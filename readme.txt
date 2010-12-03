@@ -16,6 +16,10 @@ A suite of social networking plugins, starting with a forum.
 FORUM
 ------------------
 
+NOTICE: We are currently BETA testing this plugin. As such, we do not recommend you use it on any production sites. However, we do welcome all feedback, bug reports and suggestions. Please do so at www.wpsymposium.com - thank you.
+
+*OVERVIEW*
+
 The goal of the forum is to be simple and as uncluttered as possible, whilst having powerful features within.
 
 Features currently include:
