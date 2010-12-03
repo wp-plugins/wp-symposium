@@ -12,11 +12,10 @@ A suite of social networking plugins, starting with a forum.
 
 == Description ==
 
-------------------
-FORUM
-------------------
-
 NOTICE: We are currently BETA testing this plugin. As such, we do not recommend you use it on any production sites. However, we do welcome all feedback, bug reports and suggestions. Please do so at www.wpsymposium.com - thank you.
+
+FORUM
+- - - - - - - - - - - - - - - - - - - - -
 
 *OVERVIEW*
 
