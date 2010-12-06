@@ -4,7 +4,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium_forum] on any page to display forum.
-Version: 0.1.4
+Version: 0.1.5
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -59,14 +59,59 @@ function symposium_forum() {
 		?>
 				
 		<script type="text/javascript">
+
+		function validate_form(thisform)
+		{
+			form_id = thisform.id;
+			if ( (form_id) == "start-new-topic") {
+				with (thisform)
+				{
+					if (new_topic_subject.value == '' || new_topic_subject.value == null) {
+						jQuery(".new-topic-subject-warning").show("slow");
+						new_topic_subject.focus(); 
+						return false;
+					}
+					if (new_topic_text.value == '' || new_topic_text.value == null) {
+						jQuery(".new_topic_text-warning").show("slow");
+						new_topic_text.focus(); 
+						return false;
+					}
+				}
+			}
+			if ( (form_id) == "start-reply-topic") {
+				with (thisform)
+				{
+					if (reply_text.value == '' || reply_text.value == null) {
+						jQuery(".reply_text-warning").show("slow");
+						reply_text.focus(); 
+						return false;
+					}
+				}
+			}
+			if ( (form_id) == "quick-reply") {
+				with (thisform)
+				{
+					if (reply_text.value == '' || reply_text.value == null) {
+						jQuery(".quick-reply-warning").show("slow");
+						reply_text.focus(); 
+						return false;
+					}
+				}
+			}			
+		}
+
 	    jQuery(document).ready(function() { 	
-	    	
+	    		
+	    		// Notices	    	
 			jQuery(".notice").hide();
 			jQuery(".pleasewait").hide();
-			
 		    jQuery('.backto').click(function() {
 				jQuery('.pleasewait').inmiddle().show();
 		    });		
+			jQuery(".new-topic-subject-warning").hide();
+			jQuery(".new_topic_text-warning").hide();
+			jQuery(".reply_text-warning").hide();
+			jQuery(".quick-reply-warning").hide();
 			
 			// Centre in screen
 			jQuery.fn.inmiddle = function () {
@@ -75,7 +120,7 @@ function symposium_forum() {
 		    this.css("left", ( jQuery(window).width() - this.width() ) / 2+jQuery(window).scrollLeft() + "px");
 			    return this;
 			}
-	
+			
 			// Edit topic (AJAX)
 		   jQuery('#starting-post').hover(function() {
 		        jQuery(this).find('#edit-this-topic').show();
@@ -93,7 +138,7 @@ function symposium_forum() {
 					},
 				function(str)
 				{
-					var details = str.split("|");
+					var details = str.split("[split]");
 					jQuery('#edit_topic_subject').val(details[0]);
 					jQuery('#edit_topic_subject').removeAttr("disabled");
 					jQuery('#edit_topic_text').html(details[1]);
@@ -115,7 +160,7 @@ function symposium_forum() {
 					},
 				function(str)
 				{
-					var details = str.split("|");
+					var details = str.split("[split]");
 					jQuery('#edit_topic_subject').val(details[0]);
 					jQuery('#edit_topic_subject').attr("disabled", "enabled");
 					jQuery('#edit_topic_text').html(details[1]);
@@ -455,8 +500,8 @@ function symposium_forum() {
 		
 			$store = true;
 			$edit_new_topic = false;
-			if ($new_topic_subject == '') { $msg = "Please enter a subject"; $store = false; $edit_new_topic = true; }
-			if ($new_topic_text == '') { $msg = "Please enter a message"; $store = false; $edit_new_topic = true; }
+			if ($new_topic_subject == '') { $msg = $language->prs; $store = false; $edit_new_topic = true; }
+			if ($new_topic_text == '') { $msg = $language->prm; $store = false; $edit_new_topic = true; }
 			
 			if ( ($store) && is_user_logged_in() ) {
 				// Check for duplicates
@@ -558,7 +603,7 @@ function symposium_forum() {
 			$reply_text = $_POST['reply_text'];
 			$reply_topic_subscribe = $_POST['reply_topic_subscribe'];
 			
-			if ($reply_text	 != '') {
+			if ($reply_text != '') {
 			
 				if (is_user_logged_in()) {
 					// Check for duplicates
@@ -647,7 +692,9 @@ function symposium_forum() {
 					$reply_topic_subscribe = '';
 				}
 				
-			}		
+			} else {
+				$msg = $language->prm;
+			}	
 		}
 		
 		// any page id
@@ -657,8 +704,9 @@ function symposium_forum() {
 			$topic = $_GET['show'];
 		}
 		
+		// error message?
 		if ($msg != '') {
-			echo($msg);
+			echo('<div class="warning">'.$msg.'</div>');
 		}
 		
 		// Get Topic ID if applicable
@@ -699,20 +747,22 @@ function symposium_forum() {
 		
 			// New Topic Form
 	
-			echo '<div id="new-topic"';
+			echo '<div name="new-topic" id="new-topic"';
 				if ($edit_new_topic == false) { echo ' style="display:none;"'; } 
 				echo '>';
-				echo '<form action="'.$thispage.'" method="post">';
+				echo '<form id="start-new-topic" onsubmit="return validate_form(this)" action="'.$thispage.'" method="post">';
 				echo '<div><input type="hidden" name="action" value="post">';
 				echo '<input type="hidden" name="cid" value="'.$cat_id.'">';
 				echo '<div id="new-topic-subject-label" class="new-topic-subject label">'.$language->ts.'</div>';
 				echo '<input class="new-topic-subject-input" type="text" name="new_topic_subject" value="';
 				echo ($new_topic_subject); 
 				echo '"></div>';
+				echo '<div class="new-topic-subject-warning warning">'.$language->prs.'.</div>';
 				echo '<div><div class="new-topic-subject label">'.$language->fpit.'</div>';
 				echo '<textarea class="new-topic-subject-text" name="new_topic_text">';
 				echo ($new_topic_text);
 				echo '</textarea></div>';
+				echo '<div class="new_topic_text-warning warning">'.$language->prm.'</div>';
 				$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
 				$defaultcat = $wpdb->get_var($wpdb->prepare("SELECT cid FROM ".$cats." WHERE defaultcat = 'on'"));
 				if ($show_categories == "on") {
@@ -748,13 +798,14 @@ function symposium_forum() {
 			echo '</div>';
 			
 			if ($show != '') {
-				echo '<div id="reply-topic" style="display:none;">';
-					echo '<form action="'.$thispage.'" method="post">';
+				echo '<div id="reply-topic" name="reply-topic" style="display:none;">';
+					echo '<form id="start-reply-topic" action="'.$thispage.'" onsubmit="return validate_form(this)" method="post">';
 					echo '<input type="hidden" name="action" value="reply">';
 					echo '<input type="hidden" name="tid" value="'.$show.'">';
 					echo '<input type="hidden" name="cid" value="'.$cat_id.'">';
 					echo '<div class="reply-topic-subject label">'.$language->rtt.'</div>';
 					echo '<textarea class="reply-topic-subject-text" name="reply_text"></textarea>';
+					echo '<div class="reply_text-warning warning">'.$language->prm.'</div>';
 					echo '<div class="emailreplies label"><input type="checkbox" name="reply_topic_subscribe"';
 					$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$show." and uid = ".$current_user->ID));
 					$subscribed = false;	
@@ -1070,13 +1121,14 @@ function symposium_forum() {
 			
 			// Quick Reply
 			if (is_user_logged_in()) {
-				echo '<div id="reply-topic-bottom">';
-					echo '<form action="'.$thispage.'" method="post">';
+				echo '<div id="reply-topic-bottom" name="reply-topic-bottom">';
+					echo '<form id="quick-reply" action="'.$thispage.'" onsubmit="return validate_form(this)" method="post">';
 					echo '<input type="hidden" name="action" value="reply">';
 					echo '<input type="hidden" name="tid" value="'.$show.'">';
 					echo '<input type="hidden" name="cid" value="'.$cat_id.'">';
 					echo '<div class="reply-topic-subject label">'.$language->rtt.'</div>';
 					echo '<textarea class="reply-topic-text" name="reply_text"></textarea>';
+					echo '<div class="quick-reply-warning warning">'.$language->prm.'</div>';
 					echo '<div class="emailreplies label"><input type="checkbox" id="reply_subscribe" name="reply_topic_subscribe"';
 					if ($subscribed_count > 0) { echo 'checked'; } 
 					echo '> '.$language->wir.'</div>';
@@ -1095,7 +1147,7 @@ function symposium_forum() {
 		echo "</div>";
 		
 		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-		echo "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>Forum powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress</div>";
+		echo "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>Forum powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress, v0.1.5</div>";
 
 	} // End of language check
 
@@ -1193,9 +1245,9 @@ function getEditDetails(){
 	}
 
 	if ($details) {
-		echo $subject."|".$details->topic_post."|".$details->topic_parent."|".$details->tid."|".$details->topic_category;
+		echo $subject."[split]".$details->topic_post."[split]".$details->topic_parent."[split]".$details->tid."[split]".$details->topic_category;
 	} else {
-		echo "Problem retrieving topic information|Passed Topic ID = ".$tid;
+		echo "Problem retrieving topic information[split]Passed Topic ID = ".$tid;
 	}
 	exit;
 }

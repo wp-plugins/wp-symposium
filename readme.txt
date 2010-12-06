@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.1.4
+Stable tag: 0.1.5
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -24,8 +24,9 @@ The goal of the forum is to be simple and as uncluttered as possible, whilst hav
 
 Features currently include:
 
-*Styles*
+*Apperance/Styles*
 
+* Replaces smiley codes with images, eg. :)
 * Change the styles (look and feel) through the admin panel
 * No need to edit stylesheet
 * Uses member avatars
@@ -102,6 +103,7 @@ Put the following in a page on your site:
 7. Edit Topic/Move Topic
 8. Admin categories screen
 9. Admin menu
+10. Using smilies
 
 == Frequently Asked Questions ==
 
@@ -111,13 +113,22 @@ A. Go to www.wpsymposium.com
 Q. My language isn't supported, can I add my language?
 A. Contact us via info@wpsymposium.com and we will add the language with your help, thank you.
 
+Q. Are there images other than smilies?
+A. Yes, if you look in the smilies folder you can use any of the images by putting [] around the first page of the filename, eg: [rofl] would show rofl.png
 
 == Changelog ==
+
+= 0.1.5 =
+
+* Added client side check if post/reply form not filled in
+* Added automatic smiley replace and image tag replacement, eg: [rofl]
+* Fixed delete category
+* Fixed set 'allow new topics' for new category
 
 = 0.1.4 =
 
 * Fixed bug where all topics were appearing as new in notifications
-* Minor aesthetic change
+* Added two nobreak spaces prior to Back to [topic]... link for narrow forums
 
 = 0.1.3 =
 

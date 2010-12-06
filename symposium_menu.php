@@ -64,9 +64,10 @@ function symposium_plugin_categories() {
 		$wpdb->query( $wpdb->prepare( "
 			INSERT INTO ".$wpdb->prefix.'symposium_cats'."
 			( 	title, 
-				listorder
+				listorder,
+				allow_new
 			)
-			VALUES ( %s, %d )", 
+			VALUES ( %s, %d, %s )", 
 	        array(
 	        	$_POST['new_title'], 
 	        	$_POST['new_listorder'],
@@ -82,9 +83,8 @@ function symposium_plugin_categories() {
   		// Must leave at least one category, so check
 		$cat_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_cats'));
 		if ($cat_count > 1) {
-			$wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix.'symposium_cats'." WHERE cid = ".$cat_id) );
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_topics'." SET topic_category = 0 WHERE topic_category = ".$cat_id) );					
-		} else {
+			$wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix.'symposium_cats'." WHERE cid = ".$_GET['cid']) );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_topics'." SET topic_category = 0 WHERE topic_category = ".$_GET['cid']) );					} else {
 			echo "<div class='error'><p>You must have at least one category, you can hide the category title on the <a href='?page=symposium_options'>options page</a>.</p></div>";
 		}
   	}
@@ -642,7 +642,7 @@ function symposium_plugin_options() {
 	<ul>
 	<li>&middot;&nbsp;Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time, for the previous day.</li>
 	<li>&middot;&nbsp;Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website.</li>
-  	<li>&middot;&nbsp;WP Symposium version: 0.1.4</li>
+  	<li>&middot;&nbsp;WP Symposium version: 0.1.5</li>
   	<li>&middot;&nbsp;Database version: <?php echo get_option("symposium_db_version"); ?></li>
 
 	</ul>

@@ -4,7 +4,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.4
+Version: 0.1.5
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -58,7 +58,7 @@ function symposium_widget() {
 	echo '</table>';
 	
 	echo '<p>';
-	echo 'WP Symposium Version: 0.1.4<br />';
+	echo 'WP Symposium Version: 0.1.5<br />';
 	echo 'Database version: '.get_option("symposium_db_version");
 	echo '</p>';
 }
@@ -540,6 +540,25 @@ function symposium_activate() {
 		update_option("symposium_db_version", "2");
 	}
 	    
+	$db_ver = get_option("symposium_db_version");
+	// Version 2
+	if ($db_ver == "2") {
+
+		// Add more language labels
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prs varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prm varchar(256) NOT NULL");
+
+		// Set labels
+   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET prs = 'Please enter a subject.' WHERE language='ENG'");
+   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET prs = 'S&apos;il vous pla&icirc;t entrer un sujet.' WHERE language='FR'");
+   		
+   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET prm = 'Please enter a message.' WHERE language='ENG'");
+   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET prm = 'S&apos;il vous pla&icirc;t entrer un message.' WHERE language='FR'");
+   		
+   		// Update Database Version
+		update_option("symposium_db_version", "3");
+	}
+	    
 }
 /* End of Install */
 
@@ -727,16 +746,47 @@ function symposium_notification_trigger_schedule() {
 
 }
 
+// Hook to replace Smilies
+function far_ob_call($buffer){ // $buffer contains entire page
+	$smileys = WP_PLUGIN_URL . '/wp-symposium/smilies/';
+	// Smilies
+	$buffer = str_replace(":)", "<img src='".$smileys."smile.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":(", "<img src='".$smileys."sad.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":'(", "<img src='".$smileys."crying.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":x", "<img src='".$smileys."kiss.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":X", "<img src='".$smileys."shut_mouth.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":D", "<img src='".$smileys."laugh.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":$", "<img src='".$smileys."moneymouth.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":|", "<img src='".$smileys."neutral.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":?", "<img src='".$smileys."question.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":z", "<img src='".$smileys."sleepy.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":P", "<img src='".$smileys."tongue.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(";)", "<img src='".$smileys."wink.png' alt='emoticon'/>", $buffer);
+	// Other images
+	$buffer = str_replace("[rofl]", "<img src='".$smileys."rofl.png' alt='emoticon'/>", $buffer);
+	
+	return $buffer;
+}
+
+function far_template_redirect(){
+	ob_start();
+	ob_start('far_ob_call');
+}
+add_action('template_redirect', 'far_template_redirect');
+
 // Add jQuery and jQuery scripts
 function admin_init() {
 	if (is_admin()) {
 		// Color Picker
 		wp_register_script('symposium_iColorPicker', WP_PLUGIN_URL . '/wp-symposium/iColorPicker.js');
 	    wp_enqueue_script('symposium_iColorPicker');
+
 	}
 
 }
 add_action('init', 'admin_init');
+
+
 
 register_activation_hook(__FILE__,'symposium_activate');
 register_deactivation_hook(__FILE__, 'symposium_deactivate');
