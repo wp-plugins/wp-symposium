@@ -675,7 +675,7 @@ function symposium_forum() {
 				echo "<a class='backto label' href='".$thispage."?cid=".$cat_id."'>".$language->bt." ".$category_title."...</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 			}
 	
-			echo "<a class='backto label' href='".$thispage."'>".$language->btf."...</a>";
+			echo "&nbsp;&nbsp;<a class='backto label' href='".$thispage."'>".$language->btf."...</a>";
 			echo "</div>";
 		}
 	
@@ -788,7 +788,7 @@ function symposium_forum() {
 				echo "> ".$language->rew;
 				echo "</div>";
 			}	
-						
+				
 			echo '<table id="symposium_table" cellspacing=0 cellpadding=6 style="width:100%;border-collapse:inherit;">';
 		
 			// Loop through all categories

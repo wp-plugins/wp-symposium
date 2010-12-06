@@ -642,7 +642,7 @@ function symposium_plugin_options() {
 	<ul>
 	<li>&middot;&nbsp;Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time, for the previous day.</li>
 	<li>&middot;&nbsp;Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website.</li>
-  	<li>&middot;&nbsp;WP Symposium version: 0.1.3</li>
+  	<li>&middot;&nbsp;WP Symposium version: 0.1.4</li>
   	<li>&middot;&nbsp;Database version: <?php echo get_option("symposium_db_version"); ?></li>
 
 	</ul>

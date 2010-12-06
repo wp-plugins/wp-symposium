@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups
 Requires at least: 2.8
 Tested up to: 3.0
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 
 A suite of social networking plugins, starting with a forum.
 
@@ -103,6 +103,11 @@ A. Contact us via info@wpsymposium.com and we will add the language with your he
 
 
 == Changelog ==
+
+= 0.1.4 =
+
+* Fixed bug where all topics where appearing as new in notifications
+* Minor aesthetic change
 
 = 0.1.3 =
 

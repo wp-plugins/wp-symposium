@@ -4,7 +4,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.3
+Version: 0.1.4
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -58,7 +58,7 @@ function symposium_widget() {
 	echo '</table>';
 	
 	echo '<p>';
-	echo 'WP Symposium Version: 0.1.3<br />';
+	echo 'WP Symposium Version: 0.1.4<br />';
 	echo 'Database version: '.get_option("symposium_db_version");
 	echo '</p>';
 }
@@ -627,7 +627,7 @@ function symposium_notification_trigger_schedule() {
 		$endTime = mktime(23, 59, 59, date('m'), date('d')-1, date('Y'));
 		
 		// Get all new topics from previous period
-		$topics_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE UNIX_TIMESTAMP(topic_date) >= ".$startTime." AND UNIX_TIMESTAMP(topic_date) <= ".$endTime));
+		$topics_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0 AND UNIX_TIMESTAMP(topic_date) >= ".$startTime." AND UNIX_TIMESTAMP(topic_date) <= ".$endTime));
 
 		if ($topics_count > 0) {
 
@@ -710,7 +710,8 @@ function symposium_notification_trigger_schedule() {
 			// Report back to monitor the service - you can delete the following 4 lines if you do not want this support
 			// but in providing this anonymous information you can help us to help you
 			$mail_to = 'info@wpsymposium.com';
-			if(sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br /><br />'.$topics_count.' post(s)')) {
+			$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$config));				
+			if(sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />'.$topics_count.' post(s)')) {
 				update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
 			}
 
@@ -718,7 +719,7 @@ function symposium_notification_trigger_schedule() {
 			// Report back to monitor the service - you can delete the following 4 lines if you do not want this support
 			// but in providing this anonymous information you can help us to help you
 			$mail_to = 'info@wpsymposium.com';
-			if(sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br /><br />No Posts')) {
+			if(sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />No Posts')) {
 				update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
 			}
 		}
