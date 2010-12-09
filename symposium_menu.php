@@ -115,7 +115,7 @@ function symposium_plugin_categories() {
 
 			echo '<tr valign="top">';
 			echo '<input name="cid[]" type="hidden" value="'.$category->cid.'" />';
-			echo '<td><input name="title[]" type="text" value="'.$category->title.'" class="regular-text" /></td>';
+			echo '<td><input name="title[]" type="text" value="'.stripslashes($category->title).'" class="regular-text" /></td>';
 			echo '<td><input name="listorder[]" type="text" value="'.$category->listorder.'" /></td>';
 			echo '<td>';
 			echo '<select name="allow_new[]">';
@@ -525,8 +525,6 @@ function symposium_plugin_options() {
 		    $tid = $_POST['tid'][$key];
 		    $topic_category = $_POST['topic_category'][$key];
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_topics'." SET topic_category = ".$topic_category." WHERE tid = ".$tid) );					
-			echo $wpdb->last_query."<br>";
-		        			
 		}
 
         // Put an settings updated message on the screen
@@ -594,8 +592,18 @@ function symposium_plugin_options() {
 	<th scope="row"><label for="language">Language</label></th> 
 	<td>
 	<select name="language">
-		<option value='ENG'<?php if ($language == 'ENG') { echo ' SELECTED'; } ?>>English</option>
-		<option value='FR'<?php if ($language == 'FR') { echo ' SELECTED'; } ?>>French</option>
+		<?php
+		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
+		if ($language_options) {
+			foreach ($language_options as $option)
+			{
+				echo "<option value='".$option->language."'";
+				if ($language == $option->language) { echo ' SELECTED'; }
+				echo ">".$option->language."</option>";
+			}
+		}
+		
+		?>
 	</select> 
 	<span class="description">Contact info@wpsymposium.com to help with other languages, or to make corrections</span></td> 
 	</tr> 
@@ -642,7 +650,7 @@ function symposium_plugin_options() {
 	<ul>
 	<li>&middot;&nbsp;Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time, for the previous day.</li>
 	<li>&middot;&nbsp;Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website.</li>
-  	<li>&middot;&nbsp;WP Symposium version: 0.1.5</li>
+  	<li>&middot;&nbsp;WP Symposium version: <?php echo get_option("symposium_version"); ?></li>
   	<li>&middot;&nbsp;Database version: <?php echo get_option("symposium_db_version"); ?></li>
 
 	</ul>

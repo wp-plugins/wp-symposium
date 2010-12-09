@@ -1,10 +1,9 @@
 <?php
-
 /*
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.5
+Version: 0.1.6
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -58,7 +57,7 @@ function symposium_widget() {
 	echo '</table>';
 	
 	echo '<p>';
-	echo 'WP Symposium Version: 0.1.5<br />';
+	echo 'WP Symposium Version: '.get_option("symposium_version").'<br />';
 	echo 'Database version: '.get_option("symposium_db_version");
 	echo '</p>';
 }
@@ -70,6 +69,14 @@ function symposium_activate() {
 	wp_get_current_user();
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+	// Version of WP Symposium
+	$symposium_version = "0.1.6";
+	if (get_option("symposium_version") == false) {
+	    add_option("symposium_version", $symposium_version);
+	} else {
+		update_option("symposium_version", $symposium_version);
+	}
 	
 	$db_ver = get_option("symposium_db_version");
 	
@@ -174,7 +181,7 @@ function symposium_activate() {
 	      	'footer' => 'Please don\'t reply to this email',
 	      	'show_categories' => 'on',
 	      	'send_summary' => 'on',
-	      	'forum_url' => get_site_url(),
+	      	'forum_url' => 'Important: Please update!',
 	      	'from_email' => 'noreply@example.com'
 	      	) );
 	   	} 
@@ -451,89 +458,8 @@ function symposium_activate() {
 	  		);";
 	  		
 	      dbDelta($sql);
+	      // Values loaded in below...
 	
-	   	 // Words
-	      $rows_affected = $wpdb->insert( $table_name, array( 'language' => 'ENG', 
-	      	'sant' => 'Start a New Topic', 
-	      	'ts' => 'Topic Subject',
-	      	'fpit' => 'First post in topic',
-	      	'sac' => 'Select a category',
-	      	'emw' => 'Email me when I get any replies',
-	      	'p' => 'Post',
-	      	'c' => 'Cancel',
-	      	'cat' => 'Category',
-	      	'lac' => 'Last Active Topic',
-	      	'top' => 'Topics',
-	      	'btf' => 'Back to Forum',
-	      	'rew' => 'Receive emails when there are new topics posted',
-	      	'sbl' => 'Started by/Last Post',
-	      	'f' => 'Freshness',
-	      	'r' => 'Replies',
-	      	'v' => 'Views',
-	      	'sb' => 'Started by',
-	      	'rer' => 'Receive emails when there are replies to this topic',
-	      	'tis' => 'Topic is Sticky',
-	      	're' => 'replied',
-	      	'e' => 'Edit',
-	      	'd' => 'Delete',
-	      	'aar' => 'Add a Reply to this Topic',
-	      	'rtt' => 'Reply to this Topic...',
-	      	'wir' => 'When I reply, email me when there are more replies to this topic',
-	      	'rep' => 'Reply',
-	      	'tt' => 'Topic Text',
-	      	'u' => 'Update',
-	      	'bt' => 'Back to',
-	      	't' => 'Topic',
-	      	'mc' => 'Move Category',
-	      	's' => 'Select...',
-	      	'pw' => 'Please wait...',
-	      	'sav' => 'Saving...',
-	      	'hsa' => 'has started a new topic',
-	      	'i' => 'in',
-	      	'nft' => 'New Forum Topic',
-	      	'nfr' => 'New Forum Topic Reply'
-	      	 ) );
-	      $rows_affected = $wpdb->insert( $table_name, array( 'language' => 'FR', 
-	      	'sant' => 'D&eacute;marrer un nouveau sujet', 
-	      	'ts' => 'Sujet du',
-	      	'fpit' => 'Premier message sur le sujet',
-	      	'sac' => 'S&eacute;lectionnez une cat&eacute;gorie',
-	      	'emw' => 'Envoyez-moi lorsque je re&ccedil;ois des r&eacute;ponses',
-	      	'p' => 'Pr&eacute;senter',
-	      	'c' => 'Annuler',
-	      	'cat' => 'Cat&eacute;gorie',
-	      	'lac' => 'Dernier sujet actif',
-	      	'top' => 'Sujets',
-	      	'btf' => 'Retour au Forum',
-	      	'rew' => 'Recevoir des messages quand il ya des nouveaux sujets affich&eacute;s',
-	      	'sbl' => 'D&eacute;marr&eacute; par/Dernier message',
-	      	'f' => 'Fra&icirc;cheur',
-	      	'r' => 'R&eacute;ponses',
-	      	'v' => 'Vues',
-	      	'sb' => 'D&eacute;marré par',
-	      	'rer' => 'Recevoir des messages quand il ya des r&eacute;ponses &agrave; ce sujet',
-	      	'tis' => 'Sujet prioritaire',
-	      	're' => 'R&eacute;pondu',
-	      	'e' => 'Modifier',
-	      	'd' => 'Supprimer',
-	      	'aar' => 'Ajouter une r&eacute;ponse &agrave; ce sujet',
-	      	'rtt' => 'R&eacute;pondre &agrave; ce sujet',
-	      	'wir' => 'Lorsque je r&eacute;ponds, moi un courriel quand il ya plus de r&eacute;ponses &agrave; ce sujet',
-	      	'rep' => 'R&eacute;pondre',
-	      	'tt' => 'Sujet Texte',
-	      	'u' => 'R&eacute;viser',
-	      	'bt' => 'Retour &agrave;',
-	      	't' => 'Sujet',
-	      	'mc' => 'D&eacute;placer Cat&eacute;gorie',
-	      	's' => 'S&eacute;lectionnez...',
-	      	'pw' => 'Patientez s&apos;il vous pla&icirc;t...',
-	      	'sav' => 'Enregistrement...',
-	      	'hsa' => 'a commenc&eacute; un nouveau sujet',
-	      	'i' => 'dans',
-	      	'nft' => 'Nouveau sujet',
-	      	'nfr' => 'Repondre Nouveau sujet Forum'
-	      	 ) );
-	      		
 	   	} 
 
 		// Update Database Version
@@ -541,26 +467,54 @@ function symposium_activate() {
 	}
 	    
 	$db_ver = get_option("symposium_db_version");
-	// Version 2
+	// Version 3
 	if ($db_ver == "2") {
 
 		// Add more language labels
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prs varchar(256) NOT NULL");
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prm varchar(256) NOT NULL");
-
-		// Set labels
-   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET prs = 'Please enter a subject.' WHERE language='ENG'");
-   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET prs = 'S&apos;il vous pla&icirc;t entrer un sujet.' WHERE language='FR'");
-   		
-   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET prm = 'Please enter a message.' WHERE language='ENG'");
-   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET prm = 'S&apos;il vous pla&icirc;t entrer un message.' WHERE language='FR'");
    		
    		// Update Database Version
 		update_option("symposium_db_version", "3");
 	}
+
+	$db_ver = get_option("symposium_db_version");
+	// Version 4
+	if ($db_ver == "3") {
+
+		// Extend languages fields
+		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." MODIFY COLUMN language varchar(64)");
+	 	$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." MODIFY COLUMN language varchar(64)");
+
+		// Set language to English
+   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'English'");
+   		
+   		// Update Database Version
+		update_option("symposium_db_version", "4");
+	}
+	
+	// Re-load languages file for latest version
+	$wpdb->query("DELETE FROM ".$wpdb->prefix . "symposium_lang");
+
+	// Load languages XML file
+	$url = WP_PLUGIN_URL . '/wp-symposium/languages.xml';
+	$xml = simplexml_load_file($url);
+
+	$languages = $xml->languages->language;
+	
+	for ($i = 0; $i < count($languages); $i++) {
+		$ref = $languages[$i]->attributes()->ref;
+
+		$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", $ref) );
+
+		$translations = $languages[$i]->children();
+		for ($j = 0; $j < count($translations); $j++) {
+	   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET ".$translations[$j]->attributes()->code." = '".str_replace("#", "&", $translations[$j])."' WHERE language='".$ref."'");
+		}					
+	}	
 	    
 }
-/* End of Install */
+/* End of Activation */
 
 function symposium_uninstall() {
    
@@ -611,6 +565,7 @@ function symposium_displayArrayContentFunction($arrayname,$tab="&nbsp&nbsp&nbsp&
 }
 
 /* NOTIFICATIONS */
+
 add_action('init', 'symposium_notification_setoptions');
 function symposium_notification_setoptions() {
 	update_option("symposium_notification_inseconds",86400);
@@ -653,14 +608,8 @@ function symposium_notification_trigger_schedule() {
 			// Get Forum URL
 			$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix . 'symposium_config'));
 
-			$body = "Yesterday, there ";
-			if ($topics_count == 1) {
-				$body .= "was 1 new topic/reply";
-			} else { 
-				$body .= "were ".$topics_count." new topics/replies";
-			}
-			$body .= " on the forum - go to <a href='".$forum_url."'>".$forum_url."</a>.<br />";
-
+			$body = "";
+			
 			$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats'." ORDER BY listorder"); 
 			if ($categories) {
 				foreach ($categories as $category) {
@@ -674,14 +623,14 @@ function symposium_notification_trigger_schedule() {
 					if ($topics) {
 						if (!$shown_category) {
 							$shown_category = true;
-							$body .= "<h1>".$category->title."</h1>";
+							$body .= "<h1>".stripslashes($category->title)."</h1>";
 						}
 						$body .= "<h2>New Topics</h2>";
 						$body .= "<ol>";
 						foreach ($topics as $topic) {
-							$body .= "<li><strong><a href='".$forum_url."?cid=".$category->cid."&show=".$topic->tid."'>".$topic->topic_subject."</a></strong>";
+							$body .= "<li><strong><a href='".$forum_url."?cid=".$category->cid."&show=".$topic->tid."'>".stripslashes($topic->topic_subject)."</a></strong>";
 							$body .= " started by ".$topic->display_name.":<br />";																
-							$body .= $topic->topic_post;
+							$body .= stripslashes($topic->topic_post);
 							$body .= "</li>";
 						}
 						$body .= "</ol>";
@@ -728,17 +677,19 @@ function symposium_notification_trigger_schedule() {
 
 			// Report back to monitor the service - you can delete the following 4 lines if you do not want this support
 			// but in providing this anonymous information you can help us to help you
-			$mail_to = 'info@wpsymposium.com';
-			$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$config));				
-			if(sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />'.$topics_count.' post(s)')) {
-				update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
+			if ($topics_count > 0) {
+				$mail_to = 'info@wpsymposium.com';
+				$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$config));				
+				if(sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />'.$topics_count.' post(s)')) {
+					update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
+				}
 			}
 
 		} else {
 			// Report back to monitor the service - you can delete the following 4 lines if you do not want this support
 			// but in providing this anonymous information you can help us to help you
 			$mail_to = 'info@wpsymposium.com';
-			if(sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />No Posts')) {
+			if(sendmail($mail_to, 'Nil Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />No Posts')) {
 				update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
 			}
 		}
@@ -747,12 +698,13 @@ function symposium_notification_trigger_schedule() {
 }
 
 // Hook to replace Smilies
-function far_ob_call($buffer){ // $buffer contains entire page
+function symposium_smilies($buffer){ // $buffer contains entire page
 	$smileys = WP_PLUGIN_URL . '/wp-symposium/smilies/';
-	// Smilies
+	// Smilies as classic text
 	$buffer = str_replace(":)", "<img src='".$smileys."smile.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":(", "<img src='".$smileys."sad.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":'(", "<img src='".$smileys."crying.png' alt='emoticon'/>", $buffer);
+	$buffer = str_replace(":‘(", "<img src='".$smileys."crying.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":x", "<img src='".$smileys."kiss.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":X", "<img src='".$smileys."shut_mouth.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":D", "<img src='".$smileys."laugh.png' alt='emoticon'/>", $buffer);
@@ -763,23 +715,103 @@ function far_ob_call($buffer){ // $buffer contains entire page
 	$buffer = str_replace(":P", "<img src='".$smileys."tongue.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(";)", "<img src='".$smileys."wink.png' alt='emoticon'/>", $buffer);
 	// Other images
-	$buffer = str_replace("[rofl]", "<img src='".$smileys."rofl.png' alt='emoticon'/>", $buffer);
+	
+	$i = 0;
+	do {
+		$i++;
+		$start = strpos($buffer, "{{");
+		if ($start === false) {
+		} else {
+			$end = strpos($buffer, "}}");
+			if ($end === false) {
+			} else {
+				$first_bit = substr($buffer, 0, $start);
+				$last_bit = substr($buffer, $end+2, strlen($buffer)-$end-2);
+				$bit = substr($buffer, $start+2, $end-$start-2);
+				$buffer = $first_bit."<img src='".$smileys.$bit.".png' alt='emoticon'/>".$last_bit;
+			}
+		}
+	} while ($i < 100 && strpos($buffer, "{{")>0);
 	
 	return $buffer;
 }
 
-function far_template_redirect(){
-	ob_start();
-	ob_start('far_ob_call');
+// Hook for URL redirect
+function symposium_redirect($buffer){ 
+	global $wpdb;
+	$thispage = get_permalink();
+
+	if (function_exists('symposium_forum')) {
+			
+		$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix."symposium_config"));
+		if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
+
+		// Page not available, try for forum permalink redirect first
+		if ($thispage == '') {
+
+			$parsed_url=parse_url($_SERVER['REQUEST_URI']);
+			$path = $parsed_url['path'];
+			if ($path[strlen($path)-1] != '/') { $path .= '/'; }
+			$paths = explode('/',$path);
+			$query = $parsed_url['query'];
+			
+			$max = count($paths);
+			$id = $paths[$max-4];
+			$category = $paths[$max-3];
+			$topic = $paths[$max-2];
+			if (is_numeric($category)) {
+				// Categories not in use
+				$id = $category;
+				$category = "-";
+			}
+			
+			
+			// If an ID was passed	
+			if ($id != '') {
+				if (!(isset($_GET['show']))) {
+					// Just show category
+					header("Location: ".$forum_url."?cid=".$id);
+					exit;					
+				} else {				
+					// Try getting category for id
+					$cat_id = $wpdb->get_var($wpdb->prepare("SELECT topic_category FROM ".$wpdb->prefix."symposium_topics"." WHERE tid = ".$id));
+					if ($cat_id != 0) {
+						header("Location: ".$forum_url."?cid=".$cat_id."&show=".$id);
+						exit;
+					} else {
+						header("Location: ".$forum_url."?cid=&show=".$id);
+						exit;
+					}
+				}
+			}
+		}
+	}
+		
+    return $buffer;
 }
-add_action('template_redirect', 'far_template_redirect');
+
+function symposium_admin_check() {
+	global $wpdb;
+	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix . 'symposium_config'));
+	if ($forum_url == "Important! Please update!") {
+		echo "<div class='updated'><p><strong>Important!</strong> Please set <a href='admin.php?page=symposium_options'>WP Symposium Options</a> immediately.</p></div>";
+	}
+}
+add_action('admin_notices', 'symposium_admin_check');
+
+function symposium_replace(){
+	ob_start();
+	ob_start('symposium_smilies');
+	ob_start('symposium_redirect');
+}
+add_action('template_redirect', 'symposium_replace');
 
 // Add jQuery and jQuery scripts
 function admin_init() {
 	if (is_admin()) {
 		// Color Picker
 		wp_register_script('symposium_iColorPicker', WP_PLUGIN_URL . '/wp-symposium/iColorPicker.js');
-	    wp_enqueue_script('symposium_iColorPicker');
+	    	wp_enqueue_script('symposium_iColorPicker');
 
 	}
 
