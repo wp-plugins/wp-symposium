@@ -33,8 +33,11 @@
 		$html .= "  color: ".$label.";";
 		$html .= "}";
 		
-		$html .= "#symposium-wrapper, #symposium-wrapper a {";
+		$html .= "#symposium-wrapper {";
 		$html .= "	color: ".$text_color.";";
+		$html .= "}";
+
+		$html .= "#symposium-wrapper row a, #symposium-wrapper row_odd a,  {";
 		if ($underline == "on") {
 			$html .= "	text-decoration: underline;";
 		} else {

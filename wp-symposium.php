@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.7
+Version: 0.1.7.1
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -77,7 +77,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.7";
+	$symposium_version = "0.1.7.1";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -546,6 +546,18 @@ function symposium_activate() {
    		
    		// Update Database Version 
 		update_option("symposium_db_version", "6");
+	}
+
+	// Version 7 *************************************************************************************
+	$db_ver = get_option("symposium_db_version");
+	if ($db_ver == "6") {
+
+		// Add preview text lengths
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_options"." ADD preview1 int(11) NOT NULL DEFAULT '45'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_options"." ADD preview2 int(11) NOT NULL DEFAULT '90'");
+   		
+   		// Update Database Version 
+		update_option("symposium_db_version", "7");
 	}
 
 	// ***********************************************************************************************

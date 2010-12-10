@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any page to display forum.
-Version: 0.1.7
+Version: 0.1.7.1
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -648,7 +648,7 @@ function symposium_forum() {
 				$html .= "<div class='table_header'>";
 				if ($use_categories == "on") {
 					$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
-					$html .= "<div class='table_topic'><a href='".$forum_url."'>".stripslashes($category_title)."</a></div>";
+					$html .= "<div class='table_topic'><a style='color:".$categories_color."; text-decoration:none;' href='".$forum_url."'>".stripslashes($category_title)."</a></div>";
 				} else {
 					$html .= "<div class='table_topic'>".stripslashes($language->t)."</div>";
 				}
