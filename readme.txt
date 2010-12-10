@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.6
+Stable tag: 0.1.7
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -130,9 +130,19 @@ Q. My language isn't supported, can I add my language?
 A. Contact us via www.wpsymposium.com and we will add the language with your help, thank you.
 
 Q. Are there images other than smilies?
-A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - for more information see the Forum Smilies page on www.wpsymposium.com
+A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page on www.wpsymposium.com
 
 == Changelog ==
+
+= 0.1.7 ==
+
+* Added: Avatars in first topic post
+* Added: Small avatars on started by/last reply column
+* Added: Underline style option to links
+* Added: Support for '.html on PAGES' plugin that appends .html to Wordpres URLs
+* Added: Better reporting if loading of language XML file fails
+* Change: Enhanced the layout to be simpler, and removed unnecessary headings
+* Fix: loading language XML file won't rely upon allow_url_fopen being enabled in php.ini
 
 = 0.1.6 =
 

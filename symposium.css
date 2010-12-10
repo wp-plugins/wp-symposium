@@ -149,7 +149,6 @@
 #symposium-wrapper .child-reply 
 {
 	clear: both;
-	border-bottom: 1px dashed #ddd;
 	padding-top: 6px;
 	overflow:auto;
 }
@@ -157,7 +156,7 @@
 {
 	float: left;
 	margin-right: 10px;
-	margin-bottom: 10px;
+	margin-bottom: 3px;
 }
 #symposium-wrapper child-posts .child-reply .child-reply-post 
 {
@@ -198,58 +197,71 @@
 #symposium-wrapper #symposium_table
 {
 	border: 1px solid #990;
+	width: 100%;
 	margin-top: 10px;
+	overflow: auto;
 }
 #symposium-wrapper .table_topic, #symposium-wrapper .row_topic
 {
 	border-radius: 0px;
-	width: 41%;
+}
+
+#symposium-wrapper .table_topic
+{
+	float: left;
+	font-weight: bold;
+	font-size: 20px;
 }
 
 #symposium-wrapper .table_startedby, #symposium-wrapper .row_startedby
 {
+	float: right;
+	margin-left: 15px;
+	width: 350px;
 	border-radius: 0px;
-	width: 25%;
-}
-
-#symposium-wrapper .table_freshness, #symposium-wrapper .row_freshness
-{
-	border-radius: 0px;
-	width: 13%;
-	text-align: right;
 }
 
 #symposium-wrapper .table_replies, #symposium-wrapper .row_replies
 {
+	float: right;
+	width: 60px;
 	border-radius: 0px;
-	width: 10%;
 	text-align: center;
 }
 
 #symposium-wrapper .table_views, #symposium-wrapper .row_views
 {
 	border-radius: 0px;
-	width: 10%;
+	float: right;
+	width: 60px;
 	text-align: center;
 }
 
 #symposium-wrapper .table_header
 {
-	padding: 6px;
+	clear: both;
+	width: 100%;
+	overflow: auto;
 }
-#symposium-wrapper .table_topic, #symposium-wrapper .table_startedby, #symposium-wrapper .table_freshness, #symposium-wrapper .table_replies, #symposium-wrapper .table_views 
+#symposium-wrapper .table_topic, #symposium-wrapper .table_startedby, #symposium-wrapper .table_replies, #symposium-wrapper .table_views 
 {
 	font-weight: bold;
-	padding: 6px;
-	background-color: #990;
+	padding: 8px;
 	color: #fff;
+	width: 80%;
 }
 #symposium-wrapper .row
 {
+	clear: both;
+	overflow: auto;
+	border-radius: 0px;
 	background-color: #ffc;
 }
 #symposium-wrapper .row_odd
 {
+	clear: both;
+	overflow: auto;
+	border-radius: 0px;
 	background-color: #ffd;
 }
 #symposium-wrapper .row:hover, #symposium-wrapper .row_odd:hover
@@ -257,13 +269,11 @@
 	background-color: #fff;
 }
 
-#symposium-wrapper .row_topic, #symposium-wrapper .row_startedby, #symposium-wrapper .row_freshness, #symposium-wrapper .row_replies, #symposium-wrapper .row_views
+#symposium-wrapper .row_topic, #symposium-wrapper .row_startedby, #symposium-wrapper .row_replies, #symposium-wrapper .row_views
 {
-	border-bottom: 1px dashed #aaa;
 	border-top: 0px;
 	font-weight: normal;
 	padding: 6px;
-	line-spacing: 28px;
 }
 #symposium-wrapper .row_link_div
 {
@@ -272,9 +282,13 @@
 #symposium-wrapper .row_link
 {
 	font-weight: bold;
-	font-size: 16px;
+	font-size: 20px;
 }
-#symposium-wrapper .row_link:hover
+#symposium-wrapper .row_link_topic
+{
+	font-weight: bold;
+}
+#symposium-wrapper .row_link:hover, #symposium-wrapper .row_link_topic:hover
 {
 	text-decoration: underline;
 }

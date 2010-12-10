@@ -11,6 +11,7 @@
 		$text_color = $wpdb->get_var($wpdb->prepare("SELECT text_color FROM ".$config));
 		$text_color_2 = $wpdb->get_var($wpdb->prepare("SELECT text_color_2 FROM ".$config));
 		$link = $wpdb->get_var($wpdb->prepare("SELECT link FROM ".$config));
+		$underline = $wpdb->get_var($wpdb->prepare("SELECT underline FROM ".$config));
 		$link_hover = $wpdb->get_var($wpdb->prepare("SELECT link_hover FROM ".$config));
 		$table_rollover = $wpdb->get_var($wpdb->prepare("SELECT table_rollover FROM ".$config));
 		$table_border = $wpdb->get_var($wpdb->prepare("SELECT table_border FROM ".$config));
@@ -34,6 +35,11 @@
 		
 		$html .= "#symposium-wrapper, #symposium-wrapper a {";
 		$html .= "	color: ".$text_color.";";
+		if ($underline == "on") {
+			$html .= "	text-decoration: underline;";
+		} else {
+			$html .= "	text-decoration: none;";
+		}
 		$html .= "}";
 	
 		$html .= "#symposium-wrapper #new-topic, #symposium-wrapper #reply-topic, #symposium-wrapper #edit-topic-div {";
@@ -55,23 +61,20 @@
 		$html .= "	border: ".$table_border."px solid ".$bg_color_1.";";	
 		$html .= "}";
 	
-		$html .= "#symposium-wrapper .table_topic, #symposium-wrapper .table_startedby, #symposium-wrapper .table_freshness, #symposium-wrapper .table_replies, #symposium-wrapper .table_views, #symposium-wrapper .table_topics {";
+		$html .= "#symposium-wrapper .table_header {";
 		$html .= "	background-color: ".$bg_color_1.";";
-		$html .= "	color: #fff;";
 		$html .= "  font-weight: bold;";
 	 	$html .= "  border-radius:0px;";
 		$html .= "  -moz-border-radius:0px;";
 		$html .= "  border: 0";
-	 	$html .= "}";
-	
-		$html .= "#symposium-wrapper .table_topic {";
 	 	$html .= "  border-top-left-radius:".($border_radius-5)."px;";
 		$html .= "  -moz-border-radius-topleft:".($border_radius-5)."px;";
-		$html .= "}";
-		
-		$html .= "#symposium-wrapper .table_topics {";
 	 	$html .= "  border-top-right-radius:".($border_radius-5)."px;";
 		$html .= "  -moz-border-radius-inmiddle:".($border_radius-5)."px;";
+		$html .= "}";
+
+		$html .= "#symposium-wrapper .table_topic {";
+		$html .= "	color: ".$categories_color.";";
 		$html .= "}";
 		
 		$html .= "#symposium-wrapper .round_bottom_left {";
@@ -125,7 +128,9 @@
 		$html .= "	background-color: ".$bg_color_3.";";
 		$html .= "}";
 	
-		$html .= "#symposium-wrapper .child-reply, #symposium-wrapper .row_topic, #symposium-wrapper .row_startedby, #symposium-wrapper .row_freshness, #symposium-wrapper .row_replies, #symposium-wrapper .row_views {";
+		$html .= "#symposium-wrapper .sep {";
+		$html .= "	clear:both;";
+		$html .= "	width:100%;";
 		$html .= "	border-bottom: ".$row_border_size."px ".$row_border_style." ".$text_color_2.";";
 		$html .= "}";
 				

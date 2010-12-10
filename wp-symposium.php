@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.6
+Version: 0.1.7
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -77,7 +77,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.6";
+	$symposium_version = "0.1.7";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -86,7 +86,7 @@ function symposium_activate() {
 	
 	$db_ver = get_option("symposium_db_version");
 	
-	// Initial version 
+	// Initial version *************************************************************************************
 	if ($db_ver == false) {
 
 	 	// Categories
@@ -408,8 +408,8 @@ function symposium_activate() {
 	   	
 	}
 
+	// Version 2 *************************************************************************************
 	$db_ver = get_option("symposium_db_version");
-	// Version 2
 	if ($db_ver == "1") {
 
 		// Add Languages to Options
@@ -471,8 +471,8 @@ function symposium_activate() {
 		update_option("symposium_db_version", "2");
 	}
 	    
+	// Version 3 *************************************************************************************
 	$db_ver = get_option("symposium_db_version");
-	// Version 3
 	if ($db_ver == "2") {
 
 		// Add language labels
@@ -483,8 +483,8 @@ function symposium_activate() {
 		update_option("symposium_db_version", "3");
 	}
 
+	// Version 4 *************************************************************************************
 	$db_ver = get_option("symposium_db_version");
-	// Version 4
 	if ($db_ver == "3") {
 
 		// Extend languages fields
@@ -497,27 +497,95 @@ function symposium_activate() {
    		// Update Database Version
 		update_option("symposium_db_version", "4");
 	}
-	
-	// Re-load languages file for latest version
+
+	// Version 5 *************************************************************************************
+	$db_ver = get_option("symposium_db_version");
+	if ($db_ver == "4") {
+
+		// Add underline style
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD underline varchar(2) NOT NULL DEFAULT 'on'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD underline varchar(2) NOT NULL DEFAULT 'on'");
+
+		// Add Aqua Style
+	    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_styles", array( 
+	      	'title' => 'Aqua', 
+			'border_radius' => '5',
+	      	'bigbutton_background' => '#B9D3EE', 
+	      	'bigbutton_background_hover' => '#B9D3EE',
+	      	'bigbutton_color' => '#505050', 
+	      	'bigbutton_color_hover' => '#000', 
+	      	'bg_color_1' => '#B9D3EE', 
+	      	'bg_color_2' => '#fff',
+	      	'bg_color_3' => '#fff', 
+	      	'table_rollover' => '#F8F8F8', 
+	      	'table_border' => '0', 
+	      	'row_border_style' => 'dotted', 
+	      	'row_border_size' => '1', 
+	      	'replies_border_size' => '1', 
+	      	'categories_background' => '#B9D3EE', 
+	      	'categories_color' => '#505050', 
+	      	'text_color' => '#505050', 
+	      	'text_color_2' => '#505050', 
+	      	'link' => '#505050', 
+	      	'underline' => '', 
+	      	'link_hover' => '#000', 
+			'label' => '#505050'
+	      	) );
+   		
+   		// Update Database Version
+		update_option("symposium_db_version", "5");
+	}
+
+	// Version 6 *************************************************************************************
+	$db_ver = get_option("symposium_db_version");
+	if ($db_ver == "5") {
+
+		// Add language labels
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tp varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tps varchar(256) NOT NULL");
+   		
+   		// Update Database Version 
+		update_option("symposium_db_version", "6");
+	}
+
+	// ***********************************************************************************************
+	// Re-load languages file for latest version *****************************************************
 	$wpdb->query("DELETE FROM ".$wpdb->prefix . "symposium_lang");
 
-	// Load languages XML file
+	// Check XML languages file
 	$url = WP_PLUGIN_URL . '/wp-symposium/languages.xml';
-	$xml = simplexml_load_file($url);
+	$xml_dir = WP_PLUGIN_DIR . '/wp-symposium/languages.xml';
+	if (file_exists($xml_dir)) {
 
-	$languages = $xml->languages->language;
+		// Load XML file
+		$curl = curl_init();
+	    	curl_setopt($curl, CURLOPT_URL, $url);
+	    	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	    	curl_setopt($curl, CURLOPT_REFERER, get_site_url());
+	    	$str = curl_exec($curl);
+	    	curl_close($curl);
+	    	$xml = simplexml_load_string($str);
+	  		
+		if ($xml === false) {
+			$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'XML file found, but failed to load') );			
+		} else {	
+			$languages = $xml->languages->language;
+			
+			for ($i = 0; $i < count($languages); $i++) {
+				$ref = $languages[$i]->attributes()->ref;
+		
+				$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", $ref) );
+		
+				$translations = $languages[$i]->children();
+				for ($j = 0; $j < count($translations); $j++) {
+			   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET ".$translations[$j]->attributes()->code." = '".str_replace("#", "&", $translations[$j])."' WHERE language='".$ref."'");
+				}					
+			}
+		}
+	} else {
+		$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", $xml_dir.' not found') );		
+	}    
 	
-	for ($i = 0; $i < count($languages); $i++) {
-		$ref = $languages[$i]->attributes()->ref;
-
-		$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", $ref) );
-
-		$translations = $languages[$i]->children();
-		for ($j = 0; $j < count($translations); $j++) {
-	   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET ".$translations[$j]->attributes()->code." = '".str_replace("#", "&", $translations[$j])."' WHERE language='".$ref."'");
-		}					
-	}	
-	    
 }
 /* End of Activation */
 
@@ -578,7 +646,7 @@ function symposium_notification_setoptions() {
 	/* This is where the actual recurring event is scheduled */
 	if (!wp_next_scheduled('symposium_notification_hook')) {
 		$dt=explode(':',date('d:m:Y',time()));
-		$schedule=mktime(0,1,0,$dt[1],$dt[0],$dt[2])+1;
+		$schedule=mktime(0,1,0,$dt[1],$dt[0],$dt[2])+86400;
 		// set for 00:01 from tomorrow
 		wp_schedule_event($schedule, "symposium_notification_recc", "symposium_notification_hook");
 	}
@@ -754,48 +822,43 @@ function symposium_redirect($buffer){
 			
 		$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix."symposium_config"));
 		if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
-
-		// Page not available, try for forum permalink redirect first
-		if ($thispage == '') {
-
-			$parsed_url=parse_url($_SERVER['REQUEST_URI']);
-			$path = $parsed_url['path'];
-			if ($path[strlen($path)-1] != '/') { $path .= '/'; }
-			$paths = explode('/',$path);
-			$query = $parsed_url['query'];
-			
-			$max = count($paths);
-			$id = $paths[$max-4];
-			$category = $paths[$max-3];
-			$topic = $paths[$max-2];
-			if (is_numeric($category)) {
-				// Categories not in use
-				$id = $category;
-				$category = "-";
-			}
-			
-			
-			// If an ID was passed	
-			if ($id != '') {
-				if (!(isset($_GET['show']))) {
-					// Just show category
-					header("Location: ".$forum_url."?cid=".$id);
-					exit;					
-				} else {				
-					// Try getting category for id
-					$cat_id = $wpdb->get_var($wpdb->prepare("SELECT topic_category FROM ".$wpdb->prefix."symposium_topics"." WHERE tid = ".$id));
-					if ($cat_id != 0) {
-						header("Location: ".$forum_url."?cid=".$cat_id."&show=".$id);
-						exit;
-					} else {
-						header("Location: ".$forum_url."?cid=&show=".$id);
-						exit;
-					}
+		
+		$parsed_url=parse_url($_SERVER['REQUEST_URI']);
+		$path = $parsed_url['path'];
+		if ($path[strlen($path)-1] != '/') { $path .= '/'; }
+		$paths = explode('/',$path);
+		$query = $parsed_url['query'];
+		
+		$max = count($paths);
+		$id = $paths[$max-4];
+		$category = $paths[$max-3];
+		$topic = $paths[$max-2];
+		if (is_numeric($category)) {
+			// Categories not in use
+			$id = $category;
+			$category = "-";
+		}
+				
+		// If an ID was passed	
+		if ($id != '') {
+			if (!(isset($_GET['show']))) {
+				// Just show category
+				header("Location: ".$forum_url."?cid=".$id);
+				exit;					
+			} else {				
+				// Try getting category for id
+				$cat_id = $wpdb->get_var($wpdb->prepare("SELECT topic_category FROM ".$wpdb->prefix."symposium_topics"." WHERE tid = ".$id));
+				if ($cat_id != 0) {
+					header("Location: ".$forum_url."?cid=".$cat_id."&show=".$id);
+					exit;
+				} else {
+					header("Location: ".$forum_url."?cid=&show=".$id);
+					exit;
 				}
 			}
 		}
 	}
-		
+	
     return $buffer;
 }
 

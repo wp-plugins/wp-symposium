@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any page to display forum.
-Version: 0.1.6
+Version: 0.1.7
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -31,6 +31,13 @@ function symposium_forum() {
 
 	$plugin = get_site_url().'/wp-content/plugins/wp-symposium/';
 	$thispage = get_permalink();
+	//echo $thispage."<br>";
+	//echo $thispage[strlen($thispage)-1]."<br>";
+	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
+	//echo $thispage."<br>";
+	//echo symposium_permalink(1, "topic")."<br>";
+	//echo $thispage.symposium_permalink(1, "topic")."<br>";
+	
 	$dbpage = WP_PLUGIN_URL.'/wp-symposium/symposium_forum_db.php';
 	
 	if (isset($_GET[page_id]) && $_GET[page_id] != '') {
@@ -49,13 +56,27 @@ function symposium_forum() {
 	$topics = $wpdb->prefix . 'symposium_topics';
 	$subs = $wpdb->prefix . 'symposium_subs';
 	$cats = $wpdb->prefix . 'symposium_cats';
-	$lang = $wpdb->prefix . 'symposium_lang';
+	$lang = $wpdb->prefix . 'symposium_lang';	
 	
+	$snippet_length = 45;
+	$snippet_length_long = 90;
+		
 	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$config));
 	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
 	if (!$language) {
 		
-		$html .= "<p>Language translation not available for ".$wpdb->get_var($wpdb->prepare("SELECT language FROM ".$config))."</p>";
+		$html .= "<p>Language translation for not available for [".$language_key."] - try setting the language on the Options page.</p>";
+		$language_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix . 'symposium_lang');
+		$language_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix . 'symposium_lang'));
+		$html .= "<p>".$language_count." languages available:</p>";
+		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
+		if ($language_options) {
+			foreach ($language_options as $option)
+			{
+				$html .= $option->language."<br />";
+			}
+		}		
+
 		
 	} else {
 		
@@ -67,8 +88,7 @@ function symposium_forum() {
 			if (isset($_POST['tid'])) { $show_tid = $_POST['tid']*1; }
 		}
 
-		$html .= '				
-		<script type="text/javascript">
+		$html .= '<script type="text/javascript">
 
 		function validate_form(thisform)
 		{
@@ -519,19 +539,17 @@ function symposium_forum() {
 				$html .= "</div>";
 			}	
 				
-			$html .= '<table id="symposium_table" cellspacing=0 cellpadding=6 style="width:100%;border-collapse:inherit;">';
+			// Start of table
+			$html .= '<div id="symposium_table">';
 		
-			// Loop through all categories
+			// Top level (categories)
 			$use_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
 			
 			if ( ($use_categories == "on") && (!(isset($cat_id))) ) {
 	
-				$html .= "<tr class='table_header'>";
-				$html .= "<td class='table_topic'>".$language->cat."</td>";
-				$html .= "<td class='table_startedby'>".$language->lac."</td>";
-				$html .= "<td class='table_topics' style='text-align:center'>".$language->top."</td>";
-				$html .= "<td class='table_topics'>".$language->v."</td>";
-				$html .= "</tr>";
+				$html .= "<div class='table_header'>";
+				$html .= "<div class='table_topic'>".$language->cat."</div>";
+				$html .= "</div>";
 				
 				$categories = $wpdb->get_results("SELECT * FROM ".$cats." ORDER BY listorder");
 				
@@ -539,89 +557,115 @@ function symposium_forum() {
 				$cnt = 0;
 				foreach($categories as $category) {
 					$cnt++;
-					if ($cnt/2 != round($cnt/2)) {
-						$html .= '<tr class="row">';
+					if ($cnt&1) {
+						$html .= '<div class="row ';
+						if ($cnt == $num_cats) { $html .= ' round_bottom_left round_bottom_right'; }
+						$html .= '">';
 					} else {
-						$html .= '<tr class="row_odd">';
+						$html .= '<div class="row_odd ';
+						if ($cnt == $num_cats) { $html .= ' round_bottom_left round_bottom_right'; }
+						$html .= '">';
 					}
-					$html .= '<td class="row_topic';
-					if ($cnt == $num_cats) {
-						$html .= ' round_bottom_left';
-					}
-					
-					$html .= '" valign="top"><a class="backto row_link" href="'.$thispage.permalink($category->cid, "category").$q.'cid='.$category->cid.'">'.stripslashes($category->title).'</a></td>';
-					$last_topic = $wpdb->get_row("
-						SELECT tid, topic_subject, topic_post, topic_date, topic_sticky, topic_parent, display_name, topic_category 
-						FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-						WHERE topic_parent = 0 AND topic_category = ".$category->cid." ORDER BY topic_sticky DESC, topic_date DESC"); 
-					$html .= "<td class='row_topic'>";
-					if ($last_topic) {
-						$reply = $wpdb->get_row("
-							SELECT tid, topic_subject, topic_post, topic_date, display_name, topic_category 
+						// Last Topic
+						$last_topic = $wpdb->get_row("
+							SELECT tid, topic_subject, topic_post, topic_date, topic_owner, topic_sticky, topic_parent, display_name, topic_category 
 							FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-							WHERE topic_parent = ".$last_topic->tid." ORDER BY topic_date DESC"); 
-												
-						$html .= '<a class="backto row_link" href="'.$thispage.permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a>';
-						if ($last_topic->topic_sticky) { $html .= ' <img src="'.$plugin.'pin.gif" alt="Sticky Topic" />'; } 
-						$html .= '<br />';
+							WHERE topic_parent = 0 AND topic_category = ".$category->cid." ORDER BY topic_sticky DESC, topic_date DESC"); 
+						$html .= "<div class='row_topic row_startedby'>";
+						if ($last_topic) {
+							$reply = $wpdb->get_row("
+								SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_category 
+								FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
+								WHERE topic_parent = ".$last_topic->tid." ORDER BY topic_date DESC"); 
+											
+								if ($reply) {
+									$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
+										$html .= get_avatar($reply->topic_owner, 32);
+									$html .= "</div>";
+									$html .= $reply->display_name." ".$language->re." to ";
+									$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
+									$html .= symposium_time_ago($reply->topic_date, $language_key).".";
+								} else {
+									$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
+										$html .= get_avatar($last_topic->topic_owner, 32);
+									$html .= "</div>";
+									$html .= $last_topic->display_name." started ";
+									$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
+									$html .= symposium_time_ago($last_topic->topic_date, $language_key).".";
+								}
 	
-						if ($reply) {
-							$html .= $reply->display_name." ".$language->re." ".symposium_time_ago($reply->topic_date, $language_key).":<br />";
-							$post = stripslashes($reply->topic_post);
-						} else {
-							$html .= "by ".$last_topic->display_name.", ".symposium_time_ago($last_topic->topic_date, $language_key).":<br />";
-							$post = stripslashes($last_topic->topic_post);
 						}
-						if ( strlen($post) > 100 ) { $post = substr($post, 0, 100)."..."; }
-						$html .= "<span class='row_topic_text'>".$post."</span>";
-					} else {
-						$html .= "&nbsp;";
-					}
-					$html .= "</td>";
-					$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$topics." WHERE topic_parent = 0 AND topic_category = ".$category->cid));
-					$html .= "<td class='row_topic";
-					if ($cnt == $num_cats) {
-						$html .= " round_bottom_right";
-					}
-					$html .= "' style='text-align:center' valign='top'>".$topic_count."</td>";
-					$html .= "<td class='row_views";
-					if ($row_cnt == $num_topics) {
-						$html .= " round_bottom_right";
-					}
-					$html .= "' valign='top' align='center'>".$wpdb->get_var($wpdb->prepare("SELECT sum(topic_views) FROM ".$topics." WHERE topic_category = ".$category->cid))."</td>";
+						$html .= "</div>";
+						
+						// Posts
+						$html .= "<div class='row_views row_views'>";
+						$post_count = $wpdb->get_var($wpdb->prepare("SELECT count(*) FROM ".$topics." t INNER JOIN ".$topics." u ON u.topic_parent = t.tid WHERE t.topic_parent = 0 AND t.topic_category = ".$category->cid));
 
-					$html .= "</tr>";
+						if ($post_count) { 
+							$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$post_count."</div>";
+							$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
+							if ($post_count > 1) {
+								$html .= strtoupper($language->tps);
+							} else {
+								$html .= strtoupper($language->tp);
+							}
+							$html .= "</div>";
+						}
+						$html .= "</div>";
+
+						// Topic Count
+						$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$topics." WHERE topic_parent = 0 AND topic_category = ".$category->cid));
+						$html .= "<div class='row_topic row_replies'>";
+						$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$topic_count."</div>";
+						$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
+						if ($topic_count != 1) {
+							$html .= strtoupper($language->top);
+						} else {
+							$html .= strtoupper($language->t);
+						}
+						$html .= "</div>";
+						$html .= "</div>";
+
+						// Category title
+						$html .= '<div style="padding-left:9px;padding-top:13px">';
+						$html .= '<a class="backto row_link" href="'.$thispage.symposium_permalink($category->cid, "category").$q.'cid='.$category->cid.'">'.stripslashes($category->title).'</a>';
+						$html .= '</div>';
+
+												
+						// Separator
+						$html .= "<div class='sep'></div>";											
+
+					$html .= "</div>"; // Row in the table
+
 				}
 	
 	
 			}
 			
+			// Topic level
 			if ( ($use_categories != "on") || (isset($cat_id)) ) {
 	
-				$html .= "<tr class='table_header'>";
-				$html .= "<td class='table_topic'>".$language->t."</td>";
-				$html .= "<td class='table_startedby'>".$language->sbl."</td>";
-				$html .= "<td class='table_freshness'>".$language->f."</td>";
-				$html .= "<td class='table_replies'>".$language->r."</td>";
-				$html .= "<td class='table_topics'>".$language->v."</td>";
-				$html .= "</tr>";
-			
+				$html .= "<div class='table_header'>";
+				if ($use_categories == "on") {
+					$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
+					$html .= "<div class='table_topic'><a href='".$forum_url."'>".stripslashes($category_title)."</a></div>";
+				} else {
+					$html .= "<div class='table_topic'>".stripslashes($language->t)."</div>";
+				}
+				$html .= "</div>";
+
 				// Get Forums	
 				if ($use_categories == "on") {
-					$html .= "<tr>";
-					$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
-					$html .= "<td class='categories_background categories_color' style='border:0' colspan=5>".stripslashes($category_title)."</td>";
-					$html .= "</tr>";
 						
 					$query = $wpdb->get_results("
-						SELECT tid, topic_subject, topic_post, topic_date, display_name, topic_sticky 
+						SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky 
 						FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
 						WHERE topic_parent = 0 AND topic_category = ".$cat_id." ORDER BY topic_sticky DESC, topic_date DESC"); 
 						
 				} else {
 					
 					$query = $wpdb->get_results("
-						SELECT tid, topic_subject, topic_post, topic_date, display_name, topic_sticky 
+						SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky 
 						FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
 						WHERE topic_parent = 0 ORDER BY topic_sticky DESC, topic_date DESC"); 
 						
@@ -638,68 +682,97 @@ function symposium_forum() {
 						$row_cnt++;
 						
 						$replies = $wpdb->get_var($wpdb->prepare("SELECT COUNT(tid) FROM ".$topics." WHERE topic_parent = ".$topic->tid));
-						$views = $wpdb->get_var($wpdb->prepare("SELECT sum(topic_views) FROM ".$topics." WHERE tid = ".$topic->tid));
+						$reply_views = $wpdb->get_var($wpdb->prepare("SELECT sum(topic_views) FROM ".$topics." WHERE tid = ".$topic->tid));
 								
-						if ($row_cnt/2 != round($row_cnt/2)) {
-							$html .= "<tr class='row'>";
+						if ($row_cnt&1) {
+							$html .= '<div class="row ';
+							if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
+							$html .= '">';
 						} else {
-							$html .= "<tr class='row_odd'>";
+							$html .= '<div class="row_odd ';
+							if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
+							$html .= '">';
 						}
-						$html .= "<td class='row_topic";
-						if ($row_cnt == $num_topics) {
-							$html .= " round_bottom_left";
-						}
-						$html .= "'>";
-						if (current_user_can('level_10')) {
-							$html .= " <a class='delete' href='".$thispage.$q."show=".$show."&cid=".$cat_id."&action=deltopic&tid=".$topic->tid."'>".$language->d."</a>";
-						}
-						
-						$html .= '<div class="row_link_div"><a href="'.$thispage.permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($topic->topic_subject).'</a>';
-						if (is_user_logged_in()) {
-							$is_subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$topic->tid." AND uid = ".$current_user->ID));
-							if ($is_subscribed > 0) { $html .= ' <img src="'.$plugin.'orange-tick.gif" alt="Subscribed" />'; } 
-						}
-						if ($topic->topic_sticky) { $html .= ' <img src="'.$plugin.'pin.gif" alt="Sticky Topic" />'; } 
-						
-						$html .= "</div>";
-						$post = stripslashes($topic->topic_post);
-						if ( strlen($post) > 100 ) { $post = substr($post, 0, 100)."..."; }
-						$html .= "<span class='row_topic_text'>".$post."</span></td>";
-						$html .= "<td class='row_startedby' valign='top'>";
-						$last_post = $wpdb->get_row("
-							SELECT tid, topic_subject, topic_post, topic_date, display_name, topic_sticky 
-							FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-							WHERE topic_parent = ".$topic->tid." ORDER BY tid DESC"); 
-						if ( $last_post ) {
-							$html .= "Last reply by: ".$last_post->display_name."<br />";
-							$post = stripslashes($last_post->topic_post);
-							if ( strlen($post) > 100 ) { $post = substr($post, 0, 100)."..."; }
-							$html .= "<div class='row_topic_text' style='margin-top: 5px'>".$post."</div>";
-						} else {
-							$html .= $language->sb.": ".$topic->display_name;
-						}
-						$html .= "</td>";
-						$html .= "<td class='row_freshness' valign='top' align='right'>".symposium_time_ago($topic->topic_date, $language_key)."</td>";
-						$html .= "<td class='row_replies' valign='top' align='center'>".$replies."</td>";
-						$html .= "<td class='row_views";
-						if ($row_cnt == $num_topics) {
-							$html .= " round_bottom_right";
-						}
-						$html .= "' valign='top' align='center'>".$views."</td>";
-						$html .= "</tr>";
+							// Started by/Last Reply
+							$html .= "<div class='row_startedby' style='float:right;'>";
+							$last_post = $wpdb->get_row("
+								SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky 
+								FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
+								WHERE topic_parent = ".$topic->tid." ORDER BY tid DESC"); 
+							if ( $last_post ) {
+								$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
+									$html .= get_avatar($last_post->topic_owner, 32);
+								$html .= "</div>";
+								$html .= "Last reply by ".$last_post->display_name;
+								$html .= " ".symposium_time_ago($topic->topic_date, $language_key).".";
+								$post = stripslashes($last_post->topic_post);
+								if ( strlen($post) > $snippet_length_long ) { $post = substr($post, 0, $snippet_length_long)."..."; }
+								$html .= "<br /><span class='row_topic_text'>".$post."</span>";
+							} else {
+								$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
+									$html .= get_avatar($topic->topic_owner, 32);
+								$html .= "</div>";
+								$html .= $language->sb." ".$topic->display_name;
+								$html .= " ".symposium_time_ago($topic->topic_date, $language_key).".";
+							}
+							$html .= "</div>";
+							
+							// Views
+							$html .= "<div class='row_views'>";
+							if ($reply_views) { 
+								$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$reply_views."</div>";
+								$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>".strtoupper($language->v)."</div>";
+							}
+							$html .= "</div>";
+							
+							// Replies
+							$html .= "<div class='row_replies'>";
+							$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$replies."</div>";
+							$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
+							if ($replies != 1) {
+								$html .= strtoupper($language->r);
+							} else {
+								$html .= strtoupper($language->rep);
+							}
+							$html .= "</div>";
+							$html .= "</div>";
+
+							// Topic Title		
+							$html .= "<div class='row_topic' style='padding:10px'>";							
+							$html .= '<div class="row_link_div"><a href="'.$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($topic->topic_subject).'</a>';
+							if (is_user_logged_in()) {
+								$is_subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$topic->tid." AND uid = ".$current_user->ID));
+								if ($is_subscribed > 0) { $html .= ' <img src="'.$plugin.'orange-tick.gif" alt="Subscribed" />'; } 
+							}
+							if ($topic->topic_sticky) { $html .= ' <img src="'.$plugin.'pin.gif" alt="Sticky Topic" />'; } 
+							
+							// Delete link if applicable
+							if (current_user_can('level_10')) {
+								$html .= " <a class='delete' href='".$thispage.$q."show=".$show."&cid=".$cat_id."&action=deltopic&tid=".$topic->tid."'>".$language->d."</a>";
+							}
+
+							$html .= "</div>";
+							$post = stripslashes($topic->topic_post);
+							if ( strlen($post) > $snippet_length ) { $post = substr($post, 0, $snippet_length)."..."; }
+							$html .= "<span class='row_topic_text'>".$post."</span>";
+							$html .= "</div>";
+														
+							// Separator
+							$html .= "<div class='sep'></div>";											
+	
+						$html .= "</div>"; // End of Table Row
 						
 					}
 				
 				} else {
 				
-					$html .= "<tr>";
-					$html .= "<td colspan=5 style='padding: 6px'>No topics yet</td>";
-					$html .= "</tr>";			
+					$html .= "<div style='padding: 6px'>No topics yet</div>";
 				
 				}
+
 			}
 		
-			$html .= "</table>";
+			$html .= "</div>"; // End of table
 			
 		} else {
 			
@@ -808,6 +881,9 @@ function symposium_forum() {
 							$html .= "<p>".str_replace(chr(13), "<br />", stripslashes($child->topic_post))."</p>";
 						$html .= "</div>";
 					$html .= "</div>";
+
+					// Separator
+					$html .= "<div class='sep'></div>";						
 	
 				}
 				
@@ -845,11 +921,11 @@ function symposium_forum() {
 		
 		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
 		$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>Forum powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress, ".get_option("symposium_version")."</div>";
-
-		// Send HTML
-		return $html;
 		
 	} // End of language check
+
+	// Send HTML
+	return $html;
 
 }
 
@@ -886,7 +962,7 @@ function sendmail($email, $subject, $msg)
 }
 
 // Create Permalink
-function permalink($id, $type) {
+function symposium_permalink($id, $type) {
 
 	global $wpdb;
 	
@@ -903,15 +979,23 @@ function permalink($id, $type) {
 			$info = $wpdb->get_row("
 				SELECT title FROM ".$wpdb->prefix.'symposium_cats'." WHERE cid = ".$id); 
 			$string = stripslashes($info->title);
+			$string = str_replace('\\', '-', $string);
+			$string = str_replace('/', '-', $string);
 		} else {
 			$info = $wpdb->get_row("
 				SELECT topic_subject, title FROM ".$wpdb->prefix.'symposium_topics'." INNER JOIN ".$wpdb->prefix.'symposium_cats'." ON ".$wpdb->prefix.'symposium_topics'.".topic_category = ".$wpdb->prefix.'symposium_cats'.".cid WHERE tid = ".$id); 
-			$string = $info->topic_subject;
+			$string = stripslashes($info->topic_subject);
+			$string = str_replace('\\', '-', $string);
+			$string = str_replace('/', '-', $string);
 			if ($wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config')) == "on") {
-				$string = stripslashes($info->title)."/".stripslashes($string);
+				$title = stripslashes($info->title);
+				$title = str_replace('\\', '-', $title);
+				$title = str_replace('/', '-', $title);
+				$string = $title."/".$string;
 			}
 		}
-				
+
+						
 		$patterns = array();
 		$patterns[0] = '/ /';
 		$patterns[1] = '/\?/';
@@ -921,8 +1005,11 @@ function permalink($id, $type) {
 		$replacements[1] = '';
 		$replacements[2] = '';
 		$string = preg_replace($patterns, $replacements, $string);
+
+		$string = $id."/".$string;
+
 		
-		return $id."/".$string;
+		return $string;
 	}
 }
 

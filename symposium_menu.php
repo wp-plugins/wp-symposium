@@ -225,6 +225,7 @@ function symposium_plugin_styles() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET text_color = '".$style->text_color."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET text_color_2 = '".$style->text_color_2."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET link = '".$style->link."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET underline = '".$style->underline."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET link_hover = '".$style->link_hover."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET label = '".$style->label."'") );
 
@@ -256,6 +257,7 @@ function symposium_plugin_styles() {
         $text_color = $_POST[ 'text_color' ];
         $text_color_2 = $_POST[ 'text_color_2' ];
         $link = $_POST[ 'link' ];
+        $underline = $_POST[ 'underline' ];
         $link_hover = $_POST[ 'link_hover' ];
         $label = $_POST[ 'label' ];
 
@@ -278,6 +280,7 @@ function symposium_plugin_styles() {
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET text_color = '".$text_color."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET text_color_2 = '".$text_color_2."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET link = '".$link."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET underline = '".$underline."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET link_hover = '".$link_hover."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET label = '".$label."'") );					
 
@@ -446,6 +449,17 @@ function symposium_plugin_styles() {
 			<td><input name="link" type="text" id="link" class="iColorPicker" value="<?php echo $style->link; ?>"  /> 
 			<span class="description">Link Colour</span></td> 
 			</tr> 
+
+			<tr valign="top"> 
+			<th scope="row"><label for="underline">Underlined?</label></th> 
+			<td>
+			<select name="underline" id="underline"> 
+				<option <?if ( $style->underline=='') { echo "selected='selected'"; } ?> value=''>Off</option> 
+				<option <?if ( $style->underline=='on') { echo "selected='selected'"; } ?> value='on'>On</option> 
+			</select> 
+			<span class="description">Whether links are underlined or not</span></td> 
+			</tr> 
+		
 		
 			<tr valign="top"> 
 			<th scope="row"><label for="link_hover"</label></th> 
@@ -477,11 +491,15 @@ function symposium_plugin_styles() {
 			<th scope="row"><label for="sid">Select Template</label></th> 
 			<td>
 			<select name="sid" id="sid"> 
-				<option value='1'>Symposium</option> 
-				<option value='2'>Azure (Blue)</option> 
-				<option value='3'>Gothic (Black/Grey)</option> 
-				<option value='4'>Metal (Grey)</option> 
-				<option value='5'>Neutral (Grey)</option> 
+				<?php
+				$styles_lib = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_styles');
+				if ($styles_lib) {
+					foreach ($styles_lib as $style_lib)
+					{
+						echo "<option value='".$style_lib->sid."'>".$style_lib->title."</option>";
+					}
+				}
+				?>
 			</select> 
 			<span class="description">Changes are applied immediately when applied</span></td> 
 			</tr> 			
@@ -591,6 +609,20 @@ function symposium_plugin_options() {
 	<tr valign="top"> 
 	<th scope="row"><label for="language">Language</label></th> 
 	<td>
+	<?
+	// Check that languages file exists
+	$xml_dir = WP_PLUGIN_DIR . '/wp-symposium/languages.xml';
+	if (!(file_exists($xml_dir))) {
+		echo '<div class="error"><p>The language file ('.$xml_dir.') cannot be found.</p></div>';
+	}
+
+	// Check that languages have been loaded
+	$language_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_lang');
+	if ($language_count == 0) {
+		echo '<div class="error"><p>The language file has not been loaded, have you changed it? Try downloading the latest version from <a href="http://wordpress.org/extend/plugins/wp-symposium/">the plugin page</a> and replacing your language.xml file. Then <a href="plugins.php">de-activate</a> the core WP-Symposium plugin and re-activate it. If the file has still not loaded, please report this on the <a href="http://www.wpsymposium.com">Support Forum</a>.</p></div>';
+		echo 'Language file not loaded.';
+	} else {
+	?>
 	<select name="language">
 		<?php
 		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
@@ -601,11 +633,11 @@ function symposium_plugin_options() {
 				if ($language == $option->language) { echo ' SELECTED'; }
 				echo ">".$option->language."</option>";
 			}
-		}
-		
+		}		
 		?>
 	</select> 
-	<span class="description">Contact info@wpsymposium.com to help with other languages, or to make corrections</span></td> 
+	<span class="description">Go to www.wpsymposium.com to help with other languages, or to make corrections</span></td> 
+	<?php } ?>
 	</tr> 
 
 	<tr valign="top"> 
