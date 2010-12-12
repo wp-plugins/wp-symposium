@@ -1,5 +1,6 @@
 <?php
 		// Set dynamic styles
+		$wp_width = $wpdb->get_var($wpdb->prepare("SELECT wp_width FROM ".$config));
 		$border_radius = $wpdb->get_var($wpdb->prepare("SELECT border_radius FROM ".$config));
 		$bigbutton_background = $wpdb->get_var($wpdb->prepare("SELECT bigbutton_background FROM ".$config));
 		$bigbutton_color = $wpdb->get_var($wpdb->prepare("SELECT bigbutton_color FROM ".$config));
@@ -22,6 +23,9 @@
 		$categories_background = $wpdb->get_var($wpdb->prepare("SELECT categories_background FROM ".$config));
 		$categories_color = $wpdb->get_var($wpdb->prepare("SELECT categories_color FROM ".$config));
 		
+		// Check defaults
+		if ($wp_width == '') { $wp_width = '100pc'; }
+
 		$html .= "<style>";
 		
 		$html .= "#symposium-wrapper * {";
@@ -29,14 +33,15 @@
 		$html .= "  -moz-border-radius:".$border_radius."px;";
 		$html .= "}";
 	
+		$html .= "#symposium-wrapper {";
+		$html .= "	color: ".$text_color.";";
+		$html .= "  width: ".str_replace('pc', '%', $wp_width).";";
+		$html .= "}";
+
 		$html .= "#symposium-wrapper .label {";
 		$html .= "  color: ".$label.";";
 		$html .= "}";
 		
-		$html .= "#symposium-wrapper {";
-		$html .= "	color: ".$text_color.";";
-		$html .= "}";
-
 		$html .= "#symposium-wrapper .row a, #symposium-wrapper .row_odd a {";
 		if ($underline == "on") {
 			$html .= "	text-decoration: underline;";

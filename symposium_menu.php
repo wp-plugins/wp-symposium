@@ -449,17 +449,6 @@ function symposium_plugin_styles() {
 			<td><input name="link" type="text" id="link" class="iColorPicker" value="<?php echo $style->link; ?>"  /> 
 			<span class="description">Link Colour</span></td> 
 			</tr> 
-
-			<tr valign="top"> 
-			<th scope="row"><label for="underline">Underlined?</label></th> 
-			<td>
-			<select name="underline" id="underline"> 
-				<option <?if ( $style->underline=='') { echo "selected='selected'"; } ?> value=''>Off</option> 
-				<option <?if ( $style->underline=='on') { echo "selected='selected'"; } ?> value='on'>On</option> 
-			</select> 
-			<span class="description">Whether links are underlined or not</span></td> 
-			</tr> 
-		
 		
 			<tr valign="top"> 
 			<th scope="row"><label for="link_hover"</label></th> 
@@ -467,6 +456,16 @@ function symposium_plugin_styles() {
 			<span class="description">Link Colour on mouse hover</span></td> 
 			</tr> 
 
+			<tr valign="top"> 
+			<th scope="row"><label for="underline">Underlined?</label></th> 
+			<td>
+			<select name="underline" id="underline"> 
+				<option <?if ( $style->underline=='') { echo "selected='selected'"; } ?> value=''>No</option> 
+				<option <?if ( $style->underline=='on') { echo "selected='selected'"; } ?> value='on'>Yes</option> 
+			</select> 
+			<span class="description">Whether links are underlined or not</span></td> 
+			</tr> 
+		
 			<tr valign="top"> 
 			<th scope="row"><label for="label">Labels</label></th> 
 			<td><input name="label" type="text" id="label" class="iColorPicker" value="<?php echo $style->label; ?>"  /> 
@@ -559,6 +558,12 @@ function symposium_plugin_options() {
         $forum_url = $_POST[ 'forum_url' ];
         $from_email = $_POST[ 'from_email' ];
         $language = $_POST[ 'language' ];
+        $include_admin = $_POST[ 'include_admin' ];
+        $oldest_first = $_POST[ 'oldest_first' ];
+        $preview1 = $_POST[ 'preview1' ];
+        $preview2 = $_POST[ 'preview2' ];
+        $viewer = $_POST[ 'viewer' ];
+        $wp_width = str_replace('%', 'pc', ($_POST[ 'wp_width' ]));
 
         // Save the posted value in the database
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET footer = '".$footer."'") );					
@@ -567,19 +572,31 @@ function symposium_plugin_options() {
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET from_email = '".$from_email."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET language = '".$language."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET include_admin = '".$include_admin."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET oldest_first = '".$oldest_first."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET preview1 = ".$preview1) );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET preview2 = ".$preview2) );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET viewer = '".$viewer."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_width = '".$wp_width."'") );					
 
         // Put an settings updated message on the screen
 		echo "<div class='updated'><p>Options Saved</p></div>";
 
     }
 
-      
+    // Get values from database  
+	$wp_width = str_replace('pc', '%', $wpdb->get_var($wpdb->prepare("SELECT wp_width FROM ".$wpdb->prefix.'symposium_config')));
 	$footer = $wpdb->get_var($wpdb->prepare("SELECT footer FROM ".$wpdb->prefix.'symposium_config'));
 	$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config'));
 	$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix.'symposium_config'));
 	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
 	$from_email = $wpdb->get_var($wpdb->prepare("SELECT from_email FROM ".$wpdb->prefix.'symposium_config'));
 	$language = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix.'symposium_config'));
+	$include_admin = $wpdb->get_var($wpdb->prepare("SELECT include_admin FROM ".$wpdb->prefix.'symposium_config'));
+	$oldest_first = $wpdb->get_var($wpdb->prepare("SELECT oldest_first FROM ".$wpdb->prefix.'symposium_config'));
+	$preview1 = $wpdb->get_var($wpdb->prepare("SELECT preview1 FROM ".$wpdb->prefix.'symposium_config'));
+	$preview2 = $wpdb->get_var($wpdb->prepare("SELECT preview2 FROM ".$wpdb->prefix.'symposium_config'));
+	$viewer = $wpdb->get_var($wpdb->prepare("SELECT viewer FROM ".$wpdb->prefix.'symposium_config'));
 
 	?> 
 	
@@ -641,9 +658,17 @@ function symposium_plugin_options() {
 	</tr> 
 
 	<tr valign="top"> 
+	<th scope="row"><label for="wp_width">Width</label></th> 
+	<td><input name="wp_width" type="text" id="wp_width" value="<?php echo $wp_width; ?>"/> 
+	<span class="description">Width of all WP Symposium plugins, eg: 600px or 85%</span></td> 
+	</tr> 
+
+	<tr><td colspan='2'><h2>Forum</h2><td></tr>
+	
+	<tr valign="top"> 
 	<th scope="row"><label for="forum_url">Forum URL</label></th> 
 	<td><input name="forum_url" type="text" id="forum_url"  value="<?php echo $forum_url; ?>" class="regular-text" /> 
-	<span class="description">Full URL for forum, eg: http://www.example.com/forum</span></td> 
+	<span class="description">For email notifications, eg: http://www.example.com/forum</span></td> 
 	</tr> 
 
 	<tr valign="top"> 
@@ -662,7 +687,7 @@ function symposium_plugin_options() {
 	<th scope="row"><label for="send_summary">Daily Digest</label></th>
 	<td>
 	<input type="checkbox" name="send_summary" id="send_summary" <?php if ($send_summary == "on") { echo "CHECKED"; } ?>/>
-	<span class="description">Send daily summaries to all members via email</span></td> 
+	<span class="description">Enable daily summaries to all members via email</span></td> 
 	</tr> 
 
 	<tr valign="top"> 
@@ -672,6 +697,44 @@ function symposium_plugin_options() {
 	<span class="description">Organise forum topics by categories</span></td> 
 	</tr> 
 
+	<tr valign="top"> 
+	<th scope="row"><label for="include_admin">Admin views</label></th>
+	<td>
+	<input type="checkbox" name="include_admin" id="include_admin" <?php if ($include_admin == "on") { echo "CHECKED"; } ?>/>
+	<span class="description">Include administrator viewing a topic in the total view count</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="oldest_first">Order of replies</label></th>
+	<td>
+	<input type="checkbox" name="oldest_first" id="oldest_first" <?php if ($oldest_first == "on") { echo "CHECKED"; } ?>/>
+	<span class="description">Show oldest replies first (uncheck to reverse order)</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="preview1">Preview length</label></th>
+	<td><input name="preview1" type="text" id="preview1"  value="<?php echo $preview1; ?>" /> 
+	<span class="description">Maximum number of characters to show in topic preview</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="preview2"></label></th>
+	<td><input name="preview2" type="text" id="preview2"  value="<?php echo $preview2; ?>" /> 
+	<span class="description">Maximum number of characters to show in reply preview</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="viewer">View forum level</label></th> 
+	<td>
+	<select name="viewer">
+		<option value='Guest'<?php if ($viewer == 'Guest') { echo ' SELECTED'; } ?>>Guest</option>
+		<option value='Subscriber'<?php if ($viewer == 'Subscriber') { echo ' SELECTED'; } ?>>Subscriber</option>
+		<option value='Contributor'<?php if ($viewer == 'Contributor') { echo ' SELECTED'; } ?>>Contributor</option>
+		<option value='Editor'<?php if ($viewer == 'Editor') { echo ' SELECTED'; } ?>>Editor</option>
+		<option value='Administrator'<?php if ($viewer == 'Administrator') { echo ' SELECTED'; } ?>>Administrator</option>
+	</select> 
+	<span class="description">The minimum level a visitor has to be to view the forum</span></td> 
+	</tr> 
 
 	</table> 
 

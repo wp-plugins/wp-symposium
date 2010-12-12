@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.7.1
+Version: 0.1.8
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -77,7 +77,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.7.1";
+	$symposium_version = "0.1.8";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -552,10 +552,43 @@ function symposium_activate() {
 	$db_ver = get_option("symposium_db_version");
 	if ($db_ver == "6") {
 
+	   	// Language additions
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD rdv varchar(256) NOT NULL");
+
 		// Add preview text lengths
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_options"." ADD preview1 int(11) NOT NULL DEFAULT '45'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_options"." ADD preview2 int(11) NOT NULL DEFAULT '90'");
-   		
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD preview1 int(11) NOT NULL DEFAULT '45'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD preview2 int(11) NOT NULL DEFAULT '90'");
+		// Minimum level of user for viewing
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD viewer varchar(32) NOT NULL DEFAULT 'Subscriber'");
+		// Include admin's in viewing counts?
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD include_admin varchar(2) NOT NULL DEFAULT 'on'");
+		// Show oldest replies first?
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD oldest_first varchar(2) NOT NULL DEFAULT 'on'");
+		// Width of forum
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD wp_width varchar(6) NOT NULL DEFAULT '100pc'");
+
+		// Allow replies to a topic
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_topics ADD allow_replies varchar(2) NOT NULL DEFAULT 'on'");
+
+		// Change style labels!   		
+   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_styles SET title = 'Bloo' WHERE title = 'Symposium'");
+   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_styles SET title = 'Symposium' WHERE title = 'Aqua'");
+   	
+   		// Create WPS users meta table
+	   	$table_name = $wpdb->prefix . "symposium_usermeta";
+	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+	      
+	      $sql = "CREATE TABLE " . $table_name . " (
+			  mid int(11) NOT NULL AUTO_INCREMENT,
+			  uid int(11) NOT NULL,
+			  forum_digest varchar(2) NOT NULL DEFAULT 'on',
+			  PRIMARY KEY mid (mid)
+	  		);";
+	
+	     dbDelta($sql);
+
+	   	} 	
+	   	
    		// Update Database Version 
 		update_option("symposium_db_version", "7");
 	}
@@ -611,6 +644,7 @@ function symposium_uninstall() {
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_cats");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_styles");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_lang");
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_usermeta");
 
 	// Delete Notification options
 	delete_option("symposium_notification_inseconds");
@@ -630,6 +664,46 @@ function symposium_deactivate() {
 
 }
 
+// Checks is user meta exists, and if not creates it
+function update_symposium_meta($meta, $value) {
+   	global $wpdb, $current_user;
+	wp_get_current_user();
+	
+	if ($value == '') { $value = "''"; }
+	
+	// check if exists, and create record if not
+	if ($wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$current_user->ID))) {
+	} else {
+		$wpdb->query( $wpdb->prepare( "
+			INSERT INTO ".$wpdb->prefix.'symposium_usermeta'."
+			( 	uid, 
+				forum_digest
+			)
+			VALUES ( %d, %s )", 
+	        array(
+	        	$current_user->ID, 
+	        	'on'
+	        	) 
+	        ) );
+	}
+	// now update value
+  	if ($wpdb->query("UPDATE ".$wpdb->prefix."symposium_usermeta SET ".$meta." = ".$value)) {
+  		return true;
+  	} else {
+  		return false;
+  	}
+}
+
+// Get user meta data
+function get_symposium_meta($meta) {
+   	global $wpdb, $current_user;
+	wp_get_current_user();
+	if ($value = $wpdb->get_var($wpdb->prepare("SELECT ".$meta." FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$current_user->ID))) {
+		return $value;
+	} else {
+		return false;
+	}
+}
 
 // Display array contents (for de-bugging only)
 function symposium_displayArrayContentFunction($arrayname,$tab="&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp",$indent=0) {
@@ -679,7 +753,6 @@ function symposium_notification_trigger_schedule() {
 	
 	// Check to see if we should be sending a digest
 	$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix . 'symposium_config'));
-	$send_summary = "on";
 	if ($send_summary == "on") {
 		// Calculate yesterday			
 		$startTime = mktime(0, 0, 0, date('m'), date('d')-1, date('Y'));
@@ -751,7 +824,9 @@ function symposium_notification_trigger_schedule() {
 				}
 			}
 			
-			$users = $wpdb->get_results("SELECT DISTINCT user_email FROM ".$wpdb->prefix.'users'); 
+			$body .= "<p>You can stop receiving these emails at <a href='".$forum_url."'>".$forum_url."</a>.</p>";
+			
+			$users = $wpdb->get_results("SELECT DISTINCT user_email FROM ".$wpdb->prefix.'users'." u INNER JOIN ".$wpdb->prefix.'symposium_usermeta'." m ON u.ID = m.uid WHERE m.forum_digest = 'on'"); 
 			if ($users) {
 				foreach ($users as $user) {
 					if(sendmail($user->user_email, 'Daily Forum Digest', $body)) {
@@ -773,13 +848,45 @@ function symposium_notification_trigger_schedule() {
 		} else {
 			// Report back to monitor the service - you can delete the following 4 lines if you do not want this support
 			// but in providing this anonymous information you can help us to help you
-			$mail_to = 'info@wpsymposium.com';
-			if(sendmail($mail_to, 'Nil Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />No Posts')) {
-				update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
-			}
+			// $mail_to = 'info@wpsymposium.com';
+			// if(sendmail($mail_to, 'Nil Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />No Posts')) {
+			//	update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
+			// }
 		}
 	}
 
+}
+
+/* ====================================================== PHP FUNCTIONS ====================================================== */
+
+// Send email
+function sendmail($email, $subject, $msg)
+{
+	global $wpdb;
+	
+	$footer = $wpdb->get_var($wpdb->prepare("SELECT footer FROM ".$wpdb->prefix.'symposium_config'));
+
+	$body = "<style>";
+	$body .= "body { background-color: #eee; }";
+	$body .= "</style>";
+	$body .= "<div style='margin: 20px; padding:20px; border-radius:10px; background-color: #fff;border:1px solid #000;'>";
+	$body .= $msg."<br /><hr />";
+	$body .= "<div style='width:430px;font-size:10px;border:0px solid #eee;text-align:left;float:left;'>".$footer."</div>";
+	// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
+	$body .= "<div style='width:370px;font-size:10px;border:0px solid #eee;text-align:right;float:right;'>Forum powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress</div>";
+	$body .= "</div>";
+
+	// To send HTML mail, the Content-type header must be set
+	$headers  = 'MIME-Version: 1.0' . "\r\n";
+	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+	$headers .= 'From: '.$wpdb->get_var($wpdb->prepare("SELECT from_email FROM ".$wpdb->prefix.'symposium_config'))."\r\n";
+	
+	if (mail($email, $subject, $body, $headers))
+	{
+		return true;
+	} else {
+		return false;
+	}
 }
 
 // Hook to replace Smilies

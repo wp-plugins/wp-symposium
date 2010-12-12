@@ -20,6 +20,7 @@
 	      	<translation code="v">Views</translation>
 	      	<translation code="sb">Started by</translation>
 	      	<translation code="rer">Receive emails when there are replies to this topic</translation>
+	      	<translation code="rdv">Receive digests via email</translation>
 	      	<translation code="tis">Topic is Sticky</translation>
 	      	<translation code="re">replied</translation>
 	      	<translation code="e">Edit</translation>
@@ -58,6 +59,7 @@
 			<translation code="top">Sujets</translation>
 			<translation code="btf">Retour au Forum</translation>
 			<translation code="rew">Recevoir des messages quand il ya des nouveaux sujets affich#eacute;s</translation>
+	      	<translation code="rdv">Recevez par e-mail dig#egrave;re</translation>
 			<translation code="sbl">D#eacute;marr#eacute; par/Dernier message</translation>
 			<translation code="f">Fra#icirc;cheur</translation>
 			<translation code="r">R#eacute;ponses</translation>
@@ -113,6 +115,7 @@
 			<translation code="sac">Seleccione una categoria</translation>
 			<translation code="emw">Enviar un correo electronico cuando tenga una respuesta</translation>
 			<translation code="rew">Recibir correos electronicos cuando halla nuevos topicos anunciados</translation>
+	      	<translation code="rdv">Reciba resumenes por correo electronico</translation>
 			<translation code="sb">Comensar</translation>
 			<translation code="re">respondio</translation>
 			<translation code="rer">Recivir emails cuando halla respuestas a este topico</translation>
@@ -155,8 +158,9 @@
 	      	<translation code="r">Antworten</translation>
 	      	<translation code="v">Ansichten</translation>
 	      	<translation code="sac">Kategorie ausw#auml;hlen</translation>
-	      	<translation code="emw">Informiere mich per Email #uuml;ber neue Antworten</translation>
-	      	<translation code="rew">Benachrichtiung per Email, sobald neue Themen vorhanden sind</translation>
+	      	<translation code="emw">Informiere mich per email #uuml;ber neue Antworten</translation>
+	      	<translation code="rew">Benachrichtiung per email, sobald neue Themen vorhanden sind</translation>
+	      	<translation code="rdv">Erhalte verdaut per email</translation>
 	      	<translation code="sb">Geschrieben von</translation>
 	      	<translation code="rer">Benachrichtiung per Email bei neuen Antworten</translation>
 	      	<translation code="tis">Dieses Thema wurde angepinnt</translation>

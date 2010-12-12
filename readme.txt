@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.7.1
+Stable tag: 0.1.8
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -26,6 +26,15 @@ The goal of the forum is to be simple and as uncluttered as possible, whilst hav
 
 Features currently include:
 
+*Configuration*
+
+* Limit viewing of forum to particular user levels
+* Set width of forum in % or pixels
+* Supports all permalink, and default no-permalink settings
+* Supports '.html on PAGES' plugin
+* Supports 'SimpleModal Login' plugin
+* No need to edit stylesheet
+
 *Appearance/Styles*
 
 * Search Engine friendly links within the forum (helps page ranking and so on)
@@ -33,10 +42,9 @@ Features currently include:
 * Add your own smilies/emoticons
 * Change the styles (look and feel) through the admin panel
 * Colour Picker popup, no codes needed!
-* No need to edit stylesheet
+* Set the length of the preview text
 * Set optional rounded corners
 * Uses member avatars
-* Supports all permalink, and default no-permalink settings
 
 *Languages*
 
@@ -65,12 +73,14 @@ Features currently include:
 * Edit and Delete topics, posts and replies
 * Move Topics between Categories
 * How old replies shown as 'x' minutes/hours/days ago, etc
+* Choose if topic replies are allowed
 
 *Email Notifications*
 
 * Email notifications to new topics and/or replies to existing topics
 * AJAX selection to receive email notifications (no page re-load)
 * Daily Digest to all members for new topics and replies (optionally)
+* Members can choose whether to receive digests (AJAX)
 * Customise email notification address
   
 == Installation ==
@@ -96,7 +106,8 @@ When upgrading manually, make sure you deactivate and re-activate the core plugi
 
 *Adding Forum*
 
-Put the following in a page on your site (it's a hyphen, not an underscore):
+If you need to, create a new page in WordPress (Pages->Add New).
+Put the following in a WordPress page (it's a hyphen, not an underscore):
 
   `[symposium-forum]`
   
@@ -134,6 +145,17 @@ A. Yes, if you look in the smilies folder you can use any of the images there by
 
 == Changelog ==
 
+= 0.1.8 =
+
+* Added: Option to change length of preview text on topics page
+* Added: Set level of user that can view the forum
+* Added: Members can choose if to receive digests via email
+* Added: Set width of forum (helps to fit properly in with some themes)
+* Added: Option to count administrator in "topic views"
+* Added: Option to change order of replies (old to new, and vice versa)
+* Added: Option to not permit replies (for when a topic is for info only)
+* Added: Extra security on top of existing security to combat attacks
+
 = 0.1.7.1 =
 
 * Patch: Change to styles to handle underline option
@@ -143,7 +165,7 @@ A. Yes, if you look in the smilies folder you can use any of the images there by
 * Added: Avatars in first topic post
 * Added: Small avatars on started by/last reply column
 * Added: Underline style option to links
-* Added: Support for '.html on PAGES' plugin that appends .html to Wordpres URLs
+* Added: Support for '.html on PAGES' plugin that appends .html to Wordpress URLs
 * Added: Better reporting if loading of language XML file fails
 * Change: Enhanced the layout to be simpler, and removed unnecessary headings
 * Fix: loading language XML file won't rely upon allow_url_fopen being enabled in php.ini

@@ -2,8 +2,8 @@
 /*
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
-Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any page to display forum.
-Version: 0.1.7.1
+Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WP page to display forum.
+Version: 0.1.8
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -31,12 +31,7 @@ function symposium_forum() {
 
 	$plugin = get_site_url().'/wp-content/plugins/wp-symposium/';
 	$thispage = get_permalink();
-	//echo $thispage."<br>";
-	//echo $thispage[strlen($thispage)-1]."<br>";
 	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
-	//echo $thispage."<br>";
-	//echo symposium_permalink(1, "topic")."<br>";
-	//echo $thispage.symposium_permalink(1, "topic")."<br>";
 	
 	$dbpage = WP_PLUGIN_URL.'/wp-symposium/symposium_forum_db.php';
 	
@@ -58,9 +53,21 @@ function symposium_forum() {
 	$cats = $wpdb->prefix . 'symposium_cats';
 	$lang = $wpdb->prefix . 'symposium_lang';	
 	
-	$snippet_length = 45;
-	$snippet_length_long = 90;
+	// Work out user level
+	$user_level = 0; // Guest
+	if (is_user_logged_in()) { $user_level = 1; } // Subscriber
+	if (current_user_can('edit_posts')) { $user_level = 2; } // Contributor
+	if (current_user_can('edit_published_posts')) { $user_level = 3; } // Author
+	if (current_user_can('moderate_comments')) { $user_level = 4; } // Editor
+	if (current_user_can('activate_plugins')) { $user_level = 5; } // Administrator
+	
+	// Post preview
+	$snippet_length = $wpdb->get_var($wpdb->prepare("SELECT preview1 FROM ".$config));
+	if ($snippet_length == '') { $snippet_length = '45'; }
+	$snippet_length_long = $wpdb->get_var($wpdb->prepare("SELECT preview2 FROM ".$config));
+	if ($snippet_length_long == '') { $snippet_length_long = '45'; }
 		
+	// Language
 	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$config));
 	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
 	if (!$language) {
@@ -359,6 +366,60 @@ function symposium_forum() {
 					jQuery(".notice").delay(100).fadeOut("slow");
 		    	}
 		    			    	
+		    	// Digest
+		    	if (checkbox == "symposium_digest") {
+					jQuery(".notice").inmiddle().fadeIn();
+			        if(jQuery(this).is(":checked")) {
+						jQuery.post("/wp-admin/admin-ajax.php", {
+							action:"updateDigest", 
+							\'value\':\'on\'
+							},
+						function(str)
+						{
+						      // Subscribed
+						});
+						
+			        } else {
+						jQuery.post("/wp-admin/admin-ajax.php", {
+							action:"updateDigest", 
+							\'value\':\'\'
+							},
+						function(str)
+						{
+						      // Unsubscribed
+						});
+			        }
+					jQuery(".notice").delay(100).fadeOut("slow");
+		    	}
+		    		
+		    	// Replied
+		    	if (checkbox == "replies") {
+					jQuery(".notice").inmiddle().fadeIn();
+			        if(jQuery(this).is(":checked")) {
+						jQuery.post("/wp-admin/admin-ajax.php", {
+							action:"updateTopicReplies", 
+							\'tid\':'.$show_tid.', 
+							\'value\':\'on\'
+							},
+						function(str)
+						{
+						      // Replies
+						});
+						
+			        } else {
+						jQuery.post("/wp-admin/admin-ajax.php", {
+							action:"updateTopicReplies", 
+							\'tid\':'.$show_tid.', 
+							\'value\':\'\'
+							},
+						function(str)
+						{
+						      // No replies
+						});
+			        }
+					jQuery(".notice").delay(100).fadeOut("slow");
+		    	}
+
 			});
 						
 
@@ -419,503 +480,548 @@ function symposium_forum() {
 				$html .= "<a class='backto label' href='".$thispage.$q."cid=".$cat_id."'>".$language->bt." ".stripslashes($category_title)."...</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 			}
 	
-			$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix . 'symposium_config'));
-			$html .= "&nbsp;&nbsp;<a class='backto label' href='".$forum_url."'>".$language->btf."...</a>";
+			$html .= "&nbsp;&nbsp;<a class='backto label' href='".get_permalink()."'>".$language->btf."...</a>";
 			$html .= "</div>";
 		}
 	
 	
-		// Submenu ***************************************************************************************************
-		if (is_user_logged_in()) {
-			
-			// Sub Menu for Logged in User
-				$html .= "<ul id='topic-links'>";
-			if ($show == '') {
-				$allow_new = $wpdb->get_var($wpdb->prepare("SELECT allow_new FROM ".$cats." WHERE cid=".$cat_id));
-				if ( ($cat_id == '' || $allow_new == "on") || (current_user_can('level_10')) ) {
-					$html .= "<li id='new-topic-link'>".$language->sant."</li>";
-				} else {
-					$html .= "<div style='height:30px'></div>";
-				}
-			} else {
-				$html .= "<li id='reply-topic-link'>".$language->aar."</li>";
-			}
-			$html .= "</ul>";
+		// SHOW FORUM ***************************************************************************************************
+		$show_forum = false;
+		$viewer = $wpdb->get_var($wpdb->prepare("SELECT viewer FROM ".$config));
+		if ($viewer == "Guest") { $show_forum = true; }
+		if ($viewer == "Subscriber" && $user_level >= 1) { $show_forum = true; }
+		if ($viewer == "Contributor" && $user_level >= 2) { $show_forum = true; }
+		if ($viewer == "Author" && $user_level >= 3) { $show_forum = true; }
+		if ($viewer == "Editor" && $user_level <= 4) { $show_forum = true; }
+		if ($viewer == "Administrator" && $user_level >= 5) { $show_forum = true; }
 		
-			// New Topic Form
-	
-			$html .= '<div name="new-topic" id="new-topic"';
-				if ($edit_new_topic == false) { $html .= ' style="display:none;"'; } 
-				$html .= '>';
-				$html .= '<form id="start-new-topic" onsubmit="return validate_form(this)" action="'.$dbpage.'" method="post">';
-				$html .= '<div><input type="hidden" name="action" value="post">';
-				$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
-				$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
-				$html .= '<div id="new-topic-subject-label" class="new-topic-subject label">'.$language->ts.'</div>';
-				$html .= '<input class="new-topic-subject-input" type="text" name="new_topic_subject" value="';
-				$html .= ($new_topic_subject); 
-				$html .= '"></div>';
-				$html .= '<div class="new-topic-subject-warning warning">'.$language->prs.'.</div>';
-				$html .= '<div><div class="new-topic-subject label">'.$language->fpit.'</div>';
-				$html .= '<textarea class="new-topic-subject-text" name="new_topic_text">';
-				$html .= ($new_topic_text);
-				$html .= '</textarea></div>';
-				$html .= '<div class="new_topic_text-warning warning">'.$language->prm.'</div>';
-				$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
-				$defaultcat = $wpdb->get_var($wpdb->prepare("SELECT cid FROM ".$cats." WHERE defaultcat = 'on'"));
-				if ($show_categories == "on") {
-					$html .= '<div class="new-topic-category label">'.$language->sac.': ';
-					if (current_user_can('level_10')) {
-						$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats ORDER BY listorder');			
-					} else {
-						$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats WHERE allow_new = "on" ORDER BY listorder');			
-					}
-					if ($categories) {
-						$html .= '<select name="new_topic_category">';
-						foreach ($categories as $category) {
-							$html .= '<option value='.$category->cid;
-							if (isset($cat_id)) {
-								if ($category->cid == $cat_id) { $html .= " SELECTED"; }
-							} else {
-								if ($category->cid == $defaultcat) { $html .= " SELECTED"; }
-							}
-							$html .= '>'.stripslashes($category->title).'</option>';
-						}
-						$html .= '</select>';
-					}
-					$html .= '</div>';
-				} else {
-					$html .= '<input type="hidden" name="new_topic_category" value="0" />';
-				}
-				$html .= '<div class="emailreplies label"><input type="checkbox" name="new_topic_subscribe"';
-				if ($new_topic_subscribe != '') { $html .= 'checked'; } 
-				$html .= '> '.$language->emw.'</div>';
-				$html .= '<input type="submit" class="button" style="float: left" value="'.$language->p.'" />';
-				$html .= '</form>';
-				$html .= '<input id="cancel_post" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
-			$html .= '</div>';
-			
-			if ($show != '') {
-				$html .= '<div id="reply-topic" name="reply-topic" style="display:none;">';
-					$html .= '<form id="start-reply-topic" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
-					$html .= '<input type="hidden" name="action" value="reply">';
-					$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
-					$html .= '<input type="hidden" name="tid" value="'.$show.'">';
-					$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
-					$html .= '<div class="reply-topic-subject label">'.$language->rtt.'</div>';
-					$html .= '<textarea class="reply-topic-subject-text" name="reply_text"></textarea>';
-					$html .= '<div class="reply_text-warning warning">'.$language->prm.'</div>';
-					$html .= '<div class="emailreplies label"><input type="checkbox" name="reply_topic_subscribe"';
-					$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$show." and uid = ".$current_user->ID));
-					$subscribed = false;	
-					if ($subscribed_count > 0) { $html .= 'checked'; $subscribed = true; } 
-					$html .= '> Email me when there are more replies to this topic</div>';
-					$html .= '<input type="submit" class="button" style="float: left" value="'.$language->rep.'" />';
-					$html .= '</form>';
-					$html .= '<input id="cancel_reply" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
-				$html .= '</div>';
-			}
-			
-				
-		} else {
-	
-			$html .= "Until you <a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='Login'>login</a>, you can only view the forum.";
-			$html .= "<br />";
-	
-		}
-	
-		if ($show == '') {
-					
-			// Show Forum ***************************************************************************************************
-			
-			// Forum Subscribe
+		if ($show_forum) {
 			if (is_user_logged_in()) {
-				$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = 0 and uid = ".$current_user->ID));
 				
-				$html .= "<div class='symposium_subscribe_option label'>";
-				$html .= "<input type='checkbox' id='symposium_subscribe' name='symposium_subscribe'";
-				if ($subscribed_count > 0) { $html .= ' checked'; } 
-				$html .= "> ".$language->rew;
-				$html .= "</div>";
-			}	
-				
-			// Start of table
-			$html .= '<div id="symposium_table">';
-		
-			// Top level (categories)
-			$use_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
-			
-			if ( ($use_categories == "on") && (!(isset($cat_id))) ) {
-	
-				$html .= "<div class='table_header'>";
-				$html .= "<div class='table_topic'>".$language->cat."</div>";
-				$html .= "</div>";
-				
-				$categories = $wpdb->get_results("SELECT * FROM ".$cats." ORDER BY listorder");
-				
-				$num_cats = $wpdb->num_rows;
-				$cnt = 0;
-				foreach($categories as $category) {
-					$cnt++;
-					if ($cnt&1) {
-						$html .= '<div class="row ';
-						if ($cnt == $num_cats) { $html .= ' round_bottom_left round_bottom_right'; }
-						$html .= '">';
+				// Sub Menu for Logged in User
+					$html .= "<ul id='topic-links'>";
+				if ($show == '') {
+					$allow_new = $wpdb->get_var($wpdb->prepare("SELECT allow_new FROM ".$cats." WHERE cid=".$cat_id));
+					if ( ($cat_id == '' || $allow_new == "on") || (current_user_can('level_10')) ) {
+						$html .= "<li id='new-topic-link'>".$language->sant."</li>";
 					} else {
-						$html .= '<div class="row_odd ';
-						if ($cnt == $num_cats) { $html .= ' round_bottom_left round_bottom_right'; }
-						$html .= '">';
+						$html .= "<div style='height:30px'></div>";
 					}
-						// Last Topic
-						$last_topic = $wpdb->get_row("
-							SELECT tid, topic_subject, topic_post, topic_date, topic_owner, topic_sticky, topic_parent, display_name, topic_category 
-							FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-							WHERE topic_parent = 0 AND topic_category = ".$category->cid." ORDER BY topic_sticky DESC, topic_date DESC"); 
-						$html .= "<div class='row_topic row_startedby'>";
-						if ($last_topic) {
-							$reply = $wpdb->get_row("
-								SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_category 
-								FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-								WHERE topic_parent = ".$last_topic->tid." ORDER BY topic_date DESC"); 
-											
-								if ($reply) {
-									$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
-										$html .= get_avatar($reply->topic_owner, 32);
-									$html .= "</div>";
-									$html .= $reply->display_name." ".$language->re." to ";
-									$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
-									$html .= symposium_time_ago($reply->topic_date, $language_key).".";
-								} else {
-									$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
-										$html .= get_avatar($last_topic->topic_owner, 32);
-									$html .= "</div>";
-									$html .= $last_topic->display_name." started ";
-									$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
-									$html .= symposium_time_ago($last_topic->topic_date, $language_key).".";
-								}
-	
-						}
-						$html .= "</div>";
-						
-						// Posts
-						$html .= "<div class='row_views row_views'>";
-						$post_count = $wpdb->get_var($wpdb->prepare("SELECT count(*) FROM ".$topics." t INNER JOIN ".$topics." u ON u.topic_parent = t.tid WHERE t.topic_parent = 0 AND t.topic_category = ".$category->cid));
-
-						if ($post_count) { 
-							$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$post_count."</div>";
-							$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
-							if ($post_count > 1) {
-								$html .= strtoupper($language->tps);
-							} else {
-								$html .= strtoupper($language->tp);
-							}
-							$html .= "</div>";
-						}
-						$html .= "</div>";
-
-						// Topic Count
-						$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$topics." WHERE topic_parent = 0 AND topic_category = ".$category->cid));
-						$html .= "<div class='row_topic row_replies'>";
-						$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$topic_count."</div>";
-						$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
-						if ($topic_count != 1) {
-							$html .= strtoupper($language->top);
-						} else {
-							$html .= strtoupper($language->t);
-						}
-						$html .= "</div>";
-						$html .= "</div>";
-
-						// Category title
-						$html .= '<div style="padding-left:8px;padding-top:13px">';
-						$html .= '<a class="backto row_link" href="'.$thispage.symposium_permalink($category->cid, "category").$q.'cid='.$category->cid.'">'.stripslashes($category->title).'</a>';
-						$html .= '</div>';
-
-												
-						// Separator
-						$html .= "<div class='sep'></div>";											
-
-					$html .= "</div>"; // Row in the table
-
+				} else {
+					if ($wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$show_tid)) == "on") {
+						$html .= "<li id='reply-topic-link'>".$language->aar."</li>";
+					} else {
+						$html .= '<p class="label">Replies are not allowed for this topic.</p>';
+					}
 				}
-	
-	
-			}
+				$html .= "</ul>";
 			
-			// Topic level
-			if ( ($use_categories != "on") || (isset($cat_id)) ) {
-	
-				$html .= "<div class='table_header'>";
-				if ($use_categories == "on") {
-					$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
-					$html .= "<div class='table_topic'><a style='color:".$categories_color."; text-decoration:none;' href='".$forum_url."'>".stripslashes($category_title)."</a></div>";
-				} else {
-					$html .= "<div class='table_topic'>".stripslashes($language->t)."</div>";
-				}
-				$html .= "</div>";
-
-				// Get Forums	
-				if ($use_categories == "on") {
-						
-					$query = $wpdb->get_results("
-						SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky 
-						FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-						WHERE topic_parent = 0 AND topic_category = ".$cat_id." ORDER BY topic_sticky DESC, topic_date DESC"); 
-						
-				} else {
-					
-					$query = $wpdb->get_results("
-						SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky 
-						FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-						WHERE topic_parent = 0 ORDER BY topic_sticky DESC, topic_date DESC"); 
-						
-				}
-	
-				$num_topics = $wpdb->num_rows;
-					
-				if ($query) {
+				// New Topic Form
+		
+				$html .= '<div name="new-topic" id="new-topic"';
+					if ($edit_new_topic == false) { $html .= ' style="display:none;"'; } 
+					$html .= '>';
+					$html .= '<form id="start-new-topic" onsubmit="return validate_form(this)" action="'.$dbpage.'" method="post">';
+					$html .= '<div><input type="hidden" name="action" value="post">';
+					$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
+					$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
+					$html .= '<div id="new-topic-subject-label" class="new-topic-subject label">'.$language->ts.'</div>';
+					$html .= '<input class="new-topic-subject-input" type="text" name="new_topic_subject" value="';
+					$html .= ($new_topic_subject); 
+					$html .= '"></div>';
+					$html .= '<div class="new-topic-subject-warning warning">'.$language->prs.'.</div>';
+					$html .= '<div><div class="new-topic-subject label">'.$language->fpit.'</div>';
+					$html .= '<textarea class="new-topic-subject-text" name="new_topic_text">';
+					$html .= ($new_topic_text);
+					$html .= '</textarea></div>';
+					$html .= '<div class="new_topic_text-warning warning">'.$language->prm.'</div>';
+					$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
+					$defaultcat = $wpdb->get_var($wpdb->prepare("SELECT cid FROM ".$cats." WHERE defaultcat = 'on'"));
+					if ($show_categories == "on") {
+						$html .= '<div class="new-topic-category label">'.$language->sac.': ';
+						if (current_user_can('level_10')) {
+							$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats ORDER BY listorder');			
+						} else {
+							$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats WHERE allow_new = "on" ORDER BY listorder');			
+						}
+						if ($categories) {
+							$html .= '<select name="new_topic_category">';
+							foreach ($categories as $category) {
+								$html .= '<option value='.$category->cid;
+								if (isset($cat_id)) {
+									if ($category->cid == $cat_id) { $html .= " SELECTED"; }
+								} else {
+									if ($category->cid == $defaultcat) { $html .= " SELECTED"; }
+								}
+								$html .= '>'.stripslashes($category->title).'</option>';
+							}
+							$html .= '</select>';
+						}
+						$html .= '</div>';
+					} else {
+						$html .= '<input type="hidden" name="new_topic_category" value="0" />';
+					}
+					$html .= '<div class="emailreplies label"><input type="checkbox" name="new_topic_subscribe"';
+					if ($new_topic_subscribe != '') { $html .= 'checked'; } 
+					$html .= '> '.$language->emw.'</div>';
+					$html .= '<input type="submit" class="button" style="float: left" value="'.$language->p.'" />';
+					$html .= '</form>';
+					$html .= '<input id="cancel_post" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
+				$html .= '</div>';
 				
-					$row_cnt=0;
+				if ($show != '' && $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$post->tid))=="on") {
+					$html .= '<div id="reply-topic" name="reply-topic" style="display:none;">';
+						$html .= '<form id="start-reply-topic" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
+						$html .= '<input type="hidden" name="action" value="reply">';
+						$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
+						$html .= '<input type="hidden" name="tid" value="'.$show.'">';
+						$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
+						$html .= '<div class="reply-topic-subject label">'.$language->rtt.'</div>';
+						$html .= '<textarea class="reply-topic-subject-text" name="reply_text"></textarea>';
+						$html .= '<div class="reply_text-warning warning">'.$language->prm.'</div>';
+						$html .= '<div class="emailreplies label"><input type="checkbox" name="reply_topic_subscribe"';
+						$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$show." and uid = ".$current_user->ID));
+						$subscribed = false;	
+						if ($subscribed_count > 0) { $html .= 'checked'; $subscribed = true; } 
+						$html .= '> Email me when there are more replies to this topic</div>';
+						$html .= '<input type="submit" class="button" style="float: left" value="'.$language->rep.'" />';
+						$html .= '</form>';
+						$html .= '<input id="cancel_reply" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
+					$html .= '</div>';
+				}
 				
-					foreach ($query as $topic) {
 					
-						$row_cnt++;
+			} else {
+		
+				$html .= "Until you <a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='Login'>login</a>, you can only view the forum.";
+				$html .= "<br />";
+		
+			}
+		
+			if ($show == '') {
 						
-						$replies = $wpdb->get_var($wpdb->prepare("SELECT COUNT(tid) FROM ".$topics." WHERE topic_parent = ".$topic->tid));
-						$reply_views = $wpdb->get_var($wpdb->prepare("SELECT sum(topic_views) FROM ".$topics." WHERE tid = ".$topic->tid));
-								
-						if ($row_cnt&1) {
+				// Show Forum ***************************************************************************************************
+				
+				// Forum Subscribe
+				if (is_user_logged_in()) {
+					$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = 0 and uid = ".$current_user->ID));
+					$forum_digest = get_symposium_meta('forum_digest');
+					
+					$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix . 'symposium_config'));
+					if ($send_summary == "on") {
+						$html .= "<div class='symposium_subscribe_option label'>";
+						$html .= "<input type='checkbox' id='symposium_digest' name='symposium_digest'";
+						if ($forum_digest == 'on') { $html .= ' checked'; } 
+						$html .= "> ".$language->rdv;
+						$html .= "</div><br />";
+					}
+					$html .= "<div class='symposium_subscribe_option label'>";
+					$html .= "<input type='checkbox' id='symposium_subscribe' name='symposium_subscribe'";
+					if ($subscribed_count > 0) { $html .= ' checked'; } 
+					$html .= "> ".$language->rew;
+					$html .= "</div>";
+				}	
+					
+				// Start of table
+				$html .= '<div id="symposium_table">';
+			
+				// Top level (categories)
+				$use_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
+				
+				if ( ($use_categories == "on") && (!(isset($cat_id))) ) {
+		
+					$html .= "<div class='table_header'>";
+					$html .= "<div class='table_topic'>".$language->cat."</div>";
+					$html .= "</div>";
+					
+					$categories = $wpdb->get_results("SELECT * FROM ".$cats." ORDER BY listorder");
+					
+					$num_cats = $wpdb->num_rows;
+					$cnt = 0;
+					foreach($categories as $category) {
+						$cnt++;
+						if ($cnt&1) {
 							$html .= '<div class="row ';
-							if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
+							if ($cnt == $num_cats) { $html .= ' round_bottom_left round_bottom_right'; }
 							$html .= '">';
 						} else {
 							$html .= '<div class="row_odd ';
-							if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
+							if ($cnt == $num_cats) { $html .= ' round_bottom_left round_bottom_right'; }
 							$html .= '">';
 						}
-							// Started by/Last Reply
-							$html .= "<div class='row_startedby' style='float:right;'>";
-							$last_post = $wpdb->get_row("
-								SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky 
+							// Last Topic
+							$last_topic = $wpdb->get_row("
+								SELECT tid, topic_subject, topic_post, topic_date, topic_owner, topic_sticky, topic_parent, display_name, topic_category 
 								FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-								WHERE topic_parent = ".$topic->tid." ORDER BY tid DESC"); 
-							if ( $last_post ) {
-								$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
-									$html .= get_avatar($last_post->topic_owner, 32);
-								$html .= "</div>";
-								$html .= "Last reply by ".$last_post->display_name;
-								$html .= " ".symposium_time_ago($topic->topic_date, $language_key).".";
-								$post = stripslashes($last_post->topic_post);
-								if ( strlen($post) > $snippet_length_long ) { $post = substr($post, 0, $snippet_length_long)."..."; }
-								$html .= "<br /><span class='row_topic_text'>".$post."</span>";
-							} else {
-								$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
-									$html .= get_avatar($topic->topic_owner, 32);
-								$html .= "</div>";
-								$html .= $language->sb." ".$topic->display_name;
-								$html .= " ".symposium_time_ago($topic->topic_date, $language_key).".";
+								WHERE topic_parent = 0 AND topic_category = ".$category->cid." ORDER BY topic_date DESC"); 
+							$html .= "<div class='row_topic row_startedby'>";
+							if ($last_topic) {
+								$reply = $wpdb->get_row("
+									SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_category 
+									FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
+									WHERE topic_parent = ".$last_topic->tid." ORDER BY topic_date DESC"); 
+												
+									if ($reply) {
+										$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
+											$html .= get_avatar($reply->topic_owner, 32);
+										$html .= "</div>";
+										$html .= $reply->display_name." ".$language->re." to ";
+										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
+										$html .= symposium_time_ago($reply->topic_date, $language_key).".";
+									} else {
+										$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
+											$html .= get_avatar($last_topic->topic_owner, 32);
+										$html .= "</div>";
+										$html .= $last_topic->display_name." started ";
+										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
+										$html .= symposium_time_ago($last_topic->topic_date, $language_key).".";
+									}
+		
 							}
 							$html .= "</div>";
 							
-							// Views
-							$html .= "<div class='row_views'>";
-							if ($reply_views) { 
-								$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$reply_views."</div>";
-								$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>".strtoupper($language->v)."</div>";
+							// Posts
+							$html .= "<div class='row_views row_views'>";
+							$post_count = $wpdb->get_var($wpdb->prepare("SELECT count(*) FROM ".$topics." t INNER JOIN ".$topics." u ON u.topic_parent = t.tid WHERE t.topic_parent = 0 AND t.topic_category = ".$category->cid));
+	
+							if ($post_count) { 
+								$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$post_count."</div>";
+								$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
+								if ($post_count > 1) {
+									$html .= strtoupper($language->tps);
+								} else {
+									$html .= strtoupper($language->tp);
+								}
+								$html .= "</div>";
 							}
 							$html .= "</div>";
-							
-							// Replies
-							$html .= "<div class='row_replies'>";
-							$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$replies."</div>";
+	
+							// Topic Count
+							$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$topics." WHERE topic_parent = 0 AND topic_category = ".$category->cid));
+							$html .= "<div class='row_topic row_replies'>";
+							$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$topic_count."</div>";
 							$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
-							if ($replies != 1) {
-								$html .= strtoupper($language->r);
+							if ($topic_count != 1) {
+								$html .= strtoupper($language->top);
 							} else {
-								$html .= strtoupper($language->rep);
+								$html .= strtoupper($language->t);
 							}
 							$html .= "</div>";
 							$html .= "</div>";
-
-							// Topic Title		
-							$html .= "<div class='row_topic' style='padding:10px'>";							
-							$html .= '<div class="row_link_div"><a href="'.$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($topic->topic_subject).'</a>';
-							if (is_user_logged_in()) {
-								$is_subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$topic->tid." AND uid = ".$current_user->ID));
-								if ($is_subscribed > 0) { $html .= ' <img src="'.$plugin.'orange-tick.gif" alt="Subscribed" />'; } 
-							}
-							if ($topic->topic_sticky) { $html .= ' <img src="'.$plugin.'pin.gif" alt="Sticky Topic" />'; } 
-							
-							// Delete link if applicable
-							if (current_user_can('level_10')) {
-								$html .= " <a class='delete' href='".$thispage.$q."show=".$show."&cid=".$cat_id."&action=deltopic&tid=".$topic->tid."'>".$language->d."</a>";
-							}
-
-							$html .= "</div>";
-							$post = stripslashes($topic->topic_post);
-							if ( strlen($post) > $snippet_length ) { $post = substr($post, 0, $snippet_length)."..."; }
-							$html .= "<span class='row_topic_text'>".$post."</span>";
-							$html .= "</div>";
-														
+	
+							// Category title
+							$html .= '<div style="padding-left:8px;padding-top:13px">';
+							$html .= '<a class="backto row_link" href="'.$thispage.symposium_permalink($category->cid, "category").$q.'cid='.$category->cid.'">'.stripslashes($category->title).'</a>';
+							$html .= '</div>';
+	
+													
 							// Separator
 							$html .= "<div class='sep'></div>";											
 	
-						$html .= "</div>"; // End of Table Row
-						
+						$html .= "</div>"; // Row in the table
+	
 					}
-				
-				} else {
-				
-					$html .= "<div style='padding: 6px'>No topics yet</div>";
-				
-				}
-
-			}
 		
-			$html .= "</div>"; // End of table
-			
-		} else {
-			
-			// Show topic ***************************************************************************************************
-			
-			$post = $wpdb->get_row("
-				SELECT tid, topic_subject, topic_post, topic_started, display_name, topic_sticky, topic_owner 
-				FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-				WHERE tid = ".$show);
+		
+				}
 				
-			if ($post) {
+				// Topic level
+				if ( ($use_categories != "on") || (isset($cat_id)) ) {
+		
+					$html .= "<div class='table_header'>";
+					if ($use_categories == "on") {
+						$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
+						$html .= "<div class='table_topic'><a style='color:".$categories_color."; text-decoration:none;' href='".get_permalink()."'>".stripslashes($category_title)."</a></div>";
+					} else {
+						$html .= "<div class='table_topic'>".stripslashes($language->t)."</div>";
+					}
+					$html .= "</div>";
+	
+					// Get Forums	
+					if ($use_categories == "on") {
+							
+						$query = $wpdb->get_results("
+							SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky, allow_replies 
+							FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
+							WHERE topic_parent = 0 AND topic_category = ".$cat_id." ORDER BY topic_sticky DESC, topic_date DESC"); 
+							
+					} else {
+						
+						$query = $wpdb->get_results("
+							SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky, allow_replies 
+							FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
+							WHERE topic_parent = 0 ORDER BY topic_sticky DESC, topic_date DESC"); 
+							
+					}
+		
+					$num_topics = $wpdb->num_rows;
+						
+					if ($query) {
+					
+						$row_cnt=0;
+					
+						foreach ($query as $topic) {
+						
+							$row_cnt++;
+							
+							$replies = $wpdb->get_var($wpdb->prepare("SELECT COUNT(tid) FROM ".$topics." WHERE topic_parent = ".$topic->tid));
+							$reply_views = $wpdb->get_var($wpdb->prepare("SELECT sum(topic_views) FROM ".$topics." WHERE tid = ".$topic->tid));
+									
+							if ($row_cnt&1) {
+								$html .= '<div class="row ';
+								if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
+								$html .= '">';
+							} else {
+								$html .= '<div class="row_odd ';
+								if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
+								$html .= '">';
+							}
+								// Started by/Last Reply
+								$html .= "<div class='row_startedby' style='float:right;'>";
+								$last_post = $wpdb->get_row("
+									SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky 
+									FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
+									WHERE topic_parent = ".$topic->tid." ORDER BY tid DESC"); 
+								if ( $last_post ) {
+									$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
+										$html .= get_avatar($last_post->topic_owner, 32);
+									$html .= "</div>";
+									$html .= "Last reply by ".$last_post->display_name;
+									$html .= " ".symposium_time_ago($topic->topic_date, $language_key).".";
+									$post = stripslashes($last_post->topic_post);
+									if ( strlen($post) > $snippet_length_long ) { $post = substr($post, 0, $snippet_length_long)."..."; }
+									$html .= "<br /><span class='row_topic_text'>".$post."</span>";
+								} else {
+									$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
+										$html .= get_avatar($topic->topic_owner, 32);
+									$html .= "</div>";
+									$html .= $language->sb." ".$topic->display_name;
+									$html .= " ".symposium_time_ago($topic->topic_date, $language_key).".";
+								}
+								$html .= "</div>";
+								
+								// Views
+								$html .= "<div class='row_views'>";
+								if ($reply_views) { 
+									$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$reply_views."</div>";
+									$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>".strtoupper($language->v)."</div>";
+								}
+								$html .= "</div>";
+								
+								// Replies
+								$html .= "<div class='row_replies'>";
+								$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$replies."</div>";
+								$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
+								if ($replies != 1) {
+									$html .= strtoupper($language->r);
+								} else {
+									$html .= strtoupper($language->rep);
+								}
+								$html .= "</div>";
+								$html .= "</div>";
+	
+								// Topic Title		
+								$html .= "<div class='row_topic' style='padding:10px'>";							
+								$html .= '<div class="row_link_div"><a href="'.$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($topic->topic_subject).'</a>';
+								if (is_user_logged_in()) {
+									$is_subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$topic->tid." AND uid = ".$current_user->ID));
+									if ($is_subscribed > 0) { $html .= ' <img src="'.$plugin.'orange-tick.gif" alt="Subscribed" />'; } 
+								}
+								if ($topic->allow_replies != 'on') { $html .= ' <img src="'.$plugin.'padlock.gif" alt="Replies locked" />'; } 
+								if ($topic->topic_sticky) { $html .= ' <img src="'.$plugin.'pin.gif" alt="Sticky Topic" />'; } 
+								
+								// Delete link if applicable
+								if (current_user_can('level_10')) {
+									$html .= " <a class='delete' href='".$thispage.$q."show=".$show."&cid=".$cat_id."&action=deltopic&tid=".$topic->tid."'>".$language->d."</a>";
+								}
+	
+								$html .= "</div>";
+								$post = stripslashes($topic->topic_post);
+								if ( strlen($post) > $snippet_length ) { $post = substr($post, 0, $snippet_length)."..."; }
+								$html .= "<span class='row_topic_text'>".$post."</span>";
+								$html .= "</div>";
+															
+								// Separator
+								$html .= "<div class='sep'></div>";											
+		
+							$html .= "</div>"; // End of Table Row
+							
+						}
+					
+					} else {
+					
+						$html .= "<div style='padding: 6px'>No topics yet</div>";
+					
+					}
+	
+				}
 			
-				// Edit Form
-				$html .= '<div id="edit-topic-div" class="shadow">';
-					$html .= '<div class="new-topic-subject label">'.$language->ts.'</div>';
-					$html .= '<div id="'.$post->tid.'" class="edit-topic-tid"></div>';
-					$html .= '<div id="" class="edit-topic-parent"></div>';
-					$html .= '<input class="new-topic-subject-input" id="edit_topic_subject" type="text" name="edit_topic_subject" value="">';
-					$html .= '<div class="new-topic-subject label">'.$language->tt.'</div>';
-					$html .= '<textarea class="new-topic-subject-text" id="edit_topic_text" name="edit_topic_text"></textarea>';
-					$html .= '<div id="new-category-div" style="float:left">'.$language->mc.': <select name="new-category" id="new-category">';
-					$html .= '<option value="">'.$language->s.'</option>';
-					$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats ORDER BY listorder');			
-					if ($categories) {
-						foreach ($categories as $category) {
-							if ($category->allow_new == "on" || current_user_can('level_10')) {
-								$html .= '<option value='.$category->cid.'>'.stripslashes($category->title).'</option>';
+				$html .= "</div>"; // End of table
+				
+			} else {
+				
+				// Show topic ***************************************************************************************************
+				
+				$post = $wpdb->get_row("
+					SELECT tid, topic_subject, topic_post, topic_started, display_name, topic_sticky, topic_owner 
+					FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
+					WHERE tid = ".$show);
+					
+				if ($post) {
+				
+					// Edit Form
+					$html .= '<div id="edit-topic-div" class="shadow">';
+						$html .= '<div class="new-topic-subject label">'.$language->ts.'</div>';
+						$html .= '<div id="'.$post->tid.'" class="edit-topic-tid"></div>';
+						$html .= '<div id="" class="edit-topic-parent"></div>';
+						$html .= '<input class="new-topic-subject-input" id="edit_topic_subject" type="text" name="edit_topic_subject" value="">';
+						$html .= '<div class="new-topic-subject label">'.$language->tt.'</div>';
+						$html .= '<textarea class="new-topic-subject-text" id="edit_topic_text" name="edit_topic_text"></textarea>';
+						$html .= '<div id="new-category-div" style="float:left">'.$language->mc.': <select name="new-category" id="new-category">';
+						$html .= '<option value="">'.$language->s.'</option>';
+						$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats ORDER BY listorder');			
+						if ($categories) {
+							foreach ($categories as $category) {
+								if ($category->allow_new == "on" || current_user_can('level_10')) {
+									$html .= '<option value='.$category->cid.'>'.stripslashes($category->title).'</option>';
+								}
 							}
 						}
-					}
-					$html .= '</select></div>';
-					$html .= '<div style="float:right; margin-right:15px;">';
-					$html .= '<input type="submit" class="button edit_topic_submit" value="'.$language->u.'" />';
-					$html .= '<input type="submit" class="button edit_topic_cancel" value="'.$language->c.'" />';
+						$html .= '</select></div>';
+						$html .= '<div style="float:right; margin-right:15px;">';
+						$html .= '<input type="submit" class="button edit_topic_submit" value="'.$language->u.'" />';
+						$html .= '<input type="submit" class="button edit_topic_cancel" value="'.$language->c.'" />';
+						$html .= '</div>';
 					$html .= '</div>';
-				$html .= '</div>';
-				
-				$html .= "<div id='starting-post'>";
-				
-				if ( ($post->topic_owner == $current_user->ID) || (current_user_can('level_10')) ) {
-					$html .= "<div id='edit-this-topic' class='edit_topic edit label' style='cursor:pointer'>".$language->e."</div>";
-				}
-
-				$html .= "<div id='top_of_first_post' style='height:80px'>";
-				$html .= "<div class='avatar' style='margin-bottom:0px'>";
-					$html .= get_avatar($post->topic_owner, 64);
-				$html .= "</div>";
-				
-				$html .= "<div class='topic-post-header'>".stripslashes($post->topic_subject)."</div>";					
-				$html .= "<div class='started-by'>".$language->sb." ".$post->display_name." ".symposium_time_ago($post->topic_started, $language_key)."</div>";
-				$html .= "</div>";
-
-				$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", stripslashes($post->topic_post))."</div>";
-				
-				$html .= "</div>";
-	
-				// Update views
-				$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = ".$post->tid) );
-									
-				// Subscribe	
-				if (is_user_logged_in()) {
-	
-					$html .= "<br /><div class='floatright label'>";
-					$html .= "<form action='symposium.php'>";
-					$html .= "<input type='checkbox' id='subscribe' name='subscribe'";
-					$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$show." and uid = ".$current_user->ID));
-					if ($subscribed_count > 0) { $html .= ' checked'; } 
-					$html .= "> ".$language->rer;
-					if (current_user_can('level_10')) {
-						$html .= "&nbsp;&nbsp;&nbsp;<input type='checkbox' id='sticky' name='sticky'";
-						if ($post->topic_sticky > 0) { $html .= ' checked'; }
-						$html .= "> ".$language->tis;
+					
+					$html .= "<div id='starting-post'>";
+					
+					if ( ($post->topic_owner == $current_user->ID) || (current_user_can('level_10')) ) {
+						$html .= "<div id='edit-this-topic' class='edit_topic edit label' style='cursor:pointer'>".$language->e."</div>";
 					}
-					$html .= "</form>";
+	
+					$html .= "<div id='top_of_first_post' style='height:80px'>";
+					$html .= "<div class='avatar' style='margin-bottom:0px'>";
+						$html .= get_avatar($post->topic_owner, 64);
+					$html .= "</div>";
+					
+					$html .= "<div class='topic-post-header'>".stripslashes($post->topic_subject)."</div>";					
+					$html .= "<div class='started-by'>".$language->sb." ".$post->display_name." ".symposium_time_ago($post->topic_started, $language_key)."</div>";
+					$html .= "</div>";
+	
+					$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", stripslashes($post->topic_post))."</div>";
 					
 					$html .= "</div>";
-				} else {
-					$html .= "<br />";
-				}
-			
-			}
-	
-			// Replies
-			$child_query = $wpdb->get_results("
-				SELECT tid, topic_subject, topic_post, topic_date, topic_owner, display_name, ID
-				FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-				WHERE topic_parent = ".$show." ORDER BY tid");
-	
-			if ($child_query) {
-	
-				$html .= "<div id='child-posts'>";
-				
-				foreach ($child_query as $child) {
-	
-					$html .= "<div class='child-reply'>";
-						if ( ($child->topic_owner == $current_user->ID) || (current_user_can('level_10')) ) {
-							$html .= "<div style='float:right;padding-top:6px;'><a class='delete' href='".$thispage.$q."show=".$show."&cid=".$cat_id."&action=del&tid=".$child->tid."'>".$language->d."</a></div>";
-							$html .= "<div id='".$child->tid."' class='edit-child-topic edit_topic edit label' style='cursor:pointer;'>".$language->e."&nbsp;&nbsp;|&nbsp;&nbsp;</div>";
+		
+					// Update views
+					if ($user_level == 5) {
+						if ($wpdb->get_var($wpdb->prepare("SELECT include_admin FROM ".$wpdb->prefix.'symposium_config')) == "on") { 
+							$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = ".$post->tid) );
 						}
-						$html .= "<div class='avatar'>";
-							$html .= get_avatar($child->ID, 64);
+					} else {
+						$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = ".$post->tid) );
+					}
+										
+					// Subscribe	
+					if (is_user_logged_in()) {
+		
+						$html .= "<br /><div class='floatright label'>";
+						$html .= "<form action='symposium.php'>";
+						$html .= "<input type='checkbox' id='subscribe' name='subscribe'";
+						$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$show." and uid = ".$current_user->ID));
+						if ($subscribed_count > 0) { $html .= ' checked'; } 
+						$html .= "> ".$language->rer;
+						if (current_user_can('level_10')) {
+							$html .= "&nbsp;&nbsp;&nbsp;<input type='checkbox' id='sticky' name='sticky'";
+							if ($post->topic_sticky > 0) { $html .= ' checked'; }
+							$html .= "> ".$language->tis;
+							$html .= "&nbsp;&nbsp;&nbsp;<input type='checkbox' id='replies' name='replies'";
+							$allow_replies = $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$post->tid));
+							if ($allow_replies == "on") { $html .= ' checked'; }
+							$html .= "> Allow Replies";
+						}
+						$html .= "</form>";
+						
 						$html .= "</div>";
-						$html .= "<div class='started-by'>".$child->display_name." ".$language->re." ".symposium_time_ago($child->topic_date, $language_key)."...";
-						$html .= "</div>";
-						$html .= "<div id='".$child->tid."' class='child-reply-post'>";
-							$html .= "<p>".str_replace(chr(13), "<br />", stripslashes($child->topic_post))."</p>";
-						$html .= "</div>";
-					$html .= "</div>";
-
-					// Separator
-					$html .= "<div class='sep'></div>";						
-	
+					} else {
+						$html .= "<br />";
+					}
+				
 				}
+		
+				// Replies
+				$sql = "SELECT tid, topic_subject, topic_post, topic_date, topic_owner, display_name, ID
+					FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
+					WHERE topic_parent = ".$show." ORDER BY tid";
+				if ($wpdb->get_var($wpdb->prepare("SELECT oldest_first FROM ".$wpdb->prefix.'symposium_config')) != "on") { $sql .= " DESC"; }
 				
-				$html .= "</div>";
-				
-			}				
-			
-			// Quick Reply
-			if (is_user_logged_in()) {
-				$html .= '<div id="reply-topic-bottom" name="reply-topic-bottom">';
-					$html .= '<form id="quick-reply" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
-					$html .= '<input type="hidden" name="action" value="reply">';
-					$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
-					$html .= '<input type="hidden" name="tid" value="'.$show.'">';
-					$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
-					$html .= '<div class="reply-topic-subject label">'.$language->rtt.'</div>';
-					$html .= '<textarea class="reply-topic-text" name="reply_text"></textarea>';
-					$html .= '<div class="quick-reply-warning warning">'.$language->prm.'</div>';
-					$html .= '<div class="emailreplies label"><input type="checkbox" id="reply_subscribe" name="reply_topic_subscribe"';
-					if ($subscribed_count > 0) { $html .= 'checked'; } 
-					$html .= '> '.$language->wir.'</div>';
-					$html .= '<input type="submit" class="button" style="float: left" value="'.$language->rep.'" />';
-					$html .= '</form>';
-				$html .= '</div>';
-			
-			}
-		}
+				$child_query = $wpdb->get_results($sql);
+		
+				if ($child_query) {
+		
+					$html .= "<div id='child-posts'>";
+					
+					foreach ($child_query as $child) {
+		
+						$html .= "<div class='child-reply'>";
+							if ( ($child->topic_owner == $current_user->ID) || (current_user_can('level_10')) ) {
+								$html .= "<div style='float:right;padding-top:6px;'><a class='delete' href='".$thispage.$q."show=".$show."&cid=".$cat_id."&action=del&tid=".$child->tid."'>".$language->d."</a></div>";
+								$html .= "<div id='".$child->tid."' class='edit-child-topic edit_topic edit label' style='cursor:pointer;'>".$language->e."&nbsp;&nbsp;|&nbsp;&nbsp;</div>";
+							}
+							$html .= "<div class='avatar'>";
+								$html .= get_avatar($child->ID, 64);
+							$html .= "</div>";
+							$html .= "<div class='started-by'>".$child->display_name." ".$language->re." ".symposium_time_ago($child->topic_date, $language_key)."...";
+							$html .= "</div>";
+							$html .= "<div id='".$child->tid."' class='child-reply-post'>";
+								$html .= "<p>".str_replace(chr(13), "<br />", stripslashes($child->topic_post))."</p>";
+							$html .= "</div>";
+						$html .= "</div>";
 	
-		// Notices
-		$html .= "<div class='notice'><img src='".$plugin."busy.gif' /> ".$language->sav."</div>";
-		$html .= "<div class='pleasewait'><img src='".$plugin."busy.gif' /> ".$language->pw."</div>";
+						// Separator
+						$html .= "<div class='sep'></div>";						
+		
+					}
+					
+					$html .= "</div>";
+					
+				}				
 				
+				// Quick Reply
+				if (is_user_logged_in()) {
+					$html .= '<div id="reply-topic-bottom" name="reply-topic-bottom">';
+					if ($wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$post->tid)) == "on")
+					{
+						$html .= '<form id="quick-reply" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
+						$html .= '<input type="hidden" name="action" value="reply">';
+						$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
+						$html .= '<input type="hidden" name="tid" value="'.$show.'">';
+						$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
+						$html .= '<div class="reply-topic-subject label">'.$language->rtt.'</div>';
+						$html .= '<textarea class="reply-topic-text" name="reply_text"></textarea>';
+						$html .= '<div class="quick-reply-warning warning">'.$language->prm.'</div>';
+						$html .= '<div class="emailreplies label"><input type="checkbox" id="reply_subscribe" name="reply_topic_subscribe"';
+						if ($subscribed_count > 0) { $html .= 'checked'; } 
+						$html .= '> '.$language->wir.'</div>';
+						$html .= '<input type="submit" class="button" style="float: left" value="'.$language->rep.'" />';
+						$html .= '</form>';
+					}				
+					$html .= '</div>';
+				}
+			}
+		
+			// Notices
+			$html .= "<div class='notice'><img src='".$plugin."busy.gif' /> ".$language->sav."</div>";
+			$html .= "<div class='pleasewait'><img src='".$plugin."busy.gif' /> ".$language->pw."</div>";
+
+		} else {
+			
+			if ($viewer == "Subscriber") {
+				$html .= "<p>Sorry, this forum can only be used by registered members. :(</p>";
+			} else {
+				$html .= "<p>Sorry, the minimum user level for this forum is ".$viewer.". :(</p>";
+			}
+		}				
 		// End Wrapper
 		$html .= "</div>";
 		
@@ -930,36 +1036,6 @@ function symposium_forum() {
 }
 
 /* ====================================================== PHP FUNCTIONS ====================================================== */
-
-// Send email
-function sendmail($email, $subject, $msg)
-{
-	global $wpdb;
-	
-	$footer = $wpdb->get_var($wpdb->prepare("SELECT footer FROM ".$wpdb->prefix.'symposium_config'));
-
-	$body = "<style>";
-	$body .= "body { background-color: #eee; }";
-	$body .= "</style>";
-	$body .= "<div style='margin: 20px; padding:20px; border-radius:10px; background-color: #fff;border:1px solid #000;'>";
-	$body .= $msg."<br /><hr />";
-	$body .= "<div style='width:430px;font-size:10px;border:0px solid #eee;text-align:left;float:left;'>".$footer."</div>";
-	// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-	$body .= "<div style='width:370px;font-size:10px;border:0px solid #eee;text-align:right;float:right;'>Forum powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress</div>";
-	$body .= "</div>";
-
-	// To send HTML mail, the Content-type header must be set
-	$headers  = 'MIME-Version: 1.0' . "\r\n";
-	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-	$headers .= 'From: '.$wpdb->get_var($wpdb->prepare("SELECT from_email FROM ".$wpdb->prefix.'symposium_config'))."\r\n";
-	
-	if (mail($email, $subject, $body, $headers))
-	{
-		return true;
-	} else {
-		return false;
-	}
-}
 
 // Create Permalink
 function symposium_permalink($id, $type) {
@@ -1109,6 +1185,18 @@ function getEditDetails(){
 add_action('wp_ajax_getEditDetails', 'getEditDetails');
 
 // AJAX function to update topic details after editing
+function updateDigest(){
+
+	$value = $_POST['value'];	
+
+	// Update meta record exists for user
+	update_symposium_meta("forum_digest", "'".$value."'");
+	exit;
+
+}
+add_action('wp_ajax_updateDigest', 'updateDigest');
+
+// AJAX function to update topic details after editing
 function updateEditDetails(){
 
 	global $wpdb;
@@ -1187,7 +1275,7 @@ function updateForumSticky(){
 	$value = $_POST['value'];
 
 	// Store subscription if wanted
-	$wpdb->query("UPDATE ".$topics." SET topic_sticky = ".$value." AND tid = ".$tid);
+	$wpdb->query("UPDATE ".$topics." SET topic_sticky = ".$value." WHERE tid = ".$tid);
 	
 	if ($value==1) {
 		echo "Topic is sticky";
@@ -1197,6 +1285,27 @@ function updateForumSticky(){
 	exit;
 }
 add_action('wp_ajax_updateForumSticky', 'updateForumSticky');
+
+// AJAX function to change sticky status
+function updateTopicReplies(){
+
+	global $wpdb;
+	$topics = $wpdb->prefix . 'symposium_topics';
+
+	$tid = $_POST['tid'];
+	$value = $_POST['value'];
+
+	// Store subscription if wanted
+	$wpdb->query("UPDATE ".$topics." SET allow_replies = '".$value."' WHERE tid = ".$tid);
+	
+	if ($value=='on') {
+		echo "Topic is sticky";
+	} else {
+		echo "Topic is NOT sticky";
+	}
+	exit;
+}
+add_action('wp_ajax_updateTopicReplies', 'updateTopicReplies');
 
 // AJAX function to subscribe/unsubscribe to new symposium topics
 function updateForumSubscribe(){
