@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.8
+Version: 0.1.8.1
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -77,7 +77,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.8";
+	$symposium_version = "0.1.8.1";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -187,7 +187,7 @@ function symposium_activate() {
 	      	'footer' => 'Please don\'t reply to this email',
 	      	'show_categories' => 'on',
 	      	'send_summary' => 'on',
-	      	'forum_url' => 'Important: Please update!',
+	      	'forum_url' => 'Important: Please update!',	      				    
 	      	'from_email' => 'noreply@example.com'
 	      	) );
 	   	} 
@@ -900,7 +900,6 @@ function symposium_smilies($buffer){ // $buffer contains entire page
 	$buffer = str_replace(":x", "<img src='".$smileys."kiss.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":X", "<img src='".$smileys."shutup.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":D", "<img src='".$smileys."laugh.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":$", "<img src='".$smileys."moneymouth.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":|", "<img src='".$smileys."neutral.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":?", "<img src='".$smileys."question.png' alt='emoticon'/>", $buffer);
 	$buffer = str_replace(":z", "<img src='".$smileys."sleepy.png' alt='emoticon'/>", $buffer);
@@ -984,7 +983,7 @@ function symposium_redirect($buffer){
 function symposium_admin_check() {
 	global $wpdb;
 	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix . 'symposium_config'));
-	if ($forum_url == "Important! Please update!") {
+	if ($forum_url == "Important: Please update!") {
 		echo "<div class='updated'><p><strong>Important!</strong> Please set <a href='admin.php?page=symposium_options'>WP Symposium Options</a> immediately.</p></div>";
 	}
 }

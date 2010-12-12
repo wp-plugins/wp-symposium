@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.8
+Stable tag: 0.1.8.1
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -147,6 +147,10 @@ Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page on www.wpsymposium.com
 
 == Changelog ==
+
+= 0.1.8.1 =
+
+* Fixed: Clash with EasingSlider plugin
 
 = 0.1.8 =
 
