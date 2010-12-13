@@ -150,13 +150,6 @@ A. Yes, if you look in the smilies folder you can use any of the images there by
 
 == Changelog ==
 
-= Version number format =
-
-* v = Launch of several major releases, with signficant additions and changes throughout
-* v.x = Major release, code changes to distinct parts, including an upgrade to database
-* v.x.y = Minor release with additions or changes to code segments, including an upgrade to database
-* v.x.y.p = Patch to code/files only, no change to database
-
 = 0.1.8.2 =
 
 * Added: Subscribe to individual categories for new topics
