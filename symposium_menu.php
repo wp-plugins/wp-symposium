@@ -6,8 +6,330 @@ function symposium_plugin_menu() {
 	add_submenu_page('symposium_options', __('Options'), __('Options'), 'edit_themes', 'symposium_options', 'symposium_plugin_options');
 	add_submenu_page('symposium_options', __('Styles'), __('Styles'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
 	add_submenu_page('symposium_options', __('Forum Categories'), __('Forum Categories'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
+	add_submenu_page('symposium_options', __('System Management'), __('System Management'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
 }
 add_action('admin_menu', 'symposium_plugin_menu');
+
+function symposium_plugin_debug() {
+
+	global $wpdb;
+    
+  	echo '<div class="wrap">';
+  	echo '<div id="icon-themes" class="icon32"><br /></div>';
+  	echo '<h2>System Management</h2>';
+
+   	echo '<div class="error"><p><strong>Warning!</strong> Any interaction through this screen is done so at your own risk. You could disable your database and/or WP Symposium.<br />You are <strong>strongly advised</strong> to take a backup first.</p></div>';
+
+	echo "<div style='width:45%; float:right'>";
+
+  	echo '<h2>Table Structures</h2><p>';
+  	
+  	$ok = "Test Result: <span style='color:green; font-weight:bold;'>OK</span><br /><br />";
+  	$fail = "<span style='color:red; font-weight:bold;'>";
+  	$fail2 = "</span><br /><br />";
+  	$overall = "ok";
+  	
+  	// Categories
+   	$table_name = $wpdb->prefix . "symposium_cats";
+   	$status = $ok;
+   	echo '<strong>Categories: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'cid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'title')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'allow_new')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'defaultcat')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
+  	// Topics
+   	$table_name = $wpdb->prefix . "symposium_config";
+   	$status = $ok;
+   	echo '<strong>Options: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'oid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'categories_background')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'categories_color')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bigbutton_background')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bigbutton_color')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bigbutton_background_hover')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bigbutton_color_hover')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bg_color_1')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bg_color_2')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bg_color_3')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'text_color')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'table_rollover')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'link')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'link_hover')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'table_border')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'replies_border_size')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'text_color_2')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'row_border_style')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'row_border_size')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'border_radius')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'label')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'footer')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'send_summary')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'forum_url')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'from_email')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'language')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'underline')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'preview1')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'preview2')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'viewer')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'include_admin')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'oldest_first')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'wp_width')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
+  	// Languages
+   	$table_name = $wpdb->prefix . "symposium_lang";
+   	$status = $ok;
+   	echo '<strong>Languages: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'lid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'language')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'sant')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'ts')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'fpit')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'sac')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'emw')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'p')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'c')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'cat')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'lac')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'top')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'btf')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'rew')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'sbl')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'f')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'r')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'v')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'sb')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'rer')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'tis')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 're')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'e')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'd')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'aar')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'rtt')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'wir')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'rep')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'tt')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'u')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bt')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 't')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mc')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 's')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'pw')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'sav')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'hsa')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'i')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'nfr')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'prs')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'prm')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'tp')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'tps')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'rdv')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
+  	// Styles
+   	$table_name = $wpdb->prefix . "symposium_styles";
+   	$status = $ok;
+   	echo '<strong>Styles Library: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'sid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'title')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'categories_background')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'categories_color')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bigbutton_background')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bigbutton_color')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bigbutton_background_hover')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bigbutton_color_hover')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bg_color_1')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bg_color_2')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bg_color_3')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'text_color')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'table_rollover')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'link')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'link_hover')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'table_border')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'replies_border_size')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'text_color_2')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'row_border_style')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'row_border_size')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'border_radius')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'label')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'underline')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
+  	// Subscriptions
+   	$table_name = $wpdb->prefix . "symposium_subs";
+   	$status = $ok;
+   	echo '<strong>Subscriptions: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'sid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'uid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'tid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'cid')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
+  	// Topics
+   	$table_name = $wpdb->prefix . "symposium_topics";
+   	$status = $ok;
+   	echo '<strong>Topics/Posts: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'tid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_group')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_category')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_subject')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_post')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_owner')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_date')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_parent')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_views')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_started')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_sticky')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'allow_replies')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
+  	// Usermeta
+   	$table_name = $wpdb->prefix . "symposium_usermeta";
+   	$status = $ok;
+   	echo '<strong>User Meta-data: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'mid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'uid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'forum_digest')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
+   	echo '<h3>Overall</h3>';
+   	
+   	if ($overall == "ok") {
+   		echo "<p>".$ok;
+   		echo "Your database structure is accurate to the current version.</p>";
+   	} else {
+   		echo $fail."Your database is not accurate with the current version.".$fail2;
+   	}
+
+   	echo '</p>';
+	echo "</div><div style='width:45%; float:left'>";
+	
+  	// ********** Version Numbers
+	echo '<h2>Version Numbers</h2><p>';
+
+  	echo "<p>WP Symposium version: ".get_option("symposium_version")."<br />";
+  	echo "Database version: ";
+  	$db_ver = get_option("symposium_db_version");
+  	if (!$db_ver) { 
+  		echo "<span style='color:red; font-weight:bold;'>Error!</span> No database version set. You may need to re-apply the upgrades</span>"; 
+  	} else {
+  		echo $db_ver;
+  	}
+  	"</p>";
+  	
+	// ********** Test Email   	
+    if( isset($_POST[ 'symposium_testemail' ]) && $_POST[ 'symposium_testemail' ] == 'Y' ) {
+    	$to = $_POST['symposium_testemail_address'];
+		if (sendmail($to, "WP Symposium Test Email", "This is a test email sent from ".get_site_url())) {
+			echo "<div class='updated'><p>Email to ".$to." sent successfully. If you entered an invalid email address it won't arrive though!</p></div>";
+		} else {
+			echo "<div class='error'><p>Email failed to send.</p></div>";
+		}
+    }
+   	echo '<h2>Send a test email</h2>';
+   	echo '<p>Enter a valid email address to test sending an email from the server.</p>';
+   	echo '<form method="post" action="">';
+	echo '<input type="hidden" name="symposium_testemail" value="Y">';
+   	echo '<input type="text" name="symposium_testemail_address" value="" style="width:300px" class="regular-text">';
+   	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Send email" /></p>';
+   	echo '</form>';
+
+	// ********** Test Updating a Value   		
+   	echo '<h2>Test updating the database</h2>';
+   	echo '<p>Remember, some values may be case-sensitive.</p>';
+   	echo '<form method="post" action="">';
+    if( isset($_POST[ 'symposium_test_viewer' ]) && $_POST[ 'symposium_test_viewer' ] == 'Y' ) {
+        $table = $_POST[ 'symposium_testupdate_table' ];
+        $field = $_POST[ 'symposium_testupdate_field' ];
+        $value = stripslashes($_POST[ 'symposium_testupdate_value' ]);
+        $result = $wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_".$table." SET ".$field." = '".$value."'") );
+        echo "<div style='border:1px solid #060;background-color: #9f9; border-radius:5px;padding-left:8px; margin-bottom:10px;'>";
+ 		if ($result) {
+			echo "<p>Database successfully updated. Remember this is a live effect, so make sure you set it correctly for your forum!</p>";
+		} else {
+			if ($result === false) {
+				echo "<p>Database failed to update.</p>";
+			} else {
+				echo "<p>Database successfully updated. The value being set to the same it was before (".$value.").</p>";
+			}
+		}
+		echo "<p>".$wpdb->last_query."</p></div>";
+    }
+	echo '<input type="hidden" name="symposium_test_viewer" value="Y">';
+	echo '<div style="width:200px; float: left;">Table (eg: config):</div>';
+   	echo '<input type="text" name="symposium_testupdate_table" value="'.$table.'" class="regular-text"><br />';
+	echo '<div style="width:200px; float: left;">Field (eg: viewer):</div>';
+   	echo '<input type="text" name="symposium_testupdate_field" value="'.$field.'" class="regular-text"><br />';
+	echo '<div style="width:200px; float: left;">Field (eg: Guest):</div>';
+   	echo '<input type="text" name="symposium_testupdate_value" value="'.$value.'" class="regular-text"><br />';   	
+   	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Update field" /></p>';
+   	echo '</form>';
+
+	// ********** Reset database version
+   	echo '<h2>Re-apply database upgrades</h2>';
+   	echo "<p>This won't re-create tables from scratch, but it will try and adding additional fields relevant to each upgrade that may currently be missing.</p>";
+   	echo '<form method="post" action="">';
+	echo '<input type="hidden" name="symposium_db_reset" value="Y">';
+    if( isset($_POST[ 'symposium_db_reset' ]) && $_POST[ 'symposium_db_reset' ] == 'Y' ) {
+		delete_option('symposium_db_version');
+        echo "<div style='border:1px solid #060;border-radius:5px;padding-left:8px; background-color: #9f9; font-weight: bold; color: #000;margin-bottom:10px;'>";
+        echo "<p>To complete the process, please <a href='plugins.php'>de-activate and re-activate</a> the core WP Symposium plugin.</p>";
+        echo "</div>";
+    }
+   	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Reset database version" /></p>';
+    echo '</form>';
+   	
+   	   	
+  	echo '</div>';
+}
+
+function symposium_field_exists($tablename, $fieldname) {
+	global $wpdb;
+	$check = $wpdb->get_var("SELECT count(".$fieldname.") FROM ".$tablename);
+	if ($check != '') {
+		return true;
+	} else {
+		echo "Missing field: ".$fieldname."<br />";
+		return false;
+	}
+}
 
 function symposium_plugin_categories() {
 
@@ -668,7 +990,7 @@ function symposium_plugin_options() {
 	<tr valign="top"> 
 	<th scope="row"><label for="forum_url">Forum URL</label></th> 
 	<td><input name="forum_url" type="text" id="forum_url"  value="<?php echo $forum_url; ?>" class="regular-text" /> 
-	<span class="description">For email notifications, eg: http://www.example.com/forum</span></td> 
+	<span class="description"><strong>Very Important!</strong> eg: http://www.example.com/forum</span></td> 
 	</tr> 
 
 	<tr valign="top"> 
@@ -745,9 +1067,6 @@ function symposium_plugin_options() {
 	<ul>
 	<li>&middot;&nbsp;Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time, for the previous day.</li>
 	<li>&middot;&nbsp;Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website.</li>
-  	<li>&middot;&nbsp;WP Symposium version: <?php echo get_option("symposium_version"); ?></li>
-  	<li>&middot;&nbsp;Database version: <?php echo get_option("symposium_db_version"); ?></li>
-
 	</ul>
 	</p>	
 	 

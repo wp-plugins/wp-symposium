@@ -2,8 +2,8 @@
 /*
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
-Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WP page to display forum.
-Version: 0.1.8.1
+Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
+Version: 0.1.8.2
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -87,13 +87,18 @@ function symposium_forum() {
 		
 	} else {
 		
-		// Get Topic ID for use in jQuery functions	
+		// Get Topic ID and Category ID for use in jQuery functions	
 		if (isset($_GET['show'])) {
 			$show_tid = $_GET['show']*1;
 		} else {
 			$show_tid = 0;
 			if (isset($_POST['tid'])) { $show_tid = $_POST['tid']*1; }
 		}
+
+		$cat_id = 0;
+		if (isset($_GET['cid'])) { $cat_id = $_GET['cid']; }
+		if (isset($_POST['cid'])) { $cat_id = $_POST['cid']; }
+
 
 		$html .= '<script type="text/javascript">
 
@@ -139,7 +144,7 @@ function symposium_forum() {
 
 	    jQuery(document).ready(function() { 	
 	    		
-	    		// Notices	    	
+	    	// Notices	    	
 			jQuery(".notice").hide();
 			jQuery(".pleasewait").hide();
 		    	jQuery(".backto").click(function() {
@@ -211,8 +216,8 @@ function symposium_forum() {
 		   	// Update contents of edit form
 			jQuery(".edit_topic_submit").click(function(){
 				jQuery(".notice").inmiddle().show();
-		    		var tid = jQuery(".edit-topic-tid").attr("id");	
-		    		var parent = jQuery(".edit-topic-parent").attr("id");
+	    		var tid = jQuery(".edit-topic-tid").attr("id");	
+	    		var parent = jQuery(".edit-topic-parent").attr("id");
 				var topic_subject = jQuery("#edit_topic_subject").val();	
 				var topic_post = jQuery("#edit_topic_text").val();	
 				var topic_category = jQuery("#new-category").val();	
@@ -286,12 +291,13 @@ function symposium_forum() {
 		    	
 		    	var checkbox = jQuery(this).attr("id");		    		
 		    	
-		    	// Subscribe to New Forum Topics
+		    	// Subscribe to New Forum Topics in a category
 		    	if (checkbox == "symposium_subscribe") {
 					jQuery(".notice").inmiddle().fadeIn();
 			        if(jQuery(this).is(":checked")) {
 						jQuery.post("/wp-admin/admin-ajax.php", {
 							action:"updateForumSubscribe", 
+							\'cid\':'.$cat_id.',
 							"value":1
 							},
 						function(str)
@@ -301,11 +307,12 @@ function symposium_forum() {
 			        } else {
 						jQuery.post("/wp-admin/admin-ajax.php", {
 							action:"updateForumSubscribe", 
+							\'cid\':'.$cat_id.',
 							"value":0
 							},
 						function(str)
 						{
-						      // Un-subscribed
+					      // Un-subscribed
 						});
 			        }
 					jQuery(".notice").delay(100).fadeOut("slow");
@@ -322,7 +329,7 @@ function symposium_forum() {
 							},
 						function(str)
 						{
-						      // Subscribed
+							// Subscribed
 						});
 			        } else {
 						jQuery.post("/wp-admin/admin-ajax.php", {
@@ -429,10 +436,6 @@ function symposium_forum() {
 		</script>
 		';
 		
-		// Get passed variables
-		if (isset($_GET['cid'])) { $cat_id = $_GET['cid']; }
-		if (isset($_POST['cid'])) { $cat_id = $_POST['cid']; }
-
 		// Include styles	
 		include_once('symposium_styles.php');
 	
@@ -473,9 +476,9 @@ function symposium_forum() {
 		if ($_POST['show'] != '') { $show = $_POST['show']; }
 		if ($tid != '') { $show = $tid; }
 			
-		if (isset($cat_id)) {
+		if ($cat_id > 0) {
 			$html .= "<div style='clear:both' class='floatright'>";
-			if ( ( (isset($cat_id)) && ($cat_id != '') ) && ($show != '') ) {
+			if ( ($cat_id > 0) && ($show != '') ) {
 				$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
 				$html .= "<a class='backto label' href='".$thispage.$q."cid=".$cat_id."'>".$language->bt." ".stripslashes($category_title)."...</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 			}
@@ -511,13 +514,13 @@ function symposium_forum() {
 					if ($wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$show_tid)) == "on") {
 						$html .= "<li id='reply-topic-link'>".$language->aar."</li>";
 					} else {
-						$html .= '<p class="label">Replies are not allowed for this topic.</p>';
+						$html .= '<p class="label"><img src="'.$plugin.'padlock.gif" alt="Replies locked" /> Replies are not allowed for this topic.</p>';
+
 					}
 				}
 				$html .= "</ul>";
 			
-				// New Topic Form
-		
+				// New Topic Form	
 				$html .= '<div name="new-topic" id="new-topic"';
 					if ($edit_new_topic == false) { $html .= ' style="display:none;"'; } 
 					$html .= '>';
@@ -548,7 +551,7 @@ function symposium_forum() {
 							$html .= '<select name="new_topic_category">';
 							foreach ($categories as $category) {
 								$html .= '<option value='.$category->cid;
-								if (isset($cat_id)) {
+								if ($cat_id > 0) {
 									if ($category->cid == $cat_id) { $html .= " SELECTED"; }
 								} else {
 									if ($category->cid == $defaultcat) { $html .= " SELECTED"; }
@@ -568,8 +571,8 @@ function symposium_forum() {
 					$html .= '</form>';
 					$html .= '<input id="cancel_post" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
 				$html .= '</div>';
-				
-				if ($show != '' && $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$post->tid))=="on") {
+				$allow_replies = $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$show));
+				if ($show != '' && $allow_replies=="on") {
 					$html .= '<div id="reply-topic" name="reply-topic" style="display:none;">';
 						$html .= '<form id="start-reply-topic" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
 						$html .= '<input type="hidden" name="action" value="reply">';
@@ -604,22 +607,24 @@ function symposium_forum() {
 				
 				// Forum Subscribe
 				if (is_user_logged_in()) {
-					$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = 0 and uid = ".$current_user->ID));
-					$forum_digest = get_symposium_meta('forum_digest');
 					
 					$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix . 'symposium_config'));
 					if ($send_summary == "on") {
+						$forum_digest = get_symposium_meta('forum_digest');
 						$html .= "<div class='symposium_subscribe_option label'>";
 						$html .= "<input type='checkbox' id='symposium_digest' name='symposium_digest'";
 						if ($forum_digest == 'on') { $html .= ' checked'; } 
 						$html .= "> ".$language->rdv;
 						$html .= "</div><br />";
 					}
-					$html .= "<div class='symposium_subscribe_option label'>";
-					$html .= "<input type='checkbox' id='symposium_subscribe' name='symposium_subscribe'";
-					if ($subscribed_count > 0) { $html .= ' checked'; } 
-					$html .= "> ".$language->rew;
-					$html .= "</div>";
+					if ($cat_id > 0) {
+						$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = 0 AND cid = ".$cat_id." AND uid = ".$current_user->ID));
+						$html .= "<div class='symposium_subscribe_option label'>";
+						$html .= "<input type='checkbox' id='symposium_subscribe' name='symposium_subscribe'";
+						if ($subscribed_count > 0) { $html .= ' checked'; } 
+						$html .= "> ".$language->rew;
+						$html .= "</div>";
+					}
 				}	
 					
 				// Start of table
@@ -628,7 +633,7 @@ function symposium_forum() {
 				// Top level (categories)
 				$use_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
 				
-				if ( ($use_categories == "on") && (!(isset($cat_id))) ) {
+				if ( ($use_categories == "on") && ($cat_id == 0) ) {
 		
 					$html .= "<div class='table_header'>";
 					$html .= "<div class='table_topic'>".$language->cat."</div>";
@@ -712,6 +717,8 @@ function symposium_forum() {
 							// Category title
 							$html .= '<div style="padding-left:8px;padding-top:13px">';
 							$html .= '<a class="backto row_link" href="'.$thispage.symposium_permalink($category->cid, "category").$q.'cid='.$category->cid.'">'.stripslashes($category->title).'</a>';
+							$subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE cid = ".$category->cid." AND uid = ".$current_user->ID));
+							if ($subscribed > 0) { $html .= ' <img src="'.$plugin.'orange-tick.gif" alt="Subscribed" />'; } 
 							$html .= '</div>';
 	
 													
@@ -726,7 +733,7 @@ function symposium_forum() {
 				}
 				
 				// Topic level
-				if ( ($use_categories != "on") || (isset($cat_id)) ) {
+				if ( ($use_categories != "on") || ($cat_id > 0) ) {
 		
 					$html .= "<div class='table_header'>";
 					if ($use_categories == "on") {
@@ -1191,6 +1198,7 @@ function updateDigest(){
 
 	// Update meta record exists for user
 	update_symposium_meta("forum_digest", "'".$value."'");
+	echo $value;
 	exit;
 
 }
@@ -1202,12 +1210,9 @@ function updateEditDetails(){
 	global $wpdb;
 	
 	$tid = $_POST['tid'];	
-	$topic_subject = $_POST['topic_subject'];	
-	$topic_subject = str_replace("\\", "\\\\", $topic_subject);	
-	$topic_post = $_POST['topic_post'];	
+	$topic_subject = addslashes($_POST['topic_subject']);	
+	$topic_post = addslashes($_POST['topic_post']);	
 	$topic_post = str_replace("\n", chr(13), $topic_post);	
-	$topic_post = str_replace("\\", "\\\\", $topic_post);	
-	$topic_post = str_replace("'", "\'", $topic_post);	
 	$topic_category = $_POST['topic_category'];
 	
 	if ($topic_category == "") {
@@ -1315,9 +1320,10 @@ function updateForumSubscribe(){
 	$subs = $wpdb->prefix . 'symposium_subs';
 
 	$action = $_POST['value'];
+	$cid = $_POST['cid'];
 
 	// Store subscription if wanted
-	$wpdb->query("DELETE FROM ".$subs." WHERE uid = ".$current_user->ID." AND tid = 0");
+	$wpdb->query("DELETE FROM ".$subs." WHERE uid = ".$current_user->ID." AND tid = 0 AND (cid = ".$cid." OR cid = 0)");
 	
 	if ($action == 1)
 	{		
@@ -1325,18 +1331,21 @@ function updateForumSubscribe(){
 		$wpdb->query( $wpdb->prepare( "
 			INSERT INTO ".$subs."
 			( 	uid, 
-				tid
+				tid,
+				cid
 			)
-			VALUES ( %d, %d )", 
+			VALUES ( %d, %d, %d )", 
 	        array(
 	        	$current_user->ID, 
-	        	0
+	        	0,
+	        	$cid
 	        	) 
 	        ) );
 		exit;
 		
 	} else {
-			
+
+		echo 'Sorry - the subscription was not added.';			
 		exit;
 		// Removed, and not re-added
 	}

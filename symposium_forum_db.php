@@ -91,8 +91,8 @@ if (is_user_logged_in()) {
 				$query = $wpdb->get_results("
 					SELECT user_email
 					FROM ".$users." RIGHT JOIN ".$subs." ON ".$subs.".uid = ".$users.".ID 
-					WHERE tid = 0");
-	
+					WHERE tid = 0 AND cid = ".$cat_id);
+					
 				if ($query) {
 				
 					$body = $owner_name." ".$language->hsa;
@@ -109,7 +109,6 @@ if (is_user_logged_in()) {
 					$body = str_replace("\\", "", $body);
 	
 					foreach ($query as $user) {
-	
 						sendmail($user->user_email, $language->nft, $body);
 						
 					}

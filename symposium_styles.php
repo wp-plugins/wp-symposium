@@ -28,16 +28,16 @@
 
 		$html .= "<style>";
 		
-		$html .= "#symposium-wrapper * {";
-		$html .= "	border-radius: ".$border_radius."px;";
-		$html .= "  -moz-border-radius:".$border_radius."px;";
-		$html .= "}";
-	
 		$html .= "#symposium-wrapper {";
 		$html .= "	color: ".$text_color.";";
 		$html .= "  width: ".str_replace('pc', '%', $wp_width).";";
 		$html .= "}";
 
+		$html .= "#symposium-wrapper * {";
+		$html .= "	border-radius: ".$border_radius."px;";
+		$html .= "  -moz-border-radius:".$border_radius."px;";
+		$html .= "}";
+	
 		$html .= "#symposium-wrapper .label {";
 		$html .= "  color: ".$label.";";
 		$html .= "}";
@@ -53,6 +53,10 @@
 		$html .= "#symposium-wrapper #new-topic, #symposium-wrapper #reply-topic, #symposium-wrapper #edit-topic-div {";
 		$html .= "	background-color: ".$bg_color_3.";";
 		$html .= "	border: ".$replies_border_size."px solid ".$bg_color_1.";";	
+		$html .= "}";
+		
+		$html .= "#symposium-wrapper #reply-topic-bottom textarea {";
+		$html .= "	border: 1px solid ".$bg_color_1.";";			
 		$html .= "}";
 		
 		$html .= "#symposium-wrapper #new-topic-link, #symposium-wrapper #reply-topic-link, #symposium-wrapper .button {";

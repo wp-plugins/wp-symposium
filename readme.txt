@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.8.1
+Stable tag: 0.1.8.2
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -39,7 +39,8 @@ Features currently include:
 
 * Search Engine friendly links within the forum (helps page ranking and so on)
 * Replaces smiley codes with images, eg. :)
-* Add your own smilies/emoticons
+* Loads of fun smilies/emoticons to insert
+* Even add your own smilies/emoticons
 * Change the styles (look and feel) through the admin panel
 * Colour Picker popup, no codes needed!
 * Set the length of the preview text
@@ -80,11 +81,12 @@ Features currently include:
 
 *Email Notifications*
 
-* Email notifications to new topics and/or replies to existing topics
-* AJAX selection to receive email notifications (no page re-load)
+* Subscribe to new topics in chosen categories
+* Subscribe to replies to chosen topics
 * Daily Digest to all members for new topics and replies (optionally)
-* Members can choose whether to receive digests (AJAX)
-* Customise email notification address
+* AJAX selection to subscribe (no page re-load)
+* Members can subscribe to receive digests (AJAX)
+* Customise email notification address and footer text
   
 == Installation ==
 
@@ -138,7 +140,7 @@ Q. The admin side works, but the forum doesn't appear?
 A. Check you have `[symposium-forum]` on your page, with a hyphen, not an underscore.
 
 Q. I've done that, but the forum still doesn't appear?
-A. Make sure you go to the Option page in admin and save your settings. Important!
+A. Have you put `[symposium-forum]` on a WordPress page, not an HTML file? 
 
 Q. My language isn't supported, can I add my language?
 A. Contact us via www.wpsymposium.com and we will add the language with your help, thank you.
@@ -147,6 +149,21 @@ Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page on www.wpsymposium.com
 
 == Changelog ==
+
+= Version number format =
+
+* v = Launch of several major releases, with signficant additions and changes throughout
+* v.x = Major release, code changes to distinct parts, including an upgrade to database
+* v.x.y = Minor release with additions or changes to code segments, including an upgrade to database
+* v.x.y.p = Patch to code/files only, no change to database
+
+= 0.1.8.2 =
+
+* Added: Subscribe to individual categories for new topics
+* Removed: Forum-wide new topic subscription
+* Fixed: Error caused with links from rest of site (eg. a blog) redirecting to the forum
+* Fixed: Problem with apostrophe when editing topic subjects
+* Fixed: CSS issue with internal widths hiding far right pixels
 
 = 0.1.8.1 =
 
