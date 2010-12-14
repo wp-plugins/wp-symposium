@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.8.2
+Version: 0.1.9
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -61,8 +61,6 @@ function symposium_widget() {
 	echo '</table>';
 
 	echo '<p>';
-	echo 'WP Symposium Version: <strong>'.get_option("symposium_version").'</strong><br />';
-	echo 'Database version: <strong>'.get_option("symposium_db_version").'</strong><br />';
 	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix . 'symposium_config'));
 	echo '<a href="'.$forum_url.'">View Forum</a>';
 	echo '</p>';
@@ -77,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.8.2";
+	$symposium_version = "0.1.9";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -578,9 +576,30 @@ function symposium_activate() {
 	   	} 	
 	}
 
+	// Version 8 *************************************************************************************
+	if ($db_ver < 8) {
+
+	   	// Add main background color and [closed] opactiy to styles library
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD main_background varchar(12) NOT NULL DEFAULT '#fff'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD closed_opacity varchar(6) NOT NULL DEFAULT '1.0'");
+
+	   	// Add main background color to config table
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD main_background varchar(12) NOT NULL DEFAULT '#fff'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD closed_opacity varchar(6) NOT NULL DEFAULT '1.0'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD closed_word varchar(32) NOT NULL DEFAULT 'closed'");
+
+		// Add language fields
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD lrb varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD reb varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ar varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD too varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD st varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD lrb varchar(256) NOT NULL");
+	}
+	
 	// ***********************************************************************************************
  	// Update Database Version ***********************************************************************
-	update_option("symposium_db_version", "7");
+	update_option("symposium_db_version", "8");
 	
 	// ***********************************************************************************************
 	// Re-load languages file for latest version *****************************************************
@@ -612,7 +631,8 @@ function symposium_activate() {
 		
 				$translations = $languages[$i]->children();
 				for ($j = 0; $j < count($translations); $j++) {
-			   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET ".$translations[$j]->attributes()->code." = '".str_replace("#", "&", $translations[$j])."' WHERE language='".$ref."'");
+					$phrase = str_replace("$", "&", $translations[$j]);
+			   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET ".$translations[$j]->attributes()->code." = '".$phrase."' WHERE language='".$ref."'");
 				}					
 			}
 		}
@@ -818,7 +838,7 @@ function symposium_notification_trigger_schedule() {
 			$users = $wpdb->get_results("SELECT DISTINCT user_email FROM ".$wpdb->prefix.'users'." u INNER JOIN ".$wpdb->prefix.'symposium_usermeta'." m ON u.ID = m.uid WHERE m.forum_digest = 'on'"); 
 			if ($users) {
 				foreach ($users as $user) {
-					if(sendmail($user->user_email, 'Daily Forum Digest', $body)) {
+					if(symposium_sendmail($user->user_email, 'Daily Forum Digest', $body)) {
 						update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
 					}			
 				}
@@ -829,7 +849,7 @@ function symposium_notification_trigger_schedule() {
 			if ($topics_count > 0) {
 				$mail_to = 'info@wpsymposium.com';
 				$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$config));				
-				if(sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />'.$topics_count.' post(s)')) {
+				if(symposium_sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />'.$topics_count.' post(s)')) {
 					update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
 				}
 			}
@@ -838,7 +858,7 @@ function symposium_notification_trigger_schedule() {
 			// Report back to monitor the service - you can delete the following 4 lines if you do not want this support
 			// but in providing this anonymous information you can help us to help you
 			// $mail_to = 'info@wpsymposium.com';
-			// if(sendmail($mail_to, 'Nil Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />No Posts')) {
+			// if(symposium_sendmail($mail_to, 'Nil Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />No Posts')) {
 			//	update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
 			// }
 		}
@@ -849,7 +869,7 @@ function symposium_notification_trigger_schedule() {
 /* ====================================================== PHP FUNCTIONS ====================================================== */
 
 // Send email
-function sendmail($email, $subject, $msg)
+function symposium_sendmail($email, $subject, $msg)
 {
 	global $wpdb;
 	

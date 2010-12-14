@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.8.2
+Stable tag: 0.1.9
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -53,6 +53,9 @@ Features currently include:
 * French
 * Spanish (thanks to Patricia Blanco)
 * German (thanks to Pascal)
+* Italian (thanks to Massimiliano Mazza)
+* Turkish (thanks to Cahit Cengizhan)
+* Czech (thanks to Vase Jmeno)
 * If your language is not included, or to make corrections, please contact us via info@wpsymposium.com and we will work with you on translating the forum to your language.
 
 *Categories*
@@ -149,6 +152,15 @@ Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page on www.wpsymposium.com
 
 == Changelog ==
+
+= 0.1.9 =
+
+* Added: Style option for main background color
+* Added: Style option for opacity of topics with [closed] in the subject
+* Added: Option to change the "opacity trigger word" from closed
+* Added: Italian language
+* Added: Turkish language
+* Added: Czeck language
 
 = 0.1.8.2 =
 

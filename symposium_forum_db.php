@@ -16,6 +16,10 @@ $language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." W
 
 if (is_user_logged_in()) {
 
+	// Get forum_url
+	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
+	if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
+
 	// New Topic
 	if ($_POST['action'] == 'post') {
 		
@@ -68,6 +72,7 @@ if (is_user_logged_in()) {
 			        ) );
 			        
 				// Store subscription if wanted
+				$new_tid = $wpdb->insert_id;
 				if ($new_topic_subscribe == 'on') {
 					$wpdb->query( $wpdb->prepare( "
 						INSERT INTO ".$subs."
@@ -77,7 +82,7 @@ if (is_user_logged_in()) {
 						VALUES ( %d, %d )", 
 				        array(
 				        	$current_user->ID, 
-				        	$wpdb->insert_id
+				        	$new_tid
 				        	) 
 				        ) );
 				}
@@ -95,21 +100,23 @@ if (is_user_logged_in()) {
 					
 				if ($query) {
 				
-					$body = $owner_name." ".$language->hsa;
+					$body = "<p>".$owner_name." ".$language->hsa;
 					$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
 					if ($show_categories == "on") {
 						$category = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
 						$body .= " ".$language->i." ".$category;
 					}
-					$body .= "...<br /><br />";
-					$body .= $new_topic_subject."<br /><br />";
-					$body .= $new_topic_text."<br /><br />";
-					$body .= $thispage;
+					$body .= "...</p>";
+										
+					$body .= "<span style='font-size:24px'>".$new_topic_subject."</span><br /><br />";
+					$body .= "<p>".$new_topic_text."</p>";
+					$body .= "<p>".$forum_url."?cid=".$cat_id."&show=".$new_tid."</p>";
+					$body = str_replace(chr(13), "<br />", $body);
 					$body = str_replace("\\r\\n", "<br />", $body);
 					$body = str_replace("\\", "", $body);
 	
 					foreach ($query as $user) {
-						sendmail($user->user_email, $language->nft, $body);
+						symposium_sendmail($user->user_email, $language->nft, $body);
 						
 					}
 					
@@ -203,15 +210,21 @@ if (is_user_logged_in()) {
 					
 				if ($query) {
 				
-					$body = $owner_name." has replied to a topic you are subscribed to...<br /><br />";
-					$body .= $reply_text."<br /><br />";
-					$body .= $thispage;
+					$parent = $wpdb->get_var($wpdb->prepare("SELECT topic_subject FROM ".$topics." WHERE tid = ".$tid));
+					
+					$body = "<span style='font-size:24px'>".$parent."</span><br /><br />";
+					$body .= "<p>".$owner_name." ".$language->re."...</p>";
+					$body .= "<p>".$reply_text."</p>";
+					$body .= "<p>".$forum_url."?cid=".$cat_id."&show=".$tid."</p>";
+					$body = str_replace(chr(13), "<br />", $body);
 					$body = str_replace("\\r\\n", "<br />", $body);
 					$body = str_replace("\\", "", $body);
+					
+					$subject = $language->nfr;
 	
 					foreach ($query as $user) {
 	
-						sendmail($user->user_email, $language->nfr, $body);
+						symposium_sendmail($user->user_email, $language->nfr, $body);
 						
 					}
 					

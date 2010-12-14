@@ -6,9 +6,9 @@
 		$bigbutton_color = $wpdb->get_var($wpdb->prepare("SELECT bigbutton_color FROM ".$config));
 		$bigbutton_background_hover = $wpdb->get_var($wpdb->prepare("SELECT bigbutton_background_hover FROM ".$config));
 		$bigbutton_color_hover = $wpdb->get_var($wpdb->prepare("SELECT bigbutton_color_hover FROM ".$config));
-		$bg_color_1 = $wpdb->get_var($wpdb->prepare("SELECT bg_color_1 FROM ".$config));
-		$bg_color_2 = $wpdb->get_var($wpdb->prepare("SELECT bg_color_2 FROM ".$config));
-		$bg_color_3 = $wpdb->get_var($wpdb->prepare("SELECT bg_color_3 FROM ".$config));
+		$primary_color = $wpdb->get_var($wpdb->prepare("SELECT bg_color_1 FROM ".$config));
+		$row_color = $wpdb->get_var($wpdb->prepare("SELECT bg_color_2 FROM ".$config));
+		$row_color_alt = $wpdb->get_var($wpdb->prepare("SELECT bg_color_3 FROM ".$config));
 		$text_color = $wpdb->get_var($wpdb->prepare("SELECT text_color FROM ".$config));
 		$text_color_2 = $wpdb->get_var($wpdb->prepare("SELECT text_color_2 FROM ".$config));
 		$link = $wpdb->get_var($wpdb->prepare("SELECT link FROM ".$config));
@@ -22,6 +22,8 @@
 		$label = $wpdb->get_var($wpdb->prepare("SELECT label FROM ".$config));
 		$categories_background = $wpdb->get_var($wpdb->prepare("SELECT categories_background FROM ".$config));
 		$categories_color = $wpdb->get_var($wpdb->prepare("SELECT categories_color FROM ".$config));
+		$main_background = $wpdb->get_var($wpdb->prepare("SELECT main_background FROM ".$config));
+		$closed_opacity = $wpdb->get_var($wpdb->prepare("SELECT closed_opacity FROM ".$config));
 		
 		// Check defaults
 		if ($wp_width == '') { $wp_width = '100pc'; }
@@ -51,12 +53,12 @@
 		$html .= "}";
 	
 		$html .= "#symposium-wrapper #new-topic, #symposium-wrapper #reply-topic, #symposium-wrapper #edit-topic-div {";
-		$html .= "	background-color: ".$bg_color_3.";";
-		$html .= "	border: ".$replies_border_size."px solid ".$bg_color_1.";";	
+		$html .= "	background-color: ".$main_background.";";
+		$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";	
 		$html .= "}";
 		
 		$html .= "#symposium-wrapper #reply-topic-bottom textarea {";
-		$html .= "	border: 1px solid ".$bg_color_1.";";			
+		$html .= "	border: 1px solid ".$primary_color.";";			
 		$html .= "}";
 		
 		$html .= "#symposium-wrapper #new-topic-link, #symposium-wrapper #reply-topic-link, #symposium-wrapper .button {";
@@ -70,11 +72,11 @@
 		$html .= "}";
 		
 		$html .= "#symposium-wrapper #symposium_table {";
-		$html .= "	border: ".$table_border."px solid ".$bg_color_1.";";	
+		$html .= "	border: ".$table_border."px solid ".$primary_color.";";	
 		$html .= "}";
 	
 		$html .= "#symposium-wrapper .table_header {";
-		$html .= "	background-color: ".$bg_color_1.";";
+		$html .= "	background-color: ".$categories_background.";";
 		$html .= "  font-weight: bold;";
 	 	$html .= "  border-radius:0px;";
 		$html .= "  -moz-border-radius:0px;";
@@ -107,11 +109,11 @@
 		$html .= "}";
 		
 		$html .= "#symposium-wrapper .row {";
-		$html .= "	background-color: ".$bg_color_2.";";
+		$html .= "	background-color: ".$row_color.";";
 		$html .= "}";
 			
 		$html .= "#symposium-wrapper .row_odd {";
-		$html .= "	background-color: ".$bg_color_3.";";
+		$html .= "	background-color: ".$row_color_alt.";";
 		$html .= "}";
 	
 		$html .= "#symposium-wrapper .row:hover, #symposium-wrapper .row_odd:hover {";
@@ -127,8 +129,8 @@
 		$html .= "}";
 	
 		$html .= "#symposium-wrapper #starting-post {";
-		$html .= "	border: ".$replies_border_size."px solid ".$bg_color_1.";";
-		$html .= "	background-color: ".$bg_color_2.";";
+		$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";
+		$html .= "	background-color: ".$main_background.";";
 		$html .= "}";
 		
 		$html .= "#symposium-wrapper .started-by {";
@@ -136,8 +138,8 @@
 		$html .= "}";
 				
 		$html .= "#symposium-wrapper #child-posts {";
-		$html .= "	border: ".$replies_border_size."px solid ".$bg_color_1.";";
-		$html .= "	background-color: ".$bg_color_3.";";
+		$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";
+		$html .= "	background-color: ".$row_color_alt.";";
 		$html .= "}";
 	
 		$html .= "#symposium-wrapper .sep {";
@@ -145,6 +147,14 @@
 		$html .= "	width:100%;";
 		$html .= "	border-bottom: ".$row_border_size."px ".$row_border_style." ".$text_color_2.";";
 		$html .= "}";
-				
+
+		$html .= "#symposium-wrapper .transparent {";
+		$html .= '  -ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity='.($closed_opacity*10).')";';
+		$html .= "  filter: alpha(opacity=".($closed_opacity*10).");";
+		$html .= "  -moz-opacity: ".$closed_opacity.";";
+		$html .= "  -khtml-opacity: ".$closed_opacity.";";
+		$html .= "  opacity: ".$closed_opacity.";";
+		$html .= "}";
+		
 		$html .= "</style>";
 ?>

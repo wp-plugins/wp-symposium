@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.8.2
+Version: 0.1.9
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -72,8 +72,7 @@ function symposium_forum() {
 	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
 	if (!$language) {
 		
-		$html .= "<p>Language translation for not available for [".$language_key."] - try setting the language on the Options page.</p>";
-		$language_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix . 'symposium_lang');
+		$html .= "<p>Language translation not available for [".$language_key."] - try setting the language on the Options page.</p>";
 		$language_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix . 'symposium_lang'));
 		$html .= "<p>".$language_count." languages available:</p>";
 		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
@@ -548,7 +547,7 @@ function symposium_forum() {
 							$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats WHERE allow_new = "on" ORDER BY listorder');			
 						}
 						if ($categories) {
-							$html .= '<select name="new_topic_category">';
+							$html .= '<select name="new_topic_category" style="width: 200px">';
 							foreach ($categories as $category) {
 								$html .= '<option value='.$category->cid;
 								if ($cat_id > 0) {
@@ -572,6 +571,7 @@ function symposium_forum() {
 					$html .= '<input id="cancel_post" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
 				$html .= '</div>';
 				$allow_replies = $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$show));
+				// Reply Form
 				if ($show != '' && $allow_replies=="on") {
 					$html .= '<div id="reply-topic" name="reply-topic" style="display:none;">';
 						$html .= '<form id="start-reply-topic" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
@@ -585,9 +585,9 @@ function symposium_forum() {
 						$html .= '<div class="emailreplies label"><input type="checkbox" name="reply_topic_subscribe"';
 						$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$show." and uid = ".$current_user->ID));
 						$subscribed = false;	
-						if ($subscribed_count > 0) { $html .= 'checked'; $subscribed = true; } 
-						$html .= '> Email me when there are more replies to this topic</div>';
-						$html .= '<input type="submit" class="button" style="float: left" value="'.$language->rep.'" />';
+						if ($subscribed_count > 0) { $html .= ' checked'; $subscribed = true; } 
+						$html .= '> '.$language->wir.'</div>';
+						$html .= '<input type="submit" class="button" style="float: left" value="'.$language->reb.'" />';
 						$html .= '</form>';
 						$html .= '<input id="cancel_reply" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
 					$html .= '</div>';
@@ -670,14 +670,14 @@ function symposium_forum() {
 										$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
 											$html .= get_avatar($reply->topic_owner, 32);
 										$html .= "</div>";
-										$html .= $reply->display_name." ".$language->re." to ";
+										$html .= $reply->display_name." ".$language->re." ".$language->too." ";
 										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
 										$html .= symposium_time_ago($reply->topic_date, $language_key).".";
 									} else {
 										$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
 											$html .= get_avatar($last_topic->topic_owner, 32);
 										$html .= "</div>";
-										$html .= $last_topic->display_name." started ";
+										$html .= $last_topic->display_name." ".$language->st." ";
 										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
 										$html .= symposium_time_ago($last_topic->topic_date, $language_key).".";
 									}
@@ -693,9 +693,9 @@ function symposium_forum() {
 								$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$post_count."</div>";
 								$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
 								if ($post_count > 1) {
-									$html .= strtoupper($language->tps);
+									$html .= $language->tps;
 								} else {
-									$html .= strtoupper($language->tp);
+									$html .= $language->tp;
 								}
 								$html .= "</div>";
 							}
@@ -707,9 +707,9 @@ function symposium_forum() {
 							$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$topic_count."</div>";
 							$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
 							if ($topic_count != 1) {
-								$html .= strtoupper($language->top);
+								$html .= $language->top;
 							} else {
-								$html .= strtoupper($language->t);
+								$html .= $language->t;
 							}
 							$html .= "</div>";
 							$html .= "</div>";
@@ -777,12 +777,18 @@ function symposium_forum() {
 							if ($row_cnt&1) {
 								$html .= '<div class="row ';
 								if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
-								$html .= '">';
 							} else {
 								$html .= '<div class="row_odd ';
 								if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
-								$html .= '">';
 							}
+							$closed_word = strtolower($wpdb->get_var($wpdb->prepare("SELECT closed_word FROM ".$config)));
+							if ( strpos(strtolower($topic->topic_subject), "[".$closed_word."]") > 0) {
+								$color_check = ' transparent';
+							} else {
+								$color_check = '';
+							}
+							$html .= $color_check.'">';
+
 								// Started by/Last Reply
 								$html .= "<div class='row_startedby' style='float:right;'>";
 								$last_post = $wpdb->get_row("
@@ -793,7 +799,7 @@ function symposium_forum() {
 									$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
 										$html .= get_avatar($last_post->topic_owner, 32);
 									$html .= "</div>";
-									$html .= "Last reply by ".$last_post->display_name;
+									$html .= $language->lrb." ".$last_post->display_name;
 									$html .= " ".symposium_time_ago($topic->topic_date, $language_key).".";
 									$post = stripslashes($last_post->topic_post);
 									if ( strlen($post) > $snippet_length_long ) { $post = substr($post, 0, $snippet_length_long)."..."; }
@@ -811,7 +817,7 @@ function symposium_forum() {
 								$html .= "<div class='row_views'>";
 								if ($reply_views) { 
 									$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$reply_views."</div>";
-									$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>".strtoupper($language->v)."</div>";
+									$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>".$language->v."</div>";
 								}
 								$html .= "</div>";
 								
@@ -820,15 +826,15 @@ function symposium_forum() {
 								$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$replies."</div>";
 								$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
 								if ($replies != 1) {
-									$html .= strtoupper($language->r);
+									$html .= $language->r;
 								} else {
-									$html .= strtoupper($language->rep);
+									$html .= $language->rep;
 								}
 								$html .= "</div>";
 								$html .= "</div>";
 	
 								// Topic Title		
-								$html .= "<div class='row_topic' style='padding:10px'>";							
+								$html .= "<div class='row_topic' style='padding:10px'>";
 								$html .= '<div class="row_link_div"><a href="'.$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($topic->topic_subject).'</a>';
 								if (is_user_logged_in()) {
 									$is_subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$topic->tid." AND uid = ".$current_user->ID));
@@ -884,7 +890,7 @@ function symposium_forum() {
 						$html .= '<input class="new-topic-subject-input" id="edit_topic_subject" type="text" name="edit_topic_subject" value="">';
 						$html .= '<div class="new-topic-subject label">'.$language->tt.'</div>';
 						$html .= '<textarea class="new-topic-subject-text" id="edit_topic_text" name="edit_topic_text"></textarea>';
-						$html .= '<div id="new-category-div" style="float:left">'.$language->mc.': <select name="new-category" id="new-category">';
+						$html .= '<div id="new-category-div" style="float:left">'.$language->mc.': <select name="new-category" id="new-category" style="width: 200px">';
 						$html .= '<option value="">'.$language->s.'</option>';
 						$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats ORDER BY listorder');			
 						if ($categories) {
@@ -945,7 +951,7 @@ function symposium_forum() {
 							$html .= "&nbsp;&nbsp;&nbsp;<input type='checkbox' id='replies' name='replies'";
 							$allow_replies = $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$post->tid));
 							if ($allow_replies == "on") { $html .= ' checked'; }
-							$html .= "> Allow Replies";
+							$html .= "> ".$language->ar;
 						}
 						$html .= "</form>";
 						
@@ -1010,7 +1016,7 @@ function symposium_forum() {
 						$html .= '<div class="emailreplies label"><input type="checkbox" id="reply_subscribe" name="reply_topic_subscribe"';
 						if ($subscribed_count > 0) { $html .= 'checked'; } 
 						$html .= '> '.$language->wir.'</div>';
-						$html .= '<input type="submit" class="button" style="float: left" value="'.$language->rep.'" />';
+						$html .= '<input type="submit" class="button" style="float: left" value="'.$language->reb.'" />';
 						$html .= '</form>';
 					}				
 					$html .= '</div>';
@@ -1161,6 +1167,40 @@ function symposium_time_ago($date,$language,$granularity=1) {
     		$retval = str_replace("jahrs", "jahre", $retval);
 	    	$retval = "vor ".$retval;
         	break;    
+    case "Czech":
+    		$retval = str_replace("second", "sekundou", $retval);
+    		$retval = str_replace("sekundous", "sekundy", $retval);
+    		$retval = str_replace("minute", "minutou", $retval);
+    		$retval = str_replace("minutous", "minuty", $retval);
+    		$retval = str_replace("hour", "hodina", $retval);
+    		$retval = str_replace("hodinas", "hodinami", $retval);
+    		$retval = str_replace("day", "dnem", $retval);
+    		$retval = str_replace("dnems", "dny", $retval);
+    		$retval = str_replace("week", "t&yacute;dnem", $retval);
+    		$retval = str_replace("t&yacute;dnems", "t&yacute;dny", $retval);
+    		$retval = str_replace("month", "m&#283;s&iacute;c", $retval);
+    		$retval = str_replace("m&#283;s&iacute;c", "m&#283;s&iacute;i", $retval);
+    		$retval = str_replace("year", "rokem", $retval);
+    		$retval = str_replace("rokems", "lety", $retval);
+	    	$retval = "p&#345;ed ".$retval;
+        	break;    
+    case "Turkish":
+    		$retval = str_replace("second", "saniye", $retval);
+    		$retval = str_replace("saniyes", "saniye", $retval);
+    		$retval = str_replace("minute", "dakika", $retval);
+    		$retval = str_replace("dakikas", "dakika", $retval);
+    		$retval = str_replace("hour", "saat", $retval);
+    		$retval = str_replace("saats", "saat", $retval);
+    		$retval = str_replace("day", "g&uuml;n", $retval);
+    		$retval = str_replace("g&uuml;ns", "g&uuml;n", $retval);
+    		$retval = str_replace("week", "hafta", $retval);
+    		$retval = str_replace("haftas", "hafta", $retval);
+    		$retval = str_replace("month", "ay", $retval);
+    		$retval = str_replace("ays", "ay", $retval);
+    		$retval = str_replace("year", "y&#305;l", $retval);
+    		$retval = str_replace("y&#305;ls", "y&#305;l", $retval);
+	    	$retval = $retval." &ouml;nce";
+        	break;  
     }
     return $retval;      
 }
