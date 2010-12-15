@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.9
+Version: 0.1.10
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -172,7 +172,9 @@ function symposium_forum() {
 		   	jQuery("#edit-this-topic").click(function() {
 				jQuery(".pleasewait").inmiddle().show();
 				jQuery("#new-category-div").show();
-		    		var tid = jQuery(".edit-topic-tid").attr("id");	
+		    	var tid = jQuery(".edit-topic-tid").attr("id");	
+				jQuery("#edit_topic_subject").val("Please wait...");
+				jQuery("#edit_topic_text").html("Retrieving content...");
 				jQuery.post("/wp-admin/admin-ajax.php", {
 					action:"getEditDetails", 
 					\'tid\':'.$show_tid.'
@@ -187,7 +189,7 @@ function symposium_forum() {
 					jQuery("#new-category").val(details[4]);
 				});
 				jQuery("#edit-topic-div").inmiddle().fadeIn();
-				jQuery(".pleasewait").hide();
+				jQuery(".pleasewait").fadeOut("slow");
 		   	});	    	
 
 		   	// Edit a reply
@@ -195,6 +197,8 @@ function symposium_forum() {
 				jQuery(".pleasewait").inmiddle().show();
 				jQuery("#new-category-div").hide();
 		    	var tid = jQuery(this).attr("id");	
+				jQuery("#edit_topic_subject").val("Please wait...");
+				jQuery("#edit_topic_text").html("Retrieving content...");
 				jQuery.post("/wp-admin/admin-ajax.php", {
 					action:"getEditDetails", 
 					\'tid\':tid
@@ -209,7 +213,7 @@ function symposium_forum() {
 					jQuery(".edit-topic-tid").attr("id", details[3]);
 				});
 				jQuery("#edit-topic-div").inmiddle().fadeIn();
-				jQuery(".pleasewait").hide();
+				jQuery(".pleasewait").fadeOut("slow");
 		   	});	 
 		   	
 		   	// Update contents of edit form
@@ -518,7 +522,7 @@ function symposium_forum() {
 					}
 				}
 				$html .= "</ul>";
-			
+				
 				// New Topic Form	
 				$html .= '<div name="new-topic" id="new-topic"';
 					if ($edit_new_topic == false) { $html .= ' style="display:none;"'; } 
@@ -863,7 +867,7 @@ function symposium_forum() {
 					
 					} else {
 					
-						$html .= "<div style='padding: 6px'>No topics yet</div>";
+						$html .= "<div style='padding: 6px'>".$language->nty."</div>";
 					
 					}
 	
@@ -1024,8 +1028,8 @@ function symposium_forum() {
 			}
 		
 			// Notices
-			$html .= "<div class='notice'><img src='".$plugin."busy.gif' /> ".$language->sav."</div>";
-			$html .= "<div class='pleasewait'><img src='".$plugin."busy.gif' /> ".$language->pw."</div>";
+			$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin."busy.gif' /> ".$language->sav."</div>";
+			$html .= "<div class='pleasewait' style='z-index:999999;'><img src='".$plugin."busy.gif' /> ".$language->pw."</div>";
 
 		} else {
 			

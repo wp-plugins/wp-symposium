@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.9
+Version: 0.1.10
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -75,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.9";
+	$symposium_version = "0.1.10";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -596,10 +596,25 @@ function symposium_activate() {
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD st varchar(256) NOT NULL");
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD lrb varchar(256) NOT NULL");
 	}
-	
+
+	// Version 9 *************************************************************************************
+	if ($db_ver < 9) {
+
+		// Add language fields
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fdd varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ycs varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD nty varchar(256) NOT NULL");
+
+	   	// Add option fields
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontfamily varchar(256) NOT NULL DEFAULT 'Georgia,Times'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontsize varchar(16) NOT NULL DEFAULT '15'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingsfamily varchar(256) NOT NULL DEFAULT 'Arial,Helvetica'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingssize varchar(16) NOT NULL DEFAULT '20'");
+	}
+			      	
 	// ***********************************************************************************************
  	// Update Database Version ***********************************************************************
-	update_option("symposium_db_version", "8");
+	update_option("symposium_db_version", "9");
 	
 	// ***********************************************************************************************
 	// Re-load languages file for latest version *****************************************************
@@ -833,12 +848,12 @@ function symposium_notification_trigger_schedule() {
 				}
 			}
 			
-			$body .= "<p>You can stop receiving these emails at <a href='".$forum_url."'>".$forum_url."</a>.</p>";
+			$body .= "<p>".$language->ycs." <a href='".$forum_url."'>".$forum_url."</a>.</p>";
 			
 			$users = $wpdb->get_results("SELECT DISTINCT user_email FROM ".$wpdb->prefix.'users'." u INNER JOIN ".$wpdb->prefix.'symposium_usermeta'." m ON u.ID = m.uid WHERE m.forum_digest = 'on'"); 
 			if ($users) {
 				foreach ($users as $user) {
-					if(symposium_sendmail($user->user_email, 'Daily Forum Digest', $body)) {
+					if(symposium_sendmail($user->user_email, $language->fdd, $body)) {
 						update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
 					}			
 				}

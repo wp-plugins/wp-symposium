@@ -20,6 +20,7 @@
 	      	<translation code="rep">REPLY</translation>
 	      	<translation code="r">REPLIES</translation>
 	      	<translation code="v">VIEWS</translation>
+	      	<translation code="nty">No topics started yet.</translation>
 	      	<translation code="sac">Select a category</translation>
 	      	<translation code="sb">Started by</translation>
 	      	<translation code="st">started</translation>
@@ -42,6 +43,8 @@
 	      	<translation code="wir">When I reply, email me when there are more replies to this topic</translation>
 	      	<translation code="rdv">Receive digests via email</translation>
 	      	<translation code="tis">Topic is Sticky</translation>
+	      	<translation code="fdd">Forum Daily Digest</translation>
+	      	<translation code="ycs">You can stop receiving these emails at</translation>
 	      	<translation code="ar">Allow Replies</translation>
 	      	<translation code="pw">Please wait...</translation>
 	      	<translation code="sav">Saving...</translation>
@@ -66,10 +69,13 @@
 	      	<translation code="rdv">Recevez par e-mail dig$egrave;re</translation>
 			<translation code="r">R$Eacute;PONSES</translation>
 			<translation code="v">VUES</translation>
+	      	<translation code="nty">Aucun sujet encore commenc$eacute;.</translation>
 			<translation code="sb">D$eacute;marr$eacute; par</translation>
 	      	<translation code="st">commenc$eacute;</translation>
 			<translation code="rer">Recevoir des messages quand il ya des r$eacute;ponses $agrave; ce sujet</translation>
 			<translation code="tis">Sujet prioritaire</translation>
+	      	<translation code="fdd">Forum resume quotidien</translation>
+	      	<translation code="ycs">Vous pouvez arr$#234;ter de recevoir ces e-mails $agrave;</translation>
 			<translation code="re">r$eacute;pondu</translation>
 			<translation code="e">Modifier</translation>
 			<translation code="d">Supprimer</translation>
@@ -117,6 +123,7 @@
 			<translation code="lac">Ultimo topico activo</translation>
 			<translation code="r">RESPONDER</translation>
 			<translation code="v">OBSERVACIONES</translation>
+	      	<translation code="nty">Ning$uacute;n tema empezado.</translation>
 			<translation code="sac">Seleccione una categoria</translation>
 			<translation code="emw">Enviar un correo electronico cuando tenga una respuesta</translation>
 			<translation code="rew">Recibir correos electronicos cuando halla nuevos topicos anunciados</translation>
@@ -126,6 +133,8 @@
 			<translation code="re">respondio</translation>
 			<translation code="rer">Recivir emails cuando halla respuestas a este topico</translation>
 			<translation code="tis">Topico es anadido</translation>
+	      	<translation code="fdd">Foro de resumen diario</translation>
+	      	<translation code="ycs">Usted puede dejar de recibir estos correos electronicos en</translation>
 	      	<translation code="ar">Autoriser les r$eacute;ponses</translation>
 			<translation code="aar">Anadir una respuesta a este topico</translation>
 	      	<translation code="lrb">$Uacute;ltima respuesta de</translation>
@@ -166,6 +175,7 @@
 	      	<translation code="lac">Neuestes Thema</translation>
 	      	<translation code="r">ANTWORTEN</translation>
 	      	<translation code="v">ANSICHTEN</translation>
+	      	<translation code="nty">Kein Thema begonnen.</translation>
 	      	<translation code="sac">Kategorie ausw$auml;hlen</translation>
 	      	<translation code="emw">Informiere mich per email $uuml;ber neue Antworten</translation>
 	      	<translation code="rew">Benachrichtiung per email, sobald neue Themen vorhanden sind</translation>
@@ -174,6 +184,8 @@
 	      	<translation code="st">gestartet</translation>
 	      	<translation code="rer">Benachrichtiung per Email bei neuen Antworten</translation>
 	      	<translation code="tis">Dieses Thema wurde angepinnt</translation>
+	      	<translation code="fdd">Forum tagliche Zusammenfassung</translation>
+	      	<translation code="ycs">Sie k$ouml;nnen den Empfang dieser e-mails an</translation>
 	      	<translation code="ar">Lassen sie Antworten</translation>
 	      	<translation code="aar">Antwort verfassen</translation>
 	      	<translation code="lrb">Letzte Antwort von</translation>
@@ -215,6 +227,7 @@
 	      	<translation code="lac">Posledn$iacute; aktivn$iacute; t$eacute;ma</translation>
 	      	<translation code="r">ODPOV$#282;DI</translation>
 	      	<translation code="v">ZOBRAZEN$Iacute;</translation>
+	      	<translation code="nty">$#381;$acute;dn$eacute; t$eacute;ma neza$#269;ala.</translation>
 	      	<translation code="sac">Vyber kategorii</translation>
 	      	<translation code="emw">Moje nov$eacute; odpov$#283;di ozn$aacute;mit na email</translation>
 	      	<translation code="rew">Ozn$aacute;mit nov$eacute; t$eacute;ma na email</translation>
@@ -224,6 +237,8 @@
 	      	<translation code="re">p$#345;id$aacute;no</translation>
 	      	<translation code="rer">Ozn$aacute;mit na email p$#345;$iacute;sp$#283;vky k t$eacute;matu</translation>
 	      	<translation code="tis">T$eacute;ma m$aacute; n$aacute;lepku</translation>	      	
+	      	<translation code="fdd">Forum denni souhrn</translation>
+	      	<translation code="ycs">M$#367;$#382;ete zastavit p$#345;ij$#237;m$#225;n$#237; t$#283;chto e-mail$#367; na</translation>
 	      	<translation code="ar">Povolit odpov$#283;di</translation>
 	      	<translation code="aar">P$#345;idat odpov$#283;$#271; k t$eacute;matu</translation>
 	      	<translation code="lrb">Posledn$iacute; odpov$#283;$#271;</translation>
@@ -262,6 +277,7 @@
 	      	<translation code="rep">RISPOSTA</translation>
 	      	<translation code="r">REPLICA</translation>
 	      	<translation code="v">VISUALIZZAZIONI</translation>
+	      	<translation code="nty">Nessun argomento ancora iniziato.</translation>
 	      	<translation code="sac">Seleziona categoria</translation>
 	      	<translation code="emw">Inviami una email per ricevere i messaggi di risposta</translation>
 	      	<translation code="rew">Inviami una email quando ci sono nuovi argomenti</translation>
@@ -270,6 +286,8 @@
 	      	<translation code="re">risposto</translation>
 	      	<translation code="rer">Inviami una email quando ci sono nuove risposte</translation>
 	      	<translation code="tis">Discussione inappropriata</translation>
+	      	<translation code="fdd">Forum riepilogo giornaliero</translation>
+	      	<translation code="ycs">$Egrave; possibile interrompere la ricezione di queste email a</translation>
 	      	<translation code="ar">Lasciare Risposte</translation>
 	      	<translation code="aar">Aggiungi una risposta a questo argomento</translation>
 	      	<translation code="lrb">Ultima risposta di</translation>
@@ -309,6 +327,7 @@
 	      	<translation code="rep">YANITLA</translation>
 	      	<translation code="r">YANITLAR</translation>
 	      	<translation code="v">G$ouml;r$uuml;n$uuml;mler</translation>
+	      	<translation code="nty">Hi$#231; ba$#351;l$#305;k hen$#252;z ba$#351;lad$#305;.</translation>
 	      	<translation code="sac">Bir kategori secin</translation>
 	      	<translation code="sb">Ba$#351;latan</translation>
 	      	<translation code="st">ba$#351;lad$#305;</translation>
@@ -331,6 +350,8 @@
 	      	<translation code="wir">Bu konuda daha fazla yan$#305;t oldu$#287;unda e-posta ile yan$#305;tla</translation>
 	      	<translation code="rdv">e-posta yoluyla $ouml;zet al$#305;n</translation>
 	      	<translation code="tis">Konu kald$#305;</translation>
+	      	<translation code="fdd">Forum gunluk ozet</translation>
+	      	<translation code="ycs">Size bu e-postalar$#305; almay$#305; durdurabilirsiniz</translation>
 	      	<translation code="ar">Yan$#305;t ver</translation>
 	      	<translation code="pw">L$uuml;rfen bekleyin...</translation>
 	      	<translation code="sav">Kaydediliyor...</translation>

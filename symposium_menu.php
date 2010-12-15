@@ -87,6 +87,10 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'main_background')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'closed_opacity')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'closed_word')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'fontfamily')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'fontsize')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'headingsfamily')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'headingssize')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -147,6 +151,9 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'too')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'st')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'lrb')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'fdd')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'ycs')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'nty')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -663,7 +670,7 @@ function symposium_plugin_styles() {
 			<table class="form-table"> 
 			
 			<tr valign="top"> 
-			<th scope="row"><label for="main_background">Main background <img src="../wp-content/plugins/wp-symposium/new.png" alt="New in v0.1.9" /></label></th> 
+			<th scope="row"><label for="main_background">Main background <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
 			<td><input name="main_background" type="text" id="main_background" class="iColorPicker" value="<?php echo $style->main_background; ?>"  /> 
 			<span class="description">Main background colour (for example, new/edit forum topic/post)</span></td> 
 			</tr> 
@@ -844,7 +851,7 @@ function symposium_plugin_styles() {
 			</tr> 
 			
 			<tr valign="top"> 
-			<th scope="row"><label for="closed_opacity">Closed topics <img src="../wp-content/plugins/wp-symposium/new.png" alt="New in v0.1.9" /></label></th> 
+			<th scope="row"><label for="closed_opacity">Closed topics <img src="../wp-content/plugins/wp-symposium/new.png" alt="New" /></label></th> 
 			<td><input name="closed_opacity" type="text" id="closed_opacity" class="iColorPicker" value="<?php echo $style->closed_opacity; ?>"  /> 
 			<?php
 			$closed_word = $wpdb->get_var($wpdb->prepare("SELECT closed_word FROM ".$wpdb->prefix.'symposium_config'));
@@ -946,6 +953,10 @@ function symposium_plugin_options() {
         $viewer = $_POST[ 'viewer' ];
         $wp_width = str_replace('%', 'pc', ($_POST[ 'wp_width' ]));
         $closed_word = $_POST[ 'closed_word' ];
+        $fontfamily = $_POST[ 'fontfamily' ];
+        $fontsize = str_replace("px", "", strtolower($_POST[ 'fontsize' ]));
+        $headingsfamily = $_POST[ 'headingsfamily' ];
+        $headingssize = str_replace("px", "", strtolower($_POST[ 'headingssize' ]));
 
         // Save the posted value in the database
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET footer = '".$footer."'") );					
@@ -961,6 +972,10 @@ function symposium_plugin_options() {
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET viewer = '".$viewer."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_width = '".$wp_width."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET closed_word = '".$closed_word."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET fontfamily = '".$fontfamily."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET fontsize = '".$fontsize."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingsfamily = '".$headingsfamily."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingssize = '".$headingssize."'") );					
 
         // Put an settings updated message on the screen
 		echo "<div class='updated'><p>Options Saved</p></div>";
@@ -981,6 +996,10 @@ function symposium_plugin_options() {
 	$preview2 = $wpdb->get_var($wpdb->prepare("SELECT preview2 FROM ".$wpdb->prefix.'symposium_config'));
 	$viewer = $wpdb->get_var($wpdb->prepare("SELECT viewer FROM ".$wpdb->prefix.'symposium_config'));
 	$closed_word = $wpdb->get_var($wpdb->prepare("SELECT closed_word FROM ".$wpdb->prefix.'symposium_config'));
+	$fontfamily = $wpdb->get_var($wpdb->prepare("SELECT fontfamily FROM ".$wpdb->prefix.'symposium_config'));
+	$fontsize = $wpdb->get_var($wpdb->prepare("SELECT fontsize FROM ".$wpdb->prefix.'symposium_config'));
+	$headingsfamily = $wpdb->get_var($wpdb->prepare("SELECT headingsfamily FROM ".$wpdb->prefix.'symposium_config'));
+	$headingssize = $wpdb->get_var($wpdb->prepare("SELECT headingssize FROM ".$wpdb->prefix.'symposium_config'));
 
 	?> 
 	
@@ -1045,6 +1064,30 @@ function symposium_plugin_options() {
 	<th scope="row"><label for="wp_width">Width</label></th> 
 	<td><input name="wp_width" type="text" id="wp_width" value="<?php echo $wp_width; ?>"/> 
 	<span class="description">Width of all WP Symposium plugins, eg: 600px or 85%</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="fontfamily">Body Text</label></th> 
+	<td><input name="fontfamily" type="text" id="fontfamily" value="<?php echo $fontfamily; ?>"/> 
+	<span class="description">Font family for body text</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="fontsize"></label></th> 
+	<td><input name="fontsize" type="text" id="fontsize" value="<?php echo $fontsize; ?>"/> 
+	<span class="description">Font size in pixels for body text</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="headingsfamily">Headings</label></th> 
+	<td><input name="headingsfamily" type="text" id="headingsfamily" value="<?php echo $headingsfamily; ?>"/> 
+	<span class="description">Font family for headings and large text</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="headingssize"></label></th> 
+	<td><input name="headingssize" type="text" id="headingssize" value="<?php echo $headingssize; ?>"/> 
+	<span class="description">Font size in pixels for headings and large text</span></td> 
 	</tr> 
 
 	<tr><td colspan='2'><h2>Forum</h2><td></tr>
@@ -1121,7 +1164,7 @@ function symposium_plugin_options() {
 	</tr> 
 
 	<tr valign="top"> 
-	<th scope="row"><label for="closed_word">Closed word <img src="../wp-content/plugins/wp-symposium/new.png" alt="New in v0.1.9" /></label></th>
+	<th scope="row"><label for="closed_word">Closed word <img src="../wp-content/plugins/wp-symposium/new.png" alt="New" /></label></th>
 	<td><input name="closed_word" type="text" id="closed_word"  value="<?php echo $closed_word; ?>" /> 
 	<span class="description">Word used to denote a topic that is closed (see also Styles)</span></td> 
 	</tr> 

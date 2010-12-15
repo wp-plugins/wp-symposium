@@ -6,13 +6,13 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.9
+Stable tag: 0.1.10
 
 A new suite of social networking plugins, starting with a forum.
 
 == Description ==
 
-A forum and more! A new suite of social networking plugins, starting with a forum.
+A forum and more! A new suite of social networking plugins, starting with a forum - and you simply choose which you want to activate.
 
 NOTICE: We are currently BETA testing this plugin. As such, although we have not found any problems, we do not recommend you use it on any production sites. However, we do welcome all feedback, bug reports and suggestions. Please do so at www.wpsymposium.com - thank you. 
 
@@ -147,12 +147,20 @@ Q. I've done that, but the forum still doesn't appear?
 A. Have you put `[symposium-forum]` on a WordPress page, not an HTML file? 
 
 Q. My language isn't supported, can I add my language?
-A. Contact us via www.wpsymposium.com and we will add the language with your help, thank you.
+A. Go to http://www.wpsymposium.com/forum/add-new-forum-language and we will add the language with your help, thank you.
 
 Q. Are there images other than smilies?
-A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page on www.wpsymposium.com
+A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page at http://www.wpsymposium.com/forum/forum-smilies
 
 == Changelog ==
+
+= 0.1.10 = 
+
+* Added: Change font family and size for headings and body text
+* Added: Link in email notifications to stop receiving them
+* Fixed: Some overlooked language sentences
+* Fixed: Microsoft opacity for [closed] tag
+* Changed: z-index of please wait/saving messages so they appear on top of other div's
 
 = 0.1.9 =
 

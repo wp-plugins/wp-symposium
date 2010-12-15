@@ -24,6 +24,11 @@
 		$categories_color = $wpdb->get_var($wpdb->prepare("SELECT categories_color FROM ".$config));
 		$main_background = $wpdb->get_var($wpdb->prepare("SELECT main_background FROM ".$config));
 		$closed_opacity = $wpdb->get_var($wpdb->prepare("SELECT closed_opacity FROM ".$config));
+
+		$fontfamily = $wpdb->get_var($wpdb->prepare("SELECT fontfamily FROM ".$config));
+		$fontsize = $wpdb->get_var($wpdb->prepare("SELECT fontsize FROM ".$config));
+		$headingsfamily = $wpdb->get_var($wpdb->prepare("SELECT headingsfamily FROM ".$config));
+		$headingssize = $wpdb->get_var($wpdb->prepare("SELECT headingssize FROM ".$config));
 		
 		// Check defaults
 		if ($wp_width == '') { $wp_width = '100pc'; }
@@ -31,6 +36,8 @@
 		$html .= "<style>";
 		
 		$html .= "#symposium-wrapper {";
+		$html .= "	font-family: ".$fontfamily.";";
+		$html .= "	font-size: ".$fontsize."px;";
 		$html .= "	color: ".$text_color.";";
 		$html .= "  width: ".str_replace('pc', '%', $wp_width).";";
 		$html .= "}";
@@ -52,6 +59,16 @@
 		}
 		$html .= "}";
 	
+		$html .= "#symposium-wrapper .new-topic-subject-input";
+		$html .= "{";
+		$html .= "	font-family: ".$fontfamily.";";
+		$html .= "}";
+
+		$html .= "#symposium-wrapper .new-topic-subject-text, #symposium-wrapper .reply-topic-subject-text, #symposium-wrapper .reply-topic-text";
+		$html .= "{";
+		$html .= "	font-family: ".$fontfamily.";";
+		$html .= "}";
+	
 		$html .= "#symposium-wrapper #new-topic, #symposium-wrapper #reply-topic, #symposium-wrapper #edit-topic-div {";
 		$html .= "	background-color: ".$main_background.";";
 		$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";	
@@ -62,6 +79,8 @@
 		$html .= "}";
 		
 		$html .= "#symposium-wrapper #new-topic-link, #symposium-wrapper #reply-topic-link, #symposium-wrapper .button {";
+		$html .= "	font-family: ".$fontfamily.";";
+		$html .= "	font-size: ".$fontsize."px;";
 		$html .= "	background-color: ".$bigbutton_background.";";
 		$html .= "	color: ".$bigbutton_color.";";
 		$html .= "}";
@@ -88,6 +107,8 @@
 		$html .= "}";
 
 		$html .= "#symposium-wrapper .table_topic {";
+		$html .= "	font-family: ".$headingsfamily.";";
+		$html .= "	font-size: ".$headingssize.";";
 		$html .= "	color: ".$categories_color.";";
 		$html .= "}";
 		
@@ -121,6 +142,7 @@
 		$html .= "}";
 		
 		$html .= "#symposium-wrapper .row_link, #symposium-wrapper .edit, #symposium-wrapper .delete {";
+		$html .= "	font-size: ".$headingssize.";";
 		$html .= "	color: ".$link.";";
 		$html .= "}";
 			
@@ -149,8 +171,8 @@
 		$html .= "}";
 
 		$html .= "#symposium-wrapper .transparent {";
-		$html .= '  -ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity='.($closed_opacity*10).')";';
-		$html .= "  filter: alpha(opacity=".($closed_opacity*10).");";
+		$html .= '  -ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity='.($closed_opacity*100).')";';
+		$html .= "  filter: alpha(opacity=".($closed_opacity*100).");";
 		$html .= "  -moz-opacity: ".$closed_opacity.";";
 		$html .= "  -khtml-opacity: ".$closed_opacity.";";
 		$html .= "  opacity: ".$closed_opacity.";";
