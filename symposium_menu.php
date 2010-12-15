@@ -252,51 +252,45 @@ function symposium_plugin_debug() {
    		echo "<p>".$ok;
    		echo "Your database structure is accurate to the current version.</p>";
    	} else {
-   		echo $fail."Your database is not accurate with the current version.".$fail2;
+   		echo $fail."Your database is not accurate with the current version. Try re-applying the database upgrades below.".$fail2;
    	}
 
-	// ********** Languages
-	echo '<h2>Installed Languages</h2>';
-	$success = "OK";
-	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . 'symposium_lang'));
-	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
-	if (!$language) {
-		$success = "Language translation not available for [".$language_key."] - try setting the language on the <a href='admin.php?page=symposium_options'>Options</a> page.";
-	}
-	$language_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix . 'symposium_lang'));
-	if ($language > 0) {
-		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
-		if ($language_options) {
-			foreach ($language_options as $option)
-			{
-				if ($option->language != "XML file found, but failed to load") { 
-					echo "<li>".$option->language."</li>";
-				} else {
-					$success = "XML file found, but failed to load"; 
-				}
-			}
-		}		
-		echo '</ol>';
-	} else {
-		$success = "No languages have been installed.";
-	}
-	if ($success == "OK" ) { echo $ok; } else { echo $fail.$success.$fail2; }
-	
+	// ********** Reset database version
+   	echo '<h2>Re-apply database upgrades</h2>';
+   	echo "<p>This will create any missing tables, and add any missing fields, shown above.</p>";
+   	echo '<form method="post" action="">';
+	echo '<input type="hidden" name="symposium_db_reset" value="Y">';
+    if( isset($_POST[ 'symposium_db_reset' ]) && $_POST[ 'symposium_db_reset' ] == 'Y' ) {
+		delete_option('symposium_db_version');
+        echo "<div style='border:1px solid #060;border-radius:5px;padding-left:8px; background-color: #9f9; font-weight: bold; color: #000;margin-bottom:10px;'>";
+        echo "<p>To complete the process, please <a href='plugins.php'>de-activate and re-activate</a> the core WP Symposium plugin.</p>";
+        echo "</div>";
+    }
+   	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Reset database version" /></p>';
+    echo '</form>';
+   		
    	echo '</p>';
 	echo "</div><div style='width:45%; float:left'>";
 	
-  	// ********** Version Numbers
-	echo '<h2>Version Numbers</h2><p>';
+  	// ********** Summary
+	echo '<h2>Version Numbers</h2>';
 
-  	echo "<p>WP Symposium internal version: ".get_option("symposium_version")."<br />";
-  	echo "WP Symposium database version: ";
-  	$db_ver = get_option("symposium_db_version");
-  	if (!$db_ver) { 
-  		echo "<span style='color:red; font-weight:bold;'>Error!</span> No database version set. You may need to re-apply the upgrades</span>"; 
-  	} else {
-  		echo $db_ver;
-  	}
-  	"</p>";
+  	echo "<p>";
+	  	echo "WP Symposium internal version: ".get_option("symposium_version")."<br />";
+	  	echo "WP Symposium database version: ";
+	  	$db_ver = get_option("symposium_db_version");
+	  	if (!$db_ver) { 
+	  		echo "<span style='color:red; font-weight:bold;'>Error!</span> No database version set. You may need to re-apply the upgrades</span><br />"; 
+	  	} else {
+	  		echo $db_ver."<br />";
+	  	}
+		$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
+		if ($forum_url == "Important: Please update!") {
+			echo $fail."You must update your forum URL on the <a href='admin.php?page=symposium_options'>options page</a>.".$fail2;
+		} else {
+		  	echo "According to the <a href='admin.php?page=symposium_options'>options page</a>, the forum is <a href='".$forum_url."'>here</a>. Click to check.";
+		}
+  	echo "</p>";
   	
 	// ********** Test Email   	
     if( isset($_POST[ 'symposium_testemail' ]) && $_POST[ 'symposium_testemail' ] == 'Y' ) {
@@ -346,21 +340,34 @@ function symposium_plugin_debug() {
    	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Update field" /></p>';
    	echo '</form>';
 
-	// ********** Reset database version
-   	echo '<h2>Re-apply database upgrades</h2>';
-   	echo "<p>This won't re-create tables from scratch, but it will try adding additional fields relevant to each upgrade that may currently be missing.</p>";
-   	echo '<form method="post" action="">';
-	echo '<input type="hidden" name="symposium_db_reset" value="Y">';
-    if( isset($_POST[ 'symposium_db_reset' ]) && $_POST[ 'symposium_db_reset' ] == 'Y' ) {
-		delete_option('symposium_db_version');
-        echo "<div style='border:1px solid #060;border-radius:5px;padding-left:8px; background-color: #9f9; font-weight: bold; color: #000;margin-bottom:10px;'>";
-        echo "<p>To complete the process, please <a href='plugins.php'>de-activate and re-activate</a> the core WP Symposium plugin.</p>";
-        echo "</div>";
-    }
-   	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Reset database version" /></p>';
-    echo '</form>';
-   	
-   	   	
+	// ********** Languages
+	echo '<h2>Installed Languages</h2>';
+	$success = "OK";
+	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . 'symposium_lang'));
+	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
+	if (!$language) {
+		$success = "Language translation not available for [".$language_key."] - try setting the language on the <a href='admin.php?page=symposium_options'>Options</a> page.";
+	}
+	$language_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix . 'symposium_lang'));
+	if ($language > 0) {
+		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
+		if ($language_options) {
+			echo '<ol>';
+			foreach ($language_options as $option)
+			{
+				if ($option->language != "XML file found, but failed to load") { 
+					echo "<li>".$option->language."</li>";
+				} else {
+					$success = "XML file found, but failed to load"; 
+				}
+			}
+			echo '</ol>';
+		}		
+	} else {
+		$success = "No languages have been installed.";
+	}
+	if ($success == "OK" ) { echo $ok; } else { echo $fail.$success.$fail2; }
+	   	   	
   	echo '</div>';
 }
 
@@ -1068,7 +1075,7 @@ function symposium_plugin_options() {
 	</tr> 
 
 	<tr valign="top"> 
-	<th scope="row"><label for="fontfamily">Body Text</label></th> 
+	<th scope="row"><label for="fontfamily">Body Text <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
 	<td><input name="fontfamily" type="text" id="fontfamily" value="<?php echo $fontfamily; ?>"/> 
 	<span class="description">Font family for body text</span></td> 
 	</tr> 
@@ -1080,7 +1087,7 @@ function symposium_plugin_options() {
 	</tr> 
 
 	<tr valign="top"> 
-	<th scope="row"><label for="headingsfamily">Headings</label></th> 
+	<th scope="row"><label for="headingsfamily">Headings <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
 	<td><input name="headingsfamily" type="text" id="headingsfamily" value="<?php echo $headingsfamily; ?>"/> 
 	<span class="description">Font family for headings and large text</span></td> 
 	</tr> 

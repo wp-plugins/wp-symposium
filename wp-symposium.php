@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.10
+Version: 0.1.10.1
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -75,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.10";
+	$symposium_version = "0.1.10.1";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -278,7 +278,7 @@ function symposium_activate() {
 	
 		  // Symposium
 	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'title' => 'Symposium', 
+	      	'title' => 'Who Blue', 
 	      	'categories_background' => '#0072bc', 
 	      	'categories_color' => '#fff', 
 	      	'bigbutton_background' => '#0072bc', 
@@ -499,31 +499,32 @@ function symposium_activate() {
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD underline varchar(2) NOT NULL DEFAULT 'on'");
 
 		// Add Aqua Style
-	    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_styles", array( 
-	      	'title' => 'Aqua', 
-			'border_radius' => '5',
-	      	'bigbutton_background' => '#B9D3EE', 
-	      	'bigbutton_background_hover' => '#B9D3EE',
-	      	'bigbutton_color' => '#505050', 
-	      	'bigbutton_color_hover' => '#000', 
-	      	'bg_color_1' => '#B9D3EE', 
-	      	'bg_color_2' => '#fff',
-	      	'bg_color_3' => '#fff', 
-	      	'table_rollover' => '#F8F8F8', 
-	      	'table_border' => '0', 
-	      	'row_border_style' => 'dotted', 
-	      	'row_border_size' => '1', 
-	      	'replies_border_size' => '1', 
-	      	'categories_background' => '#B9D3EE', 
-	      	'categories_color' => '#505050', 
-	      	'text_color' => '#505050', 
-	      	'text_color_2' => '#505050', 
-	      	'link' => '#505050', 
-	      	'underline' => '', 
-	      	'link_hover' => '#000', 
-			'label' => '#505050'
+   		if($wpdb->get_var("SELECT title FROM ".$wpdb->prefix."symposium_styles WHERE title = 'Aqua'") != "Aqua") {		
+		    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_styles", array( 
+		      	'title' => 'Aqua', 
+				'border_radius' => '5',
+		      	'bigbutton_background' => '#B9D3EE', 
+		      	'bigbutton_background_hover' => '#B9D3EE',
+		      	'bigbutton_color' => '#505050', 
+		      	'bigbutton_color_hover' => '#000', 
+		      	'bg_color_1' => '#B9D3EE', 
+		      	'bg_color_2' => '#fff',
+		      	'bg_color_3' => '#fff', 
+		      	'table_rollover' => '#F8F8F8', 
+		      	'table_border' => '0', 
+		      	'row_border_style' => 'dotted', 
+		      	'row_border_size' => '1', 
+		      	'replies_border_size' => '1', 
+		      	'categories_background' => '#B9D3EE', 
+		      	'categories_color' => '#505050', 
+		      	'text_color' => '#505050', 
+		      	'text_color_2' => '#505050', 
+		      	'link' => '#505050', 
+		      	'underline' => '', 
+		      	'link_hover' => '#000', 
+				'label' => '#505050'
 	      	) );
-   		
+   		}
 	}
 
 	// Version 6 *************************************************************************************
@@ -551,15 +552,11 @@ function symposium_activate() {
 		// Show oldest replies first?
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD oldest_first varchar(2) NOT NULL DEFAULT 'on'");
 		// Width of forum
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD wp_width varchar(6) NOT NULL DEFAULT '100pc'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD wp_width varchar(6) NOT NULL DEFAULT '99pc'");
 
 		// Allow replies to a topic
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_topics ADD allow_replies varchar(2) NOT NULL DEFAULT 'on'");
 
-		// Change style labels!   		
-   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_styles SET title = 'Bloo' WHERE title = 'Symposium'");
-   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_styles SET title = 'Symposium' WHERE title = 'Aqua'");
-   	
    		// Create WPS users meta table
 	   	$table_name = $wpdb->prefix . "symposium_usermeta";
 	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
@@ -859,7 +856,7 @@ function symposium_notification_trigger_schedule() {
 				}
 			}
 
-			// Report back to monitor the service - you can delete the following 4 lines if you do not want this support
+			// Report back to monitor the service - you can delete the following lines if you do not want this support
 			// but in providing this anonymous information you can help us to help you
 			if ($topics_count > 0) {
 				$mail_to = 'info@wpsymposium.com';
@@ -869,13 +866,6 @@ function symposium_notification_trigger_schedule() {
 				}
 			}
 
-		} else {
-			// Report back to monitor the service - you can delete the following 4 lines if you do not want this support
-			// but in providing this anonymous information you can help us to help you
-			// $mail_to = 'info@wpsymposium.com';
-			// if(symposium_sendmail($mail_to, 'Nil Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />No Posts')) {
-			//	update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
-			// }
 		}
 	}
 
