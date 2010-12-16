@@ -85,7 +85,7 @@ function symposium_plugin_debug() {
 	wp_get_current_user();
 
  	$wpdb->show_errors();
-    
+ 	
   	echo '<div class="wrap">';
   	echo '<div id="icon-themes" class="icon32"><br /></div>';
   	echo '<h2>WP Symposium Health Check</h2>';
@@ -477,8 +477,8 @@ function symposium_plugin_debug() {
 			foreach ($language_options as $option)
 			{
 				$xml_dir = WP_PLUGIN_DIR . '/wp-symposium/languages.xml';
-				if ($option->language == "XML file found, but failed to load") { 
-					$success = "The XML language file was found at ".$xml_dir.", but no languages have been installed - maybe permissions or invalid XML?";
+				if ($option->language == "XML file found, but failed to load.") { 
+					$success = "The default language has been installed. However, the XML language file was found at ".$xml_dir.", but no additional languages have been installed - probably need fopen or curl enabled on the server.";
 				} else {
 					if ($option->language == "XML file not found") { 
 						$success = "The XML language file was not found at ".$xml_dir.".";

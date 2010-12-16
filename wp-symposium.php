@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.12
+Version: 0.1.12.1
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -75,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.12";
+	$symposium_version = "0.1.12.1";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -490,8 +490,8 @@ function symposium_activate() {
 		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." MODIFY COLUMN language varchar(64)");
 	 	$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." MODIFY COLUMN language varchar(64)");
 
-		// Set language to English
-   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'English'");
+		// Set language to Default
+   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'Default'");
    		
 	}
 
@@ -696,7 +696,6 @@ function symposium_activate() {
 			  CHANGE prs prs varchar(256) NOT NULL DEFAULT 'not set',
 			  CHANGE prm prm varchar(256) NOT NULL DEFAULT 'not set';");
 
-
 	}
 				      	
 	// ***********************************************************************************************
@@ -707,16 +706,66 @@ function symposium_activate() {
 	// Re-load languages file for latest version *****************************************************
 	$wpdb->query("DELETE FROM ".$wpdb->prefix . "symposium_lang");
 
+	// Install English as default, so if XML file loading fails at least there is one language!
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+      	'language' => 'Default', 
+		'sant' => 'Start a New Topic',
+		'p' => 'Post',
+		'rtt' => 'Reply to this Topic...',
+		'c' => 'Cancel',
+		'e' => 'Edit',
+		'd' => 'Delete',
+		'reb' => 'Reply',
+		'u' => 'Update',
+		'ts' => 'Topic Subject',
+		'fpit' => 'First post in topic',
+		'cat' => 'Category',
+		't' => 'TOPIC',
+		'top' => 'TOPICS',
+		'tp' => 'POST',
+		'tps' => 'POSTS',
+		'rep' => 'REPLY',
+		'r' => 'REPLY',
+		'v' => 'REPLY',
+		'nty' => 'No topics started yet.',
+		'sac' => 'Select a category',
+		'sb' => 'Started by',
+		'st' => 'started',
+		're' => 'replied',
+		'aar' => 'Add a Reply to this Topic',
+		'lrb' => 'Last reply by',
+		'nft' => 'New Forum Topic',
+		'nfr' => 'New Forum Topic Reply',
+		'tt' => 'Topic Text',
+		'btf' => 'Back to Forum',
+		'bt' => 'Back to',
+		'mc' => 'Move Category',
+		's' => 'Select...',
+		'hsa' => 'has started a new topic',
+		'i' => 'in',
+		'too' => 'to',
+		'emw' => 'Email me when I get any replies',
+		'rew' => 'Receive emails when there are new topics posted',
+		'rer' => 'Receive emails when there are replies to this topic',
+		'wir' => 'When I reply, email me when there are more replies to this topic',
+		'rdv' => 'Receive digests via email',
+		'tis' => 'Topic is Sticky',
+		'fdd' => 'Forum Daily Digest',
+		'ycs' => 'You can stop receiving these emails at',
+		'ar' => 'Allow Replies',
+		'pw' => 'Please wait...',
+		'sav' => 'Saving...',
+		'prs' => 'Please enter a subject.',
+		'prm' => 'Please enter a message.'
+  	) );
+	symposium_audit(array ('code'=>20, 'type'=>'info', 'plugin'=>'core', 'message'=>'Default internal language added (English).'));
+		
+			
 	// Check XML languages file
 	$plugin_dir = "wp-symposium";
 	$url = WP_PLUGIN_URL . '/'.$plugin_dir.'/languages.xml';
 	$xml_dir = WP_PLUGIN_DIR . '/'.$plugin_dir.'/languages.xml';
 	
-	// dedicated running on a Windows machine, so swap slashes
-	if (strpos($xml_dir, "C:")) {
-		$xml_dir = str_replace('/', '\\', $xml_dir);		
-	}
-
 	symposium_audit(array ('code'=>20, 'type'=>'info', 'plugin'=>'core', 'message'=>'Looking for language file ('.$xml_dir.').'));
 	
 	if (file_exists($xml_dir)) {
@@ -771,8 +820,8 @@ function symposium_activate() {
 				}
 
 			} else {
-				$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'XML file not found') );		
-				symposium_audit(array ('code'=>4, 'type'=>'error', 'plugin'=>'core', 'message'=>'XML language file not found ('.$xml_dir.'). Maybe permissions.'));
+				$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'Could not open file with curl.') );		
+				symposium_audit(array ('code'=>4, 'type'=>'error', 'plugin'=>'core', 'message'=>'Could not open file with curl ('.$xml_dir.'). It may need to be enabled on the server.'));
 			}    
 			
 		}
