@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.11.1
+Version: 0.1.12
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -29,11 +29,12 @@ function symposium_forum() {
 
 	global $wpdb, $current_user;
 
-	$plugin = get_site_url().'/wp-content/plugins/wp-symposium/';
+	$plugin_dir = 'wp-symposium';
+	$plugin = get_site_url().'/wp-content/plugins/'.$plugin_dir.'/';
 	$thispage = get_permalink();
 	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
 	
-	$dbpage = WP_PLUGIN_URL.'/wp-symposium/symposium_forum_db.php';
+	$dbpage = WP_PLUGIN_URL.'/'.$plugin_dir.'/symposium_forum_db.php';
 	
 	if (isset($_GET[page_id]) && $_GET[page_id] != '') {
 		// No Permalink
@@ -1248,7 +1249,7 @@ add_action('wp_ajax_updateForumSubscribe', 'updateForumSubscribe');
 function symposium_forum_activate() {
 
 	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>5, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum activated'));
+		symposium_audit(array ('code'=>5, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum activated.'));
 	}
 
 }
@@ -1256,7 +1257,7 @@ function symposium_forum_activate() {
 function symposium_forum_deactivate() {
 
 	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>6, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum de-activated'));
+		symposium_audit(array ('code'=>6, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum de-activated.'));
 	}
 
 }

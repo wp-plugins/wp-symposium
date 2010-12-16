@@ -13,10 +13,8 @@ add_action('admin_menu', 'symposium_plugin_menu');
 
 function symposium_plugin_event() {
 
-/* ============================================================================================================================ */
-
 	global $wpdb;
-    
+
   	echo '<div class="wrap">';
   	echo '<div id="icon-themes" class="icon32"><br /></div>';
   	echo '<h2>WP Symposium Event Log/Audit</h2>';
@@ -83,13 +81,16 @@ function symposium_plugin_debug() {
 
 /* ============================================================================================================================ */
 
-	global $wpdb;
+	global $wpdb, $current_user;
+	wp_get_current_user();
+
+ 	$wpdb->show_errors();
     
   	echo '<div class="wrap">';
   	echo '<div id="icon-themes" class="icon32"><br /></div>';
   	echo '<h2>WP Symposium Health Check</h2>';
 
-   	echo '<div class="error"><p><strong>Warning!</strong> Any interaction through this screen is done so at your own risk. You could disable your database and/or WP Symposium.<br />You are <strong>strongly advised</strong> to take a backup first. It is recommended that only <strong>advanced users</strong> use this screen.</p></div>';
+   	echo '<div class="error"><p><strong>Warning!</strong> Any interaction through this screen is done so at your own risk. You could disable your database and/or WP Symposium.<br />You are <strong>strongly advised</strong> to take a backup first. It is recommended that only <strong>advanced users</strong> use this screen. Note that error debugging is switched on for this page.</p></div>';
 
 	echo "<div style='width:45%; float:right'>";
 
@@ -320,7 +321,7 @@ function symposium_plugin_debug() {
   	// Audit
    	$table_name = $wpdb->prefix . "symposium_audit";
    	$status = $ok;
-   	echo '<strong>Subscriptions: '.$table_name.'</strong><br />';
+   	echo '<strong>Audit: '.$table_name.'</strong><br />';
    	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
    		$status = $fail."Table doesn't exist".$fail2;
    	} else {
@@ -336,7 +337,7 @@ function symposium_plugin_debug() {
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
-   	   	
+
    	echo '<h3>Overall</h3>';
    	
    	if ($overall == "ok") {
@@ -366,6 +367,29 @@ function symposium_plugin_debug() {
    	echo '<p class="submit"><input type="submit" id="testAJAX" name="Submit" class="button-primary" value="Click to test" /></p>';
    	echo '<input type="text" id="testAJAX_results" style="width: 200px" value="Result will be posted here.">';   		
    	echo '</p>';
+   	
+	
+	// ********** Audit Test
+   	echo '<h2>Audit Trail Test</h2>';
+   	echo '<p>Latest message posted: ';
+  	if ($latest_audit = $wpdb->get_row("SELECT a.*, u.display_name FROM ".$wpdb->prefix."symposium_audit a LEFT JOIN ".$wpdb->prefix."users u ON a.uid = u.ID ORDER BY aid DESC")) {
+	  	echo $latest_audit->message;
+  	} else {
+  		echo $wpdb->last_query;
+  	}
+  	echo '</p>';
+
+   	echo '<p>This will post a test message to the event audit trail.</p>';
+    if( isset($_POST[ 'symposium_audit_test' ]) && $_POST[ 'symposium_audit_test' ] == 'Y' ) {
+		symposium_audit(array ('code'=>11, 'type'=>'system', 'plugin'=>'core', 'message'=>'Test post to event audit log.'));
+		echo "<p>Test post submitted - please <a href='admin.php?page=symposium_event'>check</a> to see if it was added.</p>";
+    }
+   	echo '<form method="post" action="">';
+	echo '<input type="hidden" name="symposium_audit_test" value="Y">';
+   	echo '<p class="submit"><input type="submit" id="testAJAX" name="Submit" class="button-primary" value="Click to log" /></p>';
+   	echo '</p>';
+    echo '</form>';
+   	
 	echo "</div><div style='width:45%; float:left'>";
 	
 	
@@ -576,6 +600,7 @@ function symposium_plugin_categories() {
 
 	<table class="form-table">
 	<tr>
+	<td style="width:20px">ID</td>
 	<td>Category Title</td>
 	<td>Order</td>
 	<td>Allow new topics</td>
@@ -590,6 +615,7 @@ function symposium_plugin_categories() {
 
 			echo '<tr valign="top">';
 			echo '<input name="cid[]" type="hidden" value="'.$category->cid.'" />';
+			echo '<td>'.$category->cid.'</td>';
 			echo '<td><input name="title[]" type="text" value="'.stripslashes($category->title).'" class="regular-text" /></td>';
 			echo '<td><input name="listorder[]" type="text" value="'.$category->listorder.'" /></td>';
 			echo '<td>';
@@ -610,8 +636,8 @@ function symposium_plugin_categories() {
 	}
 	?>
 	
-	<tr><td align='right'>Default Category for new Topics:</td>
-	<td colspan=2>
+	<tr><td colspan=2 align='right'>Default Category for new Topics:</td>
+	<td colspan=3>
 	<?php
 	$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats ORDER BY listorder');
 
@@ -628,8 +654,9 @@ function symposium_plugin_categories() {
 	</td>
 	</tr>
 
-	<tr><td colspan=4><hr /></td></tr>
+	<tr><td colspan=5><hr /></td></tr>
 	<tr valign="top">
+	<td>&nbsp;</td>
 	<td><input name="new_title" type="text" onclick="javascript:this.value = ''" value="Add New Category..." class="regular-text" />
 	<td><input name="new_listorder" type="text" value="0" />
 	<td>
@@ -1127,7 +1154,7 @@ function symposium_plugin_options() {
 	<tr valign="top"> 
 	<th scope="row"><label for="language">Language</label></th> 
 	<td>
-	<?
+	<?php
 	// Check that languages file exists
 	$xml_dir = WP_PLUGIN_DIR . '/wp-symposium/languages.xml';
 	if (!(file_exists($xml_dir))) {
@@ -1140,9 +1167,7 @@ function symposium_plugin_options() {
 		echo '<div class="error"><p>The language file has not been loaded, have you changed it? Try downloading the latest version from <a href="http://wordpress.org/extend/plugins/wp-symposium/">the plugin page</a> and replacing your language.xml file. Then <a href="plugins.php">de-activate</a> the core WP-Symposium plugin and re-activate it. If the file has still not loaded, please report this on the <a href="http://www.wpsymposium.com">Support Forum</a>.</p></div>';
 		echo 'Language file not loaded.';
 	} else {
-	?>
-	<select name="language">
-		<?php
+		echo '<select name="language">';
 		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
 		if ($language_options) {
 			foreach ($language_options as $option)
@@ -1152,10 +1177,10 @@ function symposium_plugin_options() {
 				echo ">".$option->language."</option>";
 			}
 		}		
-		?>
-	</select> 
-	<span class="description">Go to www.wpsymposium.com to help with other languages, or to make corrections</span></td> 
-	<?php } ?>
+		echo '</select>';
+		echo '<span class="description">Go to www.wpsymposium.com to help with other languages, or to make corrections</span></td>';
+	}
+	?>
 	</tr> 
 
 	<tr valign="top"> 

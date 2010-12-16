@@ -2,8 +2,8 @@
 /*
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
-Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.11.1
+Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
+Version: 0.1.12
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -25,7 +25,7 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-/* ====================================================== ADMIN ONLY CODE ====================================================== */
+/* ====================================================== MENU ====================================================== */
 
 if (is_admin()) {
 	include('symposium_menu.php');
@@ -75,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.11.1";
+	$symposium_version = "0.1.12";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -219,9 +219,11 @@ function symposium_activate() {
 	      	'topic_post' => 'Welcome to the forum - this is a demonstration post and can be deleted.',
 	      	'topic_owner' => $current_user->ID,
 	      	'topic_date' => date("Y-m-d H:i:s"),
+	      	'topic_views' => 0,
 	      	'topic_parent' => 0,
 	      	'topic_started' => date("Y-m-d H:i:s")
 	      	 ) );
+	      	 
 	      $new_topic_id = $wpdb->insert_id;
 	      $rows_affected = $wpdb->insert( $table_name, array( 
 	      	'topic_category' => $new_category_id, 
@@ -229,6 +231,7 @@ function symposium_activate() {
 	      	'topic_post' => 'This is a demonstration reply.',
 	      	'topic_owner' => $current_user->ID,
 	      	'topic_date' => date("Y-m-d H:i:s"),
+	      	'topic_views' => 0,
 	      	'topic_parent' => $new_topic_id,
 	      	'topic_started' => date("Y-m-d H:i:s")
 	      	 ) );
@@ -238,6 +241,7 @@ function symposium_activate() {
 	      	'topic_post' => 'This is another demonstration reply.',
 	      	'topic_owner' => $current_user->ID,
 	      	'topic_date' => date("Y-m-d H:i:s"),
+	      	'topic_views' => 0,
 	      	'topic_parent' => $new_topic_id,
 	      	'topic_started' => date("Y-m-d H:i:s")
 	      	 ) );
@@ -591,7 +595,6 @@ function symposium_activate() {
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ar varchar(256) NOT NULL");
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD too varchar(256) NOT NULL");
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD st varchar(256) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD lrb varchar(256) NOT NULL");
 	}
 
 	// Version 9 *************************************************************************************
@@ -634,39 +637,158 @@ function symposium_activate() {
 
 	   	} 	
 	}
+	
+	// Version 11 *************************************************************************************
+	if ($db_ver < 11) {
+
+   		// Create audit table
+	   	$table_name = $wpdb->prefix . "symposium_lang";
+		      $wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang 
+			  CHANGE sant sant varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE ts ts varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE fpit fpit varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE sac sac varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE emw emw varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE p p varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE c c varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE cat cat varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE lac lac varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE top top varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE btf btf varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE rew rew varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE sbl sbl varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE f f varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE r r varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE v v varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE sb sb varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE rer rer varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE tis tis varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE re re varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE e e varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE d d varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE aar aar varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE rtt rtt varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE wir wir varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE rep rep varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE tt tt varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE u u varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE bt bt varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE t t varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE mc mc varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE s s varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE pw pw varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE sav sav varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE hsa hsa varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE i i varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE nft nft varchar(256) NOT NULL DEFAULT 'not set',			  
+			  CHANGE nfr nfr varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE fdd fdd varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE ycs ycs varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE nty nty varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE lrb lrb varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE reb reb varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE ar ar varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE too too varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE st st varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE rdv rdv varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE tp tp varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE tps tps varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE prs prs varchar(256) NOT NULL DEFAULT 'not set',
+			  CHANGE prm prm varchar(256) NOT NULL DEFAULT 'not set';");
+
+
+	}
 				      	
 	// ***********************************************************************************************
  	// Update Database Version ***********************************************************************
-	update_option("symposium_db_version", "10");
+	update_option("symposium_db_version", "11");
 	
 	// ***********************************************************************************************
 	// Re-load languages file for latest version *****************************************************
 	$wpdb->query("DELETE FROM ".$wpdb->prefix . "symposium_lang");
 
 	// Check XML languages file
-	$url = WP_PLUGIN_URL . '/wp-symposium/languages.xml';
-	$xml_dir = WP_PLUGIN_DIR . '/wp-symposium/languages.xml';
-	if (file_exists($xml_dir)) {
+	$plugin_dir = "wp-symposium";
+	$url = WP_PLUGIN_URL . '/'.$plugin_dir.'/languages.xml';
+	$xml_dir = WP_PLUGIN_DIR . '/'.$plugin_dir.'/languages.xml';
+	
+	// dedicated running on a Windows machine, so swap slashes
+	if (strpos($xml_dir, "C:")) {
+		$xml_dir = str_replace('/', '\\', $xml_dir);		
+	}
 
-		// Load XML file
-		$curl = curl_init();
-	    	curl_setopt($curl, CURLOPT_URL, $url);
-	    	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	    	curl_setopt($curl, CURLOPT_REFERER, get_site_url());
-	    	$str = curl_exec($curl);
-	    	curl_close($curl);
+	symposium_audit(array ('code'=>20, 'type'=>'info', 'plugin'=>'core', 'message'=>'Looking for language file ('.$xml_dir.').'));
+	
+	if (file_exists($xml_dir)) {
+	
+		symposium_audit(array ('code'=>21, 'type'=>'info', 'plugin'=>'core', 'message'=>'Language file found.'));
+	
+		$gotxml = false;
+		
+		// Try with fopen
+		if (false && $handle = fopen($xml_dir, "r")) {
+
+			$str = fread($handle, filesize($xml_dir));
+			fclose($handle);
 	    	$xml = simplexml_load_string($str);
-	  		
-		if ($xml === false) {
-			$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'XML file found, but failed to load') );			
-			symposium_audit(array ('code'=>3, 'type'=>'error', 'plugin'=>'core', 'message'=>'XML language file found ('.$xml_dir.'), but failed to load. Probably poor XML format or permission.'));
+
+			symposium_audit(array ('code'=>40, 'type'=>'info', 'plugin'=>'core', 'message'=>'fopen loaded '.$xml_dir.'. '.$str.'...'));
+			$gotxml = true;
+				
+		    	
+		} else {
+			symposium_audit(array ('code'=>41, 'type'=>'error', 'plugin'=>'core', 'message'=>'fopen failed to '.$xml_dir.', trying curl instead...'));
+		}
+		
+		// Try with curl
+		if ($gotxml == false) {
+
+			if (in_array  ('curl', get_loaded_extensions())) {
+				symposium_audit(array ('code'=>12, 'type'=>'info', 'plugin'=>'core', 'message'=>'The PHP function curl is enabled.'));
+					
+				if ($curl = curl_init()) {
+					
+					symposium_audit(array ('code'=>12, 'type'=>'info', 'plugin'=>'core', 'message'=>'curl initiated.'));
+					symposium_audit(array ('code'=>22, 'type'=>'info', 'plugin'=>'core', 'message'=>'curl using '.$url.'.'));
+			    	curl_setopt($curl, CURLOPT_URL, $url);
+					symposium_audit(array ('code'=>23, 'type'=>'info', 'plugin'=>'core', 'message'=>'CURLOPT_URL = '.$curl.'.'));
+			    	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+					symposium_audit(array ('code'=>24, 'type'=>'info', 'plugin'=>'core', 'message'=>'Using get_site_url() = '.get_site_url().'.'));
+			    	curl_setopt($curl, CURLOPT_REFERER, get_site_url());
+			    	$str = curl_exec($curl);
+			    	if (!$str) {
+						symposium_audit(array ('code'=>27, 'type'=>'error', 'plugin'=>'core', 'message'=>'curl_exec failed. '.curl_error($curl)));
+			    	} else {
+						symposium_audit(array ('code'=>28, 'type'=>'info', 'plugin'=>'core', 'message'=>'curl_exec succeeded.'));
+			    	}
+			    	curl_close($curl);
+					symposium_audit(array ('code'=>29, 'type'=>'info', 'plugin'=>'core', 'message'=>'Closing curl.'));
+			    	$xml = simplexml_load_string($str);
+					$gotxml = true;
+	
+				} else {
+					symposium_audit(array ('code'=>9, 'type'=>'error', 'plugin'=>'core', 'message'=>'CURL failed - is it allowed to run on your server? Check with system administrators.'));
+				}
+
+			} else {
+				$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'XML file not found') );		
+				symposium_audit(array ('code'=>4, 'type'=>'error', 'plugin'=>'core', 'message'=>'XML language file not found ('.$xml_dir.'). Maybe permissions.'));
+			}    
+			
+		}
+	    	
+		if ($gotxml == false) {
+			$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'XML file found, but failed to load.') );			
+			symposium_audit(array ('code'=>3, 'type'=>'error', 'plugin'=>'core', 'message'=>'XML language file found ('.$xml_dir.'), but failed to load. Please enable either fopen or curl on your server.'));
 		} else {	
+			
 			$languages = $xml->languages->language;
 			
 			for ($i = 0; $i < count($languages); $i++) {
 				$ref = $languages[$i]->attributes()->ref;
 		
 				$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", $ref) );
+				symposium_audit(array ('code'=>30, 'type'=>'info', 'plugin'=>'core', 'message'=>'Importing '.$ref.'...'));
 		
 				$translations = $languages[$i]->children();
 				for ($j = 0; $j < count($translations); $j++) {
@@ -675,13 +797,16 @@ function symposium_activate() {
 				}					
 			}
 		}
+	
 	} else {
-		$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'XML file not found') );		
-		symposium_audit(array ('code'=>4, 'type'=>'error', 'plugin'=>'core', 'message'=>'XML language file not found ('.$xml_dir.'). Maybe permissions.'));
-	}    
+
+		symposium_audit(array ('code'=>20, 'type'=>'info', 'plugin'=>'core', 'message'=>'Failed to find language file.'));
+		
+	}
+
 
 	// Audit activation
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core activated'));
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core activated.'));
 
 	
 }
@@ -716,7 +841,7 @@ function symposium_deactivate() {
 
 	wp_clear_scheduled_hook('symposium_notification_hook');
 	// Audit de-activation
-	symposium_audit(array ('code'=>2, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core de-activated'));
+	symposium_audit(array ('code'=>2, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core de-activated.'));
 
 }
 
@@ -729,13 +854,29 @@ function symposium_audit($array) {
     $rows_affected = $wpdb->insert( $wpdb->prefix.'symposium_audit', array( 
     	'code' => $array[code], 
 		'type' => $array[type],
+		'plugin' => $array[plugin],
 		'uid' => $current_user->ID,
-		'cid' => $array[cid],
-		'tid' => $array[tid],
-		'gid' => $array[gid],
+		'cid' => $array[cid]+1-1,
+		'tid' => $array[tid]+1-1,
+		'gid' => $array[gid]+1-1,
      	'message' => $array[message]
-    	) );
-    	
+   		) );
+   		
+   	if (!$rows_affected) {
+   		    		
+	$rows_affected = $wpdb->insert( $wpdb->prefix.'symposium_audit', array( 
+    	'code' => 13, 
+		'type' => 'error',
+		'plugin' => 'core',
+		'uid' => $current_user->ID,
+		'cid' => 0,
+		'tid' => 0,
+		'gid' => 0,
+     	'message' => 'Failed to log audit item. Code:'.$array[code].' Type:'.$array[type].' Plugin:'.$array['plugin']
+     	) );
+   	
+   	}
+   	
     if ($array[debug] == 1) {
     	echo $wpdb->last_query;
     }

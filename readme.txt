@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.11.1
+Stable tag: 0.1.12
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -156,10 +156,16 @@ A. Yes, if you look in the smilies folder you can use any of the images there by
 
 == Changelog ==
 
+= 0.1.12 =
+
+* Fix: Fatal Error on activating in symposium_menu.php when activated before core
+* Added: Now try fopen first when loading language XML, if that fails/disabled try curl instead
+* Added: Detail audit when loading XML file
+
 = 0.1.11.1 =
 
 * Added: Widget for recent forum posts
-* Added: Check that core activated before doing audit when forum activates
+* Added: Check that audit function exists before doing audit when forum activates
 
 = 0.1.11 = 
 

@@ -6,3 +6,9 @@
 6 = forum deactivation
 7 = audit cleared
 8 = audit failed to clear
+9 = curl failed
+11 = test audit post
+12 = curl 
+13 = audit post failed
+20-30 = XML language import
+40-41 = fopen language file
