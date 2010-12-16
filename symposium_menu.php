@@ -7,10 +7,81 @@ function symposium_plugin_menu() {
 	add_submenu_page('symposium_options', __('Styles'), __('Styles'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
 	add_submenu_page('symposium_options', __('Forum Categories'), __('Forum Categories'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
 	add_submenu_page('symposium_options', __('Health Check'), __('Health Check'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
+	add_submenu_page('symposium_options', __('Event Audit'), __('Event Audit'), 'edit_themes', 'symposium_event', 'symposium_plugin_event');
 }
 add_action('admin_menu', 'symposium_plugin_menu');
 
+function symposium_plugin_event() {
+
+/* ============================================================================================================================ */
+
+	global $wpdb;
+    
+  	echo '<div class="wrap">';
+  	echo '<div id="icon-themes" class="icon32"><br /></div>';
+  	echo '<h2>WP Symposium Event Log/Audit</h2>';
+  	
+   	echo '<form method="post" action="">';
+	echo '<input type="hidden" name="symposium_clear_events" value="Y">';
+   	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Clear event audit log" /></p>';
+    echo '</form>';
+
+    if( isset($_POST[ 'symposium_clear_events' ]) && $_POST[ 'symposium_clear_events' ] == 'Y' ) {
+        $success = $wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix."symposium_audit") );
+        if ($success) {
+			echo "<div class='updated'><p>Audit log cleared.</p></div>";
+			symposium_audit(array ('code'=>7, 'type'=>'info', 'plugin'=>'core', 'message'=>'Event audit log cleared.'));
+        } else {
+		   	echo '<div class="error"><p>Sorry, there was a problem clearing the even audit log.</p></div>';
+			symposium_audit(array ('code'=>8, 'type'=>'error', 'plugin'=>'core', 'message'=>'Event audit log failed to clear.'));
+        }
+    }
+
+	$audit = $wpdb->get_results("SELECT a.*, u.display_name FROM ".$wpdb->prefix."symposium_audit a LEFT JOIN ".$wpdb->prefix."users u ON a.uid = u.ID ORDER BY aid DESC");
+
+	if ($audit) {
+		echo '<table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>ID</th>';
+		echo '<th>Code</th>';
+		echo '<th>Type</th>';
+		echo '<th>User</th>';
+		echo '<th>Time</th>';
+		echo '<th>Message</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tfoot>';
+		echo '<tr>';
+		echo '<th>ID</th>';
+		echo '<th>Code</th>';
+		echo '<th>Type</th>';
+		echo '<th>User</th>';
+		echo '<th>Time</th>';
+		echo '<th>Message</th>';
+		echo '</tr>';
+		echo '</tfoot>';
+		echo '<tbody>';
+		foreach ($audit as $line) {
+			echo '<tr>';
+			echo '<td valign="top">'.$line->aid.'</td>';
+			echo '<td valign="top">'.$line->code.'</td>';
+			echo '<td valign="top"><img src="'.get_site_url().'/wp-content/plugins/wp-symposium/images/'.$line->type.'.png" alt="'.$line->type.'" /></td>';
+			echo '<td valign="top" style="width: 150px">'.$line->display_name.'</td>';
+			echo '<td valign="top" style="width: 150px">'.$line->stamp.'</td>';
+			echo '<td valign="top">'.$line->message.'</td>';
+			echo '</tr>';
+		}
+		echo '</tbody>';
+		echo '</table>';
+	}
+  	echo '</div>';
+}
+
+
 function symposium_plugin_debug() {
+
+/* ============================================================================================================================ */
 
 	global $wpdb;
     
@@ -245,7 +316,27 @@ function symposium_plugin_debug() {
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
-   	
+
+  	// Audit
+   	$table_name = $wpdb->prefix . "symposium_audit";
+   	$status = $ok;
+   	echo '<strong>Subscriptions: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'aid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'code')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'type')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'uid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'cid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'tid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'gid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'message')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'stamp')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	   	
    	echo '<h3>Overall</h3>';
    	
    	if ($overall == "ok") {
@@ -268,9 +359,15 @@ function symposium_plugin_debug() {
     }
    	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Reset database version" /></p>';
     echo '</form>';
-   		
+
+	// ********** Test AJAX
+   	echo '<h2>AJAX test</h2>';
+   	echo '<p>An AJAX function will be called, passing a random number as a parameter. That value will be returned multipled by 100, and shown below on screen.</p>';
+   	echo '<p class="submit"><input type="submit" id="testAJAX" name="Submit" class="button-primary" value="Click to test" /></p>';
+   	echo '<input type="text" id="testAJAX_results" style="width: 200px" value="Result will be posted here.">';   		
    	echo '</p>';
 	echo "</div><div style='width:45%; float:left'>";
+	
 	
   	// ********** Summary
 	echo '<h2>Version Numbers</h2>';
@@ -355,16 +452,21 @@ function symposium_plugin_debug() {
 			echo '<ol>';
 			foreach ($language_options as $option)
 			{
-				if ($option->language != "XML file found, but failed to load") { 
-					echo "<li>".$option->language."</li>";
+				$xml_dir = WP_PLUGIN_DIR . '/wp-symposium/languages.xml';
+				if ($option->language == "XML file found, but failed to load") { 
+					$success = "The XML language file was found at ".$xml_dir.", but no languages have been installed - maybe permissions or invalid XML?";
 				} else {
-					$success = "XML file found, but failed to load"; 
+					if ($option->language == "XML file not found") { 
+						$success = "The XML language file was not found at ".$xml_dir.".";
+					} else {
+						echo "<li>".$option->language."</li>";
+					}
 				}
 			}
 			echo '</ol>';
 		}		
 	} else {
-		$success = "No languages have been installed.";
+		$success = "There was an undetermind problem loading the XML file";
 	}
 	if ($success == "OK" ) { echo $ok; } else { echo $fail.$success.$fail2; }
 	   	   	
@@ -555,18 +657,6 @@ function symposium_plugin_categories() {
 function symposium_plugin_styles() {
 	
 	global $wpdb;
-	
-	?>
-	
-	<script type="text/javascript">
-    jQuery(document).ready(function() { 	
-    	
-		jQuery('.Multiple').jPicker();
-
-    });
- 	</script>
-
-	<?php
 
 	if (!current_user_can('manage_options'))  {
 	    wp_die( __('You do not have sufficient permissions to access this page.') );
@@ -1236,5 +1326,34 @@ function symposium_plugin_options() {
   	echo '</div>';
 
 } 	
+
+/* ====================================================== AJAX FUNCTIONS ====================================================== */
+
+function symposium_test_head() {
+?>
+	<script type="text/javascript">
+	jQuery(document).ready(function() {
+	   	// Test AJAX
+	   	jQuery("#testAJAX").click(function() {
+	   		random = Math.floor(Math.random()*10)+1;
+	   		alert("The random number being sent is "+random);
+			jQuery.post('/wp-admin/admin-ajax.php', { action:'symposium_test', postID:random }, function(str_test) { 
+				jQuery("#testAJAX_results").val('Value of '+str_test+' returned.');
+			} );
+   		});
+	});
+   	</script>
+<?php
+}
+add_action('admin_head', 'symposium_test_head');
+
+// AJAX test function
+function symposium_test(){
+	$value = $_POST['postID'];	
+	echo $value*100;
+	exit;
+}
+add_action('wp_ajax_symposium_test', 'symposium_test');
+
 
 ?>

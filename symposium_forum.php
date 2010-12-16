@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.10.1
+Version: 0.1.11
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -98,7 +98,7 @@ function symposium_forum() {
 		if (isset($_GET['cid'])) { $cat_id = $_GET['cid']; }
 		if (isset($_POST['cid'])) { $cat_id = $_POST['cid']; }
 
-
+		// Javascript and jQuery
 		$html .= '<script type="text/javascript">
 
 		function validate_form(thisform)
@@ -630,7 +630,7 @@ function symposium_forum() {
 						$html .= "</div>";
 					}
 				}	
-					
+									
 				// Start of table
 				$html .= '<div id="symposium_table">';
 			
@@ -1400,8 +1400,26 @@ function updateForumSubscribe(){
 }
 add_action('wp_ajax_updateForumSubscribe', 'updateForumSubscribe');
 
+/* ====================================================== ACTIVATE/DEACTIVATE ====================================================== */
+
+function symposium_forum_activate() {
+
+	symposium_audit(array ('code'=>5, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum activated'));
+
+}
+
+function symposium_forum_deactivate() {
+
+	symposium_audit(array ('code'=>6, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum de-activated'));
+
+}
+
+register_activation_hook(__FILE__,'symposium_forum_activate');
+register_deactivation_hook(__FILE__, 'symposium_forum_deactivate');
+
 /* ====================================================== SET SHORTCODE ====================================================== */
 add_shortcode('symposium-forum', 'symposium_forum');  
+
 
 
 ?>

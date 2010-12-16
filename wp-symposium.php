@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must be activated to have the admin menu, and admin functions.
-Version: 0.1.10.1
+Version: 0.1.11
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -29,7 +29,7 @@ License: GPL2
 
 if (is_admin()) {
 	include('symposium_menu.php');
-}
+}		   	
 
 /* ====================================================== ADMIN ====================================================== */
 
@@ -75,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.10.1";
+	$symposium_version = "0.1.11";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -608,10 +608,36 @@ function symposium_activate() {
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingsfamily varchar(256) NOT NULL DEFAULT 'Arial,Helvetica'");
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingssize varchar(16) NOT NULL DEFAULT '20'");
 	}
-			      	
+
+	// Version 10 *************************************************************************************
+	if ($db_ver < 10) {
+
+   		// Create audit table
+	   	$table_name = $wpdb->prefix . "symposium_audit";
+	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+	      
+	      $sql = "CREATE TABLE " . $table_name . " (
+			  aid int(11) NOT NULL AUTO_INCREMENT,
+			  code int(11) NOT NULL,
+			  type varchar(6) NOT NULL,
+			  plugin varchar(16) NOT NULL,
+			  uid int(11) NOT NULL,
+			  cid int(11) NOT NULL,
+			  tid int(11) NOT NULL,
+			  gid int(11) NOT NULL,
+			  message varchar(256) NOT NULL,
+			  stamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			  PRIMARY KEY aid (aid)
+	  		);";
+	
+	     dbDelta($sql);
+
+	   	} 	
+	}
+				      	
 	// ***********************************************************************************************
  	// Update Database Version ***********************************************************************
-	update_option("symposium_db_version", "9");
+	update_option("symposium_db_version", "10");
 	
 	// ***********************************************************************************************
 	// Re-load languages file for latest version *****************************************************
@@ -633,6 +659,7 @@ function symposium_activate() {
 	  		
 		if ($xml === false) {
 			$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'XML file found, but failed to load') );			
+			symposium_audit(array ('code'=>3, 'type'=>'error', 'plugin'=>'core', 'message'=>'XML language file found ('.$xml_dir.'), but failed to load. Probably poor XML format or permission.'));
 		} else {	
 			$languages = $xml->languages->language;
 			
@@ -649,8 +676,13 @@ function symposium_activate() {
 			}
 		}
 	} else {
-		$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", $xml_dir.' not found') );		
+		$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'XML file not found') );		
+		symposium_audit(array ('code'=>4, 'type'=>'error', 'plugin'=>'core', 'message'=>'XML language file not found ('.$xml_dir.'). Maybe permissions.'));
 	}    
+
+	// Audit activation
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core activated'));
+
 	
 }
 /* End of Activation */
@@ -666,6 +698,7 @@ function symposium_uninstall() {
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_styles");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_lang");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_usermeta");
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_audit");
 
 	// Delete Notification options
 	delete_option("symposium_notification_inseconds");
@@ -682,7 +715,32 @@ function symposium_uninstall() {
 function symposium_deactivate() {
 
 	wp_clear_scheduled_hook('symposium_notification_hook');
+	// Audit de-activation
+	symposium_audit(array ('code'=>2, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core de-activated'));
 
+}
+
+// Add audit
+function symposium_audit($array) {
+
+   	global $wpdb, $current_user;
+	wp_get_current_user();
+
+    $rows_affected = $wpdb->insert( $wpdb->prefix.'symposium_audit', array( 
+    	'code' => $array[code], 
+		'type' => $array[type],
+		'uid' => $current_user->ID,
+		'cid' => $array[cid],
+		'tid' => $array[tid],
+		'gid' => $array[gid],
+     	'message' => $array[message]
+    	) );
+    	
+    if ($array[debug] == 1) {
+    	echo $wpdb->last_query;
+    }
+    	
+    return $rows_affected;
 }
 
 // Checks is user meta exists, and if not creates it
@@ -1053,5 +1111,6 @@ add_action('wp_print_styles', 'add_symposium_stylesheet');
 register_activation_hook(__FILE__,'symposium_activate');
 register_deactivation_hook(__FILE__, 'symposium_deactivate');
 register_uninstall_hook(__FILE__, 'symposium_uninstall');
+
 
 ?>

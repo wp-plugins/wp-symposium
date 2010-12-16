@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.10.1
+Stable tag: 0.1.11
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -34,7 +34,8 @@ Features currently include:
 * Supports '.html on PAGES' plugin
 * Supports 'SimpleModal Login' plugin
 * No need to edit stylesheet
-* Health check page to help with maintenance
+* Health Check page to help with maintenance
+* Full audit trail and event log (note, minimum event/error logging at the moment, next patch will add full logging)
 
 *Appearance/Styles*
 
@@ -154,6 +155,11 @@ Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page at http://www.wpsymposium.com/forum/forum-smilies
 
 == Changelog ==
+
+= 0.1.11 = 
+
+* Added: Event log (admin menu option)
+* Added: AJAX test to Health Check
 
 = 0.1.10.1 =
 
