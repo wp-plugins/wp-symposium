@@ -6,13 +6,13 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.11
+Stable tag: 0.1.11.1
 
 A new suite of social networking plugins, starting with a forum.
 
 == Description ==
 
-A forum and more! A new suite of social networking plugins, starting with a forum - and you simply choose which you want to activate.
+WP Symposium is a forum and more! A new suite of social networking plugins, starting with a forum - and you simply choose which you want to activate.
 
 NOTICE: We are currently BETA testing this plugin. As such, although we have not found any problems, we do not recommend you use it on any production sites. However, we do welcome all feedback, bug reports and suggestions. Please do so at www.wpsymposium.com - thank you. 
 
@@ -155,6 +155,11 @@ Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page at http://www.wpsymposium.com/forum/forum-smilies
 
 == Changelog ==
+
+= 0.1.11.1 =
+
+* Added: Widget for recent forum posts
+* Added: Check that core activated before doing audit when forum activates
 
 = 0.1.11 = 
 

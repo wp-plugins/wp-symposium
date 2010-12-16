@@ -23,7 +23,7 @@ function symposium_plugin_event() {
   	
    	echo '<form method="post" action="">';
 	echo '<input type="hidden" name="symposium_clear_events" value="Y">';
-   	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Clear event audit log" /></p>';
+   	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary delete" value="Clear event audit log" /></p>';
     echo '</form>';
 
     if( isset($_POST[ 'symposium_clear_events' ]) && $_POST[ 'symposium_clear_events' ] == 'Y' ) {
@@ -1341,6 +1341,13 @@ function symposium_test_head() {
 				jQuery("#testAJAX_results").val('Value of '+str_test+' returned.');
 			} );
    		});
+
+	    // Check if really want to delete	    
+		jQuery(".delete").click(function(){
+		  var answer = confirm("Are you sure?");
+		  return answer // answer is a boolean
+		});
+
 	});
    	</script>
 <?php

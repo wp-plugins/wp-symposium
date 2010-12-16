@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.11
+Version: 0.1.11.1
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -1052,163 +1052,6 @@ function symposium_forum() {
 
 }
 
-/* ====================================================== PHP FUNCTIONS ====================================================== */
-
-// Create Permalink
-function symposium_permalink($id, $type) {
-
-	global $wpdb;
-	
-	if ($_GET['page_id'] != '') {
-		
-		// Not using Permalinks
-		return "";
-		
-	} else {
-	
-		if ($wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config')) == "on")
-		
-		if ($type == "category") {
-			$info = $wpdb->get_row("
-				SELECT title FROM ".$wpdb->prefix.'symposium_cats'." WHERE cid = ".$id); 
-			$string = stripslashes($info->title);
-			$string = str_replace('\\', '-', $string);
-			$string = str_replace('/', '-', $string);
-		} else {
-			$info = $wpdb->get_row("
-				SELECT topic_subject, title FROM ".$wpdb->prefix.'symposium_topics'." INNER JOIN ".$wpdb->prefix.'symposium_cats'." ON ".$wpdb->prefix.'symposium_topics'.".topic_category = ".$wpdb->prefix.'symposium_cats'.".cid WHERE tid = ".$id); 
-			$string = stripslashes($info->topic_subject);
-			$string = str_replace('\\', '-', $string);
-			$string = str_replace('/', '-', $string);
-			if ($wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config')) == "on") {
-				$title = stripslashes($info->title);
-				$title = str_replace('\\', '-', $title);
-				$title = str_replace('/', '-', $title);
-				$string = $title."/".$string;
-			}
-		}
-
-						
-		$patterns = array();
-		$patterns[0] = '/ /';
-		$patterns[1] = '/\?/';
-		$patterns[2] = '/\&/';
-		$replacements = array();
-		$replacements[0] = '-';
-		$replacements[1] = '';
-		$replacements[2] = '';
-		$string = preg_replace($patterns, $replacements, $string);
-
-		$string = $id."/".$string;
-
-		
-		return $string;
-	}
-}
-
-// How long ago in English
-function symposium_time_ago($date,$language,$granularity=1) {
-	
-    $date = strtotime($date);
-    $difference = time() - $date;
-    $periods = array('decade' => 315360000,
-        'year' => 31536000,
-        'month' => 2628000,
-        'week' => 604800, 
-        'day' => 86400,
-        'hour' => 3600,
-        'minute' => 60,
-        'second' => 1);
-                                 
-    foreach ($periods as $key => $value) {
-        if ($difference >= $value) {
-            $time = floor($difference/$value);
-            $difference %= $value;
-            $retval .= ($retval ? ' ' : '').$time.' ';
-            $retval .= (($time > 1) ? $key.'s' : $key);
-            $granularity--;
-        }
-        if ($granularity == '0') { break; }
-    }
-    switch ($language) {
-    case "English":
-	    	$retval .= " ago";
-        	break;    
-    case "French":
-    		$retval = str_replace("second", "seconde", $retval);
-    		$retval = str_replace("hour", "heure", $retval);
-    		$retval = str_replace("day", "jour", $retval);
-    		$retval = str_replace("week", "semaine", $retval);
-    		$retval = str_replace("month", "mois", $retval);
-    		$retval = str_replace("moiss", "mois", $retval);
-    		$retval = str_replace("year", "an", $retval);
-	    	$retval = "il ya ".$retval;
-        	break;    
-    case "Spanish":
-    		$retval = str_replace("second", "segundo", $retval);
-    		$retval = str_replace("minute", "minuto", $retval);
-    		$retval = str_replace("hour", "hora", $retval);
-    		$retval = str_replace("day", "dia", $retval);
-    		$retval = str_replace("week", "semana", $retval);
-    		$retval = str_replace("month", "mes", $retval);
-    		$retval = str_replace("mess", "meses", $retval);
-    		$retval = str_replace("year", "ano", $retval);
-	    	$retval = "hace ".$retval;
-        	break;    
-    case "German":
-    		$retval = str_replace("second", "sekunde", $retval);
-    		$retval = str_replace("sekundes", "sekunden", $retval);
-    		$retval = str_replace("minutes", "minuten", $retval);
-    		$retval = str_replace("hour", "stunde", $retval);
-    		$retval = str_replace("stundes", "stunden", $retval);
-    		$retval = str_replace("day", "tag", $retval);
-    		$retval = str_replace("tags", "tage", $retval);
-    		$retval = str_replace("week", "woche", $retval);
-    		$retval = str_replace("woches", "wochen", $retval);
-    		$retval = str_replace("month", "monat", $retval);
-    		$retval = str_replace("monats", "monate", $retval);
-    		$retval = str_replace("year", "jahr", $retval);
-    		$retval = str_replace("jahrs", "jahre", $retval);
-	    	$retval = "vor ".$retval;
-        	break;    
-    case "Czech":
-    		$retval = str_replace("second", "sekundou", $retval);
-    		$retval = str_replace("sekundous", "sekundy", $retval);
-    		$retval = str_replace("minute", "minutou", $retval);
-    		$retval = str_replace("minutous", "minuty", $retval);
-    		$retval = str_replace("hour", "hodina", $retval);
-    		$retval = str_replace("hodinas", "hodinami", $retval);
-    		$retval = str_replace("day", "dnem", $retval);
-    		$retval = str_replace("dnems", "dny", $retval);
-    		$retval = str_replace("week", "t&yacute;dnem", $retval);
-    		$retval = str_replace("t&yacute;dnems", "t&yacute;dny", $retval);
-    		$retval = str_replace("month", "m&#283;s&iacute;c", $retval);
-    		$retval = str_replace("m&#283;s&iacute;c", "m&#283;s&iacute;i", $retval);
-    		$retval = str_replace("year", "rokem", $retval);
-    		$retval = str_replace("rokems", "lety", $retval);
-	    	$retval = "p&#345;ed ".$retval;
-        	break;    
-    case "Turkish":
-    		$retval = str_replace("second", "saniye", $retval);
-    		$retval = str_replace("saniyes", "saniye", $retval);
-    		$retval = str_replace("minute", "dakika", $retval);
-    		$retval = str_replace("dakikas", "dakika", $retval);
-    		$retval = str_replace("hour", "saat", $retval);
-    		$retval = str_replace("saats", "saat", $retval);
-    		$retval = str_replace("day", "g&uuml;n", $retval);
-    		$retval = str_replace("g&uuml;ns", "g&uuml;n", $retval);
-    		$retval = str_replace("week", "hafta", $retval);
-    		$retval = str_replace("haftas", "hafta", $retval);
-    		$retval = str_replace("month", "ay", $retval);
-    		$retval = str_replace("ays", "ay", $retval);
-    		$retval = str_replace("year", "y&#305;l", $retval);
-    		$retval = str_replace("y&#305;ls", "y&#305;l", $retval);
-	    	$retval = $retval." &ouml;nce";
-        	break;  
-    }
-    return $retval;      
-}
-
 /* ====================================================== AJAX FUNCTIONS ====================================================== */
 
 // AJAX function to get topic details for editing
@@ -1404,13 +1247,17 @@ add_action('wp_ajax_updateForumSubscribe', 'updateForumSubscribe');
 
 function symposium_forum_activate() {
 
-	symposium_audit(array ('code'=>5, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum activated'));
+	if (function_exists('symposium_audit')) {
+		symposium_audit(array ('code'=>5, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum activated'));
+	}
 
 }
 
 function symposium_forum_deactivate() {
 
-	symposium_audit(array ('code'=>6, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum de-activated'));
+	if (function_exists('symposium_audit')) {
+		symposium_audit(array ('code'=>6, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum de-activated'));
+	}
 
 }
 
