@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.13
+Version: 0.1.14
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -75,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.13";
+	$symposium_version = "0.1.14";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -727,10 +727,19 @@ function symposium_activate() {
 	 	$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'English'");
 
 	}
+
+	// Version 14 *************************************************************************************
+	if ($db_ver < 14) {
+
+		// Add pending to languages
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fma varchar(256)");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fmr varchar(256)");
+
+	}
 				      	
 	// ***********************************************************************************************
  	// Update Database Version ***********************************************************************
-	update_option("symposium_db_version", "13");
+	update_option("symposium_db_version", "14");
 	
 	// ***********************************************************************************************
 	// Re-load languages file for latest version *****************************************************
@@ -756,7 +765,7 @@ function symposium_activate() {
 		'tps' => 'POSTS',
 		'rep' => 'REPLY',
 		'r' => 'REPLY',
-		'v' => 'REPLY',
+		'v' => 'VIEWS',
 		'nty' => 'No topics started yet.',
 		'sac' => 'Select a category',
 		'sb' => 'Started by',
@@ -764,8 +773,6 @@ function symposium_activate() {
 		're' => 'replied',
 		'aar' => 'Add a Reply to this Topic',
 		'lrb' => 'Last reply by',
-		'nft' => 'New Forum Topic',
-		'nfr' => 'New Forum Topic Reply',
 		'tt' => 'Topic Text',
 		'btf' => 'Back to Forum',
 		'bt' => 'Back to',
@@ -773,16 +780,20 @@ function symposium_activate() {
 		's' => 'Select...',
 		'hsa' => 'has started a new topic',
 		'i' => 'in',
-		'pen' => 'pending approval',
 		'too' => 'to',
+		'pen' => 'pending approval',
 		'emw' => 'Email me when I get any replies',
 		'rew' => 'Receive emails when there are new topics posted',
 		'rer' => 'Receive emails when there are replies to this topic',
 		'wir' => 'When I reply, email me when there are more replies to this topic',
 		'rdv' => 'Receive digests via email',
 		'tis' => 'Topic is Sticky',
+		'nft' => 'New Forum Topic',
+		'nfr' => 'New Forum Topic Reply',
 		'fdd' => 'Forum Daily Digest',
 		'ycs' => 'You can stop receiving these emails at',
+		'fma' => 'Your forum post has been approved by the moderator.',
+		'fmr' => 'Your forum post has been rejected by the moderator.',
 		'ar' => 'Allow Replies',
 		'pw' => 'Please wait...',
 		'sav' => 'Saving...',
@@ -818,6 +829,8 @@ function symposium_activate() {
       	'tis' => 'Sujet prioritaire',
       	'fdd' => 'Forum resume quotidien',
       	'ycs' => 'Vous pouvez arr&#234;ter de recevoir ces e-mails &agrave;',
+		'fma' => 'Votre post sur le forum a &eacute;t&eacute; approuvé par le mod&eacute;rateur.',
+		'fmr' => 'Votre post sur le forum a &eacute;t&eacute; rejeté par le mod&eacute;rateur.',
       	're' => 'r&eacute;pondu',
       	'e' => 'Modifier',
       	'd' => 'Supprimer',
@@ -882,6 +895,8 @@ function symposium_activate() {
       	'tis' => 'Topico es anadido',
       	'fdd' => 'Foro de resumen diario',
       	'ycs' => 'Usted puede dejar de recibir estos correos electronicos en',
+		'fma' => 'Su mensaje en el foro ha sido aprobado por el moderador.',
+		'fmr' => 'Su mensaje en el foro ha sido rechazado por el moderador.',
       	'ar' => 'Autoriser les r&eacute;ponses',
       	'aar' => 'Anadir una respuesta a este topico',
       	'lrb' => '&Uacute;ltima respuesta de',
@@ -938,6 +953,8 @@ function symposium_activate() {
       	'tis' => 'Dieses Thema wurde angepinnt',
       	'fdd' => 'Forum tagliche Zusammenfassung',
       	'ycs' => 'Sie k&ouml;nnen den Empfang dieser e-mails an',
+		'fma' => 'Ihr Forum hat der Moderator genehmigt worden.',
+		'fmr' => 'Ihr Forum wurde von der Moderatorin abgelehnt worden.',
       	'ar' => 'Lassen sie Antworten',
       	'aar' => 'Antwort verfassen',
       	'lrb' => 'Letzte Antwort von',
@@ -996,6 +1013,8 @@ function symposium_activate() {
       	'tis' => 'T&eacute;ma m&aacute; n&aacute;lepku',	      	
       	'fdd' => 'Forum denni souhrn',
       	'ycs' => 'M&#367;&#382;ete zastavit p&#345;ij&#237;m&#225;n&#237; t&#283;chto e-mail&#367; na',
+		'fma' => 'V&aacute;&#353; diskusn&iacute; p&#345;&iacute;sp&#283;vek byl schv&aacute;len moder&aacute;torem.',
+		'fmr' => 'V&aacute;&#353; diskusn&iacute; p&#345;&iacute;sp&#283;vek byl odm&iacute;tnut moder&aacute;tora.',
       	'ar' => 'Povolit odpov&#283;di',
       	'aar' => 'P&#345;idat odpov&#283;&#271; k t&eacute;matu',
       	'lrb' => 'Posledn&iacute; odpov&#283;&#271;',
@@ -1050,6 +1069,8 @@ function symposium_activate() {
       	'tis' => 'Discussione inappropriata',
       	'fdd' => 'Forum riepilogo giornaliero',
       	'ycs' => '&Egrave; possibile interrompere la ricezione di queste email a',
+		'fma' => 'Il tuo post sul forum &egrave; stato approvato dal moderatore.',
+		'fmr' => 'Il tuo post sul forum &egrave; stato rifiutato dal moderatore.',
       	'ar' => 'Lasciare Risposte',
       	'aar' => 'Aggiungi una risposta a questo argomento',
       	'lrb' => 'Ultima risposta di',
@@ -1120,6 +1141,8 @@ function symposium_activate() {
       	'tis' => 'Konu kald&#305;',
       	'fdd' => 'Forum gunluk ozet',
       	'ycs' => 'Size bu e-postalar&#305; almay&#305; durdurabilirsiniz',
+		'fma' => 'Forum iletinize moderat&#246;r taraf&#305;ndan onayland&#305;.',
+		'fmr' => 'Il tuo post sul forum &egrave; stato rifiutato dal moderatore.',
       	'ar' => 'Yan&#305;t ver',
       	'pw' => 'L&uuml;rfen bekleyin...',
       	'sav' => 'Kaydediliyor...',
