@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.12.1
+Stable tag: 0.1.13
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -28,6 +28,8 @@ Features currently include:
 
 *Configuration*
 
+* Works with any WordPress theme, and standard WordPress users
+* Optional moderation of new topics/replies
 * Limit viewing of forum to particular user levels
 * Set width of forum in % or pixels
 * Supports all permalink, and default no-permalink settings
@@ -39,8 +41,8 @@ Features currently include:
 
 *Appearance/Styles*
 
-* Search Engine friendly links within the forum (helps page ranking and so on)
-* Replaces smiley codes with images, eg. :)
+* Optional Search Engine friendly links within the forum
+* Optional Replacement of smiley codes with images, eg. :)
 * Loads of fun smilies/emoticons to insert
 * Even add your own smilies/emoticons
 * Change the styles (look and feel) through the admin panel
@@ -155,6 +157,15 @@ Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page at http://www.wpsymposium.com/forum/forum-smilies
 
 == Changelog ==
+
+= 0.1.13 =
+
+* Added: Moderation
+* Changed: Languages no longer loaded from external XML file, built into plugin instead
+* Added: Option to load jQuery
+* Added: Option to enable smilies/emoticons
+* Added: Option to use SEO friendly links
+* Changed: Font settings now with each style template, not global options
 
 = 0.1.12.1 =
 

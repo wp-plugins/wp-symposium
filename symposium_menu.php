@@ -2,14 +2,191 @@
 /* ====================================================== ADMIN MENU ====================================================== */
 
 function symposium_plugin_menu() {
-	add_menu_page(__('Symposium'), __('Symposium'), 'edit_themes', 'symposium_options', 'symposium_plugin_options', '', 7); 
+	
+	global $wpdb;
+	
+	// Act on any parameters, so menu counts are correct
+	if (isset($_GET['action'])) {
+		
+		$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix."symposium_config"));
+		$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
+
+		switch($_GET['action']) {
+			
+			case "post_del":
+				if (isset($_GET['tid'])) {
+
+					// Get details
+					$post = $wpdb->get_row( $wpdb->prepare("SELECT t.*, u.user_email FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."users u ON t.topic_owner = u.ID WHERE tid = ".$_GET['tid']) );
+
+					$body .= "<span style='font-size:24px'>Your forum post has been rejected by the moderator.</span>";
+					if ($topic_parent == 0) { $body .= "<p><strong>".stripslashes($post->topic_subject)."</strong></p>"; }
+					$body .= "<p>".stripslashes($post->topic_post)."</p>";
+					$body = str_replace(chr(13), "<br />", $body);
+					$body = str_replace("\\r\\n", "<br />", $body);
+					$body = str_replace("\\", "", $body);
+						
+					// Email author if post needs approval
+					symposium_sendmail($post->user_email, 'Forum post REJECTED by moderation', $body);
+					
+					if ($wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$_GET['tid']) ) ) {
+						symposium_audit(array ('code'=>53, 'type'=>'info', 'plugin'=>'menu', 'tid'=>$_GET['tid'], 'message'=>'Deleted post.'));
+					} else {
+						symposium_audit(array ('code'=>54, 'type'=>'error', 'plugin'=>'menu', 'tid'=>$_GET['tid'], 'message'=>'Failed to delete post.'));
+					}
+
+				}
+				break;
+
+			case "post_approve":
+				if (isset($_GET['tid'])) {
+
+					$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
+					if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
+					
+					// Get details
+					$post = $wpdb->get_row( $wpdb->prepare("SELECT t.*, u.user_email, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."users u ON t.topic_owner = u.ID WHERE tid = ".$_GET['tid']) );
+
+					$body .= "<span style='font-size:24px'>Your forum post has been approved by the moderator.</span>";
+					if ($topic_parent == 0) { $body .= "<p><strong>".stripslashes($post->topic_subject)."</strong></p>"; }
+					$body .= "<p>".stripslashes($post->topic_post)."</p>";
+					$body .= "<p>".$forum_url."?cid=".$post->topic_category."&show=".$_GET['tid']."</p>";
+					$body = str_replace(chr(13), "<br />", $body);
+					$body = str_replace("\\r\\n", "<br />", $body);
+					$body = str_replace("\\", "", $body);
+
+					// Email author if post needs approval
+					symposium_sendmail($post->user_email, 'Forum post APPROVED by moderation', $body);
+
+					// Email people who want to know and prepare body
+					$parent = $wpdb->get_row($wpdb->prepare("SELECT tid, topic_subject FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$post->topic_parent));
+
+					if ($post->topic_parent > 0) {						
+						$body = "<span style='font-size:24px'>".$parent->topic_subject."</span><br /><br />";
+					} else {
+						$body = "<span style='font-size:24px'>".$post->topic_subject."</span><br /><br />";
+					}
+					$body .= "<p>".$post->display_name." ".$language->re."...</p>";
+					$body .= "<p>".$post->topic_post."</p>";
+					$body .= "<p>".$forum_url."?cid=".$post->topic_category."&show=".$_GET['tid']."</p>";
+					$body = str_replace(chr(13), "<br />", $body);
+					$body = str_replace("\\r\\n", "<br />", $body);
+					$body = str_replace("\\", "", $body);
+					
+					if ($post->topic_parent > 0) {
+						$query = $wpdb->get_results("
+							SELECT u.user_email
+							FROM ".$wpdb->prefix."users u RIGHT JOIN ".$wpdb->prefix."symposium_subs s ON s.uid = u.ID 
+							WHERE tid = ".$parent->tid);
+					} else {
+						$query = $wpdb->get_results("
+							SELECT u.user_email
+							FROM ".$wpdb->prefix."users u RIGHT JOIN ".$wpdb->prefix."symposium_subs s ON s.uid = u.ID 
+							WHERE tid = ".$_GET['tid']);
+					}
+											
+					if ($query) {						
+						foreach ($query as $user) {		
+							symposium_sendmail($user->user_email, $language->nfr, $body);							
+						}
+					}						
+											
+			        if ($wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_topics SET topic_approved = 'on' WHERE tid = ".$_GET['tid']) ) ) {
+						symposium_audit(array ('code'=>55, 'type'=>'info', 'plugin'=>'menu', 'tid'=>$_GET['tid'], 'message'=>'Post approved.'));
+					} else {
+						symposium_audit(array ('code'=>56, 'type'=>'error', 'plugin'=>'menu', 'tid'=>$_GET['tid'], 'message'=>'Failed to approve post.'));
+					}
+
+				}
+				break;
+
+		}
+	}
+
+	// Build menu
+	$count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_approved != 'on'"); 
+	if ($count > 0) {
+		$count1 = "<span class='update-plugins' title='".$count." comments to moderate'><span class='update-count'>".$count."</span></span>";
+		$count2 = " (".$count.")";
+	} else {
+		$count12 = "";
+		$count2 = "";
+	}
+	
+	add_menu_page(__('Symposium'), __('Symposium'.$count1), 'edit_themes', 'symposium_options', 'symposium_plugin_options', '', 7); 
 	add_submenu_page('symposium_options', __('Options'), __('Options'), 'edit_themes', 'symposium_options', 'symposium_plugin_options');
 	add_submenu_page('symposium_options', __('Styles'), __('Styles'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
 	add_submenu_page('symposium_options', __('Forum Categories'), __('Forum Categories'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
+	add_submenu_page('symposium_options', __('Moderation'), __('Moderation'.$count2), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
 	add_submenu_page('symposium_options', __('Health Check'), __('Health Check'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
 	add_submenu_page('symposium_options', __('Event Audit'), __('Event Audit'), 'edit_themes', 'symposium_event', 'symposium_plugin_event');
 }
 add_action('admin_menu', 'symposium_plugin_menu');
+
+function symposium_plugin_moderation() {
+
+	global $wpdb;
+
+  	echo '<div class="wrap">';
+  	echo '<div id="icon-themes" class="icon32"><br /></div>';
+  	echo '<h2>Moderation</h2>';
+  		
+	$posts = $wpdb->get_results("SELECT t.*, display_name FROM ".$wpdb->prefix.'symposium_topics'." t 
+		LEFT JOIN ".$wpdb->prefix.'users'." u ON t.topic_owner = u.ID 
+		WHERE t.topic_approved != 'on' ORDER BY tid DESC"); 
+	if ($posts) {
+		echo '<p></p><table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>ID</th>';
+		echo '<th>Author</th>';
+		echo '<th>Preview</th>';
+		echo '<th>Time</th>';
+		echo '<th>Action</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tfoot>';
+		echo '<tr>';
+		echo '<th>ID</th>';
+		echo '<th>Author</th>';
+		echo '<th>Preview</th>';
+		echo '<th>Time</th>';
+		echo '<th>Action</th>';
+		echo '</tr>';
+		echo '</tfoot>';
+		echo '<tbody>';
+		
+		foreach ($posts as $post) {
+
+			echo '<tr>';
+			echo '<td valign="top" style="width: 30px">'.$post->tid.'</td>';
+			echo '<td valign="top" style="width: 175px">'.$post->display_name.'</td>';
+			echo '<td valign="top">';
+			if ($post->topic_parent == 0) {
+				echo '<strong>New Topic</strong><br />';
+				echo stripslashes($post->topic_subject);
+			} else {
+				echo '<strong>New Reply</strong><br />';
+				$preview = $post->topic_post;
+				if ( strlen($preview) > 100 ) { $preview = substr($preview, 0, 100)."..."; }
+				echo $preview;
+			}
+			echo '</td>';
+			echo '<td valign="top" style="width: 150px">'.$post->topic_started.'</td>';
+			echo '<td valign="top" style="width: 150px">';
+			echo "<a href='admin.php?page=symposium_moderation&action=post_approve&tid=".$post->tid."'>Approve</a> | ";
+			echo "<span class='trash delete'><a href='admin.php?page=symposium_moderation&action=post_del&tid=".$post->tid."'>Reject</a></span>";
+			echo '</td>';
+			echo '</tr>';			
+
+		}
+		echo '</tbody>';
+		echo '</table>';
+	} else {
+		echo '<p>No posts require moderation.</p>';
+	}
+
+}
 
 function symposium_plugin_event() {
 
@@ -163,6 +340,10 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'fontsize')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'headingsfamily')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'headingssize')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'jquery')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'seo')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'emoticons')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'moderation')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -226,6 +407,7 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'fdd')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'ycs')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'nty')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'pen')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -262,6 +444,10 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'underline')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'main_background')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'closed_opacity')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'fontfamily')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'fontsize')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'headingsfamily')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'headingssize')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -300,6 +486,7 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'topic_started')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'topic_sticky')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'allow_replies')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_approved')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -363,9 +550,9 @@ function symposium_plugin_debug() {
 
 	// ********** Test AJAX
    	echo '<h2>AJAX test</h2>';
-   	echo '<p>An AJAX function will be called, passing a random number as a parameter. That value will be returned multipled by 100, and shown below on screen.</p>';
-   	echo '<p class="submit"><input type="submit" id="testAJAX" name="Submit" class="button-primary" value="Click to test" /></p>';
+   	echo '<p>An AJAX function will be called, passing a random number as a parameter. If the AJAX call is successful, that value will be returned multipled by 100, and shown below on screen. The AJAX function should also log an event in the <a href="admin.php?page=symposium_event">audit trail</a>.</p>';
    	echo '<input type="text" id="testAJAX_results" style="width: 200px" value="Result will be posted here.">';   		
+   	echo '<p class="submit"><input type="submit" id="testAJAX" name="Submit" class="button-primary" value="Click to test" /></p>';
    	echo '</p>';
    	
 	
@@ -718,6 +905,10 @@ function symposium_plugin_styles() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET underline = '".$style->underline."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET link_hover = '".$style->link_hover."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET label = '".$style->label."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET fontfamily = '".$style->fontfamily."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET fontsize = '".$style->fontsize."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingsfamily = '".$style->headingsfamily."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingssize = '".$style->headingssize."'") );
 
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>Template Applied</p></div>";
@@ -751,6 +942,10 @@ function symposium_plugin_styles() {
         $link_hover = $_POST[ 'link_hover' ];
         $label = $_POST[ 'label' ];
         $closed_opacity = $_POST[ 'closed_opacity' ];
+        $fontfamily = $_POST[ 'fontfamily' ];
+        $fontsize = str_replace("px", "", strtolower($_POST[ 'fontsize' ]));
+        $headingsfamily = $_POST[ 'headingsfamily' ];
+        $headingssize = str_replace("px", "", strtolower($_POST[ 'headingssize' ]));
 
         // Save the posted value in the database
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_background = '".$categories_background."'") );				
@@ -775,6 +970,10 @@ function symposium_plugin_styles() {
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET link_hover = '".$link_hover."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET label = '".$label."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET closed_opacity = '".$closed_opacity."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET fontfamily = '".$fontfamily."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET fontsize = '".$fontsize."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingsfamily = '".$headingsfamily."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingssize = '".$headingssize."'") );					
 
         // Put an settings updated message on the screen
 		echo "<div class='updated'><p>Options Saved</p></div>";
@@ -787,14 +986,38 @@ function symposium_plugin_styles() {
 		foreach ($styles as $style) {
 			
 			?> 
-		 
+
 			<form method="post" action=""> 
 			<input type="hidden" name="symposium_update" value="Y">
 		
 			<table class="form-table"> 
 			
 			<tr valign="top"> 
-			<th scope="row"><label for="main_background">Main background <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
+			<th scope="row"><label for="fontfamily">Body Text</label></th> 
+			<td><input name="fontfamily" type="text" id="fontfamily" value="<?php echo $style->fontfamily; ?>"/> 
+			<span class="description">Font family for body text</span></td> 
+			</tr> 
+		
+			<tr valign="top"> 
+			<th scope="row"><label for="fontsize"></label></th> 
+			<td><input name="fontsize" type="text" id="fontsize" value="<?php echo $style->fontsize; ?>"/> 
+			<span class="description">Font size in pixels for body text</span></td> 
+			</tr> 
+		
+			<tr valign="top"> 
+			<th scope="row"><label for="headingsfamily">Headings</label></th> 
+			<td><input name="headingsfamily" type="text" id="headingsfamily" value="<?php echo $style->headingsfamily; ?>"/> 
+			<span class="description">Font family for headings and large text</span></td> 
+			</tr> 
+		
+			<tr valign="top"> 
+			<th scope="row"><label for="headingssize"></label></th> 
+			<td><input name="headingssize" type="text" id="headingssize" value="<?php echo $style->headingssize; ?>"/> 
+			<span class="description">Font size in pixels for headings and large text</span></td> 
+			</tr> 
+		
+			<tr valign="top"> 
+			<th scope="row"><label for="main_background">Main background</label></th> 
 			<td><input name="main_background" type="text" id="main_background" class="iColorPicker" value="<?php echo $style->main_background; ?>"  /> 
 			<span class="description">Main background colour (for example, new/edit forum topic/post)</span></td> 
 			</tr> 
@@ -1079,9 +1302,10 @@ function symposium_plugin_options() {
         $wp_width = str_replace('%', 'pc', ($_POST[ 'wp_width' ]));
         $closed_word = $_POST[ 'closed_word' ];
         $fontfamily = $_POST[ 'fontfamily' ];
-        $fontsize = str_replace("px", "", strtolower($_POST[ 'fontsize' ]));
-        $headingsfamily = $_POST[ 'headingsfamily' ];
-        $headingssize = str_replace("px", "", strtolower($_POST[ 'headingssize' ]));
+        $jquery = $_POST[ 'jquery' ];
+        $seo = $_POST[ 'seo' ];
+        $emoticons = $_POST[ 'emoticons' ];
+        $moderation = $_POST[ 'moderation' ];
 
         // Save the posted value in the database
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET footer = '".$footer."'") );					
@@ -1097,10 +1321,10 @@ function symposium_plugin_options() {
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET viewer = '".$viewer."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_width = '".$wp_width."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET closed_word = '".$closed_word."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET fontfamily = '".$fontfamily."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET fontsize = '".$fontsize."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingsfamily = '".$headingsfamily."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingssize = '".$headingssize."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET jquery = '".$jquery."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET seo = '".$seo."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET emoticons = '".$emoticons."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET moderation = '".$moderation."'") );					
 
         // Put an settings updated message on the screen
 		echo "<div class='updated'><p>Options Saved</p></div>";
@@ -1121,10 +1345,10 @@ function symposium_plugin_options() {
 	$preview2 = $wpdb->get_var($wpdb->prepare("SELECT preview2 FROM ".$wpdb->prefix.'symposium_config'));
 	$viewer = $wpdb->get_var($wpdb->prepare("SELECT viewer FROM ".$wpdb->prefix.'symposium_config'));
 	$closed_word = $wpdb->get_var($wpdb->prepare("SELECT closed_word FROM ".$wpdb->prefix.'symposium_config'));
-	$fontfamily = $wpdb->get_var($wpdb->prepare("SELECT fontfamily FROM ".$wpdb->prefix.'symposium_config'));
-	$fontsize = $wpdb->get_var($wpdb->prepare("SELECT fontsize FROM ".$wpdb->prefix.'symposium_config'));
-	$headingsfamily = $wpdb->get_var($wpdb->prepare("SELECT headingsfamily FROM ".$wpdb->prefix.'symposium_config'));
-	$headingssize = $wpdb->get_var($wpdb->prepare("SELECT headingssize FROM ".$wpdb->prefix.'symposium_config'));
+	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix.'symposium_config'));
+	$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix.'symposium_config'));
+	$emoticons = $wpdb->get_var($wpdb->prepare("SELECT emoticons FROM ".$wpdb->prefix.'symposium_config'));
+	$moderation = $wpdb->get_var($wpdb->prepare("SELECT moderation FROM ".$wpdb->prefix.'symposium_config'));
 
 	?> 
 	
@@ -1150,6 +1374,30 @@ function symposium_plugin_options() {
 	<input type="hidden" name="symposium_update" value="Y">
 
 	<table class="form-table"> 
+
+	<tr><td colspan='2'><h2>Settings</h2><td></tr>
+	
+	<tr valign="top"> 
+	<th scope="row"><label for="jquery">Load jQuery <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th>
+	<td>
+	<input type="checkbox" name="jquery" id="jquery" <?php if ($jquery == "on") { echo "CHECKED"; } ?>/>
+	<span class="description">Load jQuery on non-admin pages, disable if causing problems</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="seo">SEO extended links <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th>
+	<td>
+	<input type="checkbox" name="seo" id="seo" <?php if ($seo == "on") { echo "CHECKED"; } ?>/>
+	<span class="description">Some other plugins may clash with this feature (causes 404 errors)</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="emoticons">Smilies/Emoticons <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th>
+	<td>
+	<input type="checkbox" name="emoticons" id="emoticons" <?php if ($emoticons == "on") { echo "CHECKED"; } ?>/>
+	<span class="description">Automatically replace smilies/emoticons with graphical images</span></td> 
+	</tr> 
+
 
 	<tr valign="top"> 
 	<th scope="row"><label for="language">Language</label></th> 
@@ -1178,7 +1426,7 @@ function symposium_plugin_options() {
 			}
 		}		
 		echo '</select>';
-		echo '<span class="description">Go to www.wpsymposium.com to help with other languages, or to make corrections</span></td>';
+		echo '<span class="description">If you only have Default available, perform a <a href="admin.php?page=symposium_debug">Health Check</a>.</span></td>';
 	}
 	?>
 	</tr> 
@@ -1189,36 +1437,19 @@ function symposium_plugin_options() {
 	<span class="description">Width of all WP Symposium plugins, eg: 600px or 85%</span></td> 
 	</tr> 
 
-	<tr valign="top"> 
-	<th scope="row"><label for="fontfamily">Body Text <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
-	<td><input name="fontfamily" type="text" id="fontfamily" value="<?php echo $fontfamily; ?>"/> 
-	<span class="description">Font family for body text</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="fontsize"></label></th> 
-	<td><input name="fontsize" type="text" id="fontsize" value="<?php echo $fontsize; ?>"/> 
-	<span class="description">Font size in pixels for body text</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="headingsfamily">Headings <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
-	<td><input name="headingsfamily" type="text" id="headingsfamily" value="<?php echo $headingsfamily; ?>"/> 
-	<span class="description">Font family for headings and large text</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="headingssize"></label></th> 
-	<td><input name="headingssize" type="text" id="headingssize" value="<?php echo $headingssize; ?>"/> 
-	<span class="description">Font size in pixels for headings and large text</span></td> 
-	</tr> 
-
 	<tr><td colspan='2'><h2>Forum</h2><td></tr>
 	
 	<tr valign="top"> 
 	<th scope="row"><label for="forum_url">Forum URL</label></th> 
 	<td><input name="forum_url" type="text" id="forum_url"  value="<?php echo $forum_url; ?>" class="regular-text" /> 
 	<span class="description"><strong>Very Important!</strong> eg: http://www.example.com/forum</span></td> 
+	</tr> 
+
+	<tr valign="top"> 
+	<th scope="row"><label for="moderation">Moderation <img src="../wp-content/plugins/wp-symposium/new.png" alt="New" /></label></th>
+	<td>
+	<input type="checkbox" name="moderation" id="moderation" <?php if ($moderation == "on") { echo "CHECKED"; } ?>/>
+	<span class="description">New topics and posts require admin approval</span></td> 
 	</tr> 
 
 	<tr valign="top"> 
@@ -1287,7 +1518,7 @@ function symposium_plugin_options() {
 	</tr> 
 
 	<tr valign="top"> 
-	<th scope="row"><label for="closed_word">Closed word <img src="../wp-content/plugins/wp-symposium/new.png" alt="New" /></label></th>
+	<th scope="row"><label for="closed_word">Closed word</label></th>
 	<td><input name="closed_word" type="text" id="closed_word"  value="<?php echo $closed_word; ?>" /> 
 	<span class="description">Word used to denote a topic that is closed (see also Styles)</span></td> 
 	</tr> 
@@ -1362,9 +1593,10 @@ function symposium_test_head() {
 	   	jQuery("#testAJAX").click(function() {
 	   		random = Math.floor(Math.random()*10)+1;
 	   		alert("The random number being sent is "+random);
-			jQuery.post('/wp-admin/admin-ajax.php', { action:'symposium_test', postID:random }, function(str_test) { 
+			jQuery.post('/wp-admin/admin-ajax.php', { action:'symposium_test', postID:random }, 
+			function(str_test) { 
 				jQuery("#testAJAX_results").val('Value of '+str_test+' returned.');
-			} );
+			});
    		});
 
 	    // Check if really want to delete	    
@@ -1381,7 +1613,13 @@ add_action('admin_head', 'symposium_test_head');
 
 // AJAX test function
 function symposium_test(){
+	global $wpdb;
+	
 	$value = $_POST['postID'];	
+
+	// Log
+	symposium_audit(array ('code'=>15, 'type'=>'info', 'plugin'=>'core', 'tid'=>$tid, 'cid'=>$topic_category, 'message'=>'AJAX test post. Received ['.$value.'] and returning ['.($value*100).'].'));	
+
 	echo $value*100;
 	exit;
 }

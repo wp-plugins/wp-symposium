@@ -24,7 +24,6 @@
 		$categories_color = $wpdb->get_var($wpdb->prepare("SELECT categories_color FROM ".$config));
 		$main_background = $wpdb->get_var($wpdb->prepare("SELECT main_background FROM ".$config));
 		$closed_opacity = $wpdb->get_var($wpdb->prepare("SELECT closed_opacity FROM ".$config));
-
 		$fontfamily = $wpdb->get_var($wpdb->prepare("SELECT fontfamily FROM ".$config));
 		$fontsize = $wpdb->get_var($wpdb->prepare("SELECT fontsize FROM ".$config));
 		$headingsfamily = $wpdb->get_var($wpdb->prepare("SELECT headingsfamily FROM ".$config));

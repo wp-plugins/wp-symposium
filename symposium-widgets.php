@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium
-Version: 0.1.12.1
+Version: 0.1.13
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -78,7 +78,7 @@ class Forumrecentposts_Widget extends WP_Widget {
 						} else {
 							$text = stripslashes($post->topic_subject);
 							if ( strlen($text) > $preview ) { $text = substr($text, 0, $preview)."..."; }
-							echo $post->display_name." ".$language->re." <a href='".$forum_url.symposium_permalink($post->tid, "topic")."?cid=".$post->topic_category."&show=".$post->tid."'>".$text."</a> ".symposium_time_ago($post->topic_date, $language_key).".<br>";
+							echo $post->display_name." ".$language->st." <a href='".$forum_url.symposium_permalink($post->tid, "topic")."?cid=".$post->topic_category."&show=".$post->tid."'>".$text."</a> ".symposium_time_ago($post->topic_date, $language_key).".<br>";
 						}
 					echo "</div>";
 				echo "</div>";

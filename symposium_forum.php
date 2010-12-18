@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.12.1
+Version: 0.1.13
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -34,6 +34,8 @@ function symposium_forum() {
 	$thispage = get_permalink();
 	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
 	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix . 'symposium_config'));
+
+	$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix . 'symposium_config'));
 	
 	$dbpage = WP_PLUGIN_URL.'/'.$plugin_dir.'/symposium_forum_db.php';
 	
@@ -632,7 +634,7 @@ function symposium_forum() {
 						$html .= "</div>";
 					}
 				}	
-									
+							
 				// Start of table
 				$html .= '<div id="symposium_table">';
 			
@@ -662,15 +664,15 @@ function symposium_forum() {
 						}
 							// Last Topic
 							$last_topic = $wpdb->get_row("
-								SELECT tid, topic_subject, topic_post, topic_date, topic_owner, topic_sticky, topic_parent, display_name, topic_category 
+								SELECT tid, topic_subject, topic_approved, topic_post, topic_date, topic_owner, topic_sticky, topic_parent, display_name, topic_category 
 								FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-								WHERE topic_parent = 0 AND topic_category = ".$category->cid." ORDER BY topic_date DESC"); 
+								WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND topic_parent = 0 AND topic_category = ".$category->cid." ORDER BY topic_date DESC"); 
 							$html .= "<div class='row_topic row_startedby'>";
 							if ($last_topic) {
 								$reply = $wpdb->get_row("
-									SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_category 
+									SELECT tid, topic_subject, topic_approved, topic_post, topic_owner, topic_date, display_name, topic_category 
 									FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-									WHERE topic_parent = ".$last_topic->tid." ORDER BY topic_date DESC"); 
+									WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND topic_parent = ".$last_topic->tid." ORDER BY topic_date DESC"); 
 												
 									if ($reply) {
 										$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
@@ -679,6 +681,7 @@ function symposium_forum() {
 										$html .= $reply->display_name." ".$language->re." ".$language->too." ";
 										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
 										$html .= symposium_time_ago($reply->topic_date, $language_key).".";
+										if ($reply->topic_approved != 'on') { $html .= " <em>[".$language->pen."]</em>"; }
 									} else {
 										$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
 											$html .= get_avatar($last_topic->topic_owner, 32);
@@ -693,7 +696,7 @@ function symposium_forum() {
 							
 							// Posts
 							$html .= "<div class='row_views row_views'>";
-							$post_count = $wpdb->get_var($wpdb->prepare("SELECT count(*) FROM ".$topics." t INNER JOIN ".$topics." u ON u.topic_parent = t.tid WHERE t.topic_parent = 0 AND t.topic_category = ".$category->cid));
+							$post_count = $wpdb->get_var($wpdb->prepare("SELECT count(*) FROM ".$topics." t INNER JOIN ".$topics." u ON u.topic_parent = t.tid WHERE t.topic_parent = 0 AND (t.topic_approved = 'on' OR t.topic_owner = ".$current_user->ID.") AND t.topic_category = ".$category->cid));
 	
 							if ($post_count) { 
 								$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$post_count."</div>";
@@ -708,7 +711,7 @@ function symposium_forum() {
 							$html .= "</div>";
 	
 							// Topic Count
-							$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$topics." WHERE topic_parent = 0 AND topic_category = ".$category->cid));
+							$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$topics." WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND topic_parent = 0 AND topic_category = ".$category->cid));
 							$html .= "<div class='row_topic row_replies'>";
 							$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$topic_count."</div>";
 							$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
@@ -754,16 +757,16 @@ function symposium_forum() {
 					if ($use_categories == "on") {
 							
 						$query = $wpdb->get_results("
-							SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky, allow_replies 
+							SELECT tid, topic_subject, topic_approved, topic_post, topic_owner, topic_date, display_name, topic_sticky, allow_replies 
 							FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-							WHERE topic_parent = 0 AND topic_category = ".$cat_id." ORDER BY topic_sticky DESC, topic_date DESC"); 
+							WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND topic_parent = 0 AND topic_category = ".$cat_id." ORDER BY topic_sticky DESC, topic_date DESC"); 
 							
 					} else {
 						
 						$query = $wpdb->get_results("
-							SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky, allow_replies 
+							SELECT tid, topic_subject, topic_approved, topic_post, topic_owner, topic_date, display_name, topic_sticky, allow_replies 
 							FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-							WHERE topic_parent = 0 ORDER BY topic_sticky DESC, topic_date DESC"); 
+							WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND topic_parent = 0 ORDER BY topic_sticky DESC, topic_date DESC"); 
 							
 					}
 		
@@ -777,8 +780,8 @@ function symposium_forum() {
 						
 							$row_cnt++;
 							
-							$replies = $wpdb->get_var($wpdb->prepare("SELECT COUNT(tid) FROM ".$topics." WHERE topic_parent = ".$topic->tid));
-							$reply_views = $wpdb->get_var($wpdb->prepare("SELECT sum(topic_views) FROM ".$topics." WHERE tid = ".$topic->tid));
+							$replies = $wpdb->get_var($wpdb->prepare("SELECT COUNT(tid) FROM ".$topics." WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND topic_parent = ".$topic->tid));
+							$reply_views = $wpdb->get_var($wpdb->prepare("SELECT sum(topic_views) FROM ".$topics." WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND tid = ".$topic->tid));
 									
 							if ($row_cnt&1) {
 								$html .= '<div class="row ';
@@ -798,9 +801,9 @@ function symposium_forum() {
 								// Started by/Last Reply
 								$html .= "<div class='row_startedby' style='float:right;'>";
 								$last_post = $wpdb->get_row("
-									SELECT tid, topic_subject, topic_post, topic_owner, topic_date, display_name, topic_sticky 
+									SELECT tid, topic_subject, topic_approved, topic_post, topic_owner, topic_date, display_name, topic_sticky 
 									FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-									WHERE topic_parent = ".$topic->tid." ORDER BY tid DESC"); 
+									WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND topic_parent = ".$topic->tid." ORDER BY tid DESC"); 
 								if ( $last_post ) {
 									$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
 										$html .= get_avatar($last_post->topic_owner, 32);
@@ -810,6 +813,7 @@ function symposium_forum() {
 									$post = stripslashes($last_post->topic_post);
 									if ( strlen($post) > $snippet_length_long ) { $post = substr($post, 0, $snippet_length_long)."..."; }
 									$html .= "<br /><span class='row_topic_text'>".$post."</span>";
+									if ($last_post->topic_approved != 'on') { $html .= " <em>[".$language->pen."]</em>"; }
 								} else {
 									$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
 										$html .= get_avatar($topic->topic_owner, 32);
@@ -842,6 +846,7 @@ function symposium_forum() {
 								// Topic Title		
 								$html .= "<div class='row_topic' style='padding:10px'>";
 								$html .= '<div class="row_link_div"><a href="'.$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($topic->topic_subject).'</a>';
+								if ($topic->topic_approved != 'on') { $html .= " <em>[".$language->pen."]</em>"; }
 								if (is_user_logged_in()) {
 									$is_subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$topic->tid." AND uid = ".$current_user->ID));
 									if ($is_subscribed > 0) { $html .= ' <img src="'.$plugin.'orange-tick.gif" alt="Subscribed" />'; } 
@@ -882,9 +887,9 @@ function symposium_forum() {
 				// Show topic ***************************************************************************************************
 				
 				$post = $wpdb->get_row("
-					SELECT tid, topic_subject, topic_post, topic_started, display_name, topic_sticky, topic_owner 
+					SELECT tid, topic_subject, topic_approved, topic_post, topic_started, display_name, topic_sticky, topic_owner 
 					FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-					WHERE tid = ".$show);
+					WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND tid = ".$show);
 					
 				if ($post) {
 				
@@ -924,7 +929,9 @@ function symposium_forum() {
 						$html .= get_avatar($post->topic_owner, 64);
 					$html .= "</div>";
 					
-					$html .= "<div class='topic-post-header'>".stripslashes($post->topic_subject)."</div>";					
+					$html .= "<div class='topic-post-header'>".stripslashes($post->topic_subject);
+					if ($post->topic_approved != 'on') { $html .= " <em>[".$language->pen."]</em>"; }
+					$html .= "</div>";					
 					$html .= "<div class='started-by'>".$language->sb." ".$post->display_name." ".symposium_time_ago($post->topic_started, $language_key)."</div>";
 					$html .= "</div>";
 	
@@ -969,9 +976,9 @@ function symposium_forum() {
 				}
 		
 				// Replies
-				$sql = "SELECT tid, topic_subject, topic_post, topic_date, topic_owner, display_name, ID
+				$sql = "SELECT tid, topic_subject, topic_approved, topic_post, topic_date, topic_owner, display_name, ID
 					FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
-					WHERE topic_parent = ".$show." ORDER BY tid";
+					WHERE (topic_approved = 'on' OR topic_owner = ".$current_user->ID.") AND topic_parent = ".$show." ORDER BY tid";
 				if ($wpdb->get_var($wpdb->prepare("SELECT oldest_first FROM ".$wpdb->prefix.'symposium_config')) != "on") { $sql .= " DESC"; }
 				
 				$child_query = $wpdb->get_results($sql);
@@ -993,7 +1000,9 @@ function symposium_forum() {
 							$html .= "<div class='started-by'>".$child->display_name." ".$language->re." ".symposium_time_ago($child->topic_date, $language_key)."...";
 							$html .= "</div>";
 							$html .= "<div id='".$child->tid."' class='child-reply-post'>";
-								$html .= "<p>".str_replace(chr(13), "<br />", stripslashes($child->topic_post))."</p>";
+								$html .= "<p>".str_replace(chr(13), "<br />", stripslashes($child->topic_post));
+								if ($child->topic_approved != 'on') { $html .= " <em>[".$language->pen."]</em>"; }
+								$html .= "</p>";
 							$html .= "</div>";
 						$html .= "</div>";
 	
@@ -1103,6 +1112,9 @@ function updateEditDetails(){
 	$topic_post = addslashes($_POST['topic_post']);	
 	$topic_post = str_replace("\n", chr(13), $topic_post);	
 	$topic_category = $_POST['topic_category'];
+
+	// Log
+	symposium_audit(array ('code'=>52, 'type'=>'info', 'plugin'=>'forum', 'tid'=>$tid, 'cid'=>$topic_category, 'message'=>'AJAX post update request received.'));
 	
 	if ($topic_category == "") {
 		$topic_category = $wpdb->get_var($wpdb->prepare("SELECT topic_category FROM ".$wpdb->prefix.'symposium_topics'." WHERE tid = ".$tid));
@@ -1113,6 +1125,10 @@ function updateEditDetails(){
 	$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_topics'." SET topic_subject = '".$topic_subject."', topic_post = '".$topic_post."', topic_category = ".$topic_category." WHERE tid = ".$tid) );
 	
 	$parent = $wpdb->get_var($wpdb->prepare("SELECT topic_parent FROM ".$wpdb->prefix.'symposium_topics'." WHERE tid = ".$tid));
+
+	// Log
+	symposium_audit(array ('code'=>52, 'type'=>'info', 'plugin'=>'forum', 'tid'=>$tid, 'cid'=>$topic_category, 'message'=>'Post updated.'));
+
 	echo $topic_post;
 	
 	exit;

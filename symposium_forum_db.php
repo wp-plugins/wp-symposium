@@ -20,14 +20,22 @@ if (is_user_logged_in()) {
 	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
 	if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
 
-	// New Topic
+	// Check for moderation
+	$moderation = $wpdb->get_var($wpdb->prepare("SELECT moderation FROM ".$wpdb->prefix.'symposium_config'));
+	if ($moderation == "on") {
+		$topic_approved = "";
+	} else {
+		$topic_approved = "on";
+	}
+
+	// New Topic ****************************************************************
 	if ($_POST['action'] == 'post') {
 		
 		$new_topic_subject = $_POST['new_topic_subject'];
 		$new_topic_text = $_POST['new_topic_text'];
 		$new_topic_subscribe = $_POST['new_topic_subscribe'];
 		$new_topic_category = $_POST['new_topic_category'];
-	
+
 		$store = true;
 		$edit_new_topic = false;
 		if ($new_topic_subject == '') { $msg = $language->prs; $store = false; $edit_new_topic = true; }
@@ -42,7 +50,7 @@ if (is_user_logged_in()) {
 				// Don't double post
 			} else {						
 				// Store new topic in post
-	
+				
 				// Don't allow HTML
 				$new_topic_text = str_replace("<", "&lt;", $new_topic_text);
 				$new_topic_text = str_replace(">", "&gt;", $new_topic_text);
@@ -56,9 +64,10 @@ if (is_user_logged_in()) {
 						topic_started, 
 						topic_owner, 
 						topic_parent, 
-						topic_views
+						topic_views,
+						topic_approved
 					)
-					VALUES ( %s, %d, %s, %s, %s, %d, %d, %d )", 
+					VALUES ( %s, %d, %s, %s, %s, %d, %d, %d, %s )", 
 			        array(
 			        	$new_topic_subject, 
 			        	$new_topic_category,
@@ -67,7 +76,8 @@ if (is_user_logged_in()) {
 						date("Y-m-d H:i:s"), 
 						$current_user->ID, 
 						0,
-						0
+						0,
+						$topic_approved
 			        	) 
 			        ) );
 			        
@@ -90,38 +100,43 @@ if (is_user_logged_in()) {
 				// Set category to the category posted into
 				$cat_id = $new_topic_category;
 				
-				// Email people who want to know
-				$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$users." WHERE ID = ".$current_user->ID));
-	
-				$query = $wpdb->get_results("
-					SELECT user_email
-					FROM ".$users." RIGHT JOIN ".$subs." ON ".$subs.".uid = ".$users.".ID 
-					WHERE tid = 0 AND cid = ".$cat_id);
-					
-				if ($query) {
+				// Log
+				symposium_audit(array ('code'=>50, 'type'=>'info', 'plugin'=>'forum', 'tid'=>$new_tid, 'cid'=>$cat_id, 'message'=>'New topic posted.'));
 				
-					$body = "<p>".$owner_name." ".$language->hsa;
-					$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
-					if ($show_categories == "on") {
-						$category = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
-						$body .= " ".$language->i." ".$category;
-					}
-					$body .= "...</p>";
-										
-					$body .= "<span style='font-size:24px'>".$new_topic_subject."</span><br /><br />";
-					$body .= "<p>".$new_topic_text."</p>";
-					$body .= "<p>".$forum_url."?cid=".$cat_id."&show=".$new_tid."</p>";
-					$body = str_replace(chr(13), "<br />", $body);
-					$body = str_replace("\\r\\n", "<br />", $body);
-					$body = str_replace("\\", "", $body);
-	
-					foreach ($query as $user) {
-						symposium_sendmail($user->user_email, $language->nft, $body);
-						
-					}
-					
+				// Get post owner name and prepare email body
+				$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$users." WHERE ID = ".$current_user->ID));
+				$body = "<p>".$owner_name." ".$language->hsa;
+				$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
+				if ($show_categories == "on") {
+					$category = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
+					$body .= " ".$language->i." ".$category;
 				}
-	
+				$body .= "...</p>";
+									
+				$body .= "<span style='font-size:24px'>".$new_topic_subject."</span><br /><br />";
+				$body .= "<p>".$new_topic_text."</p>";
+				$body .= "<p>".$forum_url."?cid=".$cat_id."&show=".$new_tid."</p>";
+				$body = str_replace(chr(13), "<br />", $body);
+				$body = str_replace("\\r\\n", "<br />", $body);
+				$body = str_replace("\\", "", $body);
+				
+				if ($topic_approved == "on") {
+					// Email people who want to know	
+					$query = $wpdb->get_results("
+						SELECT user_email
+						FROM ".$users." RIGHT JOIN ".$subs." ON ".$subs.".uid = ".$users.".ID 
+						WHERE tid = 0 AND cid = ".$cat_id);
+						
+					if ($query) {					
+						foreach ($query as $user) {
+							symposium_sendmail($user->user_email, $language->nft, $body);						
+						}						
+					}
+				} else {
+					// Email admin if post needs approval
+					$body = "<span style='font-size:24px font-style:italic;'>Topic Moderation Required</span><br /><br />".$body;
+					symposium_sendmail(get_bloginfo('admin_email'), 'Forum Topic requires moderation', $body);
+				}	
 			}
 		}
 	
@@ -130,7 +145,7 @@ if (is_user_logged_in()) {
 	
 	}
 	
-	// Reply to Topic
+	// Reply to Topic ****************************************************************
 	if ($_POST['action'] == 'reply') {
 		
 		$tid = $_POST['tid'];
@@ -164,9 +179,10 @@ if (is_user_logged_in()) {
 						topic_started, 
 						topic_owner, 
 						topic_parent, 
-						topic_views
+						topic_views,
+						topic_approved
 					)
-					VALUES ( %s, %d, %s, %s, %s, %d, %d, %d )", 
+					VALUES ( %s, %d, %s, %s, %s, %d, %d, %d, %s )", 
 			        array(
 			        	'', 
 			        	$cat_id,
@@ -175,10 +191,11 @@ if (is_user_logged_in()) {
 						date("Y-m-d H:i:s"), 
 						$current_user->ID, 
 						$tid,
-						0
+						0,
+						$topic_approved
 			        	) 
 			        ) );
-	
+
 					// Update main topic date for freshness
 					$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_date = NOW() WHERE tid = ".$tid) );					
 					
@@ -197,19 +214,12 @@ if (is_user_logged_in()) {
 				        	) 
 				        ) );
 					}
+
+					// Log
+					symposium_audit(array ('code'=>51, 'type'=>'info', 'plugin'=>'forum', 'tid'=>$wpdb->insert_id, 'cid'=>$cat_id, 'message'=>'New reply posted.'));
 					
-				}
-			
-				// Email people who want to know
-				$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$users." WHERE ID = ".$current_user->ID));
-	
-				$query = $wpdb->get_results("
-					SELECT user_email
-					FROM ".$users." RIGHT JOIN ".$subs." ON ".$subs.".uid = ".$users.".ID 
-					WHERE tid = ".$tid);
-					
-				if ($query) {
-				
+					// Email people who want to know and prepare body
+					$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$users." WHERE ID = ".$current_user->ID));
 					$parent = $wpdb->get_var($wpdb->prepare("SELECT topic_subject FROM ".$topics." WHERE tid = ".$tid));
 					
 					$body = "<span style='font-size:24px'>".$parent."</span><br /><br />";
@@ -220,14 +230,22 @@ if (is_user_logged_in()) {
 					$body = str_replace("\\r\\n", "<br />", $body);
 					$body = str_replace("\\", "", $body);
 					
-					$subject = $language->nfr;
-	
-					foreach ($query as $user) {
-	
-						symposium_sendmail($user->user_email, $language->nfr, $body);
-						
-					}
-					
+					if ($topic_approved == "on") {
+						$query = $wpdb->get_results("
+							SELECT user_email
+							FROM ".$users." RIGHT JOIN ".$subs." ON ".$subs.".uid = ".$users.".ID 
+							WHERE tid = ".$tid);
+							
+						if ($query) {						
+							foreach ($query as $user) {		
+								symposium_sendmail($user->user_email, $language->nfr, $body);							
+							}
+						}						
+					} else {
+						// Email admin if post needs approval
+						$body = "<span style='font-size:24px; font-style:italic;'>Reply Moderation Required</span><br /><br />".$body;
+						symposium_sendmail(get_bloginfo('admin_email'), 'Forum Reply requires moderation', $body);
+					}					
 				}
 				
 				header ("Location: ".$_POST['url']."cid=".$cat_id."&show=".$tid);

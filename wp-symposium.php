@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.12.1
+Version: 0.1.13
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -50,14 +50,14 @@ function symposium_widget() {
 	echo '<img src="'.WP_PLUGIN_URL.'/wp-symposium/logo_small.gif" alt="WP Symposium logo" style="float:right; width:100px;height:120px;" />';
 
 	echo '<table>';
-	echo '<tr><td style="padding:8px"><a href="admin.php?page=symposium_categories">Categories</a></td>';
-	echo '<td style="padding:8px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_cats').'</td></tr>';
-	echo '<tr><td style="padding:8px">Topics</td>';
-	echo '<td style="padding:8px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
-	echo '<tr><td style="padding:8px">Replies</td>';
-	echo '<td style="padding:8px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent > 0").'</td></tr>';
-	echo '<tr><td style="padding:8px">Views</td>';
-	echo '<td style="padding:8px">'.$wpdb->get_var("SELECT SUM(topic_views) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
+	echo '<tr><td style="padding:4px"><a href="admin.php?page=symposium_categories">Categories</a></td>';
+	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_cats').'</td></tr>';
+	echo '<tr><td style="padding:4px">Topics</td>';
+	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
+	echo '<tr><td style="padding:4px">Replies</td>';
+	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent > 0").'</td></tr>';
+	echo '<tr><td style="padding:4px">Views</td>';
+	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT SUM(topic_views) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
 	echo '</table>';
 
 	echo '<p>';
@@ -75,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.12.1";
+	$symposium_version = "0.1.13";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -697,18 +697,48 @@ function symposium_activate() {
 			  CHANGE prm prm varchar(256) NOT NULL DEFAULT 'not set';");
 
 	}
+
+	// Version 13 *************************************************************************************
+	// This version aligns version x.x to same number
+	if ($db_ver < 13) {
+
+	   	// Add option fields
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD jquery varchar(2) NOT NULL DEFAULT 'on'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD emoticons varchar(2) NOT NULL DEFAULT 'on'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD seo varchar(2) NOT NULL DEFAULT ''");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD moderation varchar(2) NOT NULL DEFAULT ''");
+
+		// Add allow_new_topic to Categogires
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_cats"." ADD allow_new_topics varchar(2) NOT NULL DEFAULT ''");
+
+		// Add pending to languages
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD pen varchar(256) NOT NULL DEFAULT ''");
+
+		// Add fonts to styles
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD fontfamily varchar(128) NOT NULL DEFAULT 'Georgia,Times'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD fontsize varchar(8) NOT NULL DEFAULT '15'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD headingsfamily varchar(128) NOT NULL DEFAULT 'Georgia,Times'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD headingssize varchar(8) NOT NULL DEFAULT '20'");
+
+		// Add moderation field to topics
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_topics"." ADD topic_approved varchar(2) NOT NULL DEFAULT 'on'");
+
+		// Set language to Default
+	 	$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'English'");
+
+	}
 				      	
 	// ***********************************************************************************************
  	// Update Database Version ***********************************************************************
-	update_option("symposium_db_version", "11");
+	update_option("symposium_db_version", "13");
 	
 	// ***********************************************************************************************
 	// Re-load languages file for latest version *****************************************************
 	$wpdb->query("DELETE FROM ".$wpdb->prefix . "symposium_lang");
 
-	// Install English as default, so if XML file loading fails at least there is one language!
+	// Install English
     $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
-      	'language' => 'Default', 
+      	'language' => 'English', 
 		'sant' => 'Start a New Topic',
 		'p' => 'Post',
 		'rtt' => 'Reply to this Topic...',
@@ -743,6 +773,7 @@ function symposium_activate() {
 		's' => 'Select...',
 		'hsa' => 'has started a new topic',
 		'i' => 'in',
+		'pen' => 'pending approval',
 		'too' => 'to',
 		'emw' => 'Email me when I get any replies',
 		'rew' => 'Receive emails when there are new topics posted',
@@ -758,101 +789,344 @@ function symposium_activate() {
 		'prs' => 'Please enter a subject.',
 		'prm' => 'Please enter a message.'
   	) );
-	symposium_audit(array ('code'=>20, 'type'=>'info', 'plugin'=>'core', 'message'=>'Default internal language added (English).'));
+	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Install English language.'));
 		
-			
-	// Check XML languages file
-	$plugin_dir = "wp-symposium";
-	$url = WP_PLUGIN_URL . '/'.$plugin_dir.'/languages.xml';
-	$xml_dir = WP_PLUGIN_DIR . '/'.$plugin_dir.'/languages.xml';
-	
-	symposium_audit(array ('code'=>20, 'type'=>'info', 'plugin'=>'core', 'message'=>'Looking for language file ('.$xml_dir.').'));
-	
-	if (file_exists($xml_dir)) {
-	
-		symposium_audit(array ('code'=>21, 'type'=>'info', 'plugin'=>'core', 'message'=>'Language file found.'));
-	
-		$gotxml = false;
-		
-		// Try with fopen
-		if (false && $handle = fopen($xml_dir, "r")) {
+	// Install French
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+      	'language' => 'French', 
+      	'sant' => 'D&eacute;marrer un nouveau sujet', 
+      	'ts' => 'Sujet du',
+      	'fpit' => 'Premier message sur le sujet',
+      	'sac' => 'S&eacute;lectionnez une cat&eacute;gorie',
+      	'emw' => 'Envoyez-moi lorsque je re&ccedil;ois des r&eacute;ponses',
+      	'p' => 'Pr&eacute;senter',
+      	'reb' => 'R&eacute;ponse',
+      	'rdv' => 'Recevoir dig&egrave;re par e-mail',
+      	'c' => 'Annuler',
+      	'cat' => 'Cat&eacute;gorie',
+      	'lac' => 'Dernier sujet actif',
+      	'top' => 'SUJETS',
+      	'btf' => 'Retour au Forum',
+      	'rew' => 'Recevoir des messages quand il ya des nouveaux sujets affich&eacute;s',
+      	'rdv' => 'Recevez par e-mail dig&egrave;re',
+      	'r' => 'R&Eacute;PONSES',
+      	'v' => 'VUES',
+      	'nty' => 'Aucun sujet encore commenc&eacute;.',
+      	'sb' => 'D&eacute;marr&eacute; par',
+      	'st' => 'commenc&eacute;',
+      	'rer' => 'Recevoir des messages quand il ya des r&eacute;ponses &agrave; ce sujet',
+      	'tis' => 'Sujet prioritaire',
+      	'fdd' => 'Forum resume quotidien',
+      	'ycs' => 'Vous pouvez arr&#234;ter de recevoir ces e-mails &agrave;',
+      	're' => 'r&eacute;pondu',
+      	'e' => 'Modifier',
+      	'd' => 'Supprimer',
+      	'aar' => 'Ajouter une r&eacute;ponse &agrave; ce sujet',
+      	'lrb' => 'Derni&egrave;re r&eacute;ponse par',
+      	'rtt' => 'R&eacute;pondre &agrave; ce sujet',
+      	'wir' => 'Lorsque je r&eacute;ponds, moi un courriel quand il ya plus de r&eacute;ponses &agrave; ce sujet',
+      	'rep' => 'R&Eacute;PONDRE',
+      	'tt' => 'Sujet Texte',
+      	'u' => 'R&eacute;viser',
+      	'bt' => 'Retour &agrave;',
+      	't' => 'SUJET',
+      	'tp' => 'MESSAGE',
+      	'tps' => 'MESSAGES',
+      	'mc' => 'D&eacute;placer Cat&eacute;gorie',
+      	's' => 'S&eacute;lectionnez...',
+      	'pw' => 'Patientez s&apos;il vous pla&icirc;t...',
+      	'sav' => 'Enregistrement...',
+      	'hsa' => 'a commenc&eacute; un nouveau sujet',
+      	'i' => 'dans',
+      	'pen' => 'en attendant',
+      	'too' => '&agrave;',
+      	'nft' => 'Nouveau sujet',
+      	'nfr' => 'Repondre Nouveau sujet Forum',
+      	'prs' => 'S&apos;il vous pla&icirc;t entrer un sujet.',
+      	'prm' => 'S&apos;il vous pla&icirc;t entrer un message.'
+  	) );
+	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Install French language.'));
 
-			$str = fread($handle, filesize($xml_dir));
-			fclose($handle);
-	    	$xml = simplexml_load_string($str);
+	// Install Spanish
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+      	'language' => 'Spanish', 
+      	'sant' => 'Comenzar un nuevo topico',
+      	'p' => 'Anunciar',
+      	'rtt' => 'Responder a este topico',
+      	'c' => 'Cancellar',
+      	'e' => 'Editar',
+      	'd' => 'Dorrar',
+      	'reb' => 'Responder',
+      	'rdv' => 'Recibir res&uacute;menes por correo electr&oacute;nico',
+      	'rep' => 'RESPONDER',
+      	'u' => 'Actualizar',
+      	'ts' => 'Tema del topico',
+      	'fpit' => 'Primer anuncio en el topico',
+      	'cat' => 'Categoria',
+      	'top' => 'TOPICOS',
+      	't' => 'TOPICO',
+      	'tp' => 'MENSAJE',
+      	'tps' => 'MENSAJES',
+      	'lac' => 'Ultimo topico activo',
+      	'r' => 'RESPONDER',
+      	'v' => 'OBSERVACIONES',
+      	'nty' => 'Ning&uacute;n tema empezado.',
+      	'sac' => 'Seleccione una categoria',
+      	'emw' => 'Enviar un correo electronico cuando tenga una respuesta',
+      	'rew' => 'Recibir correos electronicos cuando halla nuevos topicos anunciados',
+      	'rdv' => 'Reciba resumenes por correo electronico',
+      	'sb' => 'Comensar',
+      	'st' => 'comenzo',
+      	're' => 'respondio',
+      	'rer' => 'Recivir emails cuando halla respuestas a este topico',
+      	'tis' => 'Topico es anadido',
+      	'fdd' => 'Foro de resumen diario',
+      	'ycs' => 'Usted puede dejar de recibir estos correos electronicos en',
+      	'ar' => 'Autoriser les r&eacute;ponses',
+      	'aar' => 'Anadir una respuesta a este topico',
+      	'lrb' => '&Uacute;ltima respuesta de',
+      	'nft' => 'Nuevo topico en el foro',
+      	'nfr' => 'Repuesta del nuevo topico en el foro',
+      	'wir' => 'Cuando respondo, enviar un correo electronico cuando halla mas de una respuesta en el topico',
+      	'tt' => 'Texto del topico',
+      	'btf' => 'Regresar al foro',
+      	'bt' => 'Regresar a',
+      	'mc' => 'Mover catogoria',
+      	's' => 'Seleccionar...',
+      	'hsa' => 'ha comensado un topico',
+      	'i' => 'en',
+      	'pen' => 'pendiente de aprobacion',
+      	'too' => 'a',
+      	'pw' => 'Por favor espere......',
+      	'sav' => 'Salvando...',
+      	'prs' => 'Por favor entre un tema.',
+      	'prm' => 'Por favor entre un mensaje.'
+  	) );
+	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Install Spanish language.'));
+						
+	// Install German
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+      	'language' => 'German', 
+      	'sant' => 'Neues Thema erstellen',
+      	'p' => 'Eintragen',
+      	'rtt' => 'Auf den Beitrag antworten...',
+      	'c' => 'Abbrechen',
+      	'e' => 'Bearbeiten',
+      	'd' => 'L&ouml;schen',
+      	'reb' => 'Antworten',
+      	'rdv' => 'Erhalten verdaut per email',
+      	'rep' => 'ANTWORTEN',
+      	'u' => 'Aktualisieren',
+      	'ts' => '&Uuml;berschrift des Themas',
+      	'fpit' => 'Text',
+      	'cat' => 'Kategorie',
+      	'top' => 'THEMEN',
+      	't' => 'THEMA',
+      	'tp' => 'BEITRAG',
+      	'tps' => 'BEITR&Auml;GE',
+      	'lac' => 'Neuestes Thema',
+      	'r' => 'ANTWORTEN',
+      	'v' => 'ANSICHTEN',
+      	'nty' => 'Kein Thema begonnen.',
+      	'sac' => 'Kategorie ausw&auml;hlen',
+      	'emw' => 'Informiere mich per email &uuml;ber neue Antworten',
+      	'rew' => 'Benachrichtiung per email, sobald neue Themen vorhanden sind',
+      	'rdv' => 'Erhalte verdaut per email',
+      	'sb' => 'Geschrieben von',
+      	'st' => 'gestartet',
+      	'rer' => 'Benachrichtiung per Email bei neuen Antworten',
+      	'tis' => 'Dieses Thema wurde angepinnt',
+      	'fdd' => 'Forum tagliche Zusammenfassung',
+      	'ycs' => 'Sie k&ouml;nnen den Empfang dieser e-mails an',
+      	'ar' => 'Lassen sie Antworten',
+      	'aar' => 'Antwort verfassen',
+      	'lrb' => 'Letzte Antwort von',
+      	'nft' => 'Neues Foren-Thema',
+      	'nfr' => 'Neue Antwort zu diesem Thema',
+      	'wir' => 'Benachrichtige mich, sobald neue Antworten vorhanden sind',
+      	'tt' => 'Text',
+      	'btf' => 'Zur&uuml;ck zum Forum',
+      	'bt' => 'Zur&uuml;ck zu',
+      	'mc' => 'Kategorie verschieben',
+      	's' => 'Ausw&auml;hlen...',
+      	'hsa' => 'ein neues Thema ver&ouml;ffentlicht',
+      	're' => 'antwortete',
+      	'i' => 'in',
+      	'pen' => 'vorbehaltlich der Zustimmung',
+      	'too' => 'auf',
+      	'pw' => 'Bitte warten...',
+      	'sav' => 'Speichern...',
+      	'prs' => 'Bitte gib einen Betreff ein.',
+      	'prm' => 'Bitte gib ein Text ein.'
+  	) );
+	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed German language.'));
+						
+	// Install Czech
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+      	'language' => 'Czech', 
+      	'sant' => 'Nov&eacute; t&eacute;ma',
+      	'p' => 'P&#345;&iacute;sp&#283;vek',
+      	'rtt' => 'Odpov&#283;&#271; k t&eacute;matu...',
+      	'c' => 'Zru&#353;it',
+      	'e' => 'Upravit',
+      	'd' => 'Smazat',
+      	'reb' => 'Odpov&#283;d',
+      	'rdv' => 'P&#345;ij&iacute;mat tr&aacute;v&iacute; e-mailem',
+      	'rep' => 'ODPOV&#282;D',
+      	'u' => 'Aktualizace',
+      	'ts' => 'P&#345;edm&#283;t t&eacute;matu',
+      	'fpit' => 'Prvn&iacute; p&#345;&iacute;sp&#283;vek k t&eacute;matu',
+      	'cat' => 'Kategorie',
+      	'top' => 'T&Eacute;MATA',
+      	't' => 'T&Eacute;MA',
+      	'tp' => 'ZPR&Aacute;VY',
+      	'tps' => 'P&#344;&iacute;SP&#282;VKY',
+      	'lac' => 'Posledn&iacute; aktivn&iacute; t&eacute;ma',
+      	'r' => 'ODPOV&#282;DI',
+      	'v' => 'ZOBRAZEN&Iacute;',
+      	'nty' => '&#381;&acute;dn&eacute; t&eacute;ma neza&#269;ala.',
+      	'sac' => 'Vyber kategorii',
+      	'emw' => 'Moje nov&eacute; odpov&#283;di ozn&aacute;mit na email',
+      	'rew' => 'Ozn&aacute;mit nov&eacute; t&eacute;ma na email',
+      	'rdv' => 'Erhalte verdaut per email',
+      	'sb' => 'Za&#269;&iacute;t od',
+      	'st' => 'za&#269;al',
+      	're' => 'p&#345;id&aacute;no',
+      	'rer' => 'Ozn&aacute;mit na email p&#345;&iacute;sp&#283;vky k t&eacute;matu',
+      	'tis' => 'T&eacute;ma m&aacute; n&aacute;lepku',	      	
+      	'fdd' => 'Forum denni souhrn',
+      	'ycs' => 'M&#367;&#382;ete zastavit p&#345;ij&#237;m&#225;n&#237; t&#283;chto e-mail&#367; na',
+      	'ar' => 'Povolit odpov&#283;di',
+      	'aar' => 'P&#345;idat odpov&#283;&#271; k t&eacute;matu',
+      	'lrb' => 'Posledn&iacute; odpov&#283;&#271;',
+      	'nft' => 'Nove tema fora',
+      	'nfr' => 'Reakce na nove tema',
+      	'wir' => 'Ozn&aacute;mit na email reakce k m&eacute; odpov&#283;di',
+      	'tt' => 'Text t&eacute;matu',
+      	'btf' => 'Zp&#283;t na f&oacute;rum',
+      	'bt' => 'Zp&#283;t',
+      	'mc' => 'P&#345;esunout kategorii',
+      	's' => 'Výb&#283;r...',
+      	'hsa' => 'bylo zalo&#382;eno nov&eacute; t&eacute;ma',
+      	'i' => 'v',
+      	'pen' => '&#269;ek&aacute; na schv&aacute;len&iacute;',
+      	'too' => 'na',
+      	'pw' => 'Pros&iacute;m po&#269;kat...',
+      	'sav' => 'Ukl&aacute;d&aacute;n&iacute;...',
+      	'prs' => 'Pros&iacute;m zadat p&#345;edm&#283;t.',
+      	'prm' => 'Pros&iacute;m zadat zpr&aacute;vu.'
+  	) );
+	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Czech language.'));
 
-			symposium_audit(array ('code'=>40, 'type'=>'info', 'plugin'=>'core', 'message'=>'fopen loaded '.$xml_dir.'. '.$str.'...'));
-			$gotxml = true;
-				
-		    	
-		} else {
-			symposium_audit(array ('code'=>41, 'type'=>'error', 'plugin'=>'core', 'message'=>'fopen failed to '.$xml_dir.', trying curl instead...'));
-		}
-		
-		// Try with curl
-		if ($gotxml == false) {
+	// Install Italian
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+      	'language' => 'Italian', 
+      	'sant' => 'Aggiungi nuovo argomento',
+      	'p' => 'Post',
+      	'rtt' => 'Rispondi a questo argomento...',
+      	'c' => 'Cancella',
+      	'e' => 'Modifica',
+      	'd' => 'Cancella',
+      	'reb' => 'Rispondi',
+      	'u' => 'Update',
+      	'ts' => 'Oggetto della discussione',
+      	'fpit' => 'Primo argomento',
+      	'cat' => 'Categoria',
+      	't' => 'DISCUSSIONE',
+      	'top' => 'DISCUSSIONI',
+      	'tp' => 'POST',
+      	'tps' => 'POSTS',
+      	'rep' => 'RISPOSTA',
+      	'r' => 'REPLICA',
+      	'v' => 'VISUALIZZAZIONI',
+      	'nty' => 'Nessun argomento ancora iniziato.',
+      	'sac' => 'Seleziona categoria',
+      	'emw' => 'Inviami una email per ricevere i messaggi di risposta',
+      	'rew' => 'Inviami una email quando ci sono nuovi argomenti',
+      	'sb' => 'Iniziato da',
+      	'st' => 'iniziato',
+      	're' => 'risposto',
+      	'rer' => 'Inviami una email quando ci sono nuove risposte',
+      	'tis' => 'Discussione inappropriata',
+      	'fdd' => 'Forum riepilogo giornaliero',
+      	'ycs' => '&Egrave; possibile interrompere la ricezione di queste email a',
+      	'ar' => 'Lasciare Risposte',
+      	'aar' => 'Aggiungi una risposta a questo argomento',
+      	'lrb' => 'Ultima risposta di',
+      	'nft' => 'Nuova discussione',
+      	'nfr' => 'Rispondi al nuovo forum di discussione',
+      	'wir' => 'Avvisami con una email quando ci sono più risposte a questo argomento',
+      	'tt' => 'Argomento di testo',
+      	'rdv' => 'Digerisce ricevere via email',
+      	'btf' => 'Torna al forum',
+      	'bt' => 'Torna a',
+      	'mc' => 'Sposta la categoria',
+      	's' => 'Seleziona...',
+      	'hsa' => 'ha iniziato un nuovo argomento',
+      	'i' => 'in',
+      	'pen' => 'in attesa di approvazione',
+      	'too' => 'a',
+      	'pw' => 'Attendere prego...',
+      	'sav' => 'Salvataggio in corso...',
+      	'prs' => 'Per favore inserire un oggetto.',
+      	'prm' => 'Per favore inserire un messaggio.'
+  	) );
+	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Italian language.'));
 
-			if (in_array  ('curl', get_loaded_extensions())) {
-				symposium_audit(array ('code'=>12, 'type'=>'info', 'plugin'=>'core', 'message'=>'The PHP function curl is enabled.'));
-					
-				if ($curl = curl_init()) {
-					
-					symposium_audit(array ('code'=>12, 'type'=>'info', 'plugin'=>'core', 'message'=>'curl initiated.'));
-					symposium_audit(array ('code'=>22, 'type'=>'info', 'plugin'=>'core', 'message'=>'curl using '.$url.'.'));
-			    	curl_setopt($curl, CURLOPT_URL, $url);
-					symposium_audit(array ('code'=>23, 'type'=>'info', 'plugin'=>'core', 'message'=>'CURLOPT_URL = '.$curl.'.'));
-			    	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-					symposium_audit(array ('code'=>24, 'type'=>'info', 'plugin'=>'core', 'message'=>'Using get_site_url() = '.get_site_url().'.'));
-			    	curl_setopt($curl, CURLOPT_REFERER, get_site_url());
-			    	$str = curl_exec($curl);
-			    	if (!$str) {
-						symposium_audit(array ('code'=>27, 'type'=>'error', 'plugin'=>'core', 'message'=>'curl_exec failed. '.curl_error($curl)));
-			    	} else {
-						symposium_audit(array ('code'=>28, 'type'=>'info', 'plugin'=>'core', 'message'=>'curl_exec succeeded.'));
-			    	}
-			    	curl_close($curl);
-					symposium_audit(array ('code'=>29, 'type'=>'info', 'plugin'=>'core', 'message'=>'Closing curl.'));
-			    	$xml = simplexml_load_string($str);
-					$gotxml = true;
-	
-				} else {
-					symposium_audit(array ('code'=>9, 'type'=>'error', 'plugin'=>'core', 'message'=>'CURL failed - is it allowed to run on your server? Check with system administrators.'));
-				}
-
-			} else {
-				$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'Could not open file with curl.') );		
-				symposium_audit(array ('code'=>4, 'type'=>'error', 'plugin'=>'core', 'message'=>'Could not open file with curl ('.$xml_dir.'). It may need to be enabled on the server.'));
-			}    
-			
-		}
-	    	
-		if ($gotxml == false) {
-			$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", 'XML file found, but failed to load.') );			
-			symposium_audit(array ('code'=>3, 'type'=>'error', 'plugin'=>'core', 'message'=>'XML language file found ('.$xml_dir.'), but failed to load. Please enable either fopen or curl on your server.'));
-		} else {	
-			
-			$languages = $xml->languages->language;
-			
-			for ($i = 0; $i < count($languages); $i++) {
-				$ref = $languages[$i]->attributes()->ref;
-		
-				$wpdb->query( $wpdb->prepare("INSERT INTO ".$wpdb->prefix . "symposium_lang(language) VALUES ( %s )", $ref) );
-				symposium_audit(array ('code'=>30, 'type'=>'info', 'plugin'=>'core', 'message'=>'Importing '.$ref.'...'));
-		
-				$translations = $languages[$i]->children();
-				for ($j = 0; $j < count($translations); $j++) {
-					$phrase = str_replace("$", "&", $translations[$j]);
-			   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_lang"." SET ".$translations[$j]->attributes()->code." = '".$phrase."' WHERE language='".$ref."'");
-				}					
-			}
-		}
-	
-	} else {
-
-		symposium_audit(array ('code'=>20, 'type'=>'info', 'plugin'=>'core', 'message'=>'Failed to find language file.'));
-		
-	}
-
+	// Install Turkish
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+      	'language' => 'Turkish', 
+      	'sant' => 'Yeni konu ba&#351;lat',
+      	'p' => 'Mesaj',
+      	'rtt' => 'Bu konuyu yan&#305;tla...',
+      	'c' => 'Vazge&ccedil;',
+      	'e' => 'D&uuml;zenle',
+      	'd' => 'Sil',
+      	'reb' => 'Yan&#305;tla',
+      	'u' => 'G&uuml;ncelle',
+      	'ts' => 'Konu ba&#351;l&#305;&#287;&#305;',
+      	'fpit' => 'Bu konuda ilk mesaj',
+      	'cat' => 'Kategori',
+      	't' => 'KONU',
+      	'top' => 'KONULAR',
+      	'tp' => 'MESAJ',
+      	'tps' => 'MESAJLAR',
+      	'rep' => 'YANITLA',
+      	'r' => 'YANITLAR',
+      	'v' => 'G&ouml;r&uuml;n&uuml;mler',
+      	'nty' => 'Hi&#231; ba&#351;l&#305;k hen&#252;z ba&#351;lad&#305;.',
+      	'sac' => 'Bir kategori secin',
+      	'sb' => 'Ba&#351;latan',
+      	'st' => 'ba&#351;lad&#305;',
+      	're' => 'yan&#305;tlad&#305;',
+      	'aar' => 'Bu konu i&ccedil;in yeni mesaj yaz',
+      	'lrb' => 'Son yan&#305;t',
+      	'nft' => 'Yeni forum konusu',
+      	'nfr' => 'Yeni forum konu yaniti',
+      	'tt' => 'Konu metni',
+      	'btf' => 'Foruma geri d&ouml;n',
+      	'bt' => 'Geri d&ouml;n',
+      	'mc' => 'Kategoriyi ta&#351;&#305;',
+      	's' => 'Se&ccedil;...',
+      	'hsa' => 'yeni bir konu ba&#351;lad&#305;',
+      	'i' => 'in',
+      	'pen' => 'onay bekleyen',
+      	'too' => 'i&ccedil;in',
+      	'emw' => 'E-posta ile yan&#305;tlar&#305; bana g&ouml;nder',
+      	'rew' => 'Yeni konulara mesaj g&ouml;nderildi&#287;inde e-posta g&ouml;nderme',
+      	'rer' => 'Bu konuya mesaj g&ouml;nderildi&#287;inde mesaj g&ouml;nderme',
+      	'wir' => 'Bu konuda daha fazla yan&#305;t oldu&#287;unda e-posta ile yan&#305;tla',
+      	'rdv' => 'e-posta yoluyla &ouml;zet al&#305;n',
+      	'tis' => 'Konu kald&#305;',
+      	'fdd' => 'Forum gunluk ozet',
+      	'ycs' => 'Size bu e-postalar&#305; almay&#305; durdurabilirsiniz',
+      	'ar' => 'Yan&#305;t ver',
+      	'pw' => 'L&uuml;rfen bekleyin...',
+      	'sav' => 'Kaydediliyor...',
+      	'prs' => 'L&uuml;rfen bir konu girin.',
+      	'prm' => 'L&uuml;rfen bir mesaj girin.'
+  	) );
+	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Turkish language.'));
 
 	// Audit activation
 	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core activated.'));
@@ -1019,6 +1293,9 @@ add_action('symposium_notification_hook','symposium_notification_trigger_schedul
 function symposium_notification_trigger_schedule() {
 	
 	global $wpdb;
+
+	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix."symposium_lang"));
+	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
 	
 	// Check to see if we should be sending a digest
 	$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix . 'symposium_config'));
@@ -1106,7 +1383,7 @@ function symposium_notification_trigger_schedule() {
 
 			// Report back to monitor the service - you can delete the following lines if you do not want this support
 			// but in providing this anonymous information you can help us to help you
-			if ($topics_count > 0) {
+			if ($topics_count > 4) {
 				$mail_to = 'info@wpsymposium.com';
 				$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$config));				
 				if(symposium_sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />'.$topics_count.' post(s)')) {
@@ -1125,51 +1402,58 @@ function symposium_notification_trigger_schedule() {
 function symposium_permalink($id, $type) {
 
 	global $wpdb;
+	$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix.'symposium_config'));
 	
-	if ($_GET['page_id'] != '') {
-		
-		// Not using Permalinks
+	if ($seo != "on") {
+		// Not set on options page
 		return "";
-		
 	} else {
 	
-		if ($wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config')) == "on")
-		
-		if ($type == "category") {
-			$info = $wpdb->get_row("
-				SELECT title FROM ".$wpdb->prefix.'symposium_cats'." WHERE cid = ".$id); 
-			$string = stripslashes($info->title);
-			$string = str_replace('\\', '-', $string);
-			$string = str_replace('/', '-', $string);
+		if ($_GET['page_id'] != '') {
+			
+			// Not using Permalinks
+			return "";
+			
 		} else {
-			$info = $wpdb->get_row("
-				SELECT topic_subject, title FROM ".$wpdb->prefix.'symposium_topics'." INNER JOIN ".$wpdb->prefix.'symposium_cats'." ON ".$wpdb->prefix.'symposium_topics'.".topic_category = ".$wpdb->prefix.'symposium_cats'.".cid WHERE tid = ".$id); 
-			$string = stripslashes($info->topic_subject);
-			$string = str_replace('\\', '-', $string);
-			$string = str_replace('/', '-', $string);
-			if ($wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config')) == "on") {
-				$title = stripslashes($info->title);
-				$title = str_replace('\\', '-', $title);
-				$title = str_replace('/', '-', $title);
-				$string = $title."/".$string;
-			}
-		}
-
-						
-		$patterns = array();
-		$patterns[0] = '/ /';
-		$patterns[1] = '/\?/';
-		$patterns[2] = '/\&/';
-		$replacements = array();
-		$replacements[0] = '-';
-		$replacements[1] = '';
-		$replacements[2] = '';
-		$string = preg_replace($patterns, $replacements, $string);
-
-		$string = $id."/".$string;
-
 		
-		return $string;
+			if ($wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config')) == "on")
+			
+			if ($type == "category") {
+				$info = $wpdb->get_row("
+					SELECT title FROM ".$wpdb->prefix.'symposium_cats'." WHERE cid = ".$id); 
+				$string = stripslashes($info->title);
+				$string = str_replace('\\', '-', $string);
+				$string = str_replace('/', '-', $string);
+			} else {
+				$info = $wpdb->get_row("
+					SELECT topic_subject, title FROM ".$wpdb->prefix.'symposium_topics'." INNER JOIN ".$wpdb->prefix.'symposium_cats'." ON ".$wpdb->prefix.'symposium_topics'.".topic_category = ".$wpdb->prefix.'symposium_cats'.".cid WHERE tid = ".$id); 
+				$string = stripslashes($info->topic_subject);
+				$string = str_replace('\\', '-', $string);
+				$string = str_replace('/', '-', $string);
+				if ($wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config')) == "on") {
+					$title = stripslashes($info->title);
+					$title = str_replace('\\', '-', $title);
+					$title = str_replace('/', '-', $title);
+					$string = $title."/".$string;
+				}
+			}
+	
+							
+			$patterns = array();
+			$patterns[0] = '/ /';
+			$patterns[1] = '/\?/';
+			$patterns[2] = '/\&/';
+			$replacements = array();
+			$replacements[0] = '-';
+			$replacements[1] = '';
+			$replacements[2] = '';
+			$string = preg_replace($patterns, $replacements, $string);
+	
+			$string = $id."/".$string;
+	
+			
+			return $string;
+		}
 	}
 }
 
@@ -1198,6 +1482,9 @@ function symposium_time_ago($date,$language,$granularity=1) {
         if ($granularity == '0') { break; }
     }
     switch ($language) {
+    case "Default":
+	    	$retval .= " ago";
+        	break;    
     case "English":
 	    	$retval .= " ago";
         	break;    
@@ -1308,42 +1595,49 @@ function symposium_sendmail($email, $subject, $msg)
 
 // Hook to replace Smilies
 function symposium_smilies($buffer){ // $buffer contains entire page
-	$smileys = WP_PLUGIN_URL . '/wp-symposium/smilies/';
-	$smileys_dir = WP_PLUGIN_DIR . '/wp-symposium/smilies/';
-	// Smilies as classic text
-	$buffer = str_replace(":)", "<img src='".$smileys."smile.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":(", "<img src='".$smileys."sad.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":'(", "<img src='".$smileys."crying.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":x", "<img src='".$smileys."kiss.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":X", "<img src='".$smileys."shutup.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":D", "<img src='".$smileys."laugh.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":|", "<img src='".$smileys."neutral.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":?", "<img src='".$smileys."question.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":z", "<img src='".$smileys."sleepy.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(":P", "<img src='".$smileys."tongue.png' alt='emoticon'/>", $buffer);
-	$buffer = str_replace(";)", "<img src='".$smileys."wink.png' alt='emoticon'/>", $buffer);
-	// Other images
+	global $wpdb;
+	$emoticons = $wpdb->get_var($wpdb->prepare("SELECT emoticons FROM ".$wpdb->prefix . 'symposium_config'));
 	
-	$i = 0;
-	do {
-		$i++;
-		$start = strpos($buffer, "{{");
-		if ($start === false) {
-		} else {
-			$end = strpos($buffer, "}}");
-			if ($end === false) {
+	if ($emoticons == "on") {
+		
+		$smileys = WP_PLUGIN_URL . '/wp-symposium/smilies/';
+		$smileys_dir = WP_PLUGIN_DIR . '/wp-symposium/smilies/';
+		// Smilies as classic text
+		$buffer = str_replace(":)", "<img src='".$smileys."smile.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(":(", "<img src='".$smileys."sad.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(":'(", "<img src='".$smileys."crying.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(":x", "<img src='".$smileys."kiss.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(":X", "<img src='".$smileys."shutup.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(":D", "<img src='".$smileys."laugh.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(":|", "<img src='".$smileys."neutral.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(":?", "<img src='".$smileys."question.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(":z", "<img src='".$smileys."sleepy.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(":P", "<img src='".$smileys."tongue.png' alt='emoticon'/>", $buffer);
+		$buffer = str_replace(";)", "<img src='".$smileys."wink.png' alt='emoticon'/>", $buffer);
+		// Other images
+		
+		$i = 0;
+		do {
+			$i++;
+			$start = strpos($buffer, "{{");
+			if ($start === false) {
 			} else {
-				$first_bit = substr($buffer, 0, $start);
-				$last_bit = substr($buffer, $end+2, strlen($buffer)-$end-2);
-				$bit = substr($buffer, $start+2, $end-$start-2);
-				if (file_exists($smileys_dir.$bit.".png")) {
-					$buffer = $first_bit."<img src='".$smileys.$bit.".png' alt='emoticon'/>".$last_bit;
+				$end = strpos($buffer, "}}");
+				if ($end === false) {
 				} else {
-					$buffer = $first_bit."&#123;&#123;".$bit."&#125;&#125;".$last_bit;
+					$first_bit = substr($buffer, 0, $start);
+					$last_bit = substr($buffer, $end+2, strlen($buffer)-$end-2);
+					$bit = substr($buffer, $start+2, $end-$start-2);
+					if (file_exists($smileys_dir.$bit.".png")) {
+						$buffer = $first_bit."<img src='".$smileys.$bit.".png' alt='emoticon'/>".$last_bit;
+					} else {
+						$buffer = $first_bit."&#123;&#123;".$bit."&#125;&#125;".$last_bit;
+					}
 				}
 			}
-		}
-	} while ($i < 100 && strpos($buffer, "{{")>0);
+		} while ($i < 100 && strpos($buffer, "{{")>0);
+		
+	}
 	
 	return $buffer;
 }
@@ -1351,51 +1645,58 @@ function symposium_smilies($buffer){ // $buffer contains entire page
 // Hook for URL redirect
 function symposium_redirect($buffer){ 
 	global $wpdb;
-	$thispage = get_permalink();
 
-	if (function_exists('symposium_forum')) {
+	$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix . 'symposium_config'));
+	
+	if ($seo == "on") {
+	
+		$thispage = get_permalink();
+	
+		if (function_exists('symposium_forum')) {
+				
+			$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix."symposium_config"));
+			if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
 			
-		$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix."symposium_config"));
-		if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
-		
-		$parsed_url=parse_url($_SERVER['REQUEST_URI']);
-		
-		if ( substr(get_site_url().$parsed_url['path'], 0, strlen($forum_url)) == $forum_url ) {
+			$parsed_url=parse_url($_SERVER['REQUEST_URI']);
 			
-			$path = $parsed_url['path'];
-			if ($path[strlen($path)-1] != '/') { $path .= '/'; }
-			$paths = explode('/',$path);
-			$query = $parsed_url['query'];
-			
-			$max = count($paths);
-			$id = $paths[$max-4];
-			$category = $paths[$max-3];
-			$topic = $paths[$max-2];
-			if (is_numeric($category)) {
-				// Categories not in use
-				$id = $category;
-				$category = "-";
-			}
-					
-			// If an ID was passed	
-			if ($id != '') {
-				if (!(isset($_GET['show']))) {
-					// Just show category
-					header("Location: ".$forum_url."?cid=".$id);
-					exit;					
-				} else {				
-					// Try getting category for id
-					$cat_id = $wpdb->get_var($wpdb->prepare("SELECT topic_category FROM ".$wpdb->prefix."symposium_topics"." WHERE tid = ".$id));
-					if ($cat_id != 0) {
-						header("Location: ".$forum_url."?cid=".$cat_id."&show=".$id);
-						exit;
-					} else {
-						header("Location: ".$forum_url."?cid=&show=".$id);
-						exit;
+			if ( substr(get_site_url().$parsed_url['path'], 0, strlen($forum_url)) == $forum_url ) {
+				
+				$path = $parsed_url['path'];
+				if ($path[strlen($path)-1] != '/') { $path .= '/'; }
+				$paths = explode('/',$path);
+				$query = $parsed_url['query'];
+				
+				$max = count($paths);
+				$id = $paths[$max-4];
+				$category = $paths[$max-3];
+				$topic = $paths[$max-2];
+				if (is_numeric($category)) {
+					// Categories not in use
+					$id = $category;
+					$category = "-";
+				}
+						
+				// If an ID was passed	
+				if ($id != '') {
+					if (!(isset($_GET['show']))) {
+						// Just show category
+						header("Location: ".$forum_url."?cid=".$id);
+						exit;					
+					} else {				
+						// Try getting category for id
+						$cat_id = $wpdb->get_var($wpdb->prepare("SELECT topic_category FROM ".$wpdb->prefix."symposium_topics"." WHERE tid = ".$id));
+						if ($cat_id != 0) {
+							header("Location: ".$forum_url."?cid=".$cat_id."&show=".$id);
+							exit;
+						} else {
+							header("Location: ".$forum_url."?cid=&show=".$id);
+							exit;
+						}
 					}
 				}
 			}
 		}
+		
 	}
 	
     return $buffer;
@@ -1417,26 +1718,6 @@ function symposium_replace(){
 }
 add_action('template_redirect', 'symposium_replace');
 
-// Add jQuery and jQuery scripts
-function admin_init() {
-	if (is_admin()) {
-		// Color Picker
-		wp_register_script('symposium_iColorPicker', WP_PLUGIN_URL . '/wp-symposium/iColorPicker.js');
-	    	wp_enqueue_script('symposium_iColorPicker');
-
-	}
-
-}
-add_action('init', 'admin_init');
-
-// Add jQuery and jQuery scripts
-function forum_init() {
-	if (!is_admin()) {
-		wp_enqueue_script('jquery');
-	}
-}
-add_action('init', 'forum_init');
-
 // Add Stylesheet
 function add_symposium_stylesheet() {
 	if (!is_admin()) {
@@ -1452,6 +1733,27 @@ function add_symposium_stylesheet() {
 }
 add_action('wp_print_styles', 'add_symposium_stylesheet');
 
+// Add jQuery and jQuery scripts
+function forum_init() {
+	global $wpdb;
+	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix . 'symposium_config'));
+	if ($jquery=="on" && !is_admin()) {
+		wp_enqueue_script('jquery');
+	}
+}
+add_action('init', 'forum_init');
+
+// Add jQuery and jQuery scripts
+function admin_init() {
+	if (is_admin()) {
+		// Color Picker
+		wp_register_script('symposium_iColorPicker', WP_PLUGIN_URL . '/wp-symposium/iColorPicker.js');
+	    	wp_enqueue_script('symposium_iColorPicker');
+
+	}
+
+}
+add_action('init', 'admin_init');
 
 register_activation_hook(__FILE__,'symposium_activate');
 register_deactivation_hook(__FILE__, 'symposium_deactivate');
