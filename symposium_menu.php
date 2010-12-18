@@ -598,7 +598,7 @@ function symposium_plugin_debug() {
 		if ($forum_url == "Important: Please update!") {
 			echo $fail."You must update your forum URL on the <a href='admin.php?page=symposium_options'>options page</a>.".$fail2;
 		} else {
-		  	echo "According to the <a href='admin.php?page=symposium_options'>options page</a>, the forum is <a href='".$forum_url."'>here</a>. Click to check.";
+		  	echo "According to the <a href='admin.php?page=symposium_options'>options page</a>, the forum is at <a href='".$forum_url."'>$forum_url</a>. Click to check.";
 		}
   	echo "</p>";
   	
