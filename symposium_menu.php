@@ -117,7 +117,7 @@ function symposium_plugin_menu() {
 	add_submenu_page('symposium_options', __('Options'), __('Options'), 'edit_themes', 'symposium_options', 'symposium_plugin_options');
 	add_submenu_page('symposium_options', __('Styles'), __('Styles'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
 	add_submenu_page('symposium_options', __('Forum Categories'), __('Forum Categories'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
-	add_submenu_page('symposium_options', __('Moderation'), __('Moderation'.$count2), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
+	add_submenu_page('symposium_options', __('Forum Posts'), __('Forum Posts'.$count2), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
 	add_submenu_page('symposium_options', __('Health Check'), __('Health Check'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
 	add_submenu_page('symposium_options', __('Event Audit'), __('Event Audit'), 'edit_themes', 'symposium_event', 'symposium_plugin_event');
 }
@@ -129,38 +129,91 @@ function symposium_plugin_moderation() {
 
   	echo '<div class="wrap">';
   	echo '<div id="icon-themes" class="icon32"><br /></div>';
-  	echo '<h2>Moderation</h2>';
-  		
-	$posts = $wpdb->get_results("SELECT t.*, display_name FROM ".$wpdb->prefix.'symposium_topics'." t 
-		LEFT JOIN ".$wpdb->prefix.'users'." u ON t.topic_owner = u.ID 
-		WHERE t.topic_approved != 'on' ORDER BY tid DESC"); 
+  	echo '<h2>Forum Posts</h2>';
+  	
+  	$all = $wpdb->get_var("SELECT count(*) FROM ".$wpdb->prefix."symposium_topics"); 
+  	$approved = $wpdb->get_var("SELECT count(*) FROM ".$wpdb->prefix."symposium_topics WHERE topic_approved = 'on'"); 
+  	$unapproved = $all-$approved;
+  	
+  	$mod = 'all';
+  	if (isset($_GET['mod']) && $_GET['mod'] != '') { $mod = $_GET['mod']; }
+  	
+  	if ($mod == "all") { $all_class='current'; $approved_class=''; $unapproved_class=''; }
+  	if ($mod == "approved") { $all_class=''; $approved_class='current'; $unapproved_class=''; }
+  	if ($mod == "unapproved") { $all_class=''; $approved_class=''; $unapproved_class='current'; }
+  	
+  	echo '<ul class="subsubsub">';
+	echo "<li><a href='admin.php?page=symposium_moderation' class='".$all_class."'>All <span class='count'>(".$all.")</span></a> |</li>";
+	echo "<li><a href='admin.php?page=symposium_moderation&mod=approved' class='".$approved_class."'>Approved <span class='count'>(".$approved.")</span></a> |</li>"; 
+	echo "<li><a href='admin.php?page=symposium_moderation&mod=unapproved' class='".$unapproved_class."'>Unapproved <span class='count'>(".$unapproved.")</span></a></li>";
+	echo "</ul>";
+	
+	// Paging info
+	$showpage = 0;
+	$pagesize = 20;
+	$numpages = floor($all / $pagesize);
+	if ($all % $pagesize > 0) { $numpages++; }
+  	if ($_GET['showpage']) { $showpage = $_GET['showpage']-1; }
+  	if ($showpage >= $numpages) { $showpage = $numpages-1; }
+	$start = ($showpage * $pagesize);
+	$curpage = 3;
+	  		
+	// Query
+	$sql = "SELECT t.*, display_name FROM ".$wpdb->prefix.'symposium_topics'." t LEFT JOIN ".$wpdb->prefix.'users'." u ON t.topic_owner = u.ID ";
+	if ($mod == "approved") { $sql .= "WHERE t.topic_approved = 'on' "; }
+	if ($mod == "unapproved") { $sql .= "WHERE t.topic_approved != 'on' "; }
+	$sql .= "ORDER BY tid DESC "; 
+	$sql .= "LIMIT ".$start.", ".$pagesize;
+	$posts = $wpdb->get_results($sql);
+
+	// Pagination
+	echo '<div class="tablenav"><div class="tablenav-pages">';
+	for ($i = 0; $i < $numpages; $i++) {
+		if ($i == $showpage) {
+            echo "<b>".($i+1)."</b> ";
+        } else {
+            echo "<a href='admin.php?page=symposium_moderation&mod=".$mod."&showpage=".($i+1)."'>".($i+1)."</a> ";
+        }
+	}
+	echo '</div></div>';
+	
+	echo '<table class="widefat">';
+	echo '<thead>';
+	echo '<tr>';
+	echo '<th>ID</th>';
+	echo '<th>Author</th>';
+	echo '<th style="width: 30px; text-align:center;">Status</th>';
+	echo '<th>Preview</th>';
+	echo '<th>Time</th>';
+	echo '<th>Action</th>';
+	echo '</tr>';
+	echo '</thead>';
+	echo '<tfoot>';
+	echo '<tr>';
+	echo '<th>ID</th>';
+	echo '<th>Author</th>';
+	echo '<th style="width: 30px; text-align:center;">Status</th>';
+	echo '<th>Preview</th>';
+	echo '<th>Time</th>';
+	echo '<th>Action</th>';
+	echo '</tr>';
+	echo '</tfoot>';
+	echo '<tbody>';
+	
 	if ($posts) {
-		echo '<p></p><table class="widefat">';
-		echo '<thead>';
-		echo '<tr>';
-		echo '<th>ID</th>';
-		echo '<th>Author</th>';
-		echo '<th>Preview</th>';
-		echo '<th>Time</th>';
-		echo '<th>Action</th>';
-		echo '</tr>';
-		echo '</thead>';
-		echo '<tfoot>';
-		echo '<tr>';
-		echo '<th>ID</th>';
-		echo '<th>Author</th>';
-		echo '<th>Preview</th>';
-		echo '<th>Time</th>';
-		echo '<th>Action</th>';
-		echo '</tr>';
-		echo '</tfoot>';
-		echo '<tbody>';
 		
 		foreach ($posts as $post) {
 
 			echo '<tr>';
 			echo '<td valign="top" style="width: 30px">'.$post->tid.'</td>';
 			echo '<td valign="top" style="width: 175px">'.$post->display_name.'</td>';
+			echo '<td valign="top" style="width: 30px; text-align:center;">';
+			if ($post->topic_approved != "on") {
+				echo '<img src="'.get_site_url().'/wp-content/plugins/wp-symposium/images/forum_orange.png" alt="Unapproved" />';
+			} else {
+				echo '<img src="'.get_site_url().'/wp-content/plugins/wp-symposium/images/forum_green.png" alt="Unapproved" />';
+			}
+			echo '</td>';
 			echo '<td valign="top">';
 			if ($post->topic_parent == 0) {
 				echo '<strong>New Topic</strong><br />';
@@ -168,23 +221,36 @@ function symposium_plugin_moderation() {
 			} else {
 				echo '<strong>New Reply</strong><br />';
 				$preview = $post->topic_post;
-				if ( strlen($preview) > 100 ) { $preview = substr($preview, 0, 100)."..."; }
+				if ( strlen($preview) > 150 ) { $preview = substr($preview, 0, 150)."..."; }
 				echo $preview;
 			}
 			echo '</td>';
 			echo '<td valign="top" style="width: 150px">'.$post->topic_started.'</td>';
 			echo '<td valign="top" style="width: 150px">';
-			echo "<a href='admin.php?page=symposium_moderation&action=post_approve&tid=".$post->tid."'>Approve</a> | ";
-			echo "<span class='trash delete'><a href='admin.php?page=symposium_moderation&action=post_del&tid=".$post->tid."'>Reject</a></span>";
+			if ($post->topic_approved != "on" ) {
+				echo "<a href='admin.php?page=symposium_moderation&action=post_approve&showpage=".$_GET['showpage']."&tid=".$post->tid."'>Approve</a> | ";
+			}
+			echo "<span class='trash delete'><a href='admin.php?page=symposium_moderation&action=post_del&showpage=".$_GET['showpage']."&tid=".$post->tid."'>Trash</a></span>";
 			echo '</td>';
 			echo '</tr>';			
 
 		}
-		echo '</tbody>';
-		echo '</table>';
 	} else {
-		echo '<p>No posts require moderation.</p>';
+		echo '<tr><td colspan="6">&nbsp;</td></tr>';
 	}
+	echo '</tbody>';
+	echo '</table>';
+
+	// Pagination
+	echo '<div class="tablenav"><div class="tablenav-pages">';
+	for ($i = 0; $i < $numpages; $i++) {
+		if ($i == $showpage) {
+            echo "<b>".($i+1)."</b> ";
+        } else {
+            echo "<a href='admin.php?page=symposium_moderation&mod=".$mod."&showpage=".($i+1)."'>".($i+1)."</a> ";
+        }
+	}
+	echo '</div></div>';
 
 }
 
