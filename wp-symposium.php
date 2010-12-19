@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.14
+Version: 0.1.14.1
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -75,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.14";
+	$symposium_version = "0.1.14.1";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -83,6 +83,8 @@ function symposium_activate() {
 	}
 	
 	$db_ver = get_option("symposium_db_version");
+
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'WP Symposium activation started.'));
 	
 	// Initial version *************************************************************************************
 	if ($db_ver != false) {
@@ -95,7 +97,7 @@ function symposium_activate() {
 	      
 	      $sql = "CREATE TABLE " . $table_name . " (
 			  cid int(11) NOT NULL AUTO_INCREMENT,
-			  title varchar(256) NOT NULL,
+			  title varchar(1024) NOT NULL,
 			  listorder int(11) NOT NULL DEFAULT '0',
 			  allow_new varchar(2) NOT NULL DEFAULT 'on',
 			  defaultcat varchar(2) NOT NULL DEFAULT '',
@@ -153,7 +155,7 @@ function symposium_activate() {
 			  row_border_size varchar(2) NOT NULL,
 			  border_radius varchar(2) NOT NULL,
 			  label varchar(12) NOT NULL,
-			  footer varchar(2048) NOT NULL,
+			  footer varchar(1024) NOT NULL,
 			  show_categories varchar(2) NOT NULL,
 			  send_summary varchar(2) NOT NULL,
 			  forum_url varchar(128) NOT NULL,
@@ -200,7 +202,7 @@ function symposium_activate() {
 			  tid int(11) NOT NULL AUTO_INCREMENT,
 			  topic_group int(11) NOT NULL DEFAULT '0',
 			  topic_category int(11) NOT NULL DEFAULT '0',
-			  topic_subject varchar(256) NOT NULL,
+			  topic_subject varchar(1024) NOT NULL,
 			  topic_post text NOT NULL,
 			  topic_owner int(11) NOT NULL,
 			  topic_date datetime NOT NULL,
@@ -427,44 +429,44 @@ function symposium_activate() {
 	      $sql = "CREATE TABLE " . $table_name . " (
 			  lid int(11) NOT NULL AUTO_INCREMENT,
 			  language varchar(3) NOT NULL,
-			  sant varchar(256) NOT NULL,
-			  ts varchar(256) NOT NULL,
-			  fpit varchar(256) NOT NULL,
-			  sac varchar(256) NOT NULL,
-			  emw varchar(256) NOT NULL,
-			  p varchar(256) NOT NULL,
-			  c varchar(256) NOT NULL,
-			  cat varchar(256) NOT NULL,
-			  lac varchar(256) NOT NULL,
-			  top varchar(256) NOT NULL,
-			  btf varchar(256) NOT NULL,
-			  rew varchar(256) NOT NULL,
-			  sbl varchar(256) NOT NULL,
-			  f varchar(256) NOT NULL,
-			  r varchar(256) NOT NULL,
-			  v varchar(256) NOT NULL,
-			  sb varchar(256) NOT NULL,
-			  rer varchar(256) NOT NULL,
-			  tis varchar(256) NOT NULL,
-			  re varchar(256) NOT NULL,
-			  e varchar(256) NOT NULL,
-			  d varchar(256) NOT NULL,
-			  aar varchar(256) NOT NULL,			  
-			  rtt varchar(256) NOT NULL,			  
-			  wir varchar(256) NOT NULL,			  
-			  rep varchar(256) NOT NULL,			  
-			  tt varchar(256) NOT NULL,			  
-			  u varchar(256) NOT NULL,			  
-			  bt varchar(256) NOT NULL,			  
-			  t varchar(256) NOT NULL,			  
-			  mc varchar(256) NOT NULL,			  
-			  s varchar(256) NOT NULL,			  
-			  pw varchar(256) NOT NULL,			  
-			  sav varchar(256) NOT NULL,			  
-			  hsa varchar(256) NOT NULL,			  
-			  i varchar(256) NOT NULL,			  
-			  nft varchar(256) NOT NULL,			  
-			  nfr varchar(256) NOT NULL,			  
+			  sant varchar(1024) NOT NULL,
+			  ts varchar(1024) NOT NULL,
+			  fpit varchar(1024) NOT NULL,
+			  sac varchar(1024) NOT NULL,
+			  emw varchar(1024) NOT NULL,
+			  p varchar(1024) NOT NULL,
+			  c varchar(1024) NOT NULL,
+			  cat varchar(1024) NOT NULL,
+			  lac varchar(1024) NOT NULL,
+			  top varchar(1024) NOT NULL,
+			  btf varchar(1024) NOT NULL,
+			  rew varchar(1024) NOT NULL,
+			  sbl varchar(1024) NOT NULL,
+			  f varchar(1024) NOT NULL,
+			  r varchar(1024) NOT NULL,
+			  v varchar(1024) NOT NULL,
+			  sb varchar(1024) NOT NULL,
+			  rer varchar(1024) NOT NULL,
+			  tis varchar(1024) NOT NULL,
+			  re varchar(1024) NOT NULL,
+			  e varchar(1024) NOT NULL,
+			  d varchar(1024) NOT NULL,
+			  aar varchar(1024) NOT NULL,			  
+			  rtt varchar(1024) NOT NULL,			  
+			  wir varchar(1024) NOT NULL,			  
+			  rep varchar(1024) NOT NULL,			  
+			  tt varchar(1024) NOT NULL,			  
+			  u varchar(1024) NOT NULL,			  
+			  bt varchar(1024) NOT NULL,			  
+			  t varchar(1024) NOT NULL,			  
+			  mc varchar(1024) NOT NULL,			  
+			  s varchar(1024) NOT NULL,			  
+			  pw varchar(1024) NOT NULL,			  
+			  sav varchar(1024) NOT NULL,			  
+			  hsa varchar(1024) NOT NULL,			  
+			  i varchar(1024) NOT NULL,			  
+			  nft varchar(1024) NOT NULL,			  
+			  nfr varchar(1024) NOT NULL,			  
 			  PRIMARY KEY lid (lid)
 	  		);";
 	  		
@@ -478,8 +480,8 @@ function symposium_activate() {
 	if ($db_ver < 3) {
 
 		// Add language labels
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prs varchar(256) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prm varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prs varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prm varchar(1024) NOT NULL");
    		
 	}
 
@@ -535,8 +537,8 @@ function symposium_activate() {
 	if ($db_ver < 6) {
 
 		// Add language labels
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tp varchar(256) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tps varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tp varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tps varchar(1024) NOT NULL");
    		
 	}
 
@@ -544,7 +546,7 @@ function symposium_activate() {
 	if ($db_ver < 7) {
 
 	   	// Language additions
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD rdv varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD rdv varchar(1024) NOT NULL");
 
 		// Add preview text lengths
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD preview1 int(11) NOT NULL DEFAULT '45'");
@@ -590,25 +592,25 @@ function symposium_activate() {
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD closed_word varchar(32) NOT NULL DEFAULT 'closed'");
 
 		// Add language fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD lrb varchar(256) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD reb varchar(256) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ar varchar(256) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD too varchar(256) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD st varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD lrb varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD reb varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ar varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD too varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD st varchar(1024) NOT NULL");
 	}
 
 	// Version 9 *************************************************************************************
 	if ($db_ver < 9) {
 
 		// Add language fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fdd varchar(256) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ycs varchar(256) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD nty varchar(256) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fdd varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ycs varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD nty varchar(1024) NOT NULL");
 
 	   	// Add option fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontfamily varchar(256) NOT NULL DEFAULT 'Georgia,Times'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontfamily varchar(1024) NOT NULL DEFAULT 'Georgia,Times'");
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontsize varchar(16) NOT NULL DEFAULT '15'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingsfamily varchar(256) NOT NULL DEFAULT 'Arial,Helvetica'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingsfamily varchar(1024) NOT NULL DEFAULT 'Arial,Helvetica'");
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingssize varchar(16) NOT NULL DEFAULT '20'");
 	}
 
@@ -628,7 +630,7 @@ function symposium_activate() {
 			  cid int(11) NOT NULL,
 			  tid int(11) NOT NULL,
 			  gid int(11) NOT NULL,
-			  message varchar(256) NOT NULL,
+			  message varchar(1024) NOT NULL,
 			  stamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			  PRIMARY KEY aid (aid)
 	  		);";
@@ -640,66 +642,74 @@ function symposium_activate() {
 	
 	// Version 11 *************************************************************************************
 	if ($db_ver < 11) {
-
-   		// Create audit table
+		
+   		// Change audit table
 	   	$table_name = $wpdb->prefix . "symposium_lang";
-		      $wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang 
-			  CHANGE sant sant varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE ts ts varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE fpit fpit varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE sac sac varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE emw emw varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE p p varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE c c varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE cat cat varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE lac lac varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE top top varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE btf btf varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE rew rew varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE sbl sbl varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE f f varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE r r varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE v v varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE sb sb varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE rer rer varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE tis tis varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE re re varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE e e varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE d d varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE aar aar varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE rtt rtt varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE wir wir varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE rep rep varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE tt tt varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE u u varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE bt bt varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE t t varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE mc mc varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE s s varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE pw pw varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE sav sav varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE hsa hsa varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE i i varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE nft nft varchar(256) NOT NULL DEFAULT 'not set',			  
-			  CHANGE nfr nfr varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE fdd fdd varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE ycs ycs varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE nty nty varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE lrb lrb varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE reb reb varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE ar ar varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE too too varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE st st varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE rdv rdv varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE tp tp varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE tps tps varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE prs prs varchar(256) NOT NULL DEFAULT 'not set',
-			  CHANGE prm prm varchar(256) NOT NULL DEFAULT 'not set';");
+	   	
+		if (  $wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang 
+			  CHANGE sant sant varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE ts ts varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE fpit fpit varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE sac sac varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE emw emw varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE p p varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE c c varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE cat cat varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE lac lac varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE top top varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE btf btf varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE rew rew varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE sbl sbl varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE f f varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE r r varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE v v varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE sb sb varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE rer rer varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE tis tis varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE re re varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE e e varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE d d varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE aar aar varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE rtt rtt varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE wir wir varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE rep rep varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE tt tt varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE u u varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE bt bt varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE t t varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE mc mc varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE s s varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE pw pw varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE sav sav varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE hsa hsa varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE i i varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE nft nft varchar(1024) NOT NULL DEFAULT 'not set',			  
+			  CHANGE nfr nfr varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE fdd fdd varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE ycs ycs varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE nty nty varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE lrb lrb varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE reb reb varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE ar ar varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE too too varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE st st varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE rdv rdv varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE tp tp varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE tps tps varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE prs prs varchar(1024) NOT NULL DEFAULT 'not set',
+			  CHANGE prm prm varchar(1024) NOT NULL DEFAULT 'not set';") ) {
+			  	
+				symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'DB v11 languages table changed successfully.'));
+			  } else {
+				symposium_audit(array ('code'=>1, 'type'=>'error', 'plugin'=>'core', 'message'=>'DB v11 languages table change failed: '));
+			  }
+
+
 
 	}
 
 	// Version 13 *************************************************************************************
-	// This version aligns version x.x to same number
+	// This version aligns version version.x to same number (the x)
 	if ($db_ver < 13) {
 
 	   	// Add option fields
@@ -712,7 +722,7 @@ function symposium_activate() {
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_cats"." ADD allow_new_topics varchar(2) NOT NULL DEFAULT ''");
 
 		// Add pending to languages
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD pen varchar(256) NOT NULL DEFAULT ''");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD pen varchar(1024) NOT NULL DEFAULT ''");
 
 		// Add fonts to styles
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD fontfamily varchar(128) NOT NULL DEFAULT 'Georgia,Times'");
@@ -732,8 +742,8 @@ function symposium_activate() {
 	if ($db_ver < 14) {
 
 		// Add pending to languages
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fma varchar(256)");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fmr varchar(256)");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fma varchar(1024)");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fmr varchar(1024)");
 
 	}
 				      	
@@ -745,411 +755,8 @@ function symposium_activate() {
 	// Re-load languages file for latest version *****************************************************
 	$wpdb->query("DELETE FROM ".$wpdb->prefix . "symposium_lang");
 
-	// Install English
-    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
-      	'language' => 'English', 
-		'sant' => 'Start a New Topic',
-		'p' => 'Post',
-		'rtt' => 'Reply to this Topic...',
-		'c' => 'Cancel',
-		'e' => 'Edit',
-		'd' => 'Delete',
-		'reb' => 'Reply',
-		'u' => 'Update',
-		'ts' => 'Topic Subject',
-		'fpit' => 'First post in topic',
-		'cat' => 'Category',
-		't' => 'TOPIC',
-		'top' => 'TOPICS',
-		'tp' => 'POST',
-		'tps' => 'POSTS',
-		'rep' => 'REPLY',
-		'r' => 'REPLY',
-		'v' => 'VIEWS',
-		'nty' => 'No topics started yet.',
-		'sac' => 'Select a category',
-		'sb' => 'Started by',
-		'st' => 'started',
-		're' => 'replied',
-		'aar' => 'Add a Reply to this Topic',
-		'lrb' => 'Last reply by',
-		'tt' => 'Topic Text',
-		'btf' => 'Back to Forum',
-		'bt' => 'Back to',
-		'mc' => 'Move Category',
-		's' => 'Select...',
-		'hsa' => 'has started a new topic',
-		'i' => 'in',
-		'too' => 'to',
-		'pen' => 'pending approval',
-		'emw' => 'Email me when I get any replies',
-		'rew' => 'Receive emails when there are new topics posted',
-		'rer' => 'Receive emails when there are replies to this topic',
-		'wir' => 'When I reply, email me when there are more replies to this topic',
-		'rdv' => 'Receive digests via email',
-		'tis' => 'Topic is Sticky',
-		'nft' => 'New Forum Topic',
-		'nfr' => 'New Forum Topic Reply',
-		'fdd' => 'Forum Daily Digest',
-		'ycs' => 'You can stop receiving these emails at',
-		'fma' => 'Your forum post has been approved by the moderator.',
-		'fmr' => 'Your forum post has been rejected by the moderator.',
-		'ar' => 'Allow Replies',
-		'pw' => 'Please wait...',
-		'sav' => 'Saving...',
-		'prs' => 'Please enter a subject.',
-		'prm' => 'Please enter a message.'
-  	) );
-	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Install English language.'));
-		
-	// Install French
-    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
-      	'language' => 'French', 
-      	'sant' => 'D&eacute;marrer un nouveau sujet', 
-      	'ts' => 'Sujet du',
-      	'fpit' => 'Premier message sur le sujet',
-      	'sac' => 'S&eacute;lectionnez une cat&eacute;gorie',
-      	'emw' => 'Envoyez-moi lorsque je re&ccedil;ois des r&eacute;ponses',
-      	'p' => 'Pr&eacute;senter',
-      	'reb' => 'R&eacute;ponse',
-      	'rdv' => 'Recevoir dig&egrave;re par e-mail',
-      	'c' => 'Annuler',
-      	'cat' => 'Cat&eacute;gorie',
-      	'lac' => 'Dernier sujet actif',
-      	'top' => 'SUJETS',
-      	'btf' => 'Retour au Forum',
-      	'rew' => 'Recevoir des messages quand il ya des nouveaux sujets affich&eacute;s',
-      	'rdv' => 'Recevez par e-mail dig&egrave;re',
-      	'r' => 'R&Eacute;PONSES',
-      	'v' => 'VUES',
-      	'nty' => 'Aucun sujet encore commenc&eacute;.',
-      	'sb' => 'D&eacute;marr&eacute; par',
-      	'st' => 'commenc&eacute;',
-      	'rer' => 'Recevoir des messages quand il ya des r&eacute;ponses &agrave; ce sujet',
-      	'tis' => 'Sujet prioritaire',
-      	'fdd' => 'Forum resume quotidien',
-      	'ycs' => 'Vous pouvez arr&#234;ter de recevoir ces e-mails &agrave;',
-		'fma' => 'Votre post sur le forum a &eacute;t&eacute; approuvé par le mod&eacute;rateur.',
-		'fmr' => 'Votre post sur le forum a &eacute;t&eacute; rejeté par le mod&eacute;rateur.',
-      	're' => 'r&eacute;pondu',
-      	'e' => 'Modifier',
-      	'd' => 'Supprimer',
-      	'aar' => 'Ajouter une r&eacute;ponse &agrave; ce sujet',
-      	'lrb' => 'Derni&egrave;re r&eacute;ponse par',
-      	'rtt' => 'R&eacute;pondre &agrave; ce sujet',
-      	'wir' => 'Lorsque je r&eacute;ponds, moi un courriel quand il ya plus de r&eacute;ponses &agrave; ce sujet',
-      	'rep' => 'R&Eacute;PONDRE',
-      	'tt' => 'Sujet Texte',
-      	'u' => 'R&eacute;viser',
-      	'bt' => 'Retour &agrave;',
-      	't' => 'SUJET',
-      	'tp' => 'MESSAGE',
-      	'tps' => 'MESSAGES',
-      	'mc' => 'D&eacute;placer Cat&eacute;gorie',
-      	's' => 'S&eacute;lectionnez...',
-      	'pw' => 'Patientez s&apos;il vous pla&icirc;t...',
-      	'sav' => 'Enregistrement...',
-      	'hsa' => 'a commenc&eacute; un nouveau sujet',
-      	'i' => 'dans',
-      	'pen' => 'en attendant',
-      	'too' => '&agrave;',
-      	'nft' => 'Nouveau sujet',
-      	'nfr' => 'Repondre Nouveau sujet Forum',
-      	'prs' => 'S&apos;il vous pla&icirc;t entrer un sujet.',
-      	'prm' => 'S&apos;il vous pla&icirc;t entrer un message.'
-  	) );
-	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Install French language.'));
-
-	// Install Spanish
-    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
-      	'language' => 'Spanish', 
-      	'sant' => 'Comenzar un nuevo topico',
-      	'p' => 'Anunciar',
-      	'rtt' => 'Responder a este topico',
-      	'c' => 'Cancellar',
-      	'e' => 'Editar',
-      	'd' => 'Dorrar',
-      	'reb' => 'Responder',
-      	'rdv' => 'Recibir res&uacute;menes por correo electr&oacute;nico',
-      	'rep' => 'RESPONDER',
-      	'u' => 'Actualizar',
-      	'ts' => 'Tema del topico',
-      	'fpit' => 'Primer anuncio en el topico',
-      	'cat' => 'Categoria',
-      	'top' => 'TOPICOS',
-      	't' => 'TOPICO',
-      	'tp' => 'MENSAJE',
-      	'tps' => 'MENSAJES',
-      	'lac' => 'Ultimo topico activo',
-      	'r' => 'RESPONDER',
-      	'v' => 'OBSERVACIONES',
-      	'nty' => 'Ning&uacute;n tema empezado.',
-      	'sac' => 'Seleccione una categoria',
-      	'emw' => 'Enviar un correo electronico cuando tenga una respuesta',
-      	'rew' => 'Recibir correos electronicos cuando halla nuevos topicos anunciados',
-      	'rdv' => 'Reciba resumenes por correo electronico',
-      	'sb' => 'Comensar',
-      	'st' => 'comenzo',
-      	're' => 'respondio',
-      	'rer' => 'Recivir emails cuando halla respuestas a este topico',
-      	'tis' => 'Topico es anadido',
-      	'fdd' => 'Foro de resumen diario',
-      	'ycs' => 'Usted puede dejar de recibir estos correos electronicos en',
-		'fma' => 'Su mensaje en el foro ha sido aprobado por el moderador.',
-		'fmr' => 'Su mensaje en el foro ha sido rechazado por el moderador.',
-      	'ar' => 'Autoriser les r&eacute;ponses',
-      	'aar' => 'Anadir una respuesta a este topico',
-      	'lrb' => '&Uacute;ltima respuesta de',
-      	'nft' => 'Nuevo topico en el foro',
-      	'nfr' => 'Repuesta del nuevo topico en el foro',
-      	'wir' => 'Cuando respondo, enviar un correo electronico cuando halla mas de una respuesta en el topico',
-      	'tt' => 'Texto del topico',
-      	'btf' => 'Regresar al foro',
-      	'bt' => 'Regresar a',
-      	'mc' => 'Mover catogoria',
-      	's' => 'Seleccionar...',
-      	'hsa' => 'ha comensado un topico',
-      	'i' => 'en',
-      	'pen' => 'pendiente de aprobacion',
-      	'too' => 'a',
-      	'pw' => 'Por favor espere......',
-      	'sav' => 'Salvando...',
-      	'prs' => 'Por favor entre un tema.',
-      	'prm' => 'Por favor entre un mensaje.'
-  	) );
-	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Install Spanish language.'));
-						
-	// Install German
-    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
-      	'language' => 'German', 
-      	'sant' => 'Neues Thema erstellen',
-      	'p' => 'Eintragen',
-      	'rtt' => 'Auf den Beitrag antworten...',
-      	'c' => 'Abbrechen',
-      	'e' => 'Bearbeiten',
-      	'd' => 'L&ouml;schen',
-      	'reb' => 'Antworten',
-      	'rdv' => 'Erhalten verdaut per email',
-      	'rep' => 'ANTWORTEN',
-      	'u' => 'Aktualisieren',
-      	'ts' => '&Uuml;berschrift des Themas',
-      	'fpit' => 'Text',
-      	'cat' => 'Kategorie',
-      	'top' => 'THEMEN',
-      	't' => 'THEMA',
-      	'tp' => 'BEITRAG',
-      	'tps' => 'BEITR&Auml;GE',
-      	'lac' => 'Neuestes Thema',
-      	'r' => 'ANTWORTEN',
-      	'v' => 'ANSICHTEN',
-      	'nty' => 'Kein Thema begonnen.',
-      	'sac' => 'Kategorie ausw&auml;hlen',
-      	'emw' => 'Informiere mich per email &uuml;ber neue Antworten',
-      	'rew' => 'Benachrichtiung per email, sobald neue Themen vorhanden sind',
-      	'rdv' => 'Erhalte verdaut per email',
-      	'sb' => 'Geschrieben von',
-      	'st' => 'gestartet',
-      	'rer' => 'Benachrichtiung per Email bei neuen Antworten',
-      	'tis' => 'Dieses Thema wurde angepinnt',
-      	'fdd' => 'Forum tagliche Zusammenfassung',
-      	'ycs' => 'Sie k&ouml;nnen den Empfang dieser e-mails an',
-		'fma' => 'Ihr Forum hat der Moderator genehmigt worden.',
-		'fmr' => 'Ihr Forum wurde von der Moderatorin abgelehnt worden.',
-      	'ar' => 'Lassen sie Antworten',
-      	'aar' => 'Antwort verfassen',
-      	'lrb' => 'Letzte Antwort von',
-      	'nft' => 'Neues Foren-Thema',
-      	'nfr' => 'Neue Antwort zu diesem Thema',
-      	'wir' => 'Benachrichtige mich, sobald neue Antworten vorhanden sind',
-      	'tt' => 'Text',
-      	'btf' => 'Zur&uuml;ck zum Forum',
-      	'bt' => 'Zur&uuml;ck zu',
-      	'mc' => 'Kategorie verschieben',
-      	's' => 'Ausw&auml;hlen...',
-      	'hsa' => 'ein neues Thema ver&ouml;ffentlicht',
-      	're' => 'antwortete',
-      	'i' => 'in',
-      	'pen' => 'vorbehaltlich der Zustimmung',
-      	'too' => 'auf',
-      	'pw' => 'Bitte warten...',
-      	'sav' => 'Speichern...',
-      	'prs' => 'Bitte gib einen Betreff ein.',
-      	'prm' => 'Bitte gib ein Text ein.'
-  	) );
-	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed German language.'));
-						
-	// Install Czech
-    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
-      	'language' => 'Czech', 
-      	'sant' => 'Nov&eacute; t&eacute;ma',
-      	'p' => 'P&#345;&iacute;sp&#283;vek',
-      	'rtt' => 'Odpov&#283;&#271; k t&eacute;matu...',
-      	'c' => 'Zru&#353;it',
-      	'e' => 'Upravit',
-      	'd' => 'Smazat',
-      	'reb' => 'Odpov&#283;d',
-      	'rdv' => 'P&#345;ij&iacute;mat tr&aacute;v&iacute; e-mailem',
-      	'rep' => 'ODPOV&#282;D',
-      	'u' => 'Aktualizace',
-      	'ts' => 'P&#345;edm&#283;t t&eacute;matu',
-      	'fpit' => 'Prvn&iacute; p&#345;&iacute;sp&#283;vek k t&eacute;matu',
-      	'cat' => 'Kategorie',
-      	'top' => 'T&Eacute;MATA',
-      	't' => 'T&Eacute;MA',
-      	'tp' => 'ZPR&Aacute;VY',
-      	'tps' => 'P&#344;&iacute;SP&#282;VKY',
-      	'lac' => 'Posledn&iacute; aktivn&iacute; t&eacute;ma',
-      	'r' => 'ODPOV&#282;DI',
-      	'v' => 'ZOBRAZEN&Iacute;',
-      	'nty' => '&#381;&acute;dn&eacute; t&eacute;ma neza&#269;ala.',
-      	'sac' => 'Vyber kategorii',
-      	'emw' => 'Moje nov&eacute; odpov&#283;di ozn&aacute;mit na email',
-      	'rew' => 'Ozn&aacute;mit nov&eacute; t&eacute;ma na email',
-      	'rdv' => 'Erhalte verdaut per email',
-      	'sb' => 'Za&#269;&iacute;t od',
-      	'st' => 'za&#269;al',
-      	're' => 'p&#345;id&aacute;no',
-      	'rer' => 'Ozn&aacute;mit na email p&#345;&iacute;sp&#283;vky k t&eacute;matu',
-      	'tis' => 'T&eacute;ma m&aacute; n&aacute;lepku',	      	
-      	'fdd' => 'Forum denni souhrn',
-      	'ycs' => 'M&#367;&#382;ete zastavit p&#345;ij&#237;m&#225;n&#237; t&#283;chto e-mail&#367; na',
-		'fma' => 'V&aacute;&#353; diskusn&iacute; p&#345;&iacute;sp&#283;vek byl schv&aacute;len moder&aacute;torem.',
-		'fmr' => 'V&aacute;&#353; diskusn&iacute; p&#345;&iacute;sp&#283;vek byl odm&iacute;tnut moder&aacute;tora.',
-      	'ar' => 'Povolit odpov&#283;di',
-      	'aar' => 'P&#345;idat odpov&#283;&#271; k t&eacute;matu',
-      	'lrb' => 'Posledn&iacute; odpov&#283;&#271;',
-      	'nft' => 'Nove tema fora',
-      	'nfr' => 'Reakce na nove tema',
-      	'wir' => 'Ozn&aacute;mit na email reakce k m&eacute; odpov&#283;di',
-      	'tt' => 'Text t&eacute;matu',
-      	'btf' => 'Zp&#283;t na f&oacute;rum',
-      	'bt' => 'Zp&#283;t',
-      	'mc' => 'P&#345;esunout kategorii',
-      	's' => 'Výb&#283;r...',
-      	'hsa' => 'bylo zalo&#382;eno nov&eacute; t&eacute;ma',
-      	'i' => 'v',
-      	'pen' => '&#269;ek&aacute; na schv&aacute;len&iacute;',
-      	'too' => 'na',
-      	'pw' => 'Pros&iacute;m po&#269;kat...',
-      	'sav' => 'Ukl&aacute;d&aacute;n&iacute;...',
-      	'prs' => 'Pros&iacute;m zadat p&#345;edm&#283;t.',
-      	'prm' => 'Pros&iacute;m zadat zpr&aacute;vu.'
-  	) );
-	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Czech language.'));
-
-	// Install Italian
-    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
-      	'language' => 'Italian', 
-      	'sant' => 'Aggiungi nuovo argomento',
-      	'p' => 'Post',
-      	'rtt' => 'Rispondi a questo argomento...',
-      	'c' => 'Cancella',
-      	'e' => 'Modifica',
-      	'd' => 'Cancella',
-      	'reb' => 'Rispondi',
-      	'u' => 'Update',
-      	'ts' => 'Oggetto della discussione',
-      	'fpit' => 'Primo argomento',
-      	'cat' => 'Categoria',
-      	't' => 'DISCUSSIONE',
-      	'top' => 'DISCUSSIONI',
-      	'tp' => 'POST',
-      	'tps' => 'POSTS',
-      	'rep' => 'RISPOSTA',
-      	'r' => 'REPLICA',
-      	'v' => 'VISUALIZZAZIONI',
-      	'nty' => 'Nessun argomento ancora iniziato.',
-      	'sac' => 'Seleziona categoria',
-      	'emw' => 'Inviami una email per ricevere i messaggi di risposta',
-      	'rew' => 'Inviami una email quando ci sono nuovi argomenti',
-      	'sb' => 'Iniziato da',
-      	'st' => 'iniziato',
-      	're' => 'risposto',
-      	'rer' => 'Inviami una email quando ci sono nuove risposte',
-      	'tis' => 'Discussione inappropriata',
-      	'fdd' => 'Forum riepilogo giornaliero',
-      	'ycs' => '&Egrave; possibile interrompere la ricezione di queste email a',
-		'fma' => 'Il tuo post sul forum &egrave; stato approvato dal moderatore.',
-		'fmr' => 'Il tuo post sul forum &egrave; stato rifiutato dal moderatore.',
-      	'ar' => 'Lasciare Risposte',
-      	'aar' => 'Aggiungi una risposta a questo argomento',
-      	'lrb' => 'Ultima risposta di',
-      	'nft' => 'Nuova discussione',
-      	'nfr' => 'Rispondi al nuovo forum di discussione',
-      	'wir' => 'Avvisami con una email quando ci sono più risposte a questo argomento',
-      	'tt' => 'Argomento di testo',
-      	'rdv' => 'Digerisce ricevere via email',
-      	'btf' => 'Torna al forum',
-      	'bt' => 'Torna a',
-      	'mc' => 'Sposta la categoria',
-      	's' => 'Seleziona...',
-      	'hsa' => 'ha iniziato un nuovo argomento',
-      	'i' => 'in',
-      	'pen' => 'in attesa di approvazione',
-      	'too' => 'a',
-      	'pw' => 'Attendere prego...',
-      	'sav' => 'Salvataggio in corso...',
-      	'prs' => 'Per favore inserire un oggetto.',
-      	'prm' => 'Per favore inserire un messaggio.'
-  	) );
-	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Italian language.'));
-
-	// Install Turkish
-    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
-      	'language' => 'Turkish', 
-      	'sant' => 'Yeni konu ba&#351;lat',
-      	'p' => 'Mesaj',
-      	'rtt' => 'Bu konuyu yan&#305;tla...',
-      	'c' => 'Vazge&ccedil;',
-      	'e' => 'D&uuml;zenle',
-      	'd' => 'Sil',
-      	'reb' => 'Yan&#305;tla',
-      	'u' => 'G&uuml;ncelle',
-      	'ts' => 'Konu ba&#351;l&#305;&#287;&#305;',
-      	'fpit' => 'Bu konuda ilk mesaj',
-      	'cat' => 'Kategori',
-      	't' => 'KONU',
-      	'top' => 'KONULAR',
-      	'tp' => 'MESAJ',
-      	'tps' => 'MESAJLAR',
-      	'rep' => 'YANITLA',
-      	'r' => 'YANITLAR',
-      	'v' => 'G&ouml;r&uuml;n&uuml;mler',
-      	'nty' => 'Hi&#231; ba&#351;l&#305;k hen&#252;z ba&#351;lad&#305;.',
-      	'sac' => 'Bir kategori secin',
-      	'sb' => 'Ba&#351;latan',
-      	'st' => 'ba&#351;lad&#305;',
-      	're' => 'yan&#305;tlad&#305;',
-      	'aar' => 'Bu konu i&ccedil;in yeni mesaj yaz',
-      	'lrb' => 'Son yan&#305;t',
-      	'nft' => 'Yeni forum konusu',
-      	'nfr' => 'Yeni forum konu yaniti',
-      	'tt' => 'Konu metni',
-      	'btf' => 'Foruma geri d&ouml;n',
-      	'bt' => 'Geri d&ouml;n',
-      	'mc' => 'Kategoriyi ta&#351;&#305;',
-      	's' => 'Se&ccedil;...',
-      	'hsa' => 'yeni bir konu ba&#351;lad&#305;',
-      	'i' => 'in',
-      	'pen' => 'onay bekleyen',
-      	'too' => 'i&ccedil;in',
-      	'emw' => 'E-posta ile yan&#305;tlar&#305; bana g&ouml;nder',
-      	'rew' => 'Yeni konulara mesaj g&ouml;nderildi&#287;inde e-posta g&ouml;nderme',
-      	'rer' => 'Bu konuya mesaj g&ouml;nderildi&#287;inde mesaj g&ouml;nderme',
-      	'wir' => 'Bu konuda daha fazla yan&#305;t oldu&#287;unda e-posta ile yan&#305;tla',
-      	'rdv' => 'e-posta yoluyla &ouml;zet al&#305;n',
-      	'tis' => 'Konu kald&#305;',
-      	'fdd' => 'Forum gunluk ozet',
-      	'ycs' => 'Size bu e-postalar&#305; almay&#305; durdurabilirsiniz',
-		'fma' => 'Forum iletinize moderat&#246;r taraf&#305;ndan onayland&#305;.',
-		'fmr' => 'Il tuo post sul forum &egrave; stato rifiutato dal moderatore.',
-      	'ar' => 'Yan&#305;t ver',
-      	'pw' => 'L&uuml;rfen bekleyin...',
-      	'sav' => 'Kaydediliyor...',
-      	'prs' => 'L&uuml;rfen bir konu girin.',
-      	'prm' => 'L&uuml;rfen bir mesaj girin.'
-  	) );
-	symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Turkish language.'));
+	// Include lanagues
+	include('languages.php');
 
 	// Audit activation
 	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core activated.'));
@@ -1511,6 +1118,9 @@ function symposium_time_ago($date,$language,$granularity=1) {
     case "English":
 	    	$retval .= " ago";
         	break;    
+    case "Russian":
+	    	$retval = "";
+        	break;    
     case "French":
     		$retval = str_replace("second", "seconde", $retval);
     		$retval = str_replace("hour", "heure", $retval);
@@ -1582,6 +1192,107 @@ function symposium_time_ago($date,$language,$granularity=1) {
     		$retval = str_replace("y&#305;ls", "y&#305;l", $retval);
 	    	$retval = $retval." &ouml;nce";
         	break;  
+    case "Hungarian":
+    		$retval = str_replace("second", "m&aacute;sodperc", $retval);
+    		$retval = str_replace("m&aacute;sodpercs", "m&aacute;sodperc", $retval);
+    		$retval = str_replace("minute", "perc", $retval);
+    		$retval = str_replace("percs", "perc", $retval);
+    		$retval = str_replace("hour", "&oacute;ra", $retval);
+    		$retval = str_replace("&oacute;ras", "&oacute;ra", $retval);
+    		$retval = str_replace("day", "nap", $retval);
+    		$retval = str_replace("naps", "nap", $retval);
+    		$retval = str_replace("week", "h&eacute;t", $retval);
+    		$retval = str_replace("h&eacute;ts", "h&eacute;t", $retval);
+    		$retval = str_replace("month", "h&oacute;nap", $retval);
+    		$retval = str_replace("h&oacute;naps", "h&oacute;nap", $retval);
+    		$retval = str_replace("year", "&eacute;v", $retval);
+    		$retval = str_replace("&eacute;vs", "&eacute;v", $retval);
+	    	$retval = $retval." ezel&ouml;tt";
+        	break;  
+    case "Portuguese":
+    		$retval = str_replace("second", "segundo", $retval);
+    		$retval = str_replace("segundos", "segundo", $retval);
+    		$retval = str_replace("minute", "minuto", $retval);
+    		$retval = str_replace("minutos", "minuto", $retval);
+    		$retval = str_replace("hour", "hora", $retval);
+    		$retval = str_replace("horas", "hora", $retval);
+    		$retval = str_replace("day", "dia", $retval);
+    		$retval = str_replace("dias", "dia", $retval);
+    		$retval = str_replace("week", "semana", $retval);
+    		$retval = str_replace("semanas", "semana", $retval);
+    		$retval = str_replace("month", "mes", $retval);
+    		$retval = str_replace("mess", "meses", $retval);
+    		$retval = str_replace("year", "ano", $retval);
+    		$retval = str_replace("anos", "ano", $retval);
+	    	$retval = "hace ".$retval;
+        	break;    
+    case "Brazilian Portuguese":
+    		$retval = str_replace("second", "segundo", $retval);
+    		$retval = str_replace("segundos", "segundo", $retval);
+    		$retval = str_replace("minute", "minuto", $retval);
+    		$retval = str_replace("minutos", "minuto", $retval);
+    		$retval = str_replace("hour", "hora", $retval);
+    		$retval = str_replace("horas", "hora", $retval);
+    		$retval = str_replace("day", "dia", $retval);
+    		$retval = str_replace("dias", "dia", $retval);
+    		$retval = str_replace("week", "semana", $retval);
+    		$retval = str_replace("semanas", "semana", $retval);
+    		$retval = str_replace("month", "mes", $retval);
+    		$retval = str_replace("mess", "mes", $retval);
+    		$retval = str_replace("mess", "meses", $retval);
+    		$retval = str_replace("year", "ano", $retval);
+    		$retval = str_replace("anos", "ano", $retval);
+	    	$retval = "hace ".$retval;
+        	break;    
+    case "Norwegian":
+    		$retval = str_replace("second", "sekund", $retval);
+    		$retval = str_replace("sekunds", "sekunder", $retval);
+    		$retval = str_replace("minutes", "minutt", $retval);
+    		$retval = str_replace("minutts", "minutter", $retval);
+    		$retval = str_replace("day", "dag", $retval);
+    		$retval = str_replace("dags", "dager", $retval);
+    		$retval = str_replace("week", "uke", $retval);
+    		$retval = str_replace("uke", "uker", $retval);
+    		$retval = str_replace("month", "m&aring;ned", $retval);
+    		$retval = str_replace("m&aring;neds", "m&aring;neder", $retval);
+    		$retval = str_replace("year", "&aring;r", $retval);
+    		$retval = str_replace("&aring;rs", "&aring;r", $retval);
+	    	$retval = $retval." siden";
+        	break;    
+    case "Dutch":
+    		$retval = str_replace("second", "seconde", $retval);
+    		$retval = str_replace("seconde", "seconden", $retval);
+    		$retval = str_replace("minute", "minuut", $retval);
+    		$retval = str_replace("minuuts", "minuten", $retval);
+    		$retval = str_replace("hour", "uur", $retval);
+    		$retval = str_replace("uurs", "uur", $retval);
+    		$retval = str_replace("day", "dag", $retval);
+    		$retval = str_replace("dags", "dagen", $retval);
+    		$retval = str_replace("week", "hafta", $retval);
+    		$retval = str_replace("weeks", "weken", $retval);
+    		$retval = str_replace("month", "maand", $retval);
+    		$retval = str_replace("maands", "maanden", $retval);
+    		$retval = str_replace("year", "jaar", $retval);
+    		$retval = str_replace("jaars", "jaar", $retval);
+	    	$retval = $retval." geleden";        	
+			break;
+    case "Polish":
+    		$retval = str_replace("second", "sekunda", $retval);
+    		$retval = str_replace("sekundas", "sekundy", $retval);
+    		$retval = str_replace("minute", "minuta", $retval);
+    		$retval = str_replace("minutas", "minuty", $retval);
+    		$retval = str_replace("hour", "godzina", $retval);
+    		$retval = str_replace("godzinas", "godziny", $retval);
+    		$retval = str_replace("day", "dzie&#324;", $retval);
+    		$retval = str_replace("dzie&#324;s", "dni", $retval);
+    		$retval = str_replace("week", "tydzie&#324;", $retval);
+    		$retval = str_replace("tydzie&#324;s", "tygodnie", $retval);
+    		$retval = str_replace("month", "miesi&#261;c", $retval);
+    		$retval = str_replace("miesi&#261;cs", "miesi&#261;ce", $retval);
+    		$retval = str_replace("year", "rok", $retval);
+    		$retval = str_replace("roks", "lata", $retval);
+	    	$retval = $retval." temu";        	
+			break;
     }
     return $retval;      
 }
@@ -1590,7 +1301,9 @@ function symposium_time_ago($date,$language,$granularity=1) {
 function symposium_sendmail($email, $subject, $msg)
 {
 	global $wpdb;
-	
+
+	$subject = '=?UTF-8?B?' . base64_encode(html_entity_decode($subject)) . '?=';	
+
 	$footer = $wpdb->get_var($wpdb->prepare("SELECT footer FROM ".$wpdb->prefix.'symposium_config'));
 
 	$body = "<style>";

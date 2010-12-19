@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.14
+Stable tag: 0.1.14.1
 
 A new suite of social networking plugins, starting with a forum.
 
@@ -54,12 +54,23 @@ Features currently include:
 *Languages*
 
 * English
-* French
+* French (thanks to Frederic Lohbrunner)
 * Spanish (thanks to Patricia Blanco)
 * German (thanks to Pascal)
 * Italian (thanks to Massimiliano Mazza)
 * Turkish (thanks to Cahit Cengizhan)
 * Czech (thanks to Vase Jmeno)
+* Hungariaun (thanks to Gergo Nagy)
+* Portuguese (thanks to Nuno Coelho)
+* Brazilian Portuguese (thanks to Eduardo Machado)
+* Norwegian (thanks to Celina)
+* Dutch (thanks to Monique Huizen and Monique Huizen)
+* Russian (thanks to Ruslan)
+* Polish (thanks to Dariusz Labuda)
+
+* Simple Chinese (thanks to James Hu)
+* Greek (thanks to Konstantinos Bouropoulos)
+
 * If your language is not included, or to make corrections, please contact us via info@wpsymposium.com and we will work with you on translating the forum to your language.
 
 *Categories*
@@ -158,6 +169,12 @@ A. Yes, if you look in the smilies folder you can use any of the images there by
 
 == Changelog ==
 
+= 0.1.14.1 =
+
+* Changed: Corrected 'replies' label on topic level of forum
+* Changed: French language translation
+* Added: Languages: Czech, Hungarian, Portuguese, Braxilian Portuguese, Norwegian, Dutch, Russian, Polish
+
 = 0.1.14 =
 
 * Added: Additional language fields
@@ -209,9 +226,9 @@ A. Yes, if you look in the smilies folder you can use any of the images there by
 * Added: Style option for opacity of topics with [closed] in the subject
 * Added: Option to change the "opacity trigger word" from closed
 * Added: Links in email notifications
-* Added: Italian language
-* Added: Turkish language
-* Added: Czeck language
+* Added: Italian language (thanks to Luca Trovato)
+* Added: Turkish language (thanks to Cahit Cengizhan)
+* Added: Czeck language (thanks to Va&#353;e jm&eacute;no)
 
 = 0.1.8.2 =
 
