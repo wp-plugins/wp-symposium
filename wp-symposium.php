@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.14.2
+Version: 0.1.15
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -75,7 +75,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.14.2";
+	$symposium_version = "0.1.15";
 	if (get_option("symposium_version") == false) {
 	    add_option("symposium_version", $symposium_version);
 	} else {
@@ -97,7 +97,7 @@ function symposium_activate() {
 	      
 	      $sql = "CREATE TABLE " . $table_name . " (
 			  cid int(11) NOT NULL AUTO_INCREMENT,
-			  title varchar(1024) NOT NULL,
+			  title varchar(64) NOT NULL,
 			  listorder int(11) NOT NULL DEFAULT '0',
 			  allow_new varchar(2) NOT NULL DEFAULT 'on',
 			  defaultcat varchar(2) NOT NULL DEFAULT '',
@@ -155,7 +155,7 @@ function symposium_activate() {
 			  row_border_size varchar(2) NOT NULL,
 			  border_radius varchar(2) NOT NULL,
 			  label varchar(12) NOT NULL,
-			  footer varchar(1024) NOT NULL,
+			  footer varchar(64) NOT NULL,
 			  show_categories varchar(2) NOT NULL,
 			  send_summary varchar(2) NOT NULL,
 			  forum_url varchar(128) NOT NULL,
@@ -202,7 +202,7 @@ function symposium_activate() {
 			  tid int(11) NOT NULL AUTO_INCREMENT,
 			  topic_group int(11) NOT NULL DEFAULT '0',
 			  topic_category int(11) NOT NULL DEFAULT '0',
-			  topic_subject varchar(1024) NOT NULL,
+			  topic_subject varchar(64) NOT NULL,
 			  topic_post text NOT NULL,
 			  topic_owner int(11) NOT NULL,
 			  topic_date datetime NOT NULL,
@@ -429,44 +429,44 @@ function symposium_activate() {
 	      $sql = "CREATE TABLE " . $table_name . " (
 			  lid int(11) NOT NULL AUTO_INCREMENT,
 			  language varchar(3) NOT NULL,
-			  sant varchar(1024) NOT NULL,
-			  ts varchar(1024) NOT NULL,
-			  fpit varchar(1024) NOT NULL,
-			  sac varchar(1024) NOT NULL,
-			  emw varchar(1024) NOT NULL,
-			  p varchar(1024) NOT NULL,
-			  c varchar(1024) NOT NULL,
-			  cat varchar(1024) NOT NULL,
-			  lac varchar(1024) NOT NULL,
-			  top varchar(1024) NOT NULL,
-			  btf varchar(1024) NOT NULL,
-			  rew varchar(1024) NOT NULL,
-			  sbl varchar(1024) NOT NULL,
-			  f varchar(1024) NOT NULL,
-			  r varchar(1024) NOT NULL,
-			  v varchar(1024) NOT NULL,
-			  sb varchar(1024) NOT NULL,
-			  rer varchar(1024) NOT NULL,
-			  tis varchar(1024) NOT NULL,
-			  re varchar(1024) NOT NULL,
-			  e varchar(1024) NOT NULL,
-			  d varchar(1024) NOT NULL,
-			  aar varchar(1024) NOT NULL,			  
-			  rtt varchar(1024) NOT NULL,			  
-			  wir varchar(1024) NOT NULL,			  
-			  rep varchar(1024) NOT NULL,			  
-			  tt varchar(1024) NOT NULL,			  
-			  u varchar(1024) NOT NULL,			  
-			  bt varchar(1024) NOT NULL,			  
-			  t varchar(1024) NOT NULL,			  
-			  mc varchar(1024) NOT NULL,			  
-			  s varchar(1024) NOT NULL,			  
-			  pw varchar(1024) NOT NULL,			  
-			  sav varchar(1024) NOT NULL,			  
-			  hsa varchar(1024) NOT NULL,			  
-			  i varchar(1024) NOT NULL,			  
-			  nft varchar(1024) NOT NULL,			  
-			  nfr varchar(1024) NOT NULL,			  
+			  sant varchar(64) NOT NULL,
+			  ts varchar(64) NOT NULL,
+			  fpit varchar(64) NOT NULL,
+			  sac varchar(64) NOT NULL,
+			  emw varchar(64) NOT NULL,
+			  p varchar(64) NOT NULL,
+			  c varchar(64) NOT NULL,
+			  cat varchar(64) NOT NULL,
+			  lac varchar(64) NOT NULL,
+			  top varchar(64) NOT NULL,
+			  btf varchar(64) NOT NULL,
+			  rew varchar(64) NOT NULL,
+			  sbl varchar(64) NOT NULL,
+			  f varchar(64) NOT NULL,
+			  r varchar(64) NOT NULL,
+			  v varchar(64) NOT NULL,
+			  sb varchar(64) NOT NULL,
+			  rer varchar(64) NOT NULL,
+			  tis varchar(64) NOT NULL,
+			  re varchar(64) NOT NULL,
+			  e varchar(64) NOT NULL,
+			  d varchar(64) NOT NULL,
+			  aar varchar(64) NOT NULL,			  
+			  rtt varchar(64) NOT NULL,			  
+			  wir varchar(64) NOT NULL,			  
+			  rep varchar(64) NOT NULL,			  
+			  tt varchar(64) NOT NULL,			  
+			  u varchar(64) NOT NULL,			  
+			  bt varchar(64) NOT NULL,			  
+			  t varchar(64) NOT NULL,			  
+			  mc varchar(64) NOT NULL,			  
+			  s varchar(64) NOT NULL,			  
+			  pw varchar(64) NOT NULL,			  
+			  sav varchar(64) NOT NULL,			  
+			  hsa varchar(64) NOT NULL,			  
+			  i varchar(64) NOT NULL,			  
+			  nft varchar(64) NOT NULL,			  
+			  nfr varchar(64) NOT NULL,			  
 			  PRIMARY KEY lid (lid)
 	  		);";
 	  		
@@ -480,8 +480,8 @@ function symposium_activate() {
 	if ($db_ver < 3) {
 
 		// Add language labels
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prs varchar(1024) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prm varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prs varchar(64) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prm varchar(64) NOT NULL");
    		
 	}
 
@@ -537,8 +537,8 @@ function symposium_activate() {
 	if ($db_ver < 6) {
 
 		// Add language labels
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tp varchar(1024) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tps varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tp varchar(64) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tps varchar(64) NOT NULL");
    		
 	}
 
@@ -546,7 +546,7 @@ function symposium_activate() {
 	if ($db_ver < 7) {
 
 	   	// Language additions
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD rdv varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD rdv varchar(64) NOT NULL");
 
 		// Add preview text lengths
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD preview1 int(11) NOT NULL DEFAULT '45'");
@@ -592,25 +592,25 @@ function symposium_activate() {
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD closed_word varchar(32) NOT NULL DEFAULT 'closed'");
 
 		// Add language fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD lrb varchar(1024) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD reb varchar(1024) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ar varchar(1024) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD too varchar(1024) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD st varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD lrb varchar(64) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD reb varchar(64) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ar varchar(64) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD too varchar(64) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD st varchar(64) NOT NULL");
 	}
 
 	// Version 9 *************************************************************************************
 	if ($db_ver < 9) {
 
 		// Add language fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fdd varchar(1024) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ycs varchar(1024) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD nty varchar(1024) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fdd varchar(64) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ycs varchar(64) NOT NULL");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD nty varchar(64) NOT NULL");
 
 	   	// Add option fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontfamily varchar(1024) NOT NULL DEFAULT 'Georgia,Times'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontfamily varchar(64) NOT NULL DEFAULT 'Georgia,Times'");
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontsize varchar(16) NOT NULL DEFAULT '15'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingsfamily varchar(1024) NOT NULL DEFAULT 'Arial,Helvetica'");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingsfamily varchar(64) NOT NULL DEFAULT 'Arial,Helvetica'");
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingssize varchar(16) NOT NULL DEFAULT '20'");
 	}
 
@@ -630,7 +630,7 @@ function symposium_activate() {
 			  cid int(11) NOT NULL,
 			  tid int(11) NOT NULL,
 			  gid int(11) NOT NULL,
-			  message varchar(1024) NOT NULL,
+			  message TEXT NOT NULL,
 			  stamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			  PRIMARY KEY aid (aid)
 	  		);";
@@ -647,64 +647,62 @@ function symposium_activate() {
 	   	$table_name = $wpdb->prefix . "symposium_lang";
 	   	
 		if (  $wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang 
-			  CHANGE sant sant varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE ts ts varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE fpit fpit varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE sac sac varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE emw emw varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE p p varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE c c varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE cat cat varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE lac lac varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE top top varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE btf btf varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE rew rew varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE sbl sbl varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE f f varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE r r varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE v v varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE sb sb varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE rer rer varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE tis tis varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE re re varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE e e varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE d d varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE aar aar varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE rtt rtt varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE wir wir varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE rep rep varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE tt tt varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE u u varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE bt bt varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE t t varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE mc mc varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE s s varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE pw pw varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE sav sav varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE hsa hsa varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE i i varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE nft nft varchar(1024) NOT NULL DEFAULT 'not set',			  
-			  CHANGE nfr nfr varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE fdd fdd varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE ycs ycs varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE nty nty varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE lrb lrb varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE reb reb varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE ar ar varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE too too varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE st st varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE rdv rdv varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE tp tp varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE tps tps varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE prs prs varchar(1024) NOT NULL DEFAULT 'not set',
-			  CHANGE prm prm varchar(1024) NOT NULL DEFAULT 'not set';") ) {
+			  CHANGE sant sant varchar(64) NULL,
+			  CHANGE ts ts varchar(64) NULL,
+			  CHANGE fpit fpit varchar(64) NULL,
+			  CHANGE sac sac varchar(64) NULL,
+			  CHANGE emw emw varchar(64) NULL,
+			  CHANGE p p varchar(64) NULL,
+			  CHANGE c c varchar(64) NULL,
+			  CHANGE cat cat varchar(64) NULL,
+			  CHANGE lac lac varchar(64) NULL,
+			  CHANGE top top varchar(64) NULL,
+			  CHANGE btf btf varchar(64) NULL,
+			  CHANGE rew rew varchar(64) NULL,
+			  CHANGE sbl sbl varchar(64) NULL,
+			  CHANGE f f varchar(64) NULL,
+			  CHANGE r r varchar(64) NULL,
+			  CHANGE v v varchar(64) NULL,
+			  CHANGE sb sb varchar(64) NULL,
+			  CHANGE rer rer varchar(64) NULL,
+			  CHANGE tis tis varchar(64) NULL,
+			  CHANGE re re varchar(64) NULL,
+			  CHANGE e e varchar(64) NULL,
+			  CHANGE d d varchar(64) NULL,
+			  CHANGE aar aar varchar(64) NULL,			  
+			  CHANGE rtt rtt varchar(64) NULL,			  
+			  CHANGE wir wir varchar(64) NULL,			  
+			  CHANGE rep rep varchar(64) NULL,			  
+			  CHANGE tt tt varchar(64) NULL,			  
+			  CHANGE u u varchar(64) NULL,			  
+			  CHANGE bt bt varchar(64) NULL,			  
+			  CHANGE t t varchar(64) NULL,			  
+			  CHANGE mc mc varchar(64) NULL,			  
+			  CHANGE s s varchar(64) NULL,			  
+			  CHANGE pw pw varchar(64) NULL,			  
+			  CHANGE sav sav varchar(64) NULL,			  
+			  CHANGE hsa hsa varchar(64) NULL,			  
+			  CHANGE i i varchar(64) NULL,			  
+			  CHANGE nft nft varchar(64) NULL,			  
+			  CHANGE nfr nfr varchar(64) NULL,
+			  CHANGE fdd fdd varchar(64) NULL,
+			  CHANGE ycs ycs varchar(64) NULL,
+			  CHANGE nty nty varchar(64) NULL,
+			  CHANGE lrb lrb varchar(64) NULL,
+			  CHANGE reb reb varchar(64) NULL,
+			  CHANGE ar ar varchar(64) NULL,
+			  CHANGE too too varchar(64) NULL,
+			  CHANGE st st varchar(64) NULL,
+			  CHANGE rdv rdv varchar(64) NULL,
+			  CHANGE tp tp varchar(64) NULL,
+			  CHANGE tps tps varchar(64) NULL,
+			  CHANGE prs prs varchar(64) NULL,
+			  CHANGE prm prm varchar(64) NULL;") ) {
 			  	
 				symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'DB v11 languages table changed successfully.'));
 			  } else {
-				symposium_audit(array ('code'=>1, 'type'=>'error', 'plugin'=>'core', 'message'=>'DB v11 languages table change failed: '));
+				symposium_audit(array ('code'=>1, 'type'=>'error', 'plugin'=>'core', 'message'=>'DB v11 languages table change failed: '.$wpdb->last_query));
 			  }
-
-
 
 	}
 
@@ -722,7 +720,7 @@ function symposium_activate() {
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_cats"." ADD allow_new_topics varchar(2) NOT NULL DEFAULT ''");
 
 		// Add pending to languages
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD pen varchar(1024) NOT NULL DEFAULT ''");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD pen varchar(64) NOT NULL DEFAULT ''");
 
 		// Add fonts to styles
    		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD fontfamily varchar(128) NOT NULL DEFAULT 'Georgia,Times'");
@@ -742,14 +740,86 @@ function symposium_activate() {
 	if ($db_ver < 14) {
 
 		// Add pending to languages
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fma varchar(1024)");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fmr varchar(1024)");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fma varchar(64)");
+   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fmr varchar(64)");
 
 	}
-				      	
+
+	// Version 15 *************************************************************************************
+	if ($db_ver < 15) {
+		
+		// Modify audit table
+	 	$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_audit"." MODIFY COLUMN message TEXT");
+
+   		// Change audit table
+	   	$table_name = $wpdb->prefix . "symposium_lang";	   	
+		$rows_affected = $wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang 
+			  MODIFY COLUMN sant TEXT,
+			  MODIFY COLUMN ts TEXT,
+			  MODIFY COLUMN fpit TEXT,
+			  MODIFY COLUMN sac TEXT,
+			  MODIFY COLUMN emw TEXT,
+			  MODIFY COLUMN p TEXT,
+			  MODIFY COLUMN c TEXT,
+			  MODIFY COLUMN cat TEXT,
+			  MODIFY COLUMN lac TEXT,
+			  MODIFY COLUMN top TEXT,
+			  MODIFY COLUMN btf TEXT,
+			  MODIFY COLUMN rew TEXT,
+			  MODIFY COLUMN sbl TEXT,
+			  MODIFY COLUMN f TEXT,
+			  MODIFY COLUMN r TEXT,
+			  MODIFY COLUMN v TEXT,
+			  MODIFY COLUMN sb TEXT,
+			  MODIFY COLUMN rer TEXT,
+			  MODIFY COLUMN tis TEXT,
+			  MODIFY COLUMN re TEXT,
+			  MODIFY COLUMN e TEXT,
+			  MODIFY COLUMN d TEXT,
+			  MODIFY COLUMN aar TEXT,			  
+			  MODIFY COLUMN rtt TEXT,			  
+			  MODIFY COLUMN wir TEXT,			  
+			  MODIFY COLUMN rep TEXT,			  
+			  MODIFY COLUMN tt TEXT,			  
+			  MODIFY COLUMN u TEXT,			  
+			  MODIFY COLUMN bt TEXT,			  
+			  MODIFY COLUMN t TEXT,			  
+			  MODIFY COLUMN mc TEXT,			  
+			  MODIFY COLUMN s TEXT,			  
+			  MODIFY COLUMN pw TEXT,			  
+			  MODIFY COLUMN sav TEXT,			  
+			  MODIFY COLUMN hsa TEXT,			  
+			  MODIFY COLUMN i TEXT,			  
+			  MODIFY COLUMN nft TEXT,			  
+			  MODIFY COLUMN nfr TEXT,
+			  MODIFY COLUMN fdd TEXT,
+			  MODIFY COLUMN ycs TEXT,
+			  MODIFY COLUMN nty TEXT,
+			  MODIFY COLUMN lrb TEXT,
+			  MODIFY COLUMN reb TEXT,
+			  MODIFY COLUMN ar TEXT,
+			  MODIFY COLUMN too TEXT,
+			  MODIFY COLUMN st TEXT,
+			  MODIFY COLUMN rdv TEXT,
+			  MODIFY COLUMN tp TEXT,
+			  MODIFY COLUMN tps TEXT,
+			  MODIFY COLUMN prs TEXT,
+			  MODIFY COLUMN prm TEXT,
+			  MODIFY COLUMN pen TEXT,
+			  MODIFY COLUMN fma TEXT,
+			  MODIFY COLUMN fmr TEXT;");
+			  
+		  if ($rows_affected === false) {			  	
+			symposium_audit(array ('code'=>1, 'type'=>'error', 'plugin'=>'core', 'message'=>'DB v15 languages table change failed: '.$wpdb->last_query));
+		  } else {
+			symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'DB v15 languages table changed successfully.'));
+		  }
+
+	}
+					      	
 	// ***********************************************************************************************
  	// Update Database Version ***********************************************************************
-	update_option("symposium_db_version", "14");
+	update_option("symposium_db_version", "15");
 	
 	// ***********************************************************************************************
 	// Re-load languages file for latest version *****************************************************
