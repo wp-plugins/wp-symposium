@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: WP Symposium
+Plugin Name: WP Symposium Core
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.15
-Author: Simon Goodchild
+Version: 0.1.16
+Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
 */
@@ -35,8 +35,12 @@ if (is_admin()) {
 
 global $symposium_db_version;
 $symposium_db_version = "1";
-// Change log
-// 1 = Initial version
+
+// Any admin warnings
+function symposium_mail_warning() {
+	//echo "<div class='updated'>Warning</p></div>";
+}
+add_action('admin_notices', 'symposium_mail_warning');
 
 // Dashboard Widget
 add_action('wp_dashboard_setup', 'symposium_dashboard_widget');
@@ -58,6 +62,12 @@ function symposium_widget() {
 	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent > 0").'</td></tr>';
 	echo '<tr><td style="padding:4px">Views</td>';
 	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT SUM(topic_views) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
+	echo '<tr><td style="padding:4px">Mail</td>';
+	$mailcount = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail');
+	$unread = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail'." WHERE mail_read != 'on'");
+	echo '<td style="padding:4px">'.$mailcount;
+	echo ' ('.$unread.' unread)';
+	echo '</td></tr>';
 	echo '</table>';
 
 	echo '<p>';
@@ -75,765 +85,220 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.15";
-	if (get_option("symposium_version") == false) {
-	    add_option("symposium_version", $symposium_version);
+	$symposium_version = "0.1.16";
+	$symposium_db_ver = 16;
+	
+	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation started.'));
+	
+	// Code version *************************************************************************************
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Applying code version '.$symposium_version.'.'));
+	$ver = get_option("symposium_version");
+	if ($ver != false) {
+		symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Existing code version = '.$ver.'.'));
+		if ($ver != $symposium_version) {
+			symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Updated to '.$symposium_version.'.'));
+		}
+		 
+	    update_option("symposium_version", $symposium_version);	    	   	
 	} else {
-		update_option("symposium_version", $symposium_version);
+		// Set Database Version		
+	    add_option("symposium_version", $symposium_version);	    	   	
 	}
-	
-	$db_ver = get_option("symposium_db_version");
 
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'WP Symposium activation started.'));
-	
-	// Initial version *************************************************************************************
+	// Database version *************************************************************************************
+	$db_ver = get_option("symposium_db_version");
 	if ($db_ver != false) {
 		$db_ver = (int) $db_ver;
+		symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Existing database version = '.$db_ver.'.'));
 	} else {
-
-	 	// Categories
-	   	$table_name = $wpdb->prefix . "symposium_cats";
-	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-	      
-	      $sql = "CREATE TABLE " . $table_name . " (
-			  cid int(11) NOT NULL AUTO_INCREMENT,
-			  title varchar(64) NOT NULL,
-			  listorder int(11) NOT NULL DEFAULT '0',
-			  allow_new varchar(2) NOT NULL DEFAULT 'on',
-			  defaultcat varchar(2) NOT NULL DEFAULT '',
-			  PRIMARY KEY cid (cid)
-	  		);";
-	
-	      dbDelta($sql);
-	
-	      $rows_affected = $wpdb->insert( $table_name, array( 'title' => 'General Topics' ) );
-	      $new_category_id = $wpdb->insert_id;
-	      $rows_affected = $wpdb->insert( $table_name, array( 'title' => 'Support Issues' ) );
-	      $rows_affected = $wpdb->insert( $table_name, array( 'title' => 'Feedback' ) );
-	
-	   	} 
-	   	   	
-	 	// Subscriptions
-	   	$table_name = $wpdb->prefix . "symposium_subs";
-	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-	      
-	      $sql = "CREATE TABLE " . $table_name . " (
-			  sid int(11) NOT NULL AUTO_INCREMENT,
-			  uid int(11) NOT NULL,
-			  tid int(11) NOT NULL,
-			  cid int(11) NOT NULL,
-			  PRIMARY KEY sid (sid)
-	  		);";
-	
-	      dbDelta($sql);
-	
-	   	}
-	   	
-		// Configuration
-	   	$table_name = $wpdb->prefix . "symposium_config";
-	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-	      
-	      $sql = "CREATE TABLE " . $table_name . " (
-	          oid int(11) NOT NULL AUTO_INCREMENT,
-			  categories_background varchar(12) NOT NULL,
-			  categories_color varchar(12) NOT NULL,
-			  bigbutton_background varchar(12) NOT NULL,
-			  bigbutton_color varchar(12) NOT NULL,
-			  bigbutton_background_hover varchar(12) NOT NULL,
-			  bigbutton_color_hover varchar(12) NOT NULL,
-			  bg_color_1 varchar(12) NOT NULL,
-			  bg_color_2 varchar(12) NOT NULL,
-			  bg_color_3 varchar(12) NOT NULL,
-			  text_color varchar(12) NOT NULL,
-			  table_rollover varchar(12) NOT NULL,
-			  link varchar(12) NOT NULL,
-			  link_hover varchar(12) NOT NULL,
-			  table_border varchar(2) NOT NULL,
-			  replies_border_size varchar(2) NOT NULL,
-			  text_color_2 varchar(12) NOT NULL,
-			  row_border_style varchar(7) NOT NULL,
-			  row_border_size varchar(2) NOT NULL,
-			  border_radius varchar(2) NOT NULL,
-			  label varchar(12) NOT NULL,
-			  footer varchar(64) NOT NULL,
-			  show_categories varchar(2) NOT NULL,
-			  send_summary varchar(2) NOT NULL,
-			  forum_url varchar(128) NOT NULL,
-			  from_email varchar(128) NOT NULL,
-			  PRIMARY KEY oid (oid)
-			);";
-			
-	      dbDelta($sql);
-	
-	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'categories_background' => '#0072bc', 
-	      	'categories_color' => '#fff', 
-	      	'bigbutton_background' => '#0072bc', 
-	      	'bigbutton_color' => '#fff', 
-	      	'bigbutton_background_hover' => '#00aeef',
-	      	'bigbutton_color_hover' => '#fff', 
-	      	'bg_color_1' => '#0072bc', 
-	      	'bg_color_2' => '#ebebeb',
-	      	'bg_color_3' => '#fff', 
-	      	'text_color' => '#000', 
-	      	'table_rollover' => '#fbaf5a', 
-	      	'link' => '#0054a5', 
-	      	'link_hover' => '#000', 
-	      	'table_border' => '2', 
-	      	'replies_border_size' => '1', 
-	      	'text_color_2' => '#0054a5', 
-	      	'row_border_style' => 'dotted', 
-	      	'row_border_size' => '1', 
-			'border_radius' => '5',
-			'label' => '#000',
-	      	'footer' => 'Please don\'t reply to this email',
-	      	'show_categories' => 'on',
-	      	'send_summary' => 'on',
-	      	'forum_url' => 'Important: Please update!',	      				    
-	      	'from_email' => 'noreply@example.com'
-	      	) );
-	   	} 
-		
-	 	// Topics
-	   	$table_name = $wpdb->prefix . "symposium_topics";
-	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-	      
-	      $sql = "CREATE TABLE " . $table_name . " (
-			  tid int(11) NOT NULL AUTO_INCREMENT,
-			  topic_group int(11) NOT NULL DEFAULT '0',
-			  topic_category int(11) NOT NULL DEFAULT '0',
-			  topic_subject varchar(64) NOT NULL,
-			  topic_post text NOT NULL,
-			  topic_owner int(11) NOT NULL,
-			  topic_date datetime NOT NULL,
-			  topic_parent int(11) NOT NULL,
-			  topic_views int(11) NOT NULL,
-			  topic_started datetime NOT NULL,
-			  topic_sticky int(11) NOT NULL DEFAULT '0',
-			  PRIMARY KEY tid (tid)
-	  		);";
-	
-	      dbDelta($sql);
-	
-	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'topic_category' => $new_category_id, 
-	      	'topic_subject' => 'Welcome to the Forum', 
-	      	'topic_post' => 'Welcome to the forum - this is a demonstration post and can be deleted.',
-	      	'topic_owner' => $current_user->ID,
-	      	'topic_date' => date("Y-m-d H:i:s"),
-	      	'topic_views' => 0,
-	      	'topic_parent' => 0,
-	      	'topic_started' => date("Y-m-d H:i:s")
-	      	 ) );
-	      	 
-	      $new_topic_id = $wpdb->insert_id;
-	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'topic_category' => $new_category_id, 
-	      	'topic_subject' => '', 
-	      	'topic_post' => 'This is a demonstration reply.',
-	      	'topic_owner' => $current_user->ID,
-	      	'topic_date' => date("Y-m-d H:i:s"),
-	      	'topic_views' => 0,
-	      	'topic_parent' => $new_topic_id,
-	      	'topic_started' => date("Y-m-d H:i:s")
-	      	 ) );
-	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'topic_category' => $new_category_id, 
-	      	'topic_subject' => '', 
-	      	'topic_post' => 'This is another demonstration reply.',
-	      	'topic_owner' => $current_user->ID,
-	      	'topic_date' => date("Y-m-d H:i:s"),
-	      	'topic_views' => 0,
-	      	'topic_parent' => $new_topic_id,
-	      	'topic_started' => date("Y-m-d H:i:s")
-	      	 ) );
-	  		
-	   	} 	
-	
-		// Library of Styles
-	   	$table_name = $wpdb->prefix . "symposium_styles";
-	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-	   		
-	      $sql = "CREATE TABLE " . $table_name . " (
-	          sid int(11) NOT NULL AUTO_INCREMENT,
-			  title varchar(32) NOT NULL,
-			  categories_background varchar(12) NOT NULL,
-			  categories_color varchar(12) NOT NULL,
-			  bigbutton_background varchar(12) NOT NULL,
-			  bigbutton_color varchar(12) NOT NULL,
-			  bigbutton_background_hover varchar(12) NOT NULL,
-			  bigbutton_color_hover varchar(12) NOT NULL,
-			  bg_color_1 varchar(12) NOT NULL,
-			  bg_color_2 varchar(12) NOT NULL,
-			  bg_color_3 varchar(12) NOT NULL,
-			  text_color varchar(12) NOT NULL,
-			  table_rollover varchar(12) NOT NULL,
-			  link varchar(12) NOT NULL,
-			  link_hover varchar(12) NOT NULL,
-			  table_border varchar(2) NOT NULL,
-			  replies_border_size varchar(2) NOT NULL,
-			  text_color_2 varchar(12) NOT NULL,
-			  row_border_style varchar(7) NOT NULL,
-			  row_border_size varchar(2) NOT NULL,
-			  border_radius varchar(2) NOT NULL,
-			  label varchar(12) NOT NULL,
-			  PRIMARY KEY sid (sid)
-			);";
-			
-	      dbDelta($sql);
-	
-		  // Symposium
-	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'title' => 'Who Blue', 
-	      	'categories_background' => '#0072bc', 
-	      	'categories_color' => '#fff', 
-	      	'bigbutton_background' => '#0072bc', 
-	      	'bigbutton_color' => '#fff', 
-	      	'bigbutton_background_hover' => '#00aeef',
-	      	'bigbutton_color_hover' => '#fff', 
-	      	'bg_color_1' => '#0072bc', 
-	      	'bg_color_2' => '#ebebeb',
-	      	'bg_color_3' => '#fff', 
-	      	'text_color' => '#000', 
-	      	'table_rollover' => '#fbaf5a', 
-	      	'link' => '#0054a5', 
-	      	'link_hover' => '#000', 
-	      	'table_border' => '2', 
-	      	'replies_border_size' => '1', 
-	      	'text_color_2' => '#0054a5', 
-	      	'row_border_style' => 'dotted', 
-	      	'row_border_size' => '1', 
-			'border_radius' => '5',
-			'label' => '#0054a5'
-	      	) );
-	
-		  // Blue
-	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'title' => 'Blue Azure', 
-	      	'categories_background' => '#0072bc', 
-	      	'categories_color' => '#fff', 
-	      	'bigbutton_background' => '#0072bc', 
-	      	'bigbutton_color' => '#fff', 
-	      	'bigbutton_background_hover' => '#00aeef',
-	      	'bigbutton_color_hover' => '#fff', 
-	      	'bg_color_1' => '#0072bc', 
-	      	'bg_color_2' => '#ebebeb',
-	      	'bg_color_3' => '#e1e1e1', 
-	      	'text_color' => '#000', 
-	      	'table_rollover' => '#00aeef', 
-	      	'link' => '#0054a5', 
-	      	'link_hover' => '#000', 
-	      	'table_border' => '2', 
-	      	'replies_border_size' => '1', 
-	      	'text_color_2' => '#0054a5', 
-	      	'row_border_style' => 'dotted', 
-	      	'row_border_size' => '1', 
-			'border_radius' => '5',
-			'label' => '#0054a5'
-	      	) );
-	
-		  // Black/Grey
-	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'title' => 'Gothic', 
-	      	'categories_background' => '#363636', 
-	      	'categories_color' => '#fff', 
-	      	'bigbutton_background' => '#fff', 
-	      	'bigbutton_color' => '#000', 
-	      	'bigbutton_background_hover' => '#c2c2c2',
-	      	'bigbutton_color_hover' => '#000', 
-	      	'bg_color_1' => '#000', 
-	      	'bg_color_2' => '#363636',
-	      	'bg_color_3' => '#464646', 
-	      	'text_color' => '#959595', 
-	      	'table_rollover' => '#626262', 
-	      	'link' => '#fff', 
-	      	'link_hover' => '#959595', 
-	      	'table_border' => '2', 
-	      	'replies_border_size' => '1', 
-	      	'text_color_2' => '#c2c2c2', 
-	      	'row_border_style' => 'dotted', 
-	      	'row_border_size' => '1', 
-			'border_radius' => '5',
-			'label' => '#000'
-	      	) );
-	
-		  // Grey
-	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'title' => 'Metal', 
-			'border_radius' => '5',
-	      	'bigbutton_background' => '#464646', 
-	      	'bigbutton_background_hover' => '#555',
-	      	'bigbutton_color' => '#fff', 
-	      	'bigbutton_color_hover' => '#fff', 
-	      	'bg_color_1' => '#7d7d7d', 
-	      	'bg_color_2' => '#ebebeb',
-	      	'bg_color_3' => '#e1e1e1', 
-	      	'table_border' => '2', 
-	      	'row_border_style' => 'dotted', 
-	      	'row_border_size' => '1', 
-	      	'replies_border_size' => '1', 
-	      	'table_rollover' => '#7d7d7d', 
-	      	'categories_background' => '#7d7d7d', 
-	      	'categories_color' => '#fff', 
-	      	'text_color' => '#000', 
-	      	'text_color_2' => '#363636', 
-	      	'link' => '#000', 
-	      	'link_hover' => '#363636', 
-			'label' => '#000'
-	      	) );
-	
-		  // Neutral
-	      $rows_affected = $wpdb->insert( $table_name, array( 
-	      	'title' => 'Neutral', 
-			'border_radius' => '0',
-	      	'bigbutton_background' => '#959595', 
-	      	'bigbutton_background_hover' => '#c2c2c2',
-	      	'bigbutton_color' => '#fff', 
-	      	'bigbutton_color_hover' => '#000', 
-	      	'bg_color_1' => '#363636', 
-	      	'bg_color_2' => '#fff',
-	      	'bg_color_3' => '#ebebeb', 
-	      	'table_rollover' => '#e1e1e1', 
-	      	'table_border' => '0', 
-	      	'row_border_style' => 'dotted', 
-	      	'row_border_size' => '1', 
-	      	'replies_border_size' => '0', 
-	      	'categories_background' => '#c2c2c2', 
-	      	'categories_color' => '#000', 
-	      	'text_color' => '#000', 
-	      	'text_color_2' => '#898989', 
-	      	'link' => '#000', 
-	      	'link_hover' => '#363636', 
-			'label' => '#000'
-	      	) );
-	
-	   	} 
-
+		symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'No current database version, setting to 1.'));
 		// Set Database Version		
-	    add_option("symposium_db_version", $symposium_db_version);
-	    
-	    $db_ver = 1;
-	   	
+	    add_option("symposium_db_version", 1);	    	   	
 	}
 
-	// Version 2 *************************************************************************************
-	if ($db_ver < 2) {
 
-		// Add Languages to Options
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD language varchar(3) NOT NULL DEFAULT 'ENG'");
-   		
-	 	// Add Languages Table
-	   	$table_name = $wpdb->prefix . "symposium_lang";
-	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-	      
-	      $sql = "CREATE TABLE " . $table_name . " (
+	// Create initial versions of tables *************************************************************************************
+
+	include('create_tables.php');
+
+  	// Update tables (may already be there, not a problem as will just skip) *************************************************************************************
+
+   	// Add option fields
+	symposium_alter_table("config", "ADD", "allow_new_topics", "varchar(2) NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "language", "varchar(3) NOT NULL", "'ENG'");
+	symposium_alter_table("config", "ADD", "underline", "varchar(2) NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "preview1", "int(11) NOT NULL", "'45'");
+	symposium_alter_table("config", "ADD", "preview2", "int(11) NOT NULL", "'90'");
+	symposium_alter_table("config", "ADD", "viewer", "varchar(32) NOT NULL", "'Guest'");
+	symposium_alter_table("config", "ADD", "include_admin", "varchar(2) NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "oldest_first", "varchar(2) NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "wp_width", "varchar(6) NOT NULL", "'99pc'");
+	symposium_alter_table("config", "ADD", "main_background", "varchar(12) NOT NULL", "'#fff'");
+	symposium_alter_table("config", "ADD", "closed_opacity", "varchar(6) NOT NULL", "'1.0'");
+	symposium_alter_table("config", "ADD", "closed_word", "varchar(32) NOT NULL", "'closed'");
+	symposium_alter_table("config", "ADD", "fontfamily", "varchar(64) NOT NULL", "'Georgia,Times'");
+	symposium_alter_table("config", "ADD", "fontsize", "varchar(16) NOT NULL", "'15'");
+	symposium_alter_table("config", "ADD", "headingsfamily", "varchar(64) NOT NULL", "'Arial,Helvetica'");
+	symposium_alter_table("config", "ADD", "headingssize", "varchar(16) NOT NULL", "'20'");
+	symposium_alter_table("config", "ADD", "jquery", "varchar(2) NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "emoticons", "varchar(2) NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "seo", "varchar(2) NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "moderation", "varchar(2) NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "mail_url", "varchar(128) NOT NULL", "''");
+	// Profile
+	symposium_alter_table("config", "ADD", "profile_url", "varchar(128) NOT NULL", "''");
+	// Notification bar
+	symposium_alter_table("config", "ADD", "sound", "varchar(32) NOT NULL", "'chime.mp3'");
+	symposium_alter_table("config", "ADD", "bar_position", "varchar(6) NOT NULL", "'bottom'");
+	symposium_alter_table("config", "ADD", "bar_label", "varchar(256) NOT NULL", "'Powered by WP Symposium'");
+
+	// Modify option fields for all versions (if fields already exist, ADD above won't work)
+	symposium_alter_table("config", "MODIFY", "language", "varchar(64) NOT NULL", "'English'");
+	
+	// Modify audit table
+	symposium_alter_table("audit", "MODIFY", "message", "text", "''");
+
+	// Modify styles table
+	symposium_alter_table("styles", "ADD", "underline", "varchar(2) NOT NULL", "'on'");
+	symposium_alter_table("styles", "ADD", "main_background", "varchar(12) NOT NULL", "'#fff'");
+	symposium_alter_table("styles", "ADD", "closed_opacity", "varchar(6) NOT NULL", "'1.0'");
+	symposium_alter_table("styles", "ADD", "fontfamily", "varchar(128) NOT NULL", "'Georgia,Times'");
+	symposium_alter_table("styles", "ADD", "fontsize", "varchar(8) NOT NULL", "'15'");
+	symposium_alter_table("styles", "ADD", "headingsfamily", "varchar(128) NOT NULL", "'Georgia,Times'");
+	symposium_alter_table("styles", "ADD", "headingssize", "varchar(8) NOT NULL", "'20'");
+	
+	// Add moderation field to topics
+	symposium_alter_table("topics", "ADD", "allow_replies", "varchar(2) NOT NULL", "'on'");
+	symposium_alter_table("topics", "ADD", "topic_approved", "varchar(2) NOT NULL", "'on'");
+
+	// Update default language to English
+ 	$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'English'");
+
+	
+	// ***********************************************************************************************
+	// Recreate languages for latest version *****************************************************
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_lang");
+
+   	$table_name = $wpdb->prefix . "symposium_lang";
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+      
+      $sql = "CREATE TABLE " . $table_name . " (
 			  lid int(11) NOT NULL AUTO_INCREMENT,
-			  language varchar(3) NOT NULL,
-			  sant varchar(64) NOT NULL,
-			  ts varchar(64) NOT NULL,
-			  fpit varchar(64) NOT NULL,
-			  sac varchar(64) NOT NULL,
-			  emw varchar(64) NOT NULL,
-			  p varchar(64) NOT NULL,
-			  c varchar(64) NOT NULL,
-			  cat varchar(64) NOT NULL,
-			  lac varchar(64) NOT NULL,
-			  top varchar(64) NOT NULL,
-			  btf varchar(64) NOT NULL,
-			  rew varchar(64) NOT NULL,
-			  sbl varchar(64) NOT NULL,
-			  f varchar(64) NOT NULL,
-			  r varchar(64) NOT NULL,
-			  v varchar(64) NOT NULL,
-			  sb varchar(64) NOT NULL,
-			  rer varchar(64) NOT NULL,
-			  tis varchar(64) NOT NULL,
-			  re varchar(64) NOT NULL,
-			  e varchar(64) NOT NULL,
-			  d varchar(64) NOT NULL,
-			  aar varchar(64) NOT NULL,			  
-			  rtt varchar(64) NOT NULL,			  
-			  wir varchar(64) NOT NULL,			  
-			  rep varchar(64) NOT NULL,			  
-			  tt varchar(64) NOT NULL,			  
-			  u varchar(64) NOT NULL,			  
-			  bt varchar(64) NOT NULL,			  
-			  t varchar(64) NOT NULL,			  
-			  mc varchar(64) NOT NULL,			  
-			  s varchar(64) NOT NULL,			  
-			  pw varchar(64) NOT NULL,			  
-			  sav varchar(64) NOT NULL,			  
-			  hsa varchar(64) NOT NULL,			  
-			  i varchar(64) NOT NULL,			  
-			  nft varchar(64) NOT NULL,			  
-			  nfr varchar(64) NOT NULL,			  
-			  PRIMARY KEY lid (lid)
-	  		);";
-	  		
-	      dbDelta($sql);
-	
-	   	} 
+			  language varchar(64) DEFAULT NULL,
+			  sant text,
+			  ts text,
+			  fpit text,
+			  sac text,
+			  emw text,
+			  p text,
+			  c text,
+			  cat text,
+			  lac text,
+			  top text,
+			  btf text,
+			  rew text,
+			  sbl text,
+			  f text,
+			  r text,
+			  v text,
+			  sb text,
+			  rer text,
+			  tis text,
+			  re text,
+			  e text,
+			  d text,
+			  aar text,
+			  rtt text,
+			  wir text,
+			  rep text,
+			  tt text,
+			  u text,
+			  bt text,
+			  t text,
+			  mc text,
+			  s text,
+			  pw text,
+			  sav text,
+			  hsa text,
+			  i text,
+			  nft text,
+			  nfr text,
+			  prs text,
+			  prm text,
+			  tp text,
+			  tps text,
+			  rdv text,
+			  lrb text,
+			  reb text,
+			  ar text,
+			  too text,
+			  st text,
+			  fdd text,
+			  ycs text,
+			  nty text,
+			  pen text,
+			  fma text,
+			  fmr text,
+		  PRIMARY KEY lid (lid)
+  		);";
 
-	}
-	    
-	// Version 3 *************************************************************************************
-	if ($db_ver < 3) {
-
-		// Add language labels
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prs varchar(64) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD prm varchar(64) NOT NULL");
-   		
-	}
-
-	// Version 4 *************************************************************************************
-	if ($db_ver < 4) {
-
-		// Extend languages fields
-		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." MODIFY COLUMN language varchar(64)");
-	 	$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." MODIFY COLUMN language varchar(64)");
-
-		// Set language to Default
-   		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'Default'");
-   		
-	}
-
-	// Version 5 *************************************************************************************
-	if ($db_ver < 5) {
-
-		// Add underline style
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD underline varchar(2) NOT NULL DEFAULT 'on'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD underline varchar(2) NOT NULL DEFAULT 'on'");
-
-		// Add Aqua Style
-   		if($wpdb->get_var("SELECT title FROM ".$wpdb->prefix."symposium_styles WHERE title = 'Aqua'") != "Aqua") {		
-		    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_styles", array( 
-		      	'title' => 'Aqua', 
-				'border_radius' => '5',
-		      	'bigbutton_background' => '#B9D3EE', 
-		      	'bigbutton_background_hover' => '#B9D3EE',
-		      	'bigbutton_color' => '#505050', 
-		      	'bigbutton_color_hover' => '#000', 
-		      	'bg_color_1' => '#B9D3EE', 
-		      	'bg_color_2' => '#fff',
-		      	'bg_color_3' => '#fff', 
-		      	'table_rollover' => '#F8F8F8', 
-		      	'table_border' => '0', 
-		      	'row_border_style' => 'dotted', 
-		      	'row_border_size' => '1', 
-		      	'replies_border_size' => '1', 
-		      	'categories_background' => '#B9D3EE', 
-		      	'categories_color' => '#505050', 
-		      	'text_color' => '#505050', 
-		      	'text_color_2' => '#505050', 
-		      	'link' => '#505050', 
-		      	'underline' => '', 
-		      	'link_hover' => '#000', 
-				'label' => '#505050'
-	      	) );
-   		}
-	}
-
-	// Version 6 *************************************************************************************
-	if ($db_ver < 6) {
-
-		// Add language labels
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tp varchar(64) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD tps varchar(64) NOT NULL");
-   		
-	}
-
-	// Version 7 *************************************************************************************
-	if ($db_ver < 7) {
-
-	   	// Language additions
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD rdv varchar(64) NOT NULL");
-
-		// Add preview text lengths
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD preview1 int(11) NOT NULL DEFAULT '45'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD preview2 int(11) NOT NULL DEFAULT '90'");
-		// Minimum level of user for viewing
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD viewer varchar(32) NOT NULL DEFAULT 'Guest'");
-		// Include admin's in viewing counts?
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD include_admin varchar(2) NOT NULL DEFAULT 'on'");
-		// Show oldest replies first?
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD oldest_first varchar(2) NOT NULL DEFAULT 'on'");
-		// Width of forum
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config ADD wp_width varchar(6) NOT NULL DEFAULT '99pc'");
-
-		// Allow replies to a topic
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_topics ADD allow_replies varchar(2) NOT NULL DEFAULT 'on'");
-
-   		// Create WPS users meta table
-	   	$table_name = $wpdb->prefix . "symposium_usermeta";
-	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-	      
-	      $sql = "CREATE TABLE " . $table_name . " (
-			  mid int(11) NOT NULL AUTO_INCREMENT,
-			  uid int(11) NOT NULL,
-			  forum_digest varchar(2) NOT NULL DEFAULT 'on',
-			  PRIMARY KEY mid (mid)
-	  		);";
-	
-	     dbDelta($sql);
-
-	   	} 	
-	}
-
-	// Version 8 *************************************************************************************
-	if ($db_ver < 8) {
-
-	   	// Add main background color and [closed] opactiy to styles library
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD main_background varchar(12) NOT NULL DEFAULT '#fff'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD closed_opacity varchar(6) NOT NULL DEFAULT '1.0'");
-
-	   	// Add main background color to config table
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD main_background varchar(12) NOT NULL DEFAULT '#fff'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD closed_opacity varchar(6) NOT NULL DEFAULT '1.0'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD closed_word varchar(32) NOT NULL DEFAULT 'closed'");
-
-		// Add language fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD lrb varchar(64) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD reb varchar(64) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ar varchar(64) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD too varchar(64) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD st varchar(64) NOT NULL");
-	}
-
-	// Version 9 *************************************************************************************
-	if ($db_ver < 9) {
-
-		// Add language fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fdd varchar(64) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD ycs varchar(64) NOT NULL");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD nty varchar(64) NOT NULL");
-
-	   	// Add option fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontfamily varchar(64) NOT NULL DEFAULT 'Georgia,Times'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD fontsize varchar(16) NOT NULL DEFAULT '15'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingsfamily varchar(64) NOT NULL DEFAULT 'Arial,Helvetica'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD headingssize varchar(16) NOT NULL DEFAULT '20'");
-	}
-
-	// Version 10 *************************************************************************************
-	if ($db_ver < 10) {
-
-   		// Create audit table
-	   	$table_name = $wpdb->prefix . "symposium_audit";
-	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-	      
-	      $sql = "CREATE TABLE " . $table_name . " (
-			  aid int(11) NOT NULL AUTO_INCREMENT,
-			  code int(11) NOT NULL,
-			  type varchar(6) NOT NULL,
-			  plugin varchar(16) NOT NULL,
-			  uid int(11) NOT NULL,
-			  cid int(11) NOT NULL,
-			  tid int(11) NOT NULL,
-			  gid int(11) NOT NULL,
-			  message TEXT NOT NULL,
-			  stamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			  PRIMARY KEY aid (aid)
-	  		);";
-	
-	     dbDelta($sql);
-
-	   	} 	
-	}
-	
-	// Version 11 *************************************************************************************
-	if ($db_ver < 11) {
-		
-   		// Change audit table
-	   	$table_name = $wpdb->prefix . "symposium_lang";
-	   	
-		if (  $wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang 
-			  CHANGE sant sant varchar(64) NULL,
-			  CHANGE ts ts varchar(64) NULL,
-			  CHANGE fpit fpit varchar(64) NULL,
-			  CHANGE sac sac varchar(64) NULL,
-			  CHANGE emw emw varchar(64) NULL,
-			  CHANGE p p varchar(64) NULL,
-			  CHANGE c c varchar(64) NULL,
-			  CHANGE cat cat varchar(64) NULL,
-			  CHANGE lac lac varchar(64) NULL,
-			  CHANGE top top varchar(64) NULL,
-			  CHANGE btf btf varchar(64) NULL,
-			  CHANGE rew rew varchar(64) NULL,
-			  CHANGE sbl sbl varchar(64) NULL,
-			  CHANGE f f varchar(64) NULL,
-			  CHANGE r r varchar(64) NULL,
-			  CHANGE v v varchar(64) NULL,
-			  CHANGE sb sb varchar(64) NULL,
-			  CHANGE rer rer varchar(64) NULL,
-			  CHANGE tis tis varchar(64) NULL,
-			  CHANGE re re varchar(64) NULL,
-			  CHANGE e e varchar(64) NULL,
-			  CHANGE d d varchar(64) NULL,
-			  CHANGE aar aar varchar(64) NULL,			  
-			  CHANGE rtt rtt varchar(64) NULL,			  
-			  CHANGE wir wir varchar(64) NULL,			  
-			  CHANGE rep rep varchar(64) NULL,			  
-			  CHANGE tt tt varchar(64) NULL,			  
-			  CHANGE u u varchar(64) NULL,			  
-			  CHANGE bt bt varchar(64) NULL,			  
-			  CHANGE t t varchar(64) NULL,			  
-			  CHANGE mc mc varchar(64) NULL,			  
-			  CHANGE s s varchar(64) NULL,			  
-			  CHANGE pw pw varchar(64) NULL,			  
-			  CHANGE sav sav varchar(64) NULL,			  
-			  CHANGE hsa hsa varchar(64) NULL,			  
-			  CHANGE i i varchar(64) NULL,			  
-			  CHANGE nft nft varchar(64) NULL,			  
-			  CHANGE nfr nfr varchar(64) NULL,
-			  CHANGE fdd fdd varchar(64) NULL,
-			  CHANGE ycs ycs varchar(64) NULL,
-			  CHANGE nty nty varchar(64) NULL,
-			  CHANGE lrb lrb varchar(64) NULL,
-			  CHANGE reb reb varchar(64) NULL,
-			  CHANGE ar ar varchar(64) NULL,
-			  CHANGE too too varchar(64) NULL,
-			  CHANGE st st varchar(64) NULL,
-			  CHANGE rdv rdv varchar(64) NULL,
-			  CHANGE tp tp varchar(64) NULL,
-			  CHANGE tps tps varchar(64) NULL,
-			  CHANGE prs prs varchar(64) NULL,
-			  CHANGE prm prm varchar(64) NULL;") ) {
-			  	
-				symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'DB v11 languages table changed successfully.'));
-			  } else {
-				symposium_audit(array ('code'=>1, 'type'=>'error', 'plugin'=>'core', 'message'=>'DB v11 languages table change failed: '.$wpdb->last_query));
-			  }
-
-	}
-
-	// Version 13 *************************************************************************************
-	// This version aligns version version.x to same number (the x)
-	if ($db_ver < 13) {
-
-	   	// Add option fields
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD jquery varchar(2) NOT NULL DEFAULT 'on'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD emoticons varchar(2) NOT NULL DEFAULT 'on'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD seo varchar(2) NOT NULL DEFAULT ''");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_config"." ADD moderation varchar(2) NOT NULL DEFAULT ''");
-
-		// Add allow_new_topic to Categogires
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_cats"." ADD allow_new_topics varchar(2) NOT NULL DEFAULT ''");
-
-		// Add pending to languages
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD pen varchar(64) NOT NULL DEFAULT ''");
-
-		// Add fonts to styles
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD fontfamily varchar(128) NOT NULL DEFAULT 'Georgia,Times'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD fontsize varchar(8) NOT NULL DEFAULT '15'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD headingsfamily varchar(128) NOT NULL DEFAULT 'Georgia,Times'");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_styles"." ADD headingssize varchar(8) NOT NULL DEFAULT '20'");
-
-		// Add moderation field to topics
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_topics"." ADD topic_approved varchar(2) NOT NULL DEFAULT 'on'");
-
-		// Set language to Default
-	 	$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'English'");
-
-	}
-
-	// Version 14 *************************************************************************************
-	if ($db_ver < 14) {
-
-		// Add pending to languages
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fma varchar(64)");
-   		$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang"." ADD fmr varchar(64)");
-
-	}
-
-	// Version 15 *************************************************************************************
-	if ($db_ver < 15) {
-		
-		// Modify audit table
-	 	$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_audit"." MODIFY COLUMN message TEXT");
-
-   		// Change audit table
-	   	$table_name = $wpdb->prefix . "symposium_lang";	   	
-		$rows_affected = $wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_lang 
-			  MODIFY COLUMN sant TEXT,
-			  MODIFY COLUMN ts TEXT,
-			  MODIFY COLUMN fpit TEXT,
-			  MODIFY COLUMN sac TEXT,
-			  MODIFY COLUMN emw TEXT,
-			  MODIFY COLUMN p TEXT,
-			  MODIFY COLUMN c TEXT,
-			  MODIFY COLUMN cat TEXT,
-			  MODIFY COLUMN lac TEXT,
-			  MODIFY COLUMN top TEXT,
-			  MODIFY COLUMN btf TEXT,
-			  MODIFY COLUMN rew TEXT,
-			  MODIFY COLUMN sbl TEXT,
-			  MODIFY COLUMN f TEXT,
-			  MODIFY COLUMN r TEXT,
-			  MODIFY COLUMN v TEXT,
-			  MODIFY COLUMN sb TEXT,
-			  MODIFY COLUMN rer TEXT,
-			  MODIFY COLUMN tis TEXT,
-			  MODIFY COLUMN re TEXT,
-			  MODIFY COLUMN e TEXT,
-			  MODIFY COLUMN d TEXT,
-			  MODIFY COLUMN aar TEXT,			  
-			  MODIFY COLUMN rtt TEXT,			  
-			  MODIFY COLUMN wir TEXT,			  
-			  MODIFY COLUMN rep TEXT,			  
-			  MODIFY COLUMN tt TEXT,			  
-			  MODIFY COLUMN u TEXT,			  
-			  MODIFY COLUMN bt TEXT,			  
-			  MODIFY COLUMN t TEXT,			  
-			  MODIFY COLUMN mc TEXT,			  
-			  MODIFY COLUMN s TEXT,			  
-			  MODIFY COLUMN pw TEXT,			  
-			  MODIFY COLUMN sav TEXT,			  
-			  MODIFY COLUMN hsa TEXT,			  
-			  MODIFY COLUMN i TEXT,			  
-			  MODIFY COLUMN nft TEXT,			  
-			  MODIFY COLUMN nfr TEXT,
-			  MODIFY COLUMN fdd TEXT,
-			  MODIFY COLUMN ycs TEXT,
-			  MODIFY COLUMN nty TEXT,
-			  MODIFY COLUMN lrb TEXT,
-			  MODIFY COLUMN reb TEXT,
-			  MODIFY COLUMN ar TEXT,
-			  MODIFY COLUMN too TEXT,
-			  MODIFY COLUMN st TEXT,
-			  MODIFY COLUMN rdv TEXT,
-			  MODIFY COLUMN tp TEXT,
-			  MODIFY COLUMN tps TEXT,
-			  MODIFY COLUMN prs TEXT,
-			  MODIFY COLUMN prm TEXT,
-			  MODIFY COLUMN pen TEXT,
-			  MODIFY COLUMN fma TEXT,
-			  MODIFY COLUMN fmr TEXT;");
-			  
-		  if ($rows_affected === false) {			  	
-			symposium_audit(array ('code'=>1, 'type'=>'error', 'plugin'=>'core', 'message'=>'DB v15 languages table change failed: '.$wpdb->last_query));
-		  } else {
-			symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'DB v15 languages table changed successfully.'));
-		  }
-
-	}
-					      	
-	// ***********************************************************************************************
- 	// Update Database Version ***********************************************************************
-	update_option("symposium_db_version", "15");
-	
-	// ***********************************************************************************************
-	// Re-load languages file for latest version *****************************************************
-	$wpdb->query("DELETE FROM ".$wpdb->prefix . "symposium_lang");
+     dbDelta($sql);
+   	} 	
 
 	// Include lanagues
 	include('languages.php');
 
+					      	
+	// ***********************************************************************************************
+ 	// Update Database Version ***********************************************************************
+	update_option("symposium_db_version", $symposium_db_ver);
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Database version updated to '.$symposium_db_ver.'.'));
+
 	// Audit activation
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core activated.'));
+	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation complete.'));
 
 	
 }
 /* End of Activation */
+
+function symposium_alter_table($table, $action, $field, $format, $default) {
+	if ($action == "MODIFY") { $action = "MODIFY COLUMN"; }
+	if ($default != "") { $default = "DEFAULT ".$default; }
+
+	global $wpdb;	
+
+	$ok = '';
+	$check = $wpdb->get_var("SELECT count(".$field.") FROM ".$wpdb->prefix."symposium_".$table);
+	if ($check != '') { 
+		$ok = 'exists';
+		if ($check > 0) { $ok = 'same'; }
+	}
+	
+	if ($action == "ADD") {
+		if ($ok == 'exists' || $ok == 'same') {
+			symposium_audit(array ('code'=>21, 'type'=>'info', 'plugin'=>'core', 'message'=> 'Skipped '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default.' as field already exists.')));
+		} else {
+		  	if ($wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$default) ) {
+				symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default)));
+		  	} else {
+				symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default." ".$ok)));
+		  	}
+		}			
+	}
+
+	if ($action == "MODIFY COLUMN") {
+		if ($ok == 'same') {
+			symposium_audit(array ('code'=>21, 'type'=>'info', 'plugin'=>'core', 'message'=> 'Skipped '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default.' as field exists and is the same.')));
+		} else {
+		  	if ($wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$default) ) {
+				symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default)));
+		  	} else {
+				symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default)));
+		  	}
+		}			
+	}
+
+}
 
 function symposium_uninstall() {
    
@@ -847,6 +312,7 @@ function symposium_uninstall() {
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_lang");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_usermeta");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_audit");
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_mail");
 
 	// Delete Notification options
 	delete_option("symposium_notification_inseconds");
@@ -1098,6 +564,20 @@ function symposium_notification_trigger_schedule() {
 
 /* ====================================================== PHP FUNCTIONS ====================================================== */
 
+// Link to profile if pluing activated
+function symposium_profile_link($uid) {
+	global $wpdb;
+
+	$display_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$uid));
+	if (function_exists('symposium_profile')) {
+		$profile_url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix."symposium_config"));
+		$html = '<a href="'.$profile_url.'?uid='.$uid.'">'.$display_name.'</a>';
+	} else {
+		$html = $display_name;
+	}
+	return $html;
+}
+
 // Create Permalink for Forum
 function symposium_permalink($id, $type) {
 
@@ -1262,23 +742,23 @@ function symposium_time_ago($date,$language,$granularity=1) {
     		$retval = str_replace("y&#305;ls", "y&#305;l", $retval);
 	    	$retval = $retval." &ouml;nce";
         	break;  
-    case "Hungarian":
-    		$retval = str_replace("second", "m&aacute;sodperc", $retval);
-    		$retval = str_replace("m&aacute;sodpercs", "m&aacute;sodperc", $retval);
-    		$retval = str_replace("minute", "perc", $retval);
-    		$retval = str_replace("percs", "perc", $retval);
-    		$retval = str_replace("hour", "&oacute;ra", $retval);
-    		$retval = str_replace("&oacute;ras", "&oacute;ra", $retval);
-    		$retval = str_replace("day", "nap", $retval);
-    		$retval = str_replace("naps", "nap", $retval);
-    		$retval = str_replace("week", "h&eacute;t", $retval);
-    		$retval = str_replace("h&eacute;ts", "h&eacute;t", $retval);
-    		$retval = str_replace("month", "h&oacute;nap", $retval);
-    		$retval = str_replace("h&oacute;naps", "h&oacute;nap", $retval);
-    		$retval = str_replace("year", "&eacute;v", $retval);
-    		$retval = str_replace("&eacute;vs", "&eacute;v", $retval);
-	    	$retval = $retval." ezel&ouml;tt";
-        	break;  
+   case "Hungarian":
+           $retval = str_replace("second", "m&aacute;sodpercel", $retval);
+           $retval = str_replace("m&aacute;sodpercels", "m&aacute;sodpercel", $retval);
+           $retval = str_replace("minute", "percel", $retval);
+           $retval = str_replace("percels", "percel", $retval);
+           $retval = str_replace("hour", "&oacute;r&aacute;val", $retval);
+           $retval = str_replace("&oacute;r&aacute;vals", "&oacute;r&aacute;val", $retval);
+           $retval = str_replace("day", "nappal", $retval);
+           $retval = str_replace("nappals", "nappal", $retval);
+           $retval = str_replace("week", "h&eacute;ttel", $retval);
+           $retval = str_replace("h&eacute;ttels", "h&eacute;ttel", $retval);
+           $retval = str_replace("month", "h&oacute;nappal", $retval);
+           $retval = str_replace("h&oacute;nappals", "h&oacute;nappal", $retval);
+           $retval = str_replace("year", "&eacute;vvel", $retval);
+           $retval = str_replace("&eacute;vvels", "&eacute;vvel", $retval);
+           $retval = $retval." ezel&ouml;tt";
+           break; 
     case "Portuguese":
     		$retval = str_replace("second", "segundo", $retval);
     		$retval = str_replace("segundos", "segundo", $retval);
@@ -1363,7 +843,24 @@ function symposium_time_ago($date,$language,$granularity=1) {
     		$retval = str_replace("roks", "lata", $retval);
 	    	$retval = $retval." temu";        	
 			break;
-    }
+    case "Swedish":
+    		$retval = str_replace("second", "sekund", $retval);
+    		$retval = str_replace("sekunds", "sekunder", $retval);
+    		$retval = str_replace("minute", "minut", $retval);
+    		$retval = str_replace("minuts", "minuter", $retval);
+    		$retval = str_replace("hour", "timme", $retval);
+    		$retval = str_replace("timmes", "timmar", $retval);
+    		$retval = str_replace("day", "dag&#324;", $retval);
+    		$retval = str_replace("dags", "dagar", $retval);
+    		$retval = str_replace("week", "vecka", $retval);
+    		$retval = str_replace("veckas", "veckor", $retval);
+    		$retval = str_replace("month", "m&acirc;nad", $retval);
+    		$retval = str_replace("m&acirc;nads", "m&acirc;nader", $retval);
+    		$retval = str_replace("year", "&acric;r", $retval);
+    		$retval = str_replace("&acric;rs", "&acric;r", $retval);
+	    	$retval = $retval." sedan";        	
+			break;
+	    }
     return $retval;      
 }
 
@@ -1450,6 +947,7 @@ function symposium_smilies($buffer){ // $buffer contains entire page
 
 // Hook for URL redirect
 function symposium_redirect($buffer){ 
+	
 	global $wpdb;
 
 	$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix . 'symposium_config'));
@@ -1524,6 +1022,8 @@ function symposium_replace(){
 }
 add_action('template_redirect', 'symposium_replace');
 
+/* ====================================================== AJAX FUNCTIONS ====================================================== */
+
 // Add Stylesheet
 function add_symposium_stylesheet() {
 	if (!is_admin()) {
@@ -1535,9 +1035,15 @@ function add_symposium_stylesheet() {
 	    } else {
 		    wp_die( __('Stylesheet ('.$myStyleFile.' not found.') );
 	    }
+	    
+        wp_register_style('symposium_jquery-ui-css', WP_PLUGIN_URL.'/wp-symposium/jquery-ui.css');
+        wp_enqueue_style('symposium_jquery-ui-css');
+
+	    
 	}    
 }
 add_action('wp_print_styles', 'add_symposium_stylesheet');
+
 
 // Add jQuery and jQuery scripts
 function forum_init() {
@@ -1545,6 +1051,10 @@ function forum_init() {
 	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix . 'symposium_config'));
 	if ($jquery=="on" && !is_admin()) {
 		wp_enqueue_script('jquery');
+
+        wp_register_script('symposium_jquery-ui-js', WP_PLUGIN_URL.'/wp-symposium/jquery-ui.min.js');
+        wp_enqueue_script('symposium_jquery-ui-js');
+		
 	}
 }
 add_action('init', 'forum_init');
@@ -1560,6 +1070,9 @@ function admin_init() {
 
 }
 add_action('init', 'admin_init');
+
+
+
 
 register_activation_hook(__FILE__,'symposium_activate');
 register_deactivation_hook(__FILE__, 'symposium_deactivate');

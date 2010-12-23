@@ -1,30 +1,41 @@
 === Plugin Name ===
-Author: Simon Goodchild
+Author: WP Symposium
 Contributors: Simon Goodchild
 Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
-Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech
+Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.15
+Stable tag: 0.1.16
 
-A new suite of social networking plugins, starting with a forum.
+A new suite of social networking plugins - forum, mail, private messaging, notification bar, profile page, widgets, and more!
 
 == Description ==
 
-WP Symposium is a forum and more! A new suite of social networking plugins, starting with a forum - and you simply choose which you want to activate.
+WP Symposium is a new suite of social networking plugins - forum, mail, private messaging, notification bar, profile page, widgets, and more. You simply choose which you want to activate!
 
 NOTICE: We are currently BETA testing this plugin. As such, although we have not found any problems, we do not recommend you use it on any production sites. However, we do welcome all feedback, bug reports and suggestions. Please do so at www.wpsymposium.com - thank you. 
 
+Currently the forum is well developed, and the mail and notification bar have both just been released for user testing.
+
 ---------------
 
-**FORUM**
+**WP SYMPOSIUM FEATURES**
 
-*Overview*
+*plugins*
 
-The goal of the forum is to be simple and as uncluttered as possible, whilst having powerful features within.
+* Member Profile
+* Notification Bar
+* Forum
+* Mail/Private Messaging
+* Friends (not yet available)
+* Wall (not yet available)
+* ...more to come!!!
 
-Features currently include:
+*Widgets*
+
+* Latest Forum Posts
+* ...more to come!!!
 
 *Configuration*
 
@@ -61,18 +72,46 @@ Features currently include:
 * Italian (thanks to Massimiliano Mazza)
 * Turkish (thanks to Cahit Cengizhan)
 * Czech (thanks to Vase Jmeno)
-* Hungariaun (thanks to Gergo Nagy)
+* Hungarian (thanks to Gergo Nagy)
 * Portuguese (thanks to Nuno Coelho)
 * Brazilian Portuguese (thanks to Eduardo Machado)
 * Norwegian (thanks to Celina)
 * Dutch (thanks to Monique Huizen and Monique Huizen)
 * Russian (thanks to Ruslan)
 * Polish (thanks to Dariusz Labuda)
-
-* Simple Chinese (thanks to James Hu)
-* Greek (thanks to Konstantinos Bouropoulos)
+* Swedish (thanks to Mattias Dahl)
 
 * If your language is not included, or to make corrections, please contact us via info@wpsymposium.com and we will work with you on translating the forum to your language.
+
+**MEMBER PROFILE PAGE**
+
+The Member profile does not yet include all the functionality to form a useful page, but sets the foundation of sending mail to another another member, and linking the forum plugin and mail plugins. 
+
+Put `[symposium-profile]` on any WP page, and put the page URL in the Symposium options.
+
+**NOTIFICATION BAR**
+
+The notificat bar, if activated, can be placed at the bottom or top of every webpage. It shows a custom message to the left, and a login/logout link to the right.
+
+However, when a member is logged in and a new mail arrives, an alert is shown to the right instead of the logout link for a short period of time. Optionally, an alert sound (from a list available, defaulting to a subtle chime) is played.
+
+Simply activate the plugin to use the notification bar.
+
+**MAIL**
+
+Private messaging for all your members! At present they can easily send a mail to another member of the site just by typing their display name. 
+
+This will shortly be improved so that multiple recipients can be added. Furthermore mail can be limited to friends if the friends plugin is activated (yes - another plugin, but it's not available yet).
+
+Put `[symposium-mail]` on any WP page, and put the page URL in the Symposium options.
+
+**FORUM**
+
+*Overview*
+
+The goal of the forum is to be simple and as uncluttered as possible, whilst having powerful features within.
+
+Put `[symposium-forum]` on any WP page, and put the page URL in the Symposium options.
 
 *Categories*
 
@@ -110,15 +149,16 @@ Features currently include:
   
 == Installation ==
 
-Tested with PHP 5.
 Important - after activating for the first time, make sure you go to the Options page and set things up.
+As with all upgrades to any system, it is recommended that you take a backup of the database and website first.
+Tested with PHP 5.
 
 *Automatic installation*
 
 * go to Plugins->Add New and search for "Symposium"
 * click on Install below WP-Symposium
-* activate the plugins you want to use (core plugin must remain activated)
-* important - go to the Options page to configure
+* activate the plugins you want to use (core plugin MUST remain activated, and be activated first)
+* important - go to the Options page to configure settings
 
 *Manual installation*
 
@@ -135,7 +175,10 @@ If you need to, create a new page in WordPress (Pages->Add New).
 Put the following in a WordPress page (it's a hyphen, not an underscore):
 
   `[symposium-forum]`
+  `[symposium-profile]`
+  `[symposium-mail]`
   
+Installation of the notification bar is just a matter of activating it.
 
 == Screenshots ==
 
@@ -168,7 +211,19 @@ A. Go to http://www.wpsymposium.com/forum/add-new-forum-language and we will add
 Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page at http://www.wpsymposium.com/forum/forum-smilies
 
+Q. Will WP Symposium work on WPMU?
+A. Sorry no, not at the moment - but it's planned to get this working at some point
+
+
 == Changelog ==
+
+= 0.1.16 =
+
+* Added: Mail plugin
+* Added: Member Profile plugin
+* Added: Notification bar plugin
+* Changed: creation/updates of tables simplified in core activation
+* Added: Hungarian and Swedish languages
 
 = 0.1.15 =
 

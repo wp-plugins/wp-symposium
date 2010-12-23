@@ -54,9 +54,69 @@
 		'prs' => 'Please enter a subject.',
 		'prm' => 'Please enter a message.'
   	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Dutch language.'));
+		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed English language.'));
   	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Dutch language.'));
+		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install English language.'));
+  	}
+
+	// Install Swedish
+    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+      	'language' => 'Swedish', 
+		'sant' => 'Starta Nytt &Auml;mne',
+		'p' => 'Skicka',
+		'rtt' => 'Svara p&acirc; inl&Auml;gget...',
+		'c' => '&acirc;ngra',
+		'e' => '&Auml;ndra',
+		'd' => 'Radera',
+		'reb' => 'Svara',
+		'u' => 'Uppdatera',
+		'ts' => '&Auml;mnesrubrik',
+		'fpit' => 'F&ouml;rsta inl&Auml;gget i &Auml;mnet',
+		'cat' => 'Kategori',
+		't' => '&Auml;MNE',
+		'top' => '&Auml;MNEN',
+		'tp' => 'INL&Auml;GG',
+		'tps' => 'INL&Auml;GG',
+		'rep' => 'SVARA',
+		'r' => 'SVAR',
+		'v' => 'L&Auml;ST',
+		'nty' => 'Inga &Auml;mnen startade &Auml;nnu.',
+		'sac' => 'V&Auml;lj en kategori',
+		'sb' => 'Startad av',
+		'st' => 'startade',
+		're' => 'svarade',
+		'aar' => 'G&ouml;r ett inl&Auml;gg i det h&Auml;r &Auml;mnet',
+		'lrb' => 'Senaste svar av',
+		'tt' => 'Inl&Auml;ggstext',
+		'btf' => 'Tillbaka till Index',
+		'bt' => 'Tillbaka till',
+		'mc' => 'Flytta Kategori',
+		's' => 'V&Auml;lj...',
+		'hsa' => 'har startat ett nytt &Auml;mne',
+		'i' => 'i',
+		'too' => 'till',
+		'pen' => 'm&acirc;ste godk&Auml;nnas',
+		'emw' => 'E-posta mig n&Auml;r n&acirc;gon skriver ett svar',
+		'rew' => 'F&acirc; ett mail n&Auml;r nya &Auml;mnen postas',
+		'rer' => 'F&acirc; ett mail n&Auml;r det postas svar till det h&Auml;r &Auml;mnet',
+		'wir' => 'E-posta mig n&Auml;r andra svarar',
+		'rdv' => 'F&acirc; sammanfattning via e-post',
+		'ar' => 'Till&acirc;t svar',
+		'tis' => 'Klistra &Auml;mne',
+		'nft' => 'Nytt Forum-inlAgg',
+		'nfr' => 'Nytt Svar Till Forum-inlAgg',
+		'fdd' => 'Daglig Forum-sammanfattning',
+		'ycs' => 'Du kan stoppa de h&Auml;r mailen p&acirc;',
+		'fma' => 'Moderator: Ditt inl&Auml;gg har blivit godk&Auml;nt.',
+		'fmr' => 'Moderator: Ditt inl&Auml;gg har inte blivit godk&Auml;nt.',
+		'pw' => 'Ett &ouml;gonblick...',
+		'sav' => 'Sparar...',
+		'prs' => 'Var v&Auml;nlig &amp; fyll i en rubrik.',
+		'prm' => 'Var v&Auml;nlig &amp; skriv ett meddelande.'
+  	) ) ) {
+		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Swedish language.'));
+  	} else {
+		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Swedish language.'));
   	}
 
 	// Polish English
@@ -275,11 +335,11 @@
 		'hsa' => 'har startet et nytt emne',
 		'i' => 'i',
 		'too' => 'til',
-		'pen' => 'venter på godkjenning',
-		'emw' => 'Send meg email når jeg får svar',
-		'rew' => 'Motta email når nye emner er postet',
-		'rer' => 'Motta email når det er svar til dette emnet',
-		'wir' => 'Når jeg svarer, send meg email når det er flere svar til dette emnet',
+		'pen' => 'venter p&acirc; godkjenning',
+		'emw' => 'Send meg email n&acirc;r jeg f&acirc;r svar',
+		'rew' => 'Motta email n&acirc;r nye emner er postet',
+		'rer' => 'Motta email n&acirc;r det er svar til dette emnet',
+		'wir' => 'N&acirc;r jeg svarer, send meg email n&acirc;r det er flere svar til dette emnet',
 		'rdv' => 'Motta oppdateringer via email',
 		'tis' => 'Emnet er sticky',
 		'nft' => 'Nytt Forum',
@@ -784,6 +844,67 @@
   	} else {
 		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Turkish language.'));
   	}
+
+	// Install Hungarian
+    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+      	'language' => 'Hungarian', 
+	     'sant' => '&Uacute;j t&eacute;ma ind&iacute;t&aacute;sa',
+		 'p' => 'Elk&uuml;ld',
+		 'rtt' => 'Hozz&aacute;sz&oacute;l&aacute;s a t&eacute;m&aacute;hoz...',
+		 'c' => 'M&eacute;gse',
+		 'e' => 'Szerkeszt',
+		 'd' => 'T&ouml;r&ouml;l',
+		 'reb' => 'Elk&uuml;ld',
+		 'u' => 'M&oacute;dos&iacute;t',
+		 'ts' => 'T&eacute;ma c&iacute;me',
+		 'fpit' => 'Els&ouml; bejegyz&eacute;s  a t&eacute;m&aacute;ban',
+		 'cat' => 'Kateg&oacute;ria',
+		 't' => 'T&eacute;MA',
+		 'top' => 'T&eacute;MA',
+		 'tp' => 'HOZZ&Aacute;SZ&Oacute;L&Aacute;S',
+		 'tps' => 'HOZZ&Aacute;SZ&Oacute;L&Aacute;S',
+		 'rep' => 'HOZZ&Aacute;SZ&Oacute;L&Aacute;S',
+		 'r' => 'HOZZ&Aacute;SZ&Oacute;L&Aacute;S',
+		 'v' => 'OLVAS&Aacute;S',
+		 'nty' => 'M&eacute;g nincs t&eacute;ma ind&iacute;tva.',
+		 'sac' => 'Kateg&oacute;ria kiv&aacute;laszt&aacute;sa',
+		 'sb' => 'Ind&iacute;totta',
+		 'st' => 'ind&iacute;totta',
+		 're' => 'hozz&aacute;sz&oacute;lt',
+		 'aar' => 'Hozz&aacute;sz&oacute;l&aacute;s ehhez a t&eacute;m&aacute;hoz',
+		 'lrb' => 'Utols&oacute; hozz&aacute;sz&oacute;l&aacute;st &iacute;rta',
+		 'tt' => 'Bejegyz&eacute;s sz&ouml;vege',
+		 'btf' => 'Vissza a F&oacute;rumba',
+		 'bt' => 'Vissza ide:',
+		 'mc' => '&aacute;thelyez&eacute;s',
+		 's' => 'Kiv&aacute;laszt...',
+		 'hsa' => '&Uacute;j t&eacute;m&aacute;t ind&iacute;tott',
+		 'i' => 'itt:',
+		 'too' => 'a k&ouml;vetkez&ouml; t&eacute;m&aacute;hoz:',
+		 'pen' => 'elb&iacute;r&aacute;l&aacute;sra v&aacute;r',
+		 'emw' => '&eacute;rtes&iacute;t&eacute;s e-mailben mikor hozz&aacute;sz&oacute;l&aacute;s &eacute;rkezik a t&eacute;m&aacute;hoz',
+		 'rew' => ' &eacute;rtes&iacute;t&eacute;s e-mailben mikor egy &Uacute;j t&eacute;m&aacute;t ind&iacute;tanak',
+		 'rer' => '&eacute;rtes&iacute;t&eacute;s e-mailben mikor hozz&aacute;sz&oacute;l&aacute;s &eacute;rkezik a t&eacute;m&aacute;hoz',
+		 'wir' => '&eacute;rtes&iacute;t&eacute;s e-mailben mikor hozz&aacute;sz&oacute;l&aacute;s &eacute;rkezik a t&eacute;m&aacute;hoz',
+		 'rdv' => 'Napi &ouml;sszefoglal&oacute; jelent&eacute;s e-mailben',
+		 'ar' => 'Hozz&aacute;sz&oacute;l&aacute;sok enged&eacute;lyez&eacute;se',
+		 'tis' => 'Lez&aacute;rt t&eacute;ma',
+		 'nft' => 'Uj forum tema',
+		 'nfr' => 'Uj hozzaszolas',
+		 'fdd' => 'Napi osszefoglalo jelentes e-mailben.',
+		 'ycs' => 'Leiratkoz&aacute;s az e-mail &eacute;rtes&iacute;t&eacute;sr&ouml;l:',
+		 'fma' => 'Hozz&aacute;sz&oacute;l&aacute;sodat elfogadta a moder&aacute;tor.',
+		 'fmr' => 'Hozz&aacute;sz&oacute;l&aacute;sodat elutas&iacute;totta a moder&aacute;tor.',
+		 'pw' => 'T&uuml;relem...',
+		 'sav' => 'Ment&eacute;s...',
+		 'prs' => ' Meg kell adni a t&eacute;ma c&iacute;m&eacute;t.',
+		 'prm' => 'Meg kell adni a hozz&aacute;sz&oacute;l&aacute;s sz&ouml;veg&eacute;t.'
+  	) ) ) {
+		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Hungarian language.'));
+  	} else {
+		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Hungarian language.'));
+  	}
+
 
 
 ?>

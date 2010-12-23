@@ -116,8 +116,10 @@ function symposium_plugin_menu() {
 	add_menu_page(__('Symposium'), __('Symposium'.$count1), 'edit_themes', 'symposium_options', 'symposium_plugin_options', '', 7); 
 	add_submenu_page('symposium_options', __('Options'), __('Options'), 'edit_themes', 'symposium_options', 'symposium_plugin_options');
 	add_submenu_page('symposium_options', __('Styles'), __('Styles'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
-	add_submenu_page('symposium_options', __('Forum Categories'), __('Forum Categories'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
-	add_submenu_page('symposium_options', __('Forum Posts'), __('Forum Posts'.$count2), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
+	if (function_exists('symposium_forum')) {
+		add_submenu_page('symposium_options', __('Forum Categories'), __('Forum Categories'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
+		add_submenu_page('symposium_options', __('Forum Posts'), __('Forum Posts'.$count2), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
+	}
 	add_submenu_page('symposium_options', __('Health Check'), __('Health Check'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
 	add_submenu_page('symposium_options', __('Event Audit'), __('Event Audit'), 'edit_themes', 'symposium_event', 'symposium_plugin_event');
 }
@@ -333,8 +335,6 @@ function symposium_plugin_debug() {
   	echo '<div id="icon-themes" class="icon32"><br /></div>';
   	echo '<h2>WP Symposium Health Check</h2>';
 
-   	echo '<div class="error"><p><strong>Warning!</strong> Any interaction through this screen is done so at your own risk. You could disable your database and/or WP Symposium.<br />You are <strong>strongly advised</strong> to take a backup first. It is recommended that only <strong>advanced users</strong> use this screen. Note that error debugging is switched on for this page.</p></div>';
-
 	echo "<div style='width:45%; float:right'>";
 
   	echo '<h2>Table Structures</h2><p>';
@@ -359,7 +359,7 @@ function symposium_plugin_debug() {
    	}   	
    	echo $status;
    	
-  	// Topics
+  	// Options
    	$table_name = $wpdb->prefix . "symposium_config";
    	$status = $ok;
    	echo '<strong>Options: '.$table_name.'</strong><br />';
@@ -410,10 +410,16 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'seo')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'emoticons')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'moderation')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_url')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'profile_url')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bar_position')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bar_label')) { $status = "X"; }
+	
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
-   	
+   	   	
   	// Languages
    	$table_name = $wpdb->prefix . "symposium_lang";
    	$status = $ok;
@@ -535,26 +541,23 @@ function symposium_plugin_debug() {
    	}   	
    	echo $status;
    	
-  	// Topics
-   	$table_name = $wpdb->prefix . "symposium_topics";
+  	// Mail
+   	$table_name = $wpdb->prefix . "symposium_mail";
    	$status = $ok;
-   	echo '<strong>Topics/Posts: '.$table_name.'</strong><br />';
+   	echo '<strong>Mail: '.$table_name.'</strong><br />';
    	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
    		$status = $fail."Table doesn't exist".$fail2;
    	} else {
-		if (!symposium_field_exists($table_name, 'tid')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_group')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_category')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_subject')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_post')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_owner')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_date')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_parent')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_views')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_started')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_sticky')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'allow_replies')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'topic_approved')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_mid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_from')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_to')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_read')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_sent')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_subject')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_in_deleted')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_sent_deleted')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_notified')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mail_message')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -604,17 +607,7 @@ function symposium_plugin_debug() {
 
 	// ********** Reset database version
    	echo '<h2>Re-apply database upgrades</h2>';
-   	echo "<p>This will create any missing tables, and add any missing fields, shown above.</p>";
-   	echo '<form method="post" action="">';
-	echo '<input type="hidden" name="symposium_db_reset" value="Y">';
-    if( isset($_POST[ 'symposium_db_reset' ]) && $_POST[ 'symposium_db_reset' ] == 'Y' ) {
-		delete_option('symposium_db_version');
-        echo "<div style='border:1px solid #060;border-radius:5px;padding-left:8px; background-color: #9f9; font-weight: bold; color: #000;margin-bottom:10px;'>";
-        echo "<p>To complete the process, please <a href='plugins.php'>de-activate and re-activate</a> the core WP Symposium plugin.</p>";
-        echo "</div>";
-    }
-   	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Reset database version" /></p>';
-    echo '</form>';
+   	echo "<p>To re-run the database table modifications, de-activate and re-activate the core plugin. This will <strong>not</strong> destory any tables or any data.</p>";
 
 	// ********** Test AJAX
    	echo '<h2>AJAX test</h2>';
@@ -685,9 +678,33 @@ function symposium_plugin_debug() {
    	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Send email" /></p>';
    	echo '</form>';
 
+	// ********** Languages
+	echo '<h2>Installed Languages</h2>';
+	$success = "OK";
+	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . 'symposium_lang'));
+	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
+	if (!$language) {
+		$success = "Language translation not available for [".$language_key."] - try setting the language on the <a href='admin.php?page=symposium_options'>Options</a> page.";
+	}
+	$language_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix . 'symposium_lang'));
+	if ($language > 0) {
+		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
+		if ($language_options) {
+			echo '<ol>';
+			foreach ($language_options as $option)
+			{
+				echo "<li>".$option->language."</li>";
+			}
+			echo '</ol>';
+		}		
+	} else {
+		$success = "There was an undetermind problem loading the XML file";
+	}
+	if ($success == "OK" ) { echo $ok; } else { echo $fail.$success.$fail2; }
+
 	// ********** Test Updating a Value   		
    	echo '<h2>Test updating the database</h2>';
-   	echo '<p>Remember, some values may be case-sensitive.</p>';
+   	echo '<p><strong>Warning!</strong> Any interaction through this option is done so at your own risk. You could disable your database and/or WP Symposium.</p><p>You are <strong>strongly advised</strong> to take a backup first. It is recommended that only <strong>advanced users</strong> use this option. Remember, some values may be case-sensitive.</p>';
    	echo '<form method="post" action="">';
     if( isset($_POST[ 'symposium_test_viewer' ]) && $_POST[ 'symposium_test_viewer' ] == 'Y' ) {
         $table = $_POST[ 'symposium_testupdate_table' ];
@@ -715,30 +732,6 @@ function symposium_plugin_debug() {
    	echo '<input type="text" name="symposium_testupdate_value" value="'.$value.'" class="regular-text"><br />';   	
    	echo '<p class="submit"><input type="submit" name="Submit" class="button-primary" value="Update field" /></p>';
    	echo '</form>';
-
-	// ********** Languages
-	echo '<h2>Installed Languages</h2>';
-	$success = "OK";
-	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . 'symposium_lang'));
-	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
-	if (!$language) {
-		$success = "Language translation not available for [".$language_key."] - try setting the language on the <a href='admin.php?page=symposium_options'>Options</a> page.";
-	}
-	$language_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix . 'symposium_lang'));
-	if ($language > 0) {
-		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
-		if ($language_options) {
-			echo '<ol>';
-			foreach ($language_options as $option)
-			{
-				echo "<li>".$option->language."</li>";
-			}
-			echo '</ol>';
-		}		
-	} else {
-		$success = "There was an undetermind problem loading the XML file";
-	}
-	if ($success == "OK" ) { echo $ok; } else { echo $fail.$success.$fail2; }
 	   	   	
   	echo '</div>';
 }
@@ -946,6 +939,7 @@ function symposium_plugin_styles() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_background = '".$style->categories_background."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_color = '".$style->categories_color."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET border_radius = '".$style->border_radius."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET main_background = '".$style->main_background."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET bigbutton_background = '".$style->bigbutton_background."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET bigbutton_background_hover = '".$style->bigbutton_background_hover."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET bigbutton_color = '".$style->bigbutton_color."'") );					
@@ -1005,6 +999,7 @@ function symposium_plugin_styles() {
         $fontsize = str_replace("px", "", strtolower($_POST[ 'fontsize' ]));
         $headingsfamily = $_POST[ 'headingsfamily' ];
         $headingssize = str_replace("px", "", strtolower($_POST[ 'headingssize' ]));
+        $main_background = $_POST[ 'main_background' ];
 
         // Save the posted value in the database
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_background = '".$categories_background."'") );				
@@ -1033,6 +1028,7 @@ function symposium_plugin_styles() {
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET fontsize = '".$fontsize."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingsfamily = '".$headingsfamily."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET headingssize = '".$headingssize."'") );					
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET main_background = '".$main_background."'") );					
 
         // Put an settings updated message on the screen
 		echo "<div class='updated'><p>Options Saved</p></div>";
@@ -1257,7 +1253,7 @@ function symposium_plugin_styles() {
 			</tr> 
 			
 			<tr valign="top"> 
-			<th scope="row"><label for="closed_opacity">Closed topics <img src="../wp-content/plugins/wp-symposium/new.png" alt="New" /></label></th> 
+			<th scope="row"><label for="closed_opacity">Closed topics</label></th> 
 			<td><input name="closed_opacity" type="text" id="closed_opacity" class="iColorPicker" value="<?php echo $style->closed_opacity; ?>"  /> 
 			<?php
 			$closed_word = $wpdb->get_var($wpdb->prepare("SELECT closed_word FROM ".$wpdb->prefix.'symposium_config'));
@@ -1325,316 +1321,679 @@ function symposium_plugin_options() {
   	}
 
   	echo '<div class="wrap">';
-  	echo '<div id="icon-themes" class="icon32"><br /></div>';
-  	echo '<h2>Options</h2>';
   	
-    // See if the user has posted updated category information
-    if( isset($_POST[ 'categories_update' ]) && $_POST[ 'categories_update' ] == 'Y' ) {
-    	
-   		$range = array_keys($_POST['tid']);
-		foreach ($range as $key) {
-	
-		    $tid = $_POST['tid'][$key];
-		    $topic_category = $_POST['topic_category'][$key];
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_topics'." SET topic_category = ".$topic_category." WHERE tid = ".$tid) );					
-		}
-
-        // Put an settings updated message on the screen
-		echo "<div class='updated'><p>Categories Saved</p></div>";
-
-    }
-
-    // See if the user has posted us some information
-    if( isset($_POST[ 'symposium_update' ]) && $_POST[ 'symposium_update' ] == 'Y' ) {
-        // Read their posted value
-        $footer = $_POST[ 'email_footer' ];
-        $show_categories = $_POST[ 'show_categories' ];
-        $send_summary = $_POST[ 'send_summary' ];
-        $forum_url = $_POST[ 'forum_url' ];
-        $from_email = $_POST[ 'from_email' ];
-        $language = $_POST[ 'language' ];
-        $include_admin = $_POST[ 'include_admin' ];
-        $oldest_first = $_POST[ 'oldest_first' ];
-        $preview1 = $_POST[ 'preview1' ];
-        $preview2 = $_POST[ 'preview2' ];
-        $viewer = $_POST[ 'viewer' ];
-        $wp_width = str_replace('%', 'pc', ($_POST[ 'wp_width' ]));
-        $closed_word = $_POST[ 'closed_word' ];
-        $fontfamily = $_POST[ 'fontfamily' ];
-        $jquery = $_POST[ 'jquery' ];
-        $seo = $_POST[ 'seo' ];
-        $emoticons = $_POST[ 'emoticons' ];
-        $moderation = $_POST[ 'moderation' ];
-
-        // Save the posted value in the database
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET footer = '".$footer."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET show_categories = '".$show_categories."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET send_summary = '".$send_summary."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET from_email = '".$from_email."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET language = '".$language."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET include_admin = '".$include_admin."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET oldest_first = '".$oldest_first."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET preview1 = ".$preview1) );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET preview2 = ".$preview2) );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET viewer = '".$viewer."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_width = '".$wp_width."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET closed_word = '".$closed_word."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET jquery = '".$jquery."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET seo = '".$seo."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET emoticons = '".$emoticons."'") );					
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET moderation = '".$moderation."'") );					
-
-        // Put an settings updated message on the screen
-		echo "<div class='updated'><p>Options Saved</p></div>";
-
-    }
-
-    // Get values from database  
-	$wp_width = str_replace('pc', '%', $wpdb->get_var($wpdb->prepare("SELECT wp_width FROM ".$wpdb->prefix.'symposium_config')));
-	$footer = $wpdb->get_var($wpdb->prepare("SELECT footer FROM ".$wpdb->prefix.'symposium_config'));
-	$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config'));
-	$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix.'symposium_config'));
-	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
-	$from_email = $wpdb->get_var($wpdb->prepare("SELECT from_email FROM ".$wpdb->prefix.'symposium_config'));
-	$language = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix.'symposium_config'));
-	$include_admin = $wpdb->get_var($wpdb->prepare("SELECT include_admin FROM ".$wpdb->prefix.'symposium_config'));
-	$oldest_first = $wpdb->get_var($wpdb->prepare("SELECT oldest_first FROM ".$wpdb->prefix.'symposium_config'));
-	$preview1 = $wpdb->get_var($wpdb->prepare("SELECT preview1 FROM ".$wpdb->prefix.'symposium_config'));
-	$preview2 = $wpdb->get_var($wpdb->prepare("SELECT preview2 FROM ".$wpdb->prefix.'symposium_config'));
-	$viewer = $wpdb->get_var($wpdb->prepare("SELECT viewer FROM ".$wpdb->prefix.'symposium_config'));
-	$closed_word = $wpdb->get_var($wpdb->prepare("SELECT closed_word FROM ".$wpdb->prefix.'symposium_config'));
-	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix.'symposium_config'));
-	$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix.'symposium_config'));
-	$emoticons = $wpdb->get_var($wpdb->prepare("SELECT emoticons FROM ".$wpdb->prefix.'symposium_config'));
-	$moderation = $wpdb->get_var($wpdb->prepare("SELECT moderation FROM ".$wpdb->prefix.'symposium_config'));
-
-	?> 
-	
-	<div style='margin-bottom:20px; overflow:auto;'>
-	
-		<img style='float:left; margin: 10px 30px 10px 10px;' src='<?php echo get_site_url().'/wp-content/plugins/wp-symposium/'; ?>logo.png' />
+	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
+	  	echo '<h2>Options</h2>';
+	  	
+	    // See if the user has posted updated category information
+	    if( isset($_POST[ 'categories_update' ]) && $_POST[ 'categories_update' ] == 'Y' ) {
+	    	
+	   		$range = array_keys($_POST['tid']);
+			foreach ($range as $key) {
 		
-		<p><em>Symposium:</em> sym&middot;po&middot;si&middot;um;
-		<ul>
-		<li>&middot; A meeting or conference for discussion of a topic</li>
-		<li>&middot; A collection of writings on a particular topic</li>
-		<li>&middot; A convivial meeting</li>
-		</ul>
-		</p>
-		<p><em>Sym:</em> as in simple</p>
-		
-		<p style='margin-top:40px'><strong>Thank you for trying Symposium.<br />
-		For support, suggestions and feedback please visit <a href='http://www.wpsymposium.com'>www.wpsymposium.com</a></strong></p>
-		
-	</div>
-
-	<form method="post" action=""> 
-	<input type="hidden" name="symposium_update" value="Y">
-
-	<table class="form-table"> 
-
-	<tr><td colspan='2'><h2>Settings</h2><td></tr>
-	
-	<tr valign="top"> 
-	<th scope="row"><label for="jquery">Load jQuery <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th>
-	<td>
-	<input type="checkbox" name="jquery" id="jquery" <?php if ($jquery == "on") { echo "CHECKED"; } ?>/>
-	<span class="description">Load jQuery on non-admin pages, disable if causing problems</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="seo">SEO extended links <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th>
-	<td>
-	<input type="checkbox" name="seo" id="seo" <?php if ($seo == "on") { echo "CHECKED"; } ?>/>
-	<span class="description">Some other plugins may clash with this feature (causes 404 errors)</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="emoticons">Smilies/Emoticons <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th>
-	<td>
-	<input type="checkbox" name="emoticons" id="emoticons" <?php if ($emoticons == "on") { echo "CHECKED"; } ?>/>
-	<span class="description">Automatically replace smilies/emoticons with graphical images</span></td> 
-	</tr> 
-
-
-	<tr valign="top"> 
-	<th scope="row"><label for="language">Language</label></th> 
-	<td>
-	<?php
-
-	// Check that languages have been loaded
-	$language_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_lang');
-	if ($language_count == 0) {
-		echo '<div class="error"><p>The language file has not been loaded, have you changed it? Try downloading the latest version from <a href="http://wordpress.org/extend/plugins/wp-symposium/">the plugin page</a> and replacing your language.xml file. Then <a href="plugins.php">de-activate</a> the core WP-Symposium plugin and re-activate it. If the file has still not loaded, please report this on the <a href="http://www.wpsymposium.com">Support Forum</a>.</p></div>';
-		echo 'Language file not loaded.';
-	} else {
-		echo '<select name="language">';
-		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
-		if ($language_options) {
-			foreach ($language_options as $option)
-			{
-				echo "<option value='".$option->language."'";
-				if ($language == $option->language) { echo ' SELECTED'; }
-				echo ">".$option->language."</option>";
+			    $tid = $_POST['tid'][$key];
+			    $topic_category = $_POST['topic_category'][$key];
+				$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_topics'." SET topic_category = ".$topic_category." WHERE tid = ".$tid) );					
 			}
-		}		
-		echo '</select>';
-		echo '<span class="description">If you only have Default available, perform a <a href="admin.php?page=symposium_debug">Health Check</a>.</span></td>';
-	}
-	?>
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="wp_width">Width</label></th> 
-	<td><input name="wp_width" type="text" id="wp_width" value="<?php echo $wp_width; ?>"/> 
-	<span class="description">Width of all WP Symposium plugins, eg: 600px or 85%</span></td> 
-	</tr> 
-
-	<tr><td colspan='2'><h2>Forum</h2><td></tr>
 	
-	<tr valign="top"> 
-	<th scope="row"><label for="forum_url">Forum URL</label></th> 
-	<td><input name="forum_url" type="text" id="forum_url"  value="<?php echo $forum_url; ?>" class="regular-text" /> 
-	<span class="description"><strong>Very Important!</strong> eg: http://www.example.com/forum</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="moderation">Moderation <img src="../wp-content/plugins/wp-symposium/new.png" alt="New" /></label></th>
-	<td>
-	<input type="checkbox" name="moderation" id="moderation" <?php if ($moderation == "on") { echo "CHECKED"; } ?>/>
-	<span class="description">New topics and posts require admin approval</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="email_footer">Email Notifications</label></th> 
-	<td><input name="email_footer" type="text" id="email_footer"  value="<?php echo $footer; ?>" class="regular-text" /> 
-	<span class="description">Footer appended to notification emails</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="from_email">&nbsp;</label></th> 
-	<td><input name="from_email" type="text" id="from_email"  value="<?php echo $from_email; ?>" class="regular-text" /> 
-	<span class="description">Email address used for email notifications</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="send_summary">Daily Digest</label></th>
-	<td>
-	<input type="checkbox" name="send_summary" id="send_summary" <?php if ($send_summary == "on") { echo "CHECKED"; } ?>/>
-	<span class="description">Enable daily summaries to all members via email</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="show_categories">Categories</label></th>
-	<td>
-	<input type="checkbox" name="show_categories" id="show_categories" <?php if ($show_categories == "on") { echo "CHECKED"; } ?>/>
-	<span class="description">Organise forum topics by categories</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="include_admin">Admin views</label></th>
-	<td>
-	<input type="checkbox" name="include_admin" id="include_admin" <?php if ($include_admin == "on") { echo "CHECKED"; } ?>/>
-	<span class="description">Include administrator viewing a topic in the total view count</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="oldest_first">Order of replies</label></th>
-	<td>
-	<input type="checkbox" name="oldest_first" id="oldest_first" <?php if ($oldest_first == "on") { echo "CHECKED"; } ?>/>
-	<span class="description">Show oldest replies first (uncheck to reverse order)</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="preview1">Preview length</label></th>
-	<td><input name="preview1" type="text" id="preview1"  value="<?php echo $preview1; ?>" /> 
-	<span class="description">Maximum number of characters to show in topic preview</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="preview2"></label></th>
-	<td><input name="preview2" type="text" id="preview2"  value="<?php echo $preview2; ?>" /> 
-	<span class="description">Maximum number of characters to show in reply preview</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="viewer">View forum level</label></th> 
-	<td>
-	<select name="viewer">
-		<option value='Guest'<?php if ($viewer == 'Guest') { echo ' SELECTED'; } ?>>Guest</option>
-		<option value='Subscriber'<?php if ($viewer == 'Subscriber') { echo ' SELECTED'; } ?>>Subscriber</option>
-		<option value='Contributor'<?php if ($viewer == 'Contributor') { echo ' SELECTED'; } ?>>Contributor</option>
-		<option value='Editor'<?php if ($viewer == 'Editor') { echo ' SELECTED'; } ?>>Editor</option>
-		<option value='Administrator'<?php if ($viewer == 'Administrator') { echo ' SELECTED'; } ?>>Administrator</option>
-	</select> 
-	<span class="description">The minimum level a visitor has to be to view the forum</span></td> 
-	</tr> 
-
-	<tr valign="top"> 
-	<th scope="row"><label for="closed_word">Closed word</label></th>
-	<td><input name="closed_word" type="text" id="closed_word"  value="<?php echo $closed_word; ?>" /> 
-	<span class="description">Word used to denote a topic that is closed (see also Styles)</span></td> 
-	</tr> 
-
-	</table> 
-
-
-	<p style='margin-top:20px'>
-	<span class="description">
-	<strong>Notes</strong>
-	<ul>
-	<li>&middot;&nbsp;Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time, for the previous day.</li>
-	<li>&middot;&nbsp;Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website.</li>
-	</ul>
-	</p>	
-	 
-	<p class="submit"> 
-	<input type="submit" name="Submit" class="button-primary" value="Save Changes" /> 
-	</p> 
-	</form> 
+	        // Put an settings updated message on the screen
+			echo "<div class='updated'><p>Categories Saved</p></div>";
 	
-	<?php
-	
-	if ($show_categories == "on") {
-		$topics = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_category=0 AND topic_parent=0");
+	    }
 
-		if ($topics) {
-			echo "<p>The following topics are un-categorised, if you want them to appear in a category, please select below.</p>";
-			echo '<form method="post" action="">';
-			echo '<input type="hidden" name="categories_update" value="Y">';
+	    // See if the user has posted notification bar settings
+	    if( $_POST[ 'symposium_update' ] == 'B' ) {
+	        $sound = $_POST[ 'sound' ];
+	        $bar_position = $_POST[ 'bar_position' ];
+	        $bar_label = $_POST[ 'bar_label' ];
+
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET sound = '".$sound."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_position = '".$bar_position."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_label = '".$bar_label."'") );					
+			
+	        // Put an settings updated message on the screen
+			echo "<div class='updated'><p>Notification bar options saved.</p></div>";
+			
+	    }
+	    	
+	    // See if the user has posted general settings
+	    if( $_POST[ 'symposium_update' ] == 'S' ) {
+	        $jquery = $_POST[ 'jquery' ];
+	        $seo = $_POST[ 'seo' ];
+	        $emoticons = $_POST[ 'emoticons' ];
+	        $wp_width = str_replace('%', 'pc', ($_POST[ 'wp_width' ]));
+	        $language = $_POST[ 'language' ];
+	        $forum_url = $_POST[ 'forum_url' ];
+	        $mail_url = $_POST[ 'mail_url' ];
+	        $profile_url = $_POST[ 'profile_url' ];
+
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET jquery = '".$jquery."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET seo = '".$seo."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET emoticons = '".$emoticons."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_width = '".$wp_width."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET language = '".$language."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET mail_url = '".$mail_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET profile_url = '".$profile_url."'") );					
+			
+	        // Put an settings updated message on the screen
+			echo "<div class='updated'><p>Settings saved.</p></div>";
+			
+	    }
+
+	    // See if the user has posted forum settings
+	    if( $_POST[ 'symposium_update' ] == 'F' ) {
+	    	    	        
+	        $footer = $_POST[ 'email_footer' ];
+	        $show_categories = $_POST[ 'show_categories' ];
+	        $send_summary = $_POST[ 'send_summary' ];
+	        $from_email = $_POST[ 'from_email' ];
+	        $include_admin = $_POST[ 'include_admin' ];
+	        $oldest_first = $_POST[ 'oldest_first' ];
+	        $preview1 = $_POST[ 'preview1' ];
+	        $preview2 = $_POST[ 'preview2' ];
+	        $viewer = $_POST[ 'viewer' ];
+	        $closed_word = $_POST[ 'closed_word' ];
+	        $fontfamily = $_POST[ 'fontfamily' ];
+	        $moderation = $_POST[ 'moderation' ];
+
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET footer = '".$footer."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET show_categories = '".$show_categories."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET send_summary = '".$send_summary."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET from_email = '".$from_email."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET include_admin = '".$include_admin."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET oldest_first = '".$oldest_first."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET preview1 = ".$preview1) );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET preview2 = ".$preview2) );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET viewer = '".$viewer."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET closed_word = '".$closed_word."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET moderation = '".$moderation."'") );					
+
+	        // Put an settings updated message on the screen
+			echo "<div class='updated'><p>Forum options saved.</p></div>";
+
+	    }
 		
-			echo '<table class="form-table">';
+		// Following in line style is bad form and should be removed
+		?> 
+		
+		<style>
+			#symposium-wrapper #mail_tabs {
+				width: 100%;
+				border-radius:0px;
+				-moz-border-radius:0px;
+				margin-left: 10px;
+				overflow: auto;
+				position: relative;
+				top: 1px;
+			}
+			
+			#symposium-wrapper .mail_tab {
+				border: 1px solid #666;
+				padding: 8px;
+				border-radius:0px;
+				-moz-border-radius:0px;
+			 	border-top-left-radius:5px;
+				-moz-border-radius-topleft:5px;
+			 	border-top-right-radius:5px;
+				-moz-border-radius-topright:5px;
+				width: 10%;
+				text-align: center;
+				float: left;
+				margin-right: 10px;
+			}
+			
+			#symposium-wrapper #mail_tabs .nav-tab-active {
+				z-index: 3;
+				border-bottom: 1px solid #fff;
+				background-color: #fff;
+			}
+			
+			#symposium-wrapper #mail_tabs .nav-tab-inactive {
+				z-index: 1;
+				border-bottom: 1px solid #666;
+				background-color: #efefef;
+			}
+			
+			#symposium-wrapper #mail_tabs .nav-tab-active-link {
+				text-decoration: none;
+				color: #000;
+				font-size: 18px;
+			}
+			
+			#symposium-wrapper #mail_tabs .nav-tab-inactive-link {
+				text-decoration: none;
+				color: #999;
+				font-size: 18px;
+			}
+			
+			#symposium-wrapper #mail-main {
+				z-index: 2;
+				width: 98%;
+				border-radius: 5px;
+				-moz-border-radius:5px;
+				border: 1px solid #666;
+				background-color: #fff;
+				padding: 10px;
+				overflow: auto;
+				margin-bottom: 15px;
+			}
+			
+		</style>	
+	
+		<?php
+		// View
+		$notes_active = 'inactive';
+		$settings_active = 'active';
+		$forum_active = 'inactive';
+		$mail_active = 'inactive';
+		$bar_active = 'inactive';
+		$profile_active = 'inactive';
+		$view = "settings";
+		if ( !isset($_GET['view']) || ($_GET['view'] == 'notes') ) {
+			$notes_active = 'active';
+			$settings_active = 'inactive';
+			$forum_active = 'inactive';
+			$mail_active = 'inactive';
+			$bar_active = 'inactive';
+			$profile_active = 'inactive';
+			$view = "notes";
+		} 
+		if ($_GET['view'] == 'profile') {
+			$notes_active = 'inactive';
+			$settings_active = 'inactive';
+			$forum_active = 'inactive';
+			$mail_active = 'inactive';
+			$bar_active = 'inactive';
+			$profile_active = 'inactive';
+			$view = "profile";
+		} 
+		if ($_GET['view'] == 'forum') {
+			$notes_active = 'inactive';
+			$settings_active = 'inactive';
+			$forum_active = 'active';
+			$mail_active = 'inactive';
+			$bar_active = 'inactive';
+			$profile_active = 'inactive';
+			$view = "forum";
+		} 
+		if ($_GET['view'] == 'mail') {
+			$notes_active = 'inactive';
+			$settings_active = 'inactive';
+			$forum_active = 'inactive';
+			$mail_active = 'active';
+			$bar_active = 'inactive';
+			$profile_active = 'inactive';
+			$view = "mail";
+		} 
+		if ($_GET['view'] == 'bar') {
+			$notes_active = 'inactive';
+			$settings_active = 'inactive';
+			$forum_active = 'inactive';
+			$mail_active = 'inactive';
+			$bar_active = 'active';
+			$view = "bar";
+		} 
+		if ($_GET['view'] == "settings") {
+			$notes_active = 'inactive';
+			$settings_active = 'active';
+			$forum_active = 'inactive';
+			$mail_active = 'inactive';
+			$bar_active = 'inactive';
+			$profile_active = 'inactive';
+			$view = "settings";
+		} 
+	
+		echo '<div id="symposium-wrapper" style="margin-top:15px">';
+		
+			echo '<div id="mail_tabs">';
+			echo '<div class="mail_tab nav-tab-'.$notes_active.'"><a href="admin.php?page=symposium_options&view=notes" class="nav-tab-'.$notes_active.'-link">Notes</a></div>';
+			echo '<div class="mail_tab nav-tab-'.$settings_active.'"><a href="admin.php?page=symposium_options&view=settings" class="nav-tab-'.$settings_active.'-link">Settings</a></div>';
+			if (function_exists('symposium_forum')) {
+				echo '<div class="mail_tab nav-tab-'.$forum_active.'"><a href="admin.php?page=symposium_options&view=forum" class="nav-tab-'.$forum_active.'-link">Forum</a></div>';
+			};
+			if (function_exists('symposium_mail')) {
+				echo '<div class="mail_tab nav-tab-'.$mail_active.'"><a href="admin.php?page=symposium_options&view=mail" class="nav-tab-'.$mail_active.'-link">Mail</a></div>';
+			}
+			if (function_exists('symposium_profile')) {
+				echo '<div class="mail_tab nav-tab-'.$profile_active.'"><a href="admin.php?page=symposium_options&view=profile" class="nav-tab-'.$profile_active.'-link">Profile</a></div>';
+			}
+			if (function_exists('add_notification_bar')) {
+				echo '<div class="mail_tab nav-tab-'.$bar_active.'"><a href="admin.php?page=symposium_options&view=bar" class="nav-tab-'.$bar_active.'-link">No&apos;tion</a></div>';
+			}
+			echo '</div>';
+			
+			echo '<div id="mail-main">';
+			
+				// NOTES / INTRODUCTION
+				if ($view == "notes") {
+					?>
+					<img style='float:right; margin: 10px 0px 10px 10px;' src='<?php echo get_site_url().'/wp-content/plugins/wp-symposium/'; ?>logo.png' />
+					
+					<h1>WP Symposium</h1>
+					<p><em>Symposium:</em> sym&middot;po&middot;si&middot;um;
+					<ul>
+					<li>&middot; A meeting or conference for discussion of a topic</li>
+					<li>&middot; A collection of writings on a particular topic</li>
+					<li>&middot; A convivial meeting</li>
+					</ul>
+					</p>
+					<p><em>Sym:</em> as in simple</p>
+					
+					<p style='margin-top:20px'><strong>Thank you for using Symposium.<br />
+					For support, suggestions and feedback please visit <a href='http://www.wpsymposium.com'>www.wpsymposium.com</a></strong></p>
 
-			foreach ($topics as $topic) {
-				echo '<tr valign="top">';
-				echo '<th scope="row"><label for="topic_category">'.$topic->topic_subject.'</label></th>';
-				echo '<td>';
-				echo '<input type="hidden" name="tid[]" value='.$topic->tid.' />';
-				echo '<select name="topic_category[]">';
-				$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats');
-				if ($categories) {
-					foreach ($categories as $category) {
-						echo '<option value='.$category->cid.'>'.$category->title.'</option>';
+					<p>Currently included in the WP Symposium suite of plugins:
+					<ol>
+					<li>Core (activated)</li>
+					<li>Forum<?php if (function_exists('symposium_forum')) { echo ' (activated)'; } ?></li>
+					<li>Mail/Private Messaging <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /><?php if (function_exists('symposium_mail')) { echo ' (activated)'; } ?></li>
+					<li>Member Profile <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /><?php if (function_exists('symposium_profile')) { echo ' (activated)'; } ?></li>
+					<li>Notification Bar <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /><?php if (function_exists('add_notification_bar')) { echo ' (activated)'; } ?></li>
+					</ol>
+					
+					<p>
+					<strong>Warning:</strong> The WP Symposium Mail and Notification bar plugins have been released for testing only - it is not recommended for use on a live website. It is only in English at the moment, but will support all installed languages. However, your feedback on the plugin would be welcomed at <a href="http://www.wpsymposium.com">www.wpsymposium.com</a>.
+					</p>
+					
+					<p><strong>Note from the author</strong></p>
+					<p>
+					Thank you very much for using WP Symposium. The forum, with the incredibly useful feedback from users, 
+					is nearing a stable release, allowing me to concentrate on the other modules. It doesn't mean that new features 
+					won't be added - multi-level categories, for example - but with the release of the other modules there are some 
+					key additions to those new modules that should be made as soon as possible.
+					</p>
+					<p>
+					For example, "friends" is needed urgently so that mail recipients can be limited to a members list of friends, 
+					rather than everyone on the site, as well as the ability to block other members. Also, sending to multiple 
+					recipients is needed, you can only send to one person at the moment.
+					</p>
+					<p>
+					And there are some great new additions around the corner, chat windows, more widgets, wall and more!
+					</p>
+					<p>
+					So thank you for your support over the recent weeks since v0.1 - and have a great festive season!
+					</p>
+					<p><em>Simon</em></p>
+					
+					<?php
+				}
+
+				// NOTIFICATION BAR
+				if ($view == "bar") {
+
+					$sound = $wpdb->get_var($wpdb->prepare("SELECT sound FROM ".$wpdb->prefix."symposium_config"));
+					$bar_position = $wpdb->get_var($wpdb->prepare("SELECT bar_position FROM ".$wpdb->prefix."symposium_config"));
+					$bar_label = $wpdb->get_var($wpdb->prepare("SELECT bar_label FROM ".$wpdb->prefix."symposium_config"));
+					?>
+						
+					<form method="post" action=""> 
+					<input type="hidden" name="symposium_update" value="B">
+				
+					<table class="form-table"> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="bar_label">Label</label></th> 
+					<td><input name="bar_label" type="text" id="bar_label"  value="<?php echo $bar_label; ?>" style="width:300px" class="regular-text" /> 
+					<span class="description">The text that is shown to the left of the notification bar</td> 
+					</tr> 
+								
+					<tr valign="top"> 
+					<th scope="row"><label for="sound">Sound Alert</label></th> 
+					<td>
+					<select name="sound">
+						<option value='None'<?php if ($sound == 'None') { echo ' SELECTED'; } ?>>None</option>
+						<option value='baby.mp3'<?php if ($sound == 'baby.mp3') { echo ' SELECTED'; } ?>>Baby</option>
+						<option value='beep.mp3'<?php if ($sound == 'beep.mp3') { echo ' SELECTED'; } ?>>Beep</option>
+						<option value='bell.mp3'<?php if ($sound == 'bell.mp3') { echo ' SELECTED'; } ?>>Bell</option>
+						<option value='buzzer.mp3'<?php if ($sound == 'buzzer.mp3') { echo ' SELECTED'; } ?>>Buzzer</option>
+						<option value='chime.mp3'<?php if ($sound == 'chime.mp3') { echo ' SELECTED'; } ?>>Chime</option>
+						<option value='doublechime.mp3'<?php if ($sound == 'doublechime.mp3') { echo ' SELECTED'; } ?>>Double Chime</option>
+						<option value='dudeyougotmail.mp3'<?php if ($sound == 'dudeyougotmail.mp3') { echo ' SELECTED'; } ?>>Dude! You got mail!</option>
+						<option value='hacksaw.mp3'<?php if ($sound == 'hacksaw.mp3') { echo ' SELECTED'; } ?>>Hacksaw</option>
+						<option value='incoming.mp3'<?php if ($sound == 'incoming.mp3') { echo ' SELECTED'; } ?>>Incoming!</option>
+						<option value='tap.mp3'<?php if ($sound == 'tap.mp3') { echo ' SELECTED'; } ?>>Tap</option>
+						<option value='youvegotmail.mp3'<?php if ($sound == 'youvegotmail.mp3') { echo ' SELECTED'; } ?>>You've got mail</option>
+					</select> 
+					<span class="description">Plays when receive new mail or subscribed forum topic post made</span></td> 
+					</tr> 
+					
+					<?php if ($sound != 'None') { echo '<embed src="'.WP_PLUGIN_URL.'/wp-symposium/soundmanager/'.$sound.'" width="0" height="0" loop="false" autostart="true"></embed>'; } ?>
+					
+					<tr valign="top"> 
+					<th scope="row"><label for="bar_position">Bar Position</label></th> 
+					<td>
+					<select name="bar_position">
+						<option value='bottom'<?php if ($bar_position == 'bottom') { echo ' SELECTED'; } ?>>Bottom</option>
+						<option value='top'<?php if ($bar_position == 'top') { echo ' SELECTED'; } ?>>Top</option>
+					</select> 
+					<span class="description">Where on the screen the bar is placed</span></td> 
+					</tr> 				
+					</table> 
+					 
+					<p class="submit"> 
+					<input type="submit" name="Submit" class="button-primary" value="Save Changes" /> 
+					</p> 
+					</form> 
+					
+					<?php
+				}
+									 
+				// SETTINGS
+				if ($view == "settings") {
+
+				    // Get values from database  
+					$wp_width = str_replace('pc', '%', $wpdb->get_var($wpdb->prepare("SELECT wp_width FROM ".$wpdb->prefix.'symposium_config')));
+					$language = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix.'symposium_config'));
+					$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix.'symposium_config'));
+					$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix.'symposium_config'));
+					$emoticons = $wpdb->get_var($wpdb->prepare("SELECT emoticons FROM ".$wpdb->prefix.'symposium_config'));	
+					$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
+					$mail_url = $wpdb->get_var($wpdb->prepare("SELECT mail_url FROM ".$wpdb->prefix.'symposium_config'));
+					$profile_url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix.'symposium_config'));
+					?>
+									
+					<form method="post" action=""> 
+					<input type="hidden" name="symposium_update" value="S">
+				
+					<table class="form-table"> 
+
+					<tr><td colspan="2"><strong>Very Important!</strong> You must set the URL's of the components you are using, eg: http://www.example.com/forum</span></td></tr>
+					
+					<tr valign="top"> 
+					<th scope="row"><label for="forum_url">Forum URL</label></th> 
+					<td><input name="forum_url" type="text" id="forum_url"  value="<?php echo $forum_url; ?>" class="regular-text" /> 
+					<span class="description">URL of the page that shows the forum</td> 
+					</tr> 
+								
+					<tr valign="top"> 
+					<th scope="row"><label for="mail_url">Mail URL</label></th> 
+					<td><input name="mail_url" type="text" id="mail_url"  value="<?php echo $mail_url; ?>" class="regular-text" /> 
+					<span class="description">URL of the page that shows mail</td> 
+					</tr> 
+								
+					<tr valign="top"> 
+					<th scope="row"><label for="profile_url">Profile URL</label></th> 
+					<td><input name="profile_url" type="text" id="profile_url"  value="<?php echo $profile_url; ?>" class="regular-text" /> 
+					<span class="description">URL of the page that shows member profiles</td> 
+					</tr> 
+					
+								
+					<tr valign="top"> 
+					<th scope="row"><label for="jquery">Load jQuery</label></th>
+					<td>
+					<input type="checkbox" name="jquery" id="jquery" <?php if ($jquery == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Load jQuery on non-admin pages, disable if causing problems</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="seo">SEO extended links</label></th>
+					<td>
+					<input type="checkbox" name="seo" id="seo" <?php if ($seo == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Some other plugins may clash with this feature (causes 404 errors)</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="emoticons">Smilies/Emoticons</label></th>
+					<td>
+					<input type="checkbox" name="emoticons" id="emoticons" <?php if ($emoticons == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Automatically replace smilies/emoticons with graphical images</span></td> 
+					</tr> 
+				
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="language">Language</label></th> 
+					<td>
+					<?php
+				
+					// Check that languages have been loaded
+					$language_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_lang');
+					if ($language_count == 0) {
+						echo '<div class="error"><p>The language file has not been loaded, have you changed it? Try downloading the latest version from <a href="http://wordpress.org/extend/plugins/wp-symposium/">the plugin page</a> and replacing your language.xml file. Then <a href="plugins.php">de-activate</a> the core WP-Symposium plugin and re-activate it. If the file has still not loaded, please report this on the <a href="http://www.wpsymposium.com">Support Forum</a>.</p></div>';
+						echo 'Language file not loaded.';
+					} else {
+						echo '<select name="language">';
+						$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
+						if ($language_options) {
+							foreach ($language_options as $option)
+							{
+								echo "<option value='".$option->language."'";
+								if ($language == $option->language) { echo ' SELECTED'; }
+								echo ">".$option->language."</option>";
+							}
+						}		
+						echo '</select>';
+						echo '<span class="description">If you only have Default available, perform a <a href="admin.php?page=symposium_debug">Health Check</a>.</span></td>';
 					}
-				}				
-				echo '</select>';
-				echo '</td>';
-				echo '</tr>';
-			}
+					?>
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="wp_width">Width</label></th> 
+					<td><input name="wp_width" type="text" id="wp_width" value="<?php echo $wp_width; ?>"/> 
+					<span class="description">Width of all WP Symposium plugins, eg: 600px or 85%</span></td> 
+					</tr> 
+					
+					</table>
+					 
+					<p class="submit"> 
+					<input type="submit" name="Submit" class="button-primary" value="Save Changes" /> 
+					</p> 
+					</form> 
+					
+					<?php
+									  
+				} // End of Settings
 
-			echo '</table>';
+				// FORUM
+				if ($view == "forum") {
 
-			echo '<p class="submit">';
-			echo '<input type="submit" name="Submit" class="button-primary" value="Update Categories" />';
-			echo '</p>';
-			echo '</form>';
+					$footer = $wpdb->get_var($wpdb->prepare("SELECT footer FROM ".$wpdb->prefix.'symposium_config'));
+					$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$wpdb->prefix.'symposium_config'));
+					$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix.'symposium_config'));
+					$from_email = $wpdb->get_var($wpdb->prepare("SELECT from_email FROM ".$wpdb->prefix.'symposium_config'));
+					$include_admin = $wpdb->get_var($wpdb->prepare("SELECT include_admin FROM ".$wpdb->prefix.'symposium_config'));
+					$oldest_first = $wpdb->get_var($wpdb->prepare("SELECT oldest_first FROM ".$wpdb->prefix.'symposium_config'));
+					$preview1 = $wpdb->get_var($wpdb->prepare("SELECT preview1 FROM ".$wpdb->prefix.'symposium_config'));
+					$preview2 = $wpdb->get_var($wpdb->prepare("SELECT preview2 FROM ".$wpdb->prefix.'symposium_config'));
+					$viewer = $wpdb->get_var($wpdb->prepare("SELECT viewer FROM ".$wpdb->prefix.'symposium_config'));
+					$closed_word = $wpdb->get_var($wpdb->prepare("SELECT closed_word FROM ".$wpdb->prefix.'symposium_config'));
+					$moderation = $wpdb->get_var($wpdb->prepare("SELECT moderation FROM ".$wpdb->prefix.'symposium_config'));
+					?>
+						
+					<form method="post" action=""> 
+					<input type="hidden" name="symposium_update" value="F">
+				
+					<table class="form-table"> 
+					
+					<tr valign="top"> 
+					<th scope="row"><label for="moderation">Moderation</label></th>
+					<td>
+					<input type="checkbox" name="moderation" id="moderation" <?php if ($moderation == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">New topics and posts require admin approval</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="email_footer">Email Notifications</label></th> 
+					<td><input name="email_footer" type="text" id="email_footer"  value="<?php echo $footer; ?>" class="regular-text" /> 
+					<span class="description">Footer appended to notification emails</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="from_email">&nbsp;</label></th> 
+					<td><input name="from_email" type="text" id="from_email"  value="<?php echo $from_email; ?>" class="regular-text" /> 
+					<span class="description">Email address used for email notifications</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="send_summary">Daily Digest</label></th>
+					<td>
+					<input type="checkbox" name="send_summary" id="send_summary" <?php if ($send_summary == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Enable daily summaries to all members via email</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="show_categories">Categories</label></th>
+					<td>
+					<input type="checkbox" name="show_categories" id="show_categories" <?php if ($show_categories == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Organise forum topics by categories</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="include_admin">Admin views</label></th>
+					<td>
+					<input type="checkbox" name="include_admin" id="include_admin" <?php if ($include_admin == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Include administrator viewing a topic in the total view count</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="oldest_first">Order of replies</label></th>
+					<td>
+					<input type="checkbox" name="oldest_first" id="oldest_first" <?php if ($oldest_first == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Show oldest replies first (uncheck to reverse order)</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="preview1">Preview length</label></th>
+					<td><input name="preview1" type="text" id="preview1"  value="<?php echo $preview1; ?>" /> 
+					<span class="description">Maximum number of characters to show in topic preview</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="preview2"></label></th>
+					<td><input name="preview2" type="text" id="preview2"  value="<?php echo $preview2; ?>" /> 
+					<span class="description">Maximum number of characters to show in reply preview</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="viewer">View forum level</label></th> 
+					<td>
+					<select name="viewer">
+						<option value='Guest'<?php if ($viewer == 'Guest') { echo ' SELECTED'; } ?>>Guest</option>
+						<option value='Subscriber'<?php if ($viewer == 'Subscriber') { echo ' SELECTED'; } ?>>Subscriber</option>
+						<option value='Contributor'<?php if ($viewer == 'Contributor') { echo ' SELECTED'; } ?>>Contributor</option>
+						<option value='Editor'<?php if ($viewer == 'Editor') { echo ' SELECTED'; } ?>>Editor</option>
+						<option value='Administrator'<?php if ($viewer == 'Administrator') { echo ' SELECTED'; } ?>>Administrator</option>
+					</select> 
+					<span class="description">The minimum level a visitor has to be to view the forum</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="closed_word">Closed word</label></th>
+					<td><input name="closed_word" type="text" id="closed_word"  value="<?php echo $closed_word; ?>" /> 
+					<span class="description">Word used to denote a topic that is closed (see also Styles)</span></td> 
+					</tr> 
+				
+					</table> 
+				
+				
+					<p style='margin-top:20px'>
+					<span class="description">
+					<strong>Notes</strong>
+					<ul>
+					<li>&middot;&nbsp;Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time, for the previous day.</li>
+					<li>&middot;&nbsp;Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website.</li>
+					</ul>
+					</p>	
+					 
+					<p class="submit"> 
+					<input type="submit" name="Submit" class="button-primary" value="Save Changes" /> 
+					</p> 
+					</form> 
+					
+					<?php
 
-		}
-	}
-  
-  	echo '</div>';
+					if ($show_categories == "on") {
+						$topics = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_category=0 AND topic_parent=0");
+				
+						if ($topics) {
+							echo "<p>The following topics are un-categorised, if you want them to appear in a category, please select below.</p>";
+							echo '<form method="post" action="">';
+							echo '<input type="hidden" name="categories_update" value="Y">';
+						
+							echo '<table class="form-table">';
+				
+							foreach ($topics as $topic) {
+								echo '<tr valign="top">';
+								echo '<th scope="row"><label for="topic_category">'.$topic->topic_subject.'</label></th>';
+								echo '<td>';
+								echo '<input type="hidden" name="tid[]" value='.$topic->tid.' />';
+								echo '<select name="topic_category[]">';
+								$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats');
+								if ($categories) {
+									foreach ($categories as $category) {
+										echo '<option value='.$category->cid.'>'.$category->title.'</option>';
+									}
+								}				
+								echo '</select>';
+								echo '</td>';
+								echo '</tr>';
+							}
+				
+							echo '</table>';
+				
+							echo '<p class="submit">';
+							echo '<input type="submit" name="Submit" class="button-primary" value="Update Categories" />';
+							echo '</p>';
+							echo '</form>';
+				
+						}
+					}
+				  
+				} // End of Forum
 
+				// MAIL
+				if ($view == "mail") {
+
+				    // Get values from database  
+					?>
+						
+					<form method="post" action=""> 
+					<input type="hidden" name="symposium_update" value="M">
+				
+					<table class="form-table"> 
+				
+					<tr valign="top"> 
+					<td>No options available.</td>
+					</tr> 
+										
+					</table>
+					 
+					</form> 
+					
+					<?php
+									  
+				} // End of Mail
+
+				// PROFILE
+				if ($view == "profile") {
+
+				    // Get values from database  
+					?>
+						
+					<form method="post" action=""> 
+					<input type="hidden" name="symposium_update" value="P">
+				
+					<table class="form-table"> 
+				
+					<tr valign="top"> 
+					<td>No options available.</td>
+					</tr> 
+										
+					</table>
+					 
+					</form> 
+					
+					<?php
+									  
+				} // End of Profile
+													
+			echo '</div>'; // End of tab content
+		
+		echo '</div>'; // End of Symposium Wrapper
+	
+  	echo '</div>'; // End of wrap
+	  	
 } 	
 
 /* ====================================================== AJAX FUNCTIONS ====================================================== */

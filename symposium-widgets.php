@@ -3,8 +3,8 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium
-Version: 0.1.15
-Author: Simon Goodchild
+Version: 0.1.16
+Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
 */
@@ -74,11 +74,11 @@ class Forumrecentposts_Widget extends WP_Widget {
 						if ($post->topic_parent > 0) {
 							$text = stripslashes($post->topic_post);
 							if ( strlen($text) > $preview ) { $text = substr($text, 0, $preview)."..."; }
-							echo $post->display_name." ".$language->re." <a href='".$forum_url.symposium_permalink($post->topic_parent, "topic")."?cid=".$post->topic_category."&show=".$post->topic_parent."'>".$text."</a> ".symposium_time_ago($post->topic_date, $language_key).".<br>";
+							echo symposium_profile_link($post->topic_owner)." ".$language->re." <a href='".$forum_url.symposium_permalink($post->topic_parent, "topic")."?cid=".$post->topic_category."&show=".$post->topic_parent."'>".$text."</a> ".symposium_time_ago($post->topic_date, $language_key).".<br>";
 						} else {
 							$text = stripslashes($post->topic_subject);
 							if ( strlen($text) > $preview ) { $text = substr($text, 0, $preview)."..."; }
-							echo $post->display_name." ".$language->st." <a href='".$forum_url.symposium_permalink($post->tid, "topic")."?cid=".$post->topic_category."&show=".$post->tid."'>".$text."</a> ".symposium_time_ago($post->topic_date, $language_key).".<br>";
+							echo symposium_profile_link($post->topic_owner)." ".$language->st." <a href='".$forum_url.symposium_permalink($post->tid, "topic")."?cid=".$post->topic_category."&show=".$post->tid."'>".$text."</a> ".symposium_time_ago($post->topic_date, $language_key).".<br>";
 						}
 					echo "</div>";
 				echo "</div>";
@@ -122,5 +122,27 @@ class Forumrecentposts_Widget extends WP_Widget {
 	}
 
 }
+
+/* ====================================================== ACTIVATE/DEACTIVATE ====================================================== */
+
+function symposium_widgets_activate() {
+
+	if (function_exists('symposium_audit')) {
+		symposium_audit(array ('code'=>5, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Widgets activated.'));
+	} else {
+	    wp_die( __('Core plugin must be actived first.') );
+	}
+}
+
+function symposium_widgets_deactivate() {
+
+	if (function_exists('symposium_audit')) {
+		symposium_audit(array ('code'=>6, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Widgets de-activated.'));
+	}
+
+}
+
+register_activation_hook(__FILE__,'symposium_widgets_activate');
+register_deactivation_hook(__FILE__, 'symposium_widgets_deactivate');
 
 ?>

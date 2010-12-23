@@ -3,8 +3,8 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.15
-Author: Simon Goodchild
+Version: 0.1.16
+Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
 */
@@ -483,16 +483,15 @@ function symposium_forum() {
 		if ($_POST['show'] != '') { $show = $_POST['show']; }
 		if ($tid != '') { $show = $tid; }
 			
+		$html .= "<div style='clear:both' class='floatright'>";
 		if ($cat_id > 0) {
-			$html .= "<div style='clear:both' class='floatright'>";
 			if ( ($cat_id > 0) && ($show != '') ) {
 				$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
 				$html .= "<a class='backto label' href='".$thispage.$q."cid=".$cat_id."'>".$language->bt." ".stripslashes($category_title)."...</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 			}
-	
-			$html .= "&nbsp;&nbsp;<a class='backto label' href='".get_permalink()."'>".$language->btf."...</a>";
-			$html .= "</div>";
 		}
+		$html .= "&nbsp;&nbsp;<a class='backto label' href='".get_permalink()."'>".$language->btf."...</a>";
+		$html .= "</div>";
 	
 	
 		// SHOW FORUM ***************************************************************************************************
@@ -678,7 +677,7 @@ function symposium_forum() {
 										$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
 											$html .= get_avatar($reply->topic_owner, 32);
 										$html .= "</div>";
-										$html .= $reply->display_name." ".$language->re." ".$language->too." ";
+										$html .= symposium_profile_link($reply->topic_owner)." ".$language->re." ".$language->too." ";
 										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
 										$html .= symposium_time_ago($reply->topic_date, $language_key).".";
 										if ($reply->topic_approved != 'on') { $html .= " <em>[".$language->pen."]</em>"; }
@@ -686,7 +685,7 @@ function symposium_forum() {
 										$html .= "<div class='avatar' style='margin-right:0px;margin-bottom:0px; padding-bottom: 0px;'>";
 											$html .= get_avatar($last_topic->topic_owner, 32);
 										$html .= "</div>";
-										$html .= $last_topic->display_name." ".$language->st." ";
+										$html .= symposium_profile_link($last_topic->topic_owner)." ".$language->st." ";
 										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
 										$html .= symposium_time_ago($last_topic->topic_date, $language_key).".";
 									}
@@ -808,7 +807,7 @@ function symposium_forum() {
 									$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
 										$html .= get_avatar($last_post->topic_owner, 32);
 									$html .= "</div>";
-									$html .= $language->lrb." ".$last_post->display_name;
+									$html .= $language->lrb." ".symposium_profile_link($last_post->topic_owner);
 									$html .= " ".symposium_time_ago($topic->topic_date, $language_key).".";
 									$post = stripslashes($last_post->topic_post);
 									if ( strlen($post) > $snippet_length_long ) { $post = substr($post, 0, $snippet_length_long)."..."; }
@@ -818,7 +817,7 @@ function symposium_forum() {
 									$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 0px;'>";
 										$html .= get_avatar($topic->topic_owner, 32);
 									$html .= "</div>";
-									$html .= $language->sb." ".$topic->display_name;
+									$html .= $language->sb." ".symposium_profile_link($topic->topic_owner);
 									$html .= " ".symposium_time_ago($topic->topic_date, $language_key).".";
 								}
 								$html .= "</div>";
@@ -932,7 +931,7 @@ function symposium_forum() {
 					$html .= "<div class='topic-post-header'>".stripslashes($post->topic_subject);
 					if ($post->topic_approved != 'on') { $html .= " <em>[".$language->pen."]</em>"; }
 					$html .= "</div>";					
-					$html .= "<div class='started-by'>".$language->sb." ".$post->display_name." ".symposium_time_ago($post->topic_started, $language_key)."</div>";
+					$html .= "<div class='started-by'>".$language->sb." ".symposium_profile_link($post->topic_owner)." ".symposium_time_ago($post->topic_started, $language_key)."</div>";
 					$html .= "</div>";
 	
 					$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", stripslashes($post->topic_post))."</div>";
@@ -997,7 +996,7 @@ function symposium_forum() {
 							$html .= "<div class='avatar'>";
 								$html .= get_avatar($child->ID, 64);
 							$html .= "</div>";
-							$html .= "<div class='started-by'>".$child->display_name." ".$language->re." ".symposium_time_ago($child->topic_date, $language_key)."...";
+							$html .= "<div class='started-by'>".symposium_profile_link($child->topic_owner)." ".$language->re." ".symposium_time_ago($child->topic_date, $language_key)."...";
 							$html .= "</div>";
 							$html .= "<div id='".$child->tid."' class='child-reply-post'>";
 								$html .= "<p>".str_replace(chr(13), "<br />", stripslashes($child->topic_post));
@@ -1266,7 +1265,9 @@ add_action('wp_ajax_updateForumSubscribe', 'updateForumSubscribe');
 function symposium_forum_activate() {
 
 	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>5, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum activated.'));
+		symposium_audit(array ('code'=>5, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Forum activated.'));
+	} else {
+	    wp_die( __('Core plugin must be actived first.') );
 	}
 
 }
@@ -1274,7 +1275,7 @@ function symposium_forum_activate() {
 function symposium_forum_deactivate() {
 
 	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>6, 'type'=>'system', 'plugin'=>'forum', 'message'=>'Forum de-activated.'));
+		symposium_audit(array ('code'=>6, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Forum de-activated.'));
 	}
 
 }
