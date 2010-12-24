@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.16
+Version: 0.1.16.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -85,7 +85,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.16";
+	$symposium_version = "0.1.16.1";
 	$symposium_db_ver = 16;
 	
 	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation started.'));
@@ -125,7 +125,6 @@ function symposium_activate() {
 
    	// Add option fields
 	symposium_alter_table("config", "ADD", "allow_new_topics", "varchar(2) NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "language", "varchar(3) NOT NULL", "'ENG'");
 	symposium_alter_table("config", "ADD", "underline", "varchar(2) NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "preview1", "int(11) NOT NULL", "'45'");
 	symposium_alter_table("config", "ADD", "preview2", "int(11) NOT NULL", "'90'");
@@ -287,15 +286,12 @@ function symposium_alter_table($table, $action, $field, $format, $default) {
 	}
 
 	if ($action == "MODIFY COLUMN") {
-		if ($ok == 'same') {
-			symposium_audit(array ('code'=>21, 'type'=>'info', 'plugin'=>'core', 'message'=> 'Skipped '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default.' as field exists and is the same.')));
-		} else {
-		  	if ($wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$default) ) {
-				symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default)));
-		  	} else {
-				symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default)));
-		  	}
-		}			
+		$sql = "ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$default;
+	  	if ($wpdb->query($sql) ) {
+			symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default)));
+	  	} else {
+			symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default).' ('.$sql.'). May have nothing to do.'));
+	  	}
 	}
 
 }

@@ -679,8 +679,9 @@ function symposium_plugin_debug() {
    	echo '</form>';
 
 	// ********** Languages
-	echo '<h2>Installed Languages</h2>';
+	echo '<h2>Installed Languages</h2><p>';
 	$success = "OK";
+	$current_language = $wpdb->get_var("SELECT language FROM ".$wpdb->prefix.'symposium_config');
 	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . 'symposium_lang'));
 	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
 	if (!$language) {
@@ -690,18 +691,33 @@ function symposium_plugin_debug() {
 	if ($language > 0) {
 		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
 		if ($language_options) {
-			echo '<ol>';
+			echo '<select>';
 			foreach ($language_options as $option)
 			{
-				echo "<li>".$option->language."</li>";
+				echo "<option";
+				if ($option->language == $current_language) { echo " SELECTED"; }
+				echo ">".$option->language."</option>";
 			}
-			echo '</ol>';
+			echo '</select><br />';
 		}		
 	} else {
-		$success = "There was an undetermind problem loading the XML file";
+		$success = "There was an undetermind problem installing the languages.";
 	}
 	if ($success == "OK" ) { echo $ok; } else { echo $fail.$success.$fail2; }
-
+	
+	// Check language field in options
+	echo 'Current language selection: '.$current_language.'<br />';
+    $test = $wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET language = '12345678901234567890'") );
+	$test_language = $wpdb->get_var("SELECT language FROM ".$wpdb->prefix.'symposium_config');
+	echo 'Checking language options field: ';
+	if (strlen($test_language) == 20) {
+		echo $ok;
+	} else {
+		echo $fail."Language options field set incorrectly. Try de-activating and re-activating the core plugin.".$fail2; 
+	}
+	echo '</p>';
+    $test = $wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET language = '".$current_language."'") );
+	
 	// ********** Test Updating a Value   		
    	echo '<h2>Test updating the database</h2>';
    	echo '<p><strong>Warning!</strong> Any interaction through this option is done so at your own risk. You could disable your database and/or WP Symposium.</p><p>You are <strong>strongly advised</strong> to take a backup first. It is recommended that only <strong>advanced users</strong> use this option. Remember, some values may be case-sensitive.</p>';
@@ -1568,7 +1584,25 @@ function symposium_plugin_options() {
 				// NOTES / INTRODUCTION
 				if ($view == "notes") {
 					?>
-					<img style='float:right; margin: 10px 0px 10px 10px;' src='<?php echo get_site_url().'/wp-content/plugins/wp-symposium/'; ?>logo.png' />
+					
+					<div style='float: right; border-radius: 5px; width: 200px; float:right; margin-left: 15px; border: 1px solid #999;'>
+					
+						<div style='padding: 5px; background-color: #aaa; border-bottom:1px solid #666; text-align:center;'>
+							Version Numbers
+						</div>
+						<div style='border-top: 1px solid #aaa;padding: 5px; '>
+							<p>The version number of WP Symposium is in the form w.x.y.z - where z, and sometimes y are not displayed.</p>
+							<p><strong>W</strong> is a major release.</p>
+							<p><strong>X</strong> is increased when a stable release is announced to one or more of the plugins.</p>
+							<p><strong>Y</strong> is a development release, with changes made to the database tables and the code.</p>
+							<p><strong>Z</strong> is a maintenance release, with changes only to the code.</p>
+							<p>However, a maintenance release can still include many changes and new features if there are no changes to the underlying database tables.</p>
+							<p>Current version: <?php echo get_option("symposium_version") ?></p>
+						</div>
+	
+					</div>
+										
+					<img style='float:left; margin: 10px 10px 10px 0px;' src='<?php echo get_site_url().'/wp-content/plugins/wp-symposium/'; ?>logo.png' />
 					
 					<h1>WP Symposium</h1>
 					<p><em>Symposium:</em> sym&middot;po&middot;si&middot;um;
@@ -1582,7 +1616,7 @@ function symposium_plugin_options() {
 					
 					<p style='margin-top:20px'><strong>Thank you for using Symposium.<br />
 					For support, suggestions and feedback please visit <a href='http://www.wpsymposium.com'>www.wpsymposium.com</a></strong></p>
-
+					
 					<p>Currently included in the WP Symposium suite of plugins:
 					<ol>
 					<li>Core (activated)</li>

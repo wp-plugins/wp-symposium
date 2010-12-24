@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.16
+Stable tag: 0.1.16.1
 
 A new suite of social networking plugins - forum, mail, private messaging, notification bar, profile page, widgets, and more!
 
@@ -248,6 +248,11 @@ A. Sorry no, not at the moment - but it's planned to get this working at some po
 
 
 == Changelog ==
+
+= 0.1.16.1 =
+
+* Added: Health check for languages option field
+* Changed: Field modification on activation
 
 = 0.1.16 =
 
