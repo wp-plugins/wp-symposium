@@ -627,7 +627,7 @@ function symposium_plugin_debug() {
   	}
   	echo '</p>';
 
-   	echo '<p>This will post a test message to the event audit trail.</p>';
+   	echo '<p>This will post a new test message to the event audit trail.</p>';
     if( isset($_POST[ 'symposium_audit_test' ]) && $_POST[ 'symposium_audit_test' ] == 'Y' ) {
 		symposium_audit(array ('code'=>11, 'type'=>'system', 'plugin'=>'core', 'message'=>'Test post to event audit log.'));
 		echo "<p>Test post submitted - please <a href='admin.php?page=symposium_event'>check</a> to see if it was added.</p>";
@@ -680,13 +680,48 @@ function symposium_plugin_debug() {
 
 	// ********** Languages
 	echo '<h2>Installed Languages</h2><p>';
+
+	// check that the language has been set
+	$fields = mysql_query("SHOW FIELDS FROM ".$wpdb->prefix."symposium_config");
+	while ($row = mysql_fetch_row($fields)) {
+		if ($row[0] == 'language') {
+			if ($row[1] != 'varchar(64)') {
+				echo $fail."Language field is incorrect, it is currently ".$row[1].". Changing to varchar(64).".$fail2;
+				// Updating field				
+				$sql = "ALTER TABLE ".$wpdb->prefix."symposium_config MODIFY COLUMN language varchar(64) NOT NULL DEFAULT 'English'";
+				if ($wpdb->query($sql)) {
+					echo "Modified the field to the correct structure.<br />";
+					symposium_audit(array ('code'=>22, 'type'=>'info', 'plugin'=>'menu', 'message'=>'Changed language field.'));	
+
+					// If that worked, then update the value to English
+					$sql = "UPDATE ".$wpdb->prefix."symposium_config SET language = 'English'";
+				    if ($wpdb->query( $wpdb->prepare($sql) ) ) {
+				    	echo "Updated to English. Hopefully that's sorted it - refresh this page to check.<br />";
+				    } else {
+				    	echo "Eeek - couldn't set the value to English. The SQL command that failed was: ".$sql."<br />";
+						symposium_audit(array ('code'=>22, 'type'=>'error', 'plugin'=>'menu', 'message'=>'Failed to update language field. The SQL command was: '.$sql));	
+				    }
+
+				} else {
+					echo "That failed, not good. The SQL command that failed was: ".$sql.". It should have updated the field to the correct type.<br />";
+					symposium_audit(array ('code'=>22, 'type'=>'error', 'plugin'=>'menu', 'message'=>'Failed to change language field. The SQL command was: '.$sql));	
+				}
+
+			} else {
+				echo "Language field is correct type: ".$row[1].". ".$ok."<br />";
+			}
+		}
+	}
+	
+	// Get language from config
+	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . 'symposium_config'));
+	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
+	
+	// continue
 	$success = "OK";
 	$current_language = $wpdb->get_var("SELECT language FROM ".$wpdb->prefix.'symposium_config');
 	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . 'symposium_lang'));
 	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
-	if (!$language) {
-		$success = "Language translation not available for [".$language_key."] - try setting the language on the <a href='admin.php?page=symposium_options'>Options</a> page.";
-	}
 	$language_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix . 'symposium_lang'));
 	if ($language > 0) {
 		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
@@ -709,14 +744,15 @@ function symposium_plugin_debug() {
 	echo 'Current language selection: '.$current_language.'<br />';
     $test = $wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET language = '12345678901234567890'") );
 	$test_language = $wpdb->get_var("SELECT language FROM ".$wpdb->prefix.'symposium_config');
-	echo 'Checking language options field: ';
+	echo 'Checking update to language options field: ';
 	if (strlen($test_language) == 20) {
 		echo $ok;
+	    $test = $wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET language = '".$current_language."'") );
+		echo '(Updated back to chosen language)<br />';
 	} else {
 		echo $fail."Language options field set incorrectly. Try de-activating and re-activating the core plugin.".$fail2; 
 	}
 	echo '</p>';
-    $test = $wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET language = '".$current_language."'") );
 	
 	// ********** Test Updating a Value   		
    	echo '<h2>Test updating the database</h2>';
@@ -1591,7 +1627,7 @@ function symposium_plugin_options() {
 							Version Numbers
 						</div>
 						<div style='border-top: 1px solid #aaa;padding: 5px; '>
-							<p>The version number of WP Symposium is in the form w.x.y.z - where z, and sometimes y are not displayed.</p>
+							<p>The version number of WP Symposium is in the form w.x.y.z - where sometimes y and/or z are not displayed.</p>
 							<p><strong>W</strong> is a major release.</p>
 							<p><strong>X</strong> is increased when a stable release is announced to one or more of the plugins.</p>
 							<p><strong>Y</strong> is a development release, with changes made to the database tables and the code.</p>

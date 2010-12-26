@@ -13,6 +13,7 @@
 15 = test AJAX post
 20 = Language
 21 = Alter table command
+22 = Trying to change language field
 
 FORUM
 50 = New topic

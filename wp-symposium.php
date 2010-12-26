@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.16.1
+Version: 0.1.16.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -85,7 +85,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.16.1";
+	$symposium_version = "0.1.16.2";
 	$symposium_db_ver = 16;
 	
 	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation started.'));
@@ -1022,6 +1022,8 @@ add_action('template_redirect', 'symposium_replace');
 
 // Add Stylesheet
 function add_symposium_stylesheet() {
+	global $wpdb;
+
 	if (!is_admin()) {
 	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/symposium.css';
 	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/symposium.css';
@@ -1031,10 +1033,14 @@ function add_symposium_stylesheet() {
 	    } else {
 		    wp_die( __('Stylesheet ('.$myStyleFile.' not found.') );
 	    }
-	    
+	}
+
+	// Only load if chosen
+	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix . 'symposium_config'));
+	if ($jquery=="on" && !is_admin()) {
+
         wp_register_style('symposium_jquery-ui-css', WP_PLUGIN_URL.'/wp-symposium/jquery-ui.css');
         wp_enqueue_style('symposium_jquery-ui-css');
-
 	    
 	}    
 }
@@ -1045,6 +1051,7 @@ add_action('wp_print_styles', 'add_symposium_stylesheet');
 function forum_init() {
 	global $wpdb;
 	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix . 'symposium_config'));
+	// Only load if chosen
 	if ($jquery=="on" && !is_admin()) {
 		wp_enqueue_script('jquery');
 
