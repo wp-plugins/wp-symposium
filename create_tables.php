@@ -242,7 +242,7 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	'mail_message' => 'This is an example message, from me to myself...'
 	 ) );
 
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Sent first mail to '.$current_user->ID.'.'));
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Sent first mail to user ID '.$current_user->ID.'.'));
 
 } 	
 

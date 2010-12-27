@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium
-Version: 0.1.16.2
+Version: 0.1.16.3
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -28,7 +28,7 @@ class Symposium_members_Widget extends WP_Widget {
 		$control_ops = array( 'id_base' => 'symposium_members-widget' );
 		
 		/* Create the widget. */
-		$this->WP_Widget( 'symposium_members-widget', 'Symposium: Recent New Members', $widget_ops, $control_ops );
+		$this->WP_Widget( 'symposium_members-widget', 'Symposium: Latest New Members', $widget_ops, $control_ops );
 	}
 	
 	// This is shown on the page
@@ -117,7 +117,7 @@ class Forumrecentposts_Widget extends WP_Widget {
 		$control_ops = array( 'id_base' => 'forumrecentposts-widget' );
 		
 		/* Create the widget. */
-		$this->WP_Widget( 'forumrecentposts-widget', 'Symposium: Forum Recent Posts', $widget_ops, $control_ops );
+		$this->WP_Widget( 'forumrecentposts-widget', 'Symposium: Latest Forum Posts', $widget_ops, $control_ops );
 	}
 	
 	// This is shown on the page

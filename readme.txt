@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.16.2
+Stable tag: 0.1.16.3
 
 A new suite of social networking plugins - forum, mail, private messaging, notification bar, profile page, widgets, and more!
 
@@ -34,7 +34,7 @@ Currently the forum is well developed, and the mail and notification bar have bo
 
 *Widgets*
 
-* Recent New Members
+* Latest New Members
 * Latest Forum Posts
 * ... more to come!!!
 
@@ -249,6 +249,11 @@ A. Sorry no, not at the moment - but it's planned to get this working at some po
 
 
 == Changelog ==
+
+= 0.1.16.3 =
+
+* Changed: Enhanced field check during activation
+* Added: Paging on Audit Log
 
 = 0.1.16.2 =
 

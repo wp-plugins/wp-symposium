@@ -155,10 +155,9 @@ function symposium_plugin_moderation() {
 	$pagesize = 20;
 	$numpages = floor($all / $pagesize);
 	if ($all % $pagesize > 0) { $numpages++; }
-  	if ($_GET['showpage']) { $showpage = $_GET['showpage']-1; }
+  	if ($_GET['showpage']) { $showpage = $_GET['showpage']-1; } else { $showpage = 0; }
   	if ($showpage >= $numpages) { $showpage = $numpages-1; }
 	$start = ($showpage * $pagesize);
-	$curpage = 3;
 	  		
 	// Query
 	$sql = "SELECT t.*, display_name FROM ".$wpdb->prefix.'symposium_topics'." t LEFT JOIN ".$wpdb->prefix.'users'." u ON t.topic_owner = u.ID ";
@@ -168,7 +167,7 @@ function symposium_plugin_moderation() {
 	$sql .= "LIMIT ".$start.", ".$pagesize;
 	$posts = $wpdb->get_results($sql);
 
-	// Pagination
+	// Pagination (top)
 	echo '<div class="tablenav"><div class="tablenav-pages">';
 	for ($i = 0; $i < $numpages; $i++) {
 		if ($i == $showpage) {
@@ -222,7 +221,7 @@ function symposium_plugin_moderation() {
 				echo stripslashes($post->topic_subject);
 			} else {
 				echo '<strong>New Reply</strong><br />';
-				$preview = $post->topic_post;
+				$preview = stripslashes($post->topic_post);
 				if ( strlen($preview) > 150 ) { $preview = substr($preview, 0, 150)."..."; }
 				echo $preview;
 			}
@@ -243,7 +242,7 @@ function symposium_plugin_moderation() {
 	echo '</tbody>';
 	echo '</table>';
 
-	// Pagination
+	// Pagination (bottom)
 	echo '<div class="tablenav"><div class="tablenav-pages">';
 	for ($i = 0; $i < $numpages; $i++) {
 		if ($i == $showpage) {
@@ -280,8 +279,32 @@ function symposium_plugin_event() {
         }
     }
 
-	$audit = $wpdb->get_results("SELECT a.*, u.display_name FROM ".$wpdb->prefix."symposium_audit a LEFT JOIN ".$wpdb->prefix."users u ON a.uid = u.ID ORDER BY aid DESC");
+	// Paging info
+  	$all = $wpdb->get_var("SELECT count(*) FROM ".$wpdb->prefix."symposium_audit"); 
+	$showpage = 0;
+	$pagesize = 20;
+	$numpages = floor($all / $pagesize);
+	if ($all % $pagesize > 0) { $numpages++; }
+  	if ($_GET['showpage']) { $showpage = $_GET['showpage']-1; } else { $showpage = 0; }
+  	if ($showpage >= $numpages) { $showpage = $numpages-1; }
+	$start = ($showpage * $pagesize);
 
+	// Query
+	$sql = "SELECT a.*, u.display_name FROM ".$wpdb->prefix."symposium_audit a LEFT JOIN ".$wpdb->prefix."users u ON a.uid = u.ID ORDER BY aid DESC";
+	$sql .= " LIMIT ".$start.", ".$pagesize;
+	$audit = $wpdb->get_results($sql);
+	
+	// Pagination (top)
+	echo '<div class="tablenav"><div class="tablenav-pages">';
+	for ($i = 0; $i < $numpages; $i++) {
+		if ($i == $showpage) {
+            echo "<b>".($i+1)."</b> ";
+        } else {
+            echo "<a href='admin.php?page=symposium_event&showpage=".($i+1)."'>".($i+1)."</a> ";
+        }
+	}
+	echo '</div></div>';
+	
 	if ($audit) {
 		echo '<table class="widefat">';
 		echo '<thead>';
@@ -318,6 +341,18 @@ function symposium_plugin_event() {
 		echo '</tbody>';
 		echo '</table>';
 	}
+
+	// Pagination (bottom)
+	echo '<div class="tablenav"><div class="tablenav-pages">';
+	for ($i = 0; $i < $numpages; $i++) {
+		if ($i == $showpage) {
+            echo "<b>".($i+1)."</b> ";
+        } else {
+            echo "<a href='admin.php?page=symposium_event&showpage=".($i+1)."'>".($i+1)."</a> ";
+        }
+	}
+	echo '</div></div>';
+	
   	echo '</div>';
 }
 
@@ -642,7 +677,7 @@ function symposium_plugin_debug() {
 	
 	
   	// ********** Summary
-	echo '<h2>Version Numbers</h2>';
+	echo '<h2>Version Numbers / URLs</h2>';
 
   	echo "<p>";
 	  	echo "WP Symposium internal version: ".get_option("symposium_version")."<br />";
@@ -653,11 +688,23 @@ function symposium_plugin_debug() {
 	  	} else {
 	  		echo $db_ver."<br />";
 	  	}
-		$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
-		if ($forum_url == "Important: Please update!") {
-			echo $fail."You must update your forum URL on the <a href='admin.php?page=symposium_options'>options page</a>.".$fail2;
+		$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
+		if ( ($urls->forum_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
+			echo $fail."You must update your plugin URLs on the <a href='admin.php?page=symposium_options&view=settings'>options page</a>.".$fail2;
 		} else {
-		  	echo "According to the <a href='admin.php?page=symposium_options'>options page</a>, the forum is at <a href='".$forum_url."'>$forum_url</a>. Click to check.";
+		  	echo "According to the <a href='admin.php?page=symposium_options&view=settings'>options page</a>:<br />";
+		  	if (function_exists('symposium_forum')) { 
+		  		echo "&nbsp;&nbsp;the forum page is at <a href='".$urls->forum_url."'>$urls->forum_url</a><br />";
+		  	}
+		  	if (function_exists('symposium_mail')) { 
+				$mail_url = $wpdb->get_var($wpdb->prepare("SELECT mail_url FROM ".$wpdb->prefix.'symposium_config'));
+		  		echo "&nbsp;&nbsp;the mail page is at <a href='".$urls->mail_url."'>$urls->mail_url</a><br />";
+		  	}
+		  	if (function_exists('symposium_profile')) { 
+				$profile_url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix.'symposium_config'));
+		  		echo "&nbsp;&nbsp;the profile page is at <a href='".$urls->profile_url."'>$urls->profile_url</a><br />";
+		  	}
+		  	echo "Click the links above to check.";
 		}
   	echo "</p>";
   	
@@ -683,8 +730,10 @@ function symposium_plugin_debug() {
 
 	// check that the language has been set
 	$fields = mysql_query("SHOW FIELDS FROM ".$wpdb->prefix."symposium_config");
+	$found = false;
 	while ($row = mysql_fetch_row($fields)) {
 		if ($row[0] == 'language') {
+			$found = true;
 			if ($row[1] != 'varchar(64)') {
 				echo $fail."Language field is incorrect, it is currently ".$row[1].". Changing to varchar(64).".$fail2;
 				// Updating field				
@@ -708,8 +757,20 @@ function symposium_plugin_debug() {
 				}
 
 			} else {
-				echo "Language field is correct type: ".$row[1].". ".$ok."<br />";
+				echo "Language field is correct type: ".$row[1].". ".$ok;
 			}
+		}
+	}
+	if ($found == false) {
+		echo $fail."Language field missing.".$fail2;
+		// Didn't find language field, so add it
+		if (symposium_alter_table("config", "ADD", "language", "varchar(64)","NOT NULL", "''") ) {
+	        echo "<div style='border:1px solid #060;background-color: #9f9; border-radius:5px;padding-left:8px; margin-bottom:10px;'>";
+	        echo "<p>Added language field - please refresh the page.</p></div>";
+			symposium_audit(array ('code'=>22, 'type'=>'info', 'plugin'=>'menu', 'message'=>'Added language field.'));	
+		} else {
+			echo $fail."Failed to add language field.".$fail2;
+			symposium_audit(array ('code'=>22, 'type'=>'error', 'plugin'=>'menu', 'message'=>'Failed to add language field.'));	
 		}
 	}
 	

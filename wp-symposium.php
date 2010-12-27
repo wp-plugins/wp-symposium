@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.16.2
+Version: 0.1.16.3
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -85,7 +85,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.16.2";
+	$symposium_version = "0.1.16.3";
 	$symposium_db_ver = 16;
 	
 	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation started.'));
@@ -124,51 +124,52 @@ function symposium_activate() {
   	// Update tables (may already be there, not a problem as will just skip) *************************************************************************************
 
    	// Add option fields
-	symposium_alter_table("config", "ADD", "allow_new_topics", "varchar(2) NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "underline", "varchar(2) NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "preview1", "int(11) NOT NULL", "'45'");
-	symposium_alter_table("config", "ADD", "preview2", "int(11) NOT NULL", "'90'");
-	symposium_alter_table("config", "ADD", "viewer", "varchar(32) NOT NULL", "'Guest'");
-	symposium_alter_table("config", "ADD", "include_admin", "varchar(2) NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "oldest_first", "varchar(2) NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "wp_width", "varchar(6) NOT NULL", "'99pc'");
-	symposium_alter_table("config", "ADD", "main_background", "varchar(12) NOT NULL", "'#fff'");
-	symposium_alter_table("config", "ADD", "closed_opacity", "varchar(6) NOT NULL", "'1.0'");
-	symposium_alter_table("config", "ADD", "closed_word", "varchar(32) NOT NULL", "'closed'");
-	symposium_alter_table("config", "ADD", "fontfamily", "varchar(64) NOT NULL", "'Georgia,Times'");
-	symposium_alter_table("config", "ADD", "fontsize", "varchar(16) NOT NULL", "'15'");
-	symposium_alter_table("config", "ADD", "headingsfamily", "varchar(64) NOT NULL", "'Arial,Helvetica'");
-	symposium_alter_table("config", "ADD", "headingssize", "varchar(16) NOT NULL", "'20'");
-	symposium_alter_table("config", "ADD", "jquery", "varchar(2) NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "emoticons", "varchar(2) NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "seo", "varchar(2) NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "moderation", "varchar(2) NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "mail_url", "varchar(128) NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "allow_new_topics", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "preview1", "int(11)", "NOT NULL", "'45'");
+	symposium_alter_table("config", "ADD", "preview2", "int(11)", "NOT NULL", "'90'");
+	symposium_alter_table("config", "ADD", "viewer", "varchar(32)", "NOT NULL", "'Guest'");
+	symposium_alter_table("config", "ADD", "include_admin", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "oldest_first", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "wp_width", "varchar(6)", "NOT NULL", "'99pc'");
+	symposium_alter_table("config", "ADD", "main_background", "varchar(12)", "NOT NULL", "'#fff'");
+	symposium_alter_table("config", "ADD", "closed_opacity", "varchar(6)", "NOT NULL", "'1.0'");
+	symposium_alter_table("config", "ADD", "closed_word", "varchar(32)", "NOT NULL", "'closed'");
+	symposium_alter_table("config", "ADD", "fontfamily", "varchar(64)", "NOT NULL", "'Georgia,Times'");
+	symposium_alter_table("config", "ADD", "fontsize", "varchar(16)", "NOT NULL", "'15'");
+	symposium_alter_table("config", "ADD", "headingsfamily", "varchar(64)", "NOT NULL", "'Arial,Helvetica'");
+	symposium_alter_table("config", "ADD", "headingssize", "varchar(16)", "NOT NULL", "'20'");
+	symposium_alter_table("config", "ADD", "jquery", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "emoticons", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "seo", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "moderation", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "mail_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	// Profile
-	symposium_alter_table("config", "ADD", "profile_url", "varchar(128) NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	// Notification bar
-	symposium_alter_table("config", "ADD", "sound", "varchar(32) NOT NULL", "'chime.mp3'");
-	symposium_alter_table("config", "ADD", "bar_position", "varchar(6) NOT NULL", "'bottom'");
-	symposium_alter_table("config", "ADD", "bar_label", "varchar(256) NOT NULL", "'Powered by WP Symposium'");
+	symposium_alter_table("config", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
+	symposium_alter_table("config", "ADD", "bar_position", "varchar(6)", "NOT NULL", "'bottom'");
+	symposium_alter_table("config", "ADD", "bar_label", "varchar(256)", "NOT NULL", "'Powered by WP Symposium'");
 
-	// Modify option fields for all versions (if fields already exist, ADD above won't work)
-	symposium_alter_table("config", "MODIFY", "language", "varchar(64) NOT NULL", "'English'");
+	// Add/Modify option fields for all versions (if fields already exist, ADD will be skipped)
+	symposium_alter_table("config", "ADD", "language", "varchar(64)", "NOT NULL", "'English'");
+	symposium_alter_table("config", "MODIFY", "language", "varchar(64)", "NOT NULL", "'English'");
 	
 	// Modify audit table
-	symposium_alter_table("audit", "MODIFY", "message", "text", "''");
+	symposium_alter_table("audit", "MODIFY", "message", "text", "", "''");
 
 	// Modify styles table
-	symposium_alter_table("styles", "ADD", "underline", "varchar(2) NOT NULL", "'on'");
-	symposium_alter_table("styles", "ADD", "main_background", "varchar(12) NOT NULL", "'#fff'");
-	symposium_alter_table("styles", "ADD", "closed_opacity", "varchar(6) NOT NULL", "'1.0'");
-	symposium_alter_table("styles", "ADD", "fontfamily", "varchar(128) NOT NULL", "'Georgia,Times'");
-	symposium_alter_table("styles", "ADD", "fontsize", "varchar(8) NOT NULL", "'15'");
-	symposium_alter_table("styles", "ADD", "headingsfamily", "varchar(128) NOT NULL", "'Georgia,Times'");
-	symposium_alter_table("styles", "ADD", "headingssize", "varchar(8) NOT NULL", "'20'");
+	symposium_alter_table("styles", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("styles", "ADD", "main_background", "varchar(12)", "NOT NULL", "'#fff'");
+	symposium_alter_table("styles", "ADD", "closed_opacity", "varchar(6)", "NOT NULL", "'1.0'");
+	symposium_alter_table("styles", "ADD", "fontfamily", "varchar(128)", "NOT NULL", "'Georgia,Times'");
+	symposium_alter_table("styles", "ADD", "fontsize", "varchar(8)", "NOT NULL", "'15'");
+	symposium_alter_table("styles", "ADD", "headingsfamily", "varchar(128)", "NOT NULL", "'Georgia,Times'");
+	symposium_alter_table("styles", "ADD", "headingssize", "varchar(8)", "NOT NULL", "'20'");
 	
 	// Add moderation field to topics
-	symposium_alter_table("topics", "ADD", "allow_replies", "varchar(2) NOT NULL", "'on'");
-	symposium_alter_table("topics", "ADD", "topic_approved", "varchar(2) NOT NULL", "'on'");
+	symposium_alter_table("topics", "ADD", "allow_replies", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("topics", "ADD", "topic_approved", "varchar(2)", "NOT NULL", "'on'");
 
 	// Update default language to English
  	$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'English'");
@@ -260,11 +261,13 @@ function symposium_activate() {
 }
 /* End of Activation */
 
-function symposium_alter_table($table, $action, $field, $format, $default) {
+function symposium_alter_table($table, $action, $field, $format, $null, $default) {
 	if ($action == "MODIFY") { $action = "MODIFY COLUMN"; }
 	if ($default != "") { $default = "DEFAULT ".$default; }
 
 	global $wpdb;	
+	
+	$success = false;
 
 	$ok = '';
 	$check = $wpdb->get_var("SELECT count(".$field.") FROM ".$wpdb->prefix."symposium_".$table);
@@ -275,24 +278,40 @@ function symposium_alter_table($table, $action, $field, $format, $default) {
 	
 	if ($action == "ADD") {
 		if ($ok == 'exists' || $ok == 'same') {
-			symposium_audit(array ('code'=>21, 'type'=>'info', 'plugin'=>'core', 'message'=> 'Skipped '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default.' as field already exists.')));
+			symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Skipped '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default.' as field already exists.')));
 		} else {
-		  	if ($wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$default) ) {
-				symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default)));
+		  	if ($wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$null." ".$default) ) {
+				symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default)));
+				$success = true;
 		  	} else {
-				symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default." ".$ok)));
+				symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default." ".$ok)));
 		  	}
 		}			
 	}
 
 	if ($action == "MODIFY COLUMN") {
-		$sql = "ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$default;
+		$sql = "ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$null." ".$default;
 	  	if ($wpdb->query($sql) ) {
-			symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default)));
+			symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default)));
+			$success = true;
 	  	} else {
-			symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$default).' ('.$sql.'). May have nothing to do.'));
+			// check to see if existing field matches new type;
+			$fields = mysql_query("SHOW FIELDS FROM ".$wpdb->prefix."symposium_".$table);
+			$found = false;
+			while ($row = mysql_fetch_row($fields)) {
+				if ($row[0] == $field) {
+					$found = true;
+					if ($row[1] != $format) {
+						symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default).' ('.$sql.'). Field type is still wrong.'));
+					} else {
+						symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Failed, but ok, to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default).' ('.$sql.') as type is already correct ('.$format.').'));
+					}
+				}
+			}
 	  	}
 	}
+	
+	return $success;
 
 }
 
@@ -1004,9 +1023,9 @@ function symposium_redirect($buffer){
 
 function symposium_admin_check() {
 	global $wpdb;
-	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix . 'symposium_config'));
-	if ($forum_url == "Important: Please update!") {
-		echo "<div class='updated'><p><strong>Important!</strong> Please set <a href='admin.php?page=symposium_options'>WP Symposium Options</a> immediately.</p></div>";
+	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
+	if ( ($urls->forum_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
+		echo "<div class='updated'><p><strong>Important!</strong> Please set <a href='admin.php?page=symposium_options&view=settings'>WP Symposium Options</a> immediately (set to &apos;none&apos; if you are not using a particular plugin).</p></div>";
 	}
 }
 add_action('admin_notices', 'symposium_admin_check');
@@ -1063,7 +1082,7 @@ function forum_init() {
 add_action('init', 'forum_init');
 
 // Add jQuery and jQuery scripts
-function admin_init() {
+function symposium_admin_init() {
 	if (is_admin()) {
 		// Color Picker
 		wp_register_script('symposium_iColorPicker', WP_PLUGIN_URL . '/wp-symposium/iColorPicker.js');
@@ -1072,7 +1091,7 @@ function admin_init() {
 	}
 
 }
-add_action('init', 'admin_init');
+add_action('init', 'symposium_admin_init');
 
 
 

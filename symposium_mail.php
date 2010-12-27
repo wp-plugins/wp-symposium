@@ -2,8 +2,8 @@
 /*
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
-Description: RELEASED FOR TESTING ONLY! Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.1.16.2
+Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
+Version: 0.1.16.3
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
