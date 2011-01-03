@@ -3,13 +3,13 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.16.3
+Version: 0.1.17
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
 */
 	
-/*  Copyright 2010  Simon Goodchild  (info@wpsymposium.com)
+/*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
@@ -57,13 +57,8 @@ function symposium_forum() {
 	$cats = $wpdb->prefix . 'symposium_cats';
 	$lang = $wpdb->prefix . 'symposium_lang';	
 	
-	// Work out user level
-	$user_level = 0; // Guest
-	if (is_user_logged_in()) { $user_level = 1; } // Subscriber
-	if (current_user_can('edit_posts')) { $user_level = 2; } // Contributor
-	if (current_user_can('edit_published_posts')) { $user_level = 3; } // Author
-	if (current_user_can('moderate_comments')) { $user_level = 4; } // Editor
-	if (current_user_can('activate_plugins')) { $user_level = 5; } // Administrator
+	// Get user level
+	$user_level = symposium_get_current_userlevel();
 	
 	// Post preview
 	$snippet_length = $wpdb->get_var($wpdb->prepare("SELECT preview1 FROM ".$config));
@@ -71,9 +66,13 @@ function symposium_forum() {
 	$snippet_length_long = $wpdb->get_var($wpdb->prepare("SELECT preview2 FROM ".$config));
 	if ($snippet_length_long == '') { $snippet_length_long = '45'; }
 		
-	// Language
-	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$config));
-	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
+	// Includes
+	include_once('symposium_styles.php');
+	include_once('symposium_functions.php');
+
+	$get_language = symposium_get_language($current_user->ID);
+	$language_key = $get_language['key'];
+	$language = $get_language['words'];
 		
 	// Get Topic ID and Category ID for use in jQuery functions	
 	if (isset($_GET['show'])) {
@@ -428,9 +427,6 @@ function symposium_forum() {
 	</script>
 	';
 	
-	// Include styles	
-	include_once('symposium_styles.php');
-
 	// Wrapper
 	$html .= "<div id='symposium-wrapper' style='z-index:900000;'>";
 
@@ -602,7 +598,7 @@ function symposium_forum() {
 				
 				$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix . 'symposium_config'));
 				if ($send_summary == "on") {
-					$forum_digest = get_symposium_meta('forum_digest');
+					$forum_digest = get_symposium_meta($current_user->ID, 'forum_digest');
 					$html .= "<div class='symposium_subscribe_option label'>";
 					$html .= "<input type='checkbox' id='symposium_digest' name='symposium_digest'";
 					if ($forum_digest == 'on') { $html .= ' checked'; } 
@@ -1073,11 +1069,13 @@ add_action('wp_ajax_getEditDetails', 'getEditDetails');
 
 // AJAX function to update topic details after editing
 function updateDigest(){
+	global $wpdb, $current_user;
+	wp_get_current_user();
 
 	$value = $_POST['value'];	
 
 	// Update meta record exists for user
-	update_symposium_meta("forum_digest", "'".$value."'");
+	update_symposium_meta($current_user->ID, "forum_digest", "'".$value."'");
 	echo $value;
 	exit;
 

@@ -14,6 +14,11 @@
 20 = Language
 21 = Alter table command
 22 = Trying to change language field
+23 = Notification
+24 = Friend Request
+25 = Friendship accepted
+26 = Friendship rejected
+27 = Friendship deleted
 
 FORUM
 50 = New topic

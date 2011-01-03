@@ -1,4 +1,23 @@
 <?php
+// Includes
+include_once('symposium_functions.php');
+
+/*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License, version 2, as 
+    published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
 /* ====================================================== ADMIN MENU ====================================================== */
 
 function symposium_plugin_menu() {
@@ -8,8 +27,9 @@ function symposium_plugin_menu() {
 	// Act on any parameters, so menu counts are correct
 	if (isset($_GET['action'])) {
 		
-		$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix."symposium_config"));
-		$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
+		$get_language = symposium_get_language($current_user->ID);
+		$language_key = $get_language['key'];
+		$language = $get_language['words'];
 
 		switch($_GET['action']) {
 			
@@ -388,6 +408,7 @@ function symposium_plugin_debug() {
    	} else {
 		if (!symposium_field_exists($table_name, 'cid')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'title')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'listorder')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'allow_new')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'defaultcat')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
@@ -423,10 +444,11 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'border_radius')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'label')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'footer')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'show_categories')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'send_summary')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'forum_url')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'from_email')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'language')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'allow_new_topics')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'underline')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'preview1')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'preview2')) { $status = "X"; }
@@ -442,14 +464,21 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'headingsfamily')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'headingssize')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'jquery')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'seo')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'emoticons')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'seo')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'moderation')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'mail_url')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'profile_url')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'bar_position')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'bar_label')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'language')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'allow_personal_settings')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'online')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'offline')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'use_chat')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bar_polling')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'chat_polling')) { $status = "X"; }
 	
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
@@ -465,6 +494,8 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'lid')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'language')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'sant')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'ts')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'fpit')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'p')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'rtt')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'c')) { $status = "X"; }
@@ -472,9 +503,8 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'd')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'reb')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'u')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'ts')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'fpit')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'cat')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'lac')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 't')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'top')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'tp')) { $status = "X"; }
@@ -561,6 +591,63 @@ function symposium_plugin_debug() {
    	}   	
    	echo $status;
    	
+  	// Topics
+   	$table_name = $wpdb->prefix . "symposium_topics";
+   	$status = $ok;
+   	echo '<strong>Topics: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'tid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_group')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_category')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_subject')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_post')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_owner')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_date')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_parent')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_views')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_started')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_sticky')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'allow_replies')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'topic_approved')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
+  	// Friends
+   	$table_name = $wpdb->prefix . "symposium_friends";
+   	$status = $ok;
+   	echo '<strong>Friends: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'fid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'friend_from')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'friend_to')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'friend_accepted')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'friend_message')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'friend_timestamp')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+
+  	// Chat
+   	$table_name = $wpdb->prefix . "symposium_chat";
+   	$status = $ok;
+   	echo '<strong>Chat: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'chid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'chat_from')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'chat_to')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'chat_message')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'chat_timestamp')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
   	// Subscriptions
    	$table_name = $wpdb->prefix . "symposium_subs";
    	$status = $ok;
@@ -607,6 +694,20 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'mid')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'uid')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'forum_digest')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'soundchat')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'bar_position')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'notify_new_messages')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'timezone')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'city')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'country')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'dob_day')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'dob_month')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'dob_year')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'share')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'language')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'last_activity')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'status')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -621,6 +722,7 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'aid')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'code')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'type')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'plugin')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'uid')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'cid')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'tid')) { $status = "X"; }
@@ -787,7 +889,7 @@ function symposium_plugin_debug() {
 	if ($language > 0) {
 		$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
 		if ($language_options) {
-			echo '<select>';
+			echo 'Installed languages: <select>';
 			foreach ($language_options as $option)
 			{
 				echo "<option";
@@ -802,14 +904,14 @@ function symposium_plugin_debug() {
 	if ($success == "OK" ) { echo $ok; } else { echo $fail.$success.$fail2; }
 	
 	// Check language field in options
-	echo 'Current language selection: '.$current_language.'<br />';
+	echo '<strong>Current language selection: '.$current_language.'. Update this on the <a href="admin.php?page=symposium_options&view=settings">options page</a>.</strong><br />';
     $test = $wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET language = '12345678901234567890'") );
 	$test_language = $wpdb->get_var("SELECT language FROM ".$wpdb->prefix.'symposium_config');
 	echo 'Checking update to language options field: ';
 	if (strlen($test_language) == 20) {
 		echo $ok;
 	    $test = $wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET language = '".$current_language."'") );
-		echo '(Updated back to chosen language)<br />';
+		echo '(Updated back to chosen language, ie. '.$current_language.')<br />';
 	} else {
 		echo $fail."Language options field set incorrectly. Try de-activating and re-activating the core plugin.".$fail2; 
 	}
@@ -1459,13 +1561,34 @@ function symposium_plugin_options() {
 	        $sound = $_POST[ 'sound' ];
 	        $bar_position = $_POST[ 'bar_position' ];
 	        $bar_label = $_POST[ 'bar_label' ];
+	        $use_chat = $_POST[ 'use_chat' ];
+	        $bar_polling = $_POST[ 'bar_polling' ];
+	        $chat_polling = $_POST[ 'chat_polling' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET sound = '".$sound."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_position = '".$bar_position."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_label = '".$bar_label."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chat = '".$use_chat."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_polling = '".$bar_polling."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chat_polling = '".$chat_polling."'") );					
 			
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>Notification bar options saved.</p></div>";
+			
+	    }
+	    	
+	    // See if the user has posted profile settings
+	    if( $_POST[ 'symposium_update' ] == 'U' ) {
+	        $allow_personal_settings = $_POST[ 'allow_personal_settings' ];
+	        $online = $_POST[ 'online' ];
+	        $offline = $_POST[ 'offline' ];
+
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET allow_personal_settings = '".$allow_personal_settings."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET online = '".$online."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET offline = '".$offline."'") );					
+			
+	        // Put an settings updated message on the screen
+			echo "<div class='updated'><p>Member Profile options saved.</p></div>";
 			
 	    }
 	    	
@@ -1618,7 +1741,7 @@ function symposium_plugin_options() {
 			$forum_active = 'inactive';
 			$mail_active = 'inactive';
 			$bar_active = 'inactive';
-			$profile_active = 'inactive';
+			$profile_active = 'active';
 			$view = "profile";
 		} 
 		if ($_GET['view'] == 'forum') {
@@ -1724,28 +1847,25 @@ function symposium_plugin_options() {
 					</ol>
 					
 					<p>
-					<strong>Warning:</strong> The WP Symposium Mail and Notification bar plugins have been released for testing only - it is not recommended for use on a live website. It is only in English at the moment, but will support all installed languages. However, your feedback on the plugin would be welcomed at <a href="http://www.wpsymposium.com">www.wpsymposium.com</a>.
+					<strong>Warning:</strong> The WP Symposium Mail, Notification bar and Friends plugins have been released for testing only - it is not recommended for use on a live website. It is only in English at the moment, but will support all installed languages. However, your feedback on the plugin would be welcomed at <a href="http://www.wpsymposium.com">www.wpsymposium.com</a>.
 					</p>
 					
 					<p><strong>Note from the author</strong></p>
 					<p>
-					Thank you very much for using WP Symposium. The forum, with the incredibly useful feedback from users, 
-					is nearing a stable release, allowing me to concentrate on the other modules. It doesn't mean that new features 
-					won't be added - multi-level categories, for example - but with the release of the other modules there are some 
-					key additions to those new modules that should be made as soon as possible.
+					Thank you very much for using WP Symposium. Along with what is fast becoming a stable release, the WPS suite now includes initial versions of the 
+ 					mail, friends and notification bar plugins, as well as a widgets plugin with a couple of widgets to get you going.
 					</p>
 					<p>
-					For example, "friends" is needed urgently so that mail recipients can be limited to a members list of friends, 
-					rather than everyone on the site, as well as the ability to block other members. Also, sending to multiple 
-					recipients is needed, you can only send to one person at the moment.
+					You can now request another member becomes a friend of yours. Once they are a friend, you can send them mail and (depending on their privacy level 
+					see their more personal details).
 					</p>
 					<p>
-					And there are some great new additions around the corner, chat windows, more widgets, wall and more!
+					Again thank you for your support, and I look forward to hearing from you on <a href='http://www.wpsymposium.com'>www.wpsymposium.com</a>...
 					</p>
 					<p>
-					So thank you for your support over the recent weeks since v0.1 - and have a great festive season!
+					<em>Simon</em><br />
+					28th December 2010
 					</p>
-					<p><em>Simon</em></p>
 					
 					<?php
 				}
@@ -1756,6 +1876,9 @@ function symposium_plugin_options() {
 					$sound = $wpdb->get_var($wpdb->prepare("SELECT sound FROM ".$wpdb->prefix."symposium_config"));
 					$bar_position = $wpdb->get_var($wpdb->prepare("SELECT bar_position FROM ".$wpdb->prefix."symposium_config"));
 					$bar_label = $wpdb->get_var($wpdb->prepare("SELECT bar_label FROM ".$wpdb->prefix."symposium_config"));
+					$use_chat = $wpdb->get_var($wpdb->prepare("SELECT use_chat FROM ".$wpdb->prefix."symposium_config"));
+					$bar_polling = $wpdb->get_var($wpdb->prepare("SELECT bar_polling FROM ".$wpdb->prefix."symposium_config"));
+					$chat_polling = $wpdb->get_var($wpdb->prepare("SELECT chat_polling FROM ".$wpdb->prefix."symposium_config"));
 					?>
 						
 					<form method="post" action=""> 
@@ -1770,7 +1893,7 @@ function symposium_plugin_options() {
 					</tr> 
 								
 					<tr valign="top"> 
-					<th scope="row"><label for="sound">Sound Alert</label></th> 
+					<th scope="row"><label for="sound">Default Sound Alert</label></th> 
 					<td>
 					<select name="sound">
 						<option value='None'<?php if ($sound == 'None') { echo ' SELECTED'; } ?>>None</option>
@@ -1786,26 +1909,51 @@ function symposium_plugin_options() {
 						<option value='tap.mp3'<?php if ($sound == 'tap.mp3') { echo ' SELECTED'; } ?>>Tap</option>
 						<option value='youvegotmail.mp3'<?php if ($sound == 'youvegotmail.mp3') { echo ' SELECTED'; } ?>>You've got mail</option>
 					</select> 
-					<span class="description">Plays when receive new mail or subscribed forum topic post made</span></td> 
+					<span class="description">Plays for new mail, chat message, subscribed forum topic post made, etc</span></td> 
 					</tr> 
 					
-					<?php if ($sound != 'None') { echo '<embed src="'.WP_PLUGIN_URL.'/wp-symposium/soundmanager/'.$sound.'" width="0" height="0" loop="false" autostart="true"></embed>'; } ?>
+					<?php //if ($sound != 'None') { echo '<embed src="'.WP_PLUGIN_URL.'/wp-symposium/soundmanager/'.$sound.'" width="0" height="0" loop="false" autostart="true"></embed>'; } ?>
 					
 					<tr valign="top"> 
-					<th scope="row"><label for="bar_position">Bar Position</label></th> 
+					<th scope="row"><label for="bar_position">Default Bar Position</label></th> 
 					<td>
 					<select name="bar_position">
 						<option value='bottom'<?php if ($bar_position == 'bottom') { echo ' SELECTED'; } ?>>Bottom</option>
 						<option value='top'<?php if ($bar_position == 'top') { echo ' SELECTED'; } ?>>Top</option>
 					</select> 
 					<span class="description">Where on the screen the bar is placed</span></td> 
-					</tr> 				
+					</tr> 	
+					
+					<tr valign="top"> 
+					<th scope="row"><label for="use_chat">Enable chat windows</label></th>
+					<td>
+					<input type="checkbox" name="use_chat" id="use_chat" <?php if ($use_chat == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Real-time chat windows</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="bar_polling">Polling Intervals</label></th> 
+					<td><input name="bar_polling" type="text" id="bar_polling"  value="<?php echo $bar_polling; ?>" /> 
+					<span class="description">Frequency of checks for new mail, etc, in seconds</td> 
+					</tr> 
+								
+					<tr valign="top"> 
+					<th scope="row"><label for="chat_polling">&nbsp;</label></th> 
+					<td><input name="chat_polling" type="text" id="chat_polling"  value="<?php echo $chat_polling; ?>" /> 
+					<span class="description">Frequency of chat window updates in seconds</td> 
+					</tr> 
+								
+								
 					</table> 
 					 
 					<p class="submit"> 
 					<input type="submit" name="Submit" class="button-primary" value="Save Changes" /> 
 					</p> 
 					</form> 
+					
+					<strong>Notes:</strong><br/>
+					The more frequent the polling intervals, the greater the load on your server. Recommended minimum values are 30 and 10 seconds. 
+					Disabling chat windows will reduce the load on the server.
 					
 					<?php
 				}
@@ -1847,8 +1995,7 @@ function symposium_plugin_options() {
 					<th scope="row"><label for="profile_url">Profile URL</label></th> 
 					<td><input name="profile_url" type="text" id="profile_url"  value="<?php echo $profile_url; ?>" class="regular-text" /> 
 					<span class="description">URL of the page that shows member profiles</td> 
-					</tr> 
-					
+					</tr> 					
 								
 					<tr valign="top"> 
 					<th scope="row"><label for="jquery">Load jQuery</label></th>
@@ -2088,8 +2235,7 @@ function symposium_plugin_options() {
 					<td>No options available.</td>
 					</tr> 
 										
-					</table>
-					 
+					</table>					 
 					</form> 
 					
 					<?php
@@ -2100,22 +2246,42 @@ function symposium_plugin_options() {
 				if ($view == "profile") {
 
 				    // Get values from database  
+					$allow_personal_settings = $wpdb->get_var($wpdb->prepare("SELECT allow_personal_settings FROM ".$wpdb->prefix.'symposium_config'));
+					$online = $wpdb->get_var($wpdb->prepare("SELECT online FROM ".$wpdb->prefix.'symposium_config'));
+					$offline = $wpdb->get_var($wpdb->prepare("SELECT offline FROM ".$wpdb->prefix.'symposium_config'));
 					?>
 						
 					<form method="post" action=""> 
-					<input type="hidden" name="symposium_update" value="P">
+					<input type="hidden" name="symposium_update" value="U">
 				
 					<table class="form-table"> 
 				
 					<tr valign="top"> 
-					<td>No options available.</td>
+					<th scope="row"><label for="allow_personal_settings">Personal Settings</label></th>
+					<td>
+					<input type="checkbox" name="allow_personal_settings" id="allow_personal_settings" <?php if ($allow_personal_settings == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Allow members to over-ride various global settings</span></td> 
+					</tr> 
+
+					<tr valign="top"> 
+					<th scope="row"><label for="online">Inactivity period</label></th> 
+					<td><input name="online" type="text" id="online"  value="<?php echo $online; ?>" /> 
+					<span class="description">How many minutes before a member is assumed off-line</td> 
+					</tr> 
+										
+					<tr valign="top"> 
+					<th scope="row"><label for="offline">&nbsp;</label></th> 
+					<td><input name="offline" type="text" id="offline"  value="<?php echo $offline; ?>" /> 
+					<span class="description">How many minutes before a member is assumed logged out</td> 
 					</tr> 
 										
 					</table>
-					 
-					</form> 
-					
+					 					
 					<?php
+					echo '<p class="submit">';
+					echo '<input type="submit" name="Submit" class="button-primary" value="Save Changes" />';
+					echo '</p>';
+					echo '</form>';
 									  
 				} // End of Profile
 													

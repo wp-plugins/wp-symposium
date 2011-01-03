@@ -1,7 +1,23 @@
 <?php
+/*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License, version 2, as 
+    published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 
 include_once('../../../wp-config.php');
 include_once('../../../wp-includes/wp-db.php');
+include_once('symposium_functions.php');
 
 global $wpdb;
 $users = $wpdb->prefix . 'users';
@@ -11,8 +27,9 @@ $subs = $wpdb->prefix . 'symposium_subs';
 $cats = $wpdb->prefix . 'symposium_cats';
 $lang = $wpdb->prefix . 'symposium_lang';
 
-$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$config));
-$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
+$get_language = symposium_get_language($current_user->ID);
+$language_key = $get_language['key'];
+$language = $get_language['words'];
 
 if (is_user_logged_in()) {
 
@@ -115,7 +132,8 @@ if (is_user_logged_in()) {
 									
 				$body .= "<span style='font-size:24px'>".$new_topic_subject."</span><br /><br />";
 				$body .= "<p>".$new_topic_text."</p>";
-				$body .= "<p>".$forum_url."?cid=".$cat_id."&show=".$new_tid."</p>";
+				$url = $forum_url."?cid=".$cat_id."&show=".$new_tid;
+				$body .= "<p><a href='".$url."'>".$url."</a></p>";
 				$body = str_replace(chr(13), "<br />", $body);
 				$body = str_replace("\\r\\n", "<br />", $body);
 				$body = str_replace("\\", "", $body);

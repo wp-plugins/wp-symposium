@@ -1,4 +1,20 @@
 <?php
+/*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License, version 2, as 
+    published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
 // Create audit table
 $table_name = $wpdb->prefix . "symposium_audit";
 if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
@@ -212,6 +228,63 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
 } 	
 
+// Create notifications table
+$table_name = $wpdb->prefix . "symposium_notifications";
+if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+	$sql = "CREATE TABLE " . $table_name . " (
+	nid int(11) NOT NULL AUTO_INCREMENT,
+	notification_to int(11) NOT NULL,
+	notification_shown varchar(2) NOT NULL,
+	notification_message varchar(1024) NOT NULL,
+	PRIMARY KEY nid (nid)
+ 	);";
+
+    dbDelta($sql);
+
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
+
+} 	
+
+// Create notifications table
+$table_name = $wpdb->prefix . "symposium_friends";
+if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+	$sql = "CREATE TABLE " . $table_name . " (
+	fid int(11) NOT NULL AUTO_INCREMENT,
+	friend_from int(11) NOT NULL,
+	friend_to int(11) NOT NULL,
+	friend_accepted varchar(2) NOT NULL,
+	friend_message varchar(1024) NOT NULL,
+	friend_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY fid (fid)
+ 	);";
+
+    dbDelta($sql);
+
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
+
+} 	
+
+// Create chat table
+$table_name = $wpdb->prefix . "symposium_chat";
+if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+	$sql = "CREATE TABLE " . $table_name . " (
+	chid int(11) NOT NULL AUTO_INCREMENT,
+	chat_from int(11) NOT NULL,
+	chat_to int(11) NOT NULL,
+	chat_message varchar(256) NOT NULL,
+	chat_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY chid (chid)
+ 	);";
+
+    dbDelta($sql);
+
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
+
+} 	
+
 // Create mail table
 $table_name = $wpdb->prefix . "symposium_mail";
 if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
@@ -225,7 +298,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	mail_subject varchar(256) NOT NULL,
 	mail_in_deleted varchar(2) NOT NULL DEFAULT '',
 	mail_sent_deleted varchar(2) NOT NULL DEFAULT '',
-	mail_notified varchar(2) NOT NULL DEFAULT '',
 	mail_message TEXT,
 	PRIMARY KEY mail_mid (mail_mid)
  	);";

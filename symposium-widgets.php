@@ -3,10 +3,26 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium
-Version: 0.1.16.3
+Version: 0.1.17
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
+*/
+
+/*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License, version 2, as 
+    published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 /** Add our function to the widgets_init hook. **/
@@ -15,6 +31,7 @@ add_action( 'widgets_init', 'symposium_load_widgets' );
 function symposium_load_widgets() {
 	register_widget( 'Forumrecentposts_Widget' );
 	register_widget( 'Symposium_members_Widget' );
+	include_once('symposium_functions.php');
 }
 
 /** Symposium: New Members ************************************************************************* **/
@@ -33,9 +50,13 @@ class Symposium_members_Widget extends WP_Widget {
 	
 	// This is shown on the page
 	function widget( $args, $instance ) {
-		global $wpdb;
+		global $wpdb, $current_user;
+		wp_get_current_user();
+	
 		extract( $args );
-		$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix.'symposium_config'));
+		$get_language = symposium_get_language($current_user->ID);
+		$language_key = $get_language['key'];
+		$language = $get_language['words'];
 		
 		// Get options
 		$symposium_members_count_title = apply_filters('widget_title', $instance['symposium_members_count_title'] );
@@ -62,8 +83,8 @@ class Symposium_members_Widget extends WP_Widget {
 							echo get_avatar($member->ID, 32);
 						echo "</div>";
 						echo "<div>";
-							echo symposium_profile_link($member->ID)."<br />";
-							echo symposium_time_ago($member->user_registered, $language_key);
+							echo symposium_profile_link($member->ID)." joined ";
+							echo symposium_time_ago($member->user_registered, $language_key).".";
 						echo "</div>";
 					echo "</div>";
 				}
@@ -122,11 +143,15 @@ class Forumrecentposts_Widget extends WP_Widget {
 	
 	// This is shown on the page
 	function widget( $args, $instance ) {
-		global $wpdb;
+		global $wpdb, $current_user;
+		wp_get_current_user();
+	
 		extract( $args );
+		$get_language = symposium_get_language($current_user->ID);
+		$language_key = $get_language['key'];
+		$language = $get_language['words'];
+		
 		$border_radius = $wpdb->get_var($wpdb->prepare("SELECT border_radius FROM ".$wpdb->prefix.'symposium_config'));
-		$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix.'symposium_config'));
-		$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
 		$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
 		if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
 

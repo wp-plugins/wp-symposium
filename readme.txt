@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
 Requires at least: 3.0
 Tested up to: 3.0.3
-Stable tag: 0.1.16.3
+Stable tag: 0.1.17
 
 A new suite of social networking plugins - forum, mail, private messaging, notification bar, profile page, widgets, and more!
 
@@ -28,7 +28,8 @@ Currently the forum is well developed, and the mail and notification bar have bo
 * Notification Bar
 * Forum
 * Mail/Private Messaging
-* Friends (not yet available)
+* Friends (available for testing)
+* Chat (available for testing)
 * Wall (not yet available)
 * ... more to come!!!
 
@@ -90,6 +91,9 @@ Put `[symposium-profile]` on any WP page, and put the page URL in the Symposium 
 
 * Displays member photo (as set via WordPress)
 * Send Mail to member (if on another member's page)
+* Set personal preferences for site language, layout, sounds, etc
+* Set privacy level
+* Depending on privacy level, displays location map, etc
 * ... many more features to be added to this plugin!
 
 **NOTIFICATION BAR**
@@ -105,6 +109,8 @@ Simply activate the plugin to use the notification bar.
 * Shows login/logout link to the right of the bar
 * When logged in alerts show to the right of new mail
 * Plays a sound when alerts show (optional)
+* Shows friends online
+* Chat with any friend online in realtime!
 
 **MAIL**
 
@@ -249,6 +255,32 @@ A. Sorry no, not at the moment - but it's planned to get this working at some po
 
 
 == Changelog ==
+
+= 0.1.17 =
+
+* Friends: Added plugin
+* Friends: Added %f as page replacement for pending friends (use in page titles)
+* Notification Bar: Added friends online count
+* Notification Bar: Added chat windows (click on friends name)
+* Notification Bar: Added unread mail icon
+* Notification Bar: Added new friends requests icon
+* Mail: Added %m as page replacement for unread mail (use in page titles)
+* Mail: Added avatar to received mail
+* Mail: Added hyperlinks in forum email notifications instead of raw text
+* Mail: Enchanced autocomplete to include city and country (and use jQuery UI)
+* Member Profile (Personal tab): Added level of privacy (everyone/friends/no-one)
+* Member Profile (Personal tab): Added Google Map displaying location
+* Member Profile (Personal tab): Added birth date
+* Member Profile (Personal tab): Added city and country member is currently in
+* Member Profile (Settings tab): Added select language
+* Member Profile (Settings tab): Added local time zone
+* Member Profile (Settings tab): Added option to receive email notifications of new mail
+* Member Profile (Settings tab): Added option to place notification bar top or bottom of screen
+* Member Profile (Settings tab): Added option to change alert sound
+* Admin Options: Added allow/disallow personal settings in Member Profile
+* Code: Started on more Symposium functions to replace repeated code
+* Code: Moved Symposium functions to external file
+* and changed format of change log...
 
 = 0.1.16.3 =
 
