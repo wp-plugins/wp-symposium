@@ -39,15 +39,15 @@ function symposium_plugin_menu() {
 					// Get details
 					$post = $wpdb->get_row( $wpdb->prepare("SELECT t.*, u.user_email FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."users u ON t.topic_owner = u.ID WHERE tid = ".$_GET['tid']) );
 
-					$body .= "<span style='font-size:24px'>".$language->fma."</span>";
+					$body .= "<span style='font-size:24px'>".$language->fmr."</span>";
 					if ($topic_parent == 0) { $body .= "<p><strong>".stripslashes($post->topic_subject)."</strong></p>"; }
 					$body .= "<p>".stripslashes($post->topic_post)."</p>";
 					$body = str_replace(chr(13), "<br />", $body);
 					$body = str_replace("\\r\\n", "<br />", $body);
 					$body = str_replace("\\", "", $body);
 						
-					// Email author if post needs approval
-					symposium_sendmail($post->user_email, get_site_url(), $body);
+					// Email author to let them know it was deleted
+					symposium_sendmail($post->user_email, 'fmr', $body);
 					
 					if ($wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$_GET['tid']) ) ) {
 						symposium_audit(array ('code'=>53, 'type'=>'info', 'plugin'=>'menu', 'tid'=>$_GET['tid'], 'message'=>'Deleted post.'));
@@ -76,7 +76,7 @@ function symposium_plugin_menu() {
 					$body = str_replace("\\", "", $body);
 
 					// Email author if post needs approval
-					symposium_sendmail($post->user_email, get_site_url(), $body);
+					symposium_sendmail($post->user_email, 'fma', $body);
 
 					// Email people who want to know and prepare body
 					$parent = $wpdb->get_row($wpdb->prepare("SELECT tid, topic_subject FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$post->topic_parent));
@@ -107,7 +107,7 @@ function symposium_plugin_menu() {
 											
 					if ($query) {						
 						foreach ($query as $user) {		
-							symposium_sendmail($user->user_email, $language->nfr, $body);							
+							symposium_sendmail($user->user_email, "nfr", $body);							
 						}
 					}						
 											
@@ -479,6 +479,10 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'use_chat')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'bar_polling')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'chat_polling')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'use_wp_profile')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'use_wp_login')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'custom_login_url')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'custom_logout_url')) { $status = "X"; }
 	
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
@@ -542,6 +546,9 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'st')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'lrb')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'fdd')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'mr')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'fr')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'nmm')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'ycs')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'nty')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'pen')) { $status = "X"; }
@@ -796,20 +803,59 @@ function symposium_plugin_debug() {
 		} else {
 		  	echo "According to the <a href='admin.php?page=symposium_options&view=settings'>options page</a>:<br />";
 		  	if (function_exists('symposium_forum')) { 
-		  		echo "&nbsp;&nbsp;the forum page is at <a href='".$urls->forum_url."'>$urls->forum_url</a><br />";
+		  		echo "&nbsp;&middot;&nbsp;the forum page is at <a href='".$urls->forum_url."'>$urls->forum_url</a><br />";
 		  	}
 		  	if (function_exists('symposium_mail')) { 
 				$mail_url = $wpdb->get_var($wpdb->prepare("SELECT mail_url FROM ".$wpdb->prefix.'symposium_config'));
-		  		echo "&nbsp;&nbsp;the mail page is at <a href='".$urls->mail_url."'>$urls->mail_url</a><br />";
+		  		echo "&nbsp;&middot;&nbsp;the mail page is at <a href='".$urls->mail_url."'>$urls->mail_url</a><br />";
 		  	}
 		  	if (function_exists('symposium_profile')) { 
 				$profile_url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix.'symposium_config'));
-		  		echo "&nbsp;&nbsp;the profile page is at <a href='".$urls->profile_url."'>$urls->profile_url</a><br />";
+		  		echo "&nbsp;&middot;&nbsp;the profile page is at <a href='".$urls->profile_url."'>$urls->profile_url</a><br />";
 		  	}
 		  	echo "Click the links above to check.";
 		}
   	echo "</p>";
   	
+	// ********** User Level  	
+   	echo '<h2>User Level Test</h2>';
+	echo '<table class="widefat">';
+	echo '<thead>';
+	echo '<tr>';
+	echo '<th>Level</th>';
+	echo '<th>Ability</th>';
+	echo '</tr>';
+	echo '</thead>';
+	echo '<tbody>';
+	echo '<tr>';
+		echo '<td>0</td>';
+		echo '<td>Visitor</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td>1</td>';
+		echo '<td>Subscriber</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td>2</td>';
+		echo '<td>Contributor</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td>3</td>';
+		echo '<td>Author</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td>4</td>';
+		echo '<td>Editor</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td>5</td>';
+		echo '<td>Administrator</td>';
+	echo '</tr>';
+	echo '</tbody>';
+	echo '</table>';
+
+   	echo '<p>Using the WP Symposium user level function, your user level is: <strong>'.symposium_get_current_userlevel().'</strong></p>';
+
 	// ********** Test Email   	
     if( isset($_POST[ 'symposium_testemail' ]) && $_POST[ 'symposium_testemail' ] == 'Y' ) {
     	$to = $_POST['symposium_testemail_address'];
@@ -1564,6 +1610,10 @@ function symposium_plugin_options() {
 	        $use_chat = $_POST[ 'use_chat' ];
 	        $bar_polling = $_POST[ 'bar_polling' ];
 	        $chat_polling = $_POST[ 'chat_polling' ];
+	        $use_wp_profile = $_POST[ 'use_wp_profile' ];
+	        $use_wp_login = $_POST[ 'use_wp_login' ];
+	        $custom_login_url = $_POST[ 'custom_login_url' ];
+	        $custom_logout_url = $_POST[ 'custom_logout_url' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET sound = '".$sound."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_position = '".$bar_position."'") );					
@@ -1571,6 +1621,10 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chat = '".$use_chat."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_polling = '".$bar_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chat_polling = '".$chat_polling."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_profile = '".$use_wp_profile."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_login = '".$use_wp_login."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_login_url = '".$custom_login_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_logout_url = '".$custom_logout_url."'") );					
 			
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>Notification bar options saved.</p></div>";
@@ -1805,7 +1859,7 @@ function symposium_plugin_options() {
 				if ($view == "notes") {
 					?>
 					
-					<div style='float: right; border-radius: 5px; width: 200px; float:right; margin-left: 15px; border: 1px solid #999;'>
+					<div style='float: right; border-radius: 5px; width: 200px; margin-bottom:15px; float:right; margin-left: 15px; border: 1px solid #999;'>
 					
 						<div style='padding: 5px; background-color: #aaa; border-bottom:1px solid #666; text-align:center;'>
 							Version Numbers
@@ -1847,24 +1901,27 @@ function symposium_plugin_options() {
 					</ol>
 					
 					<p>
-					<strong>Warning:</strong> The WP Symposium Mail, Notification bar and Friends plugins have been released for testing only - it is not recommended for use on a live website. It is only in English at the moment, but will support all installed languages. However, your feedback on the plugin would be welcomed at <a href="http://www.wpsymposium.com">www.wpsymposium.com</a>.
+					Your feedback would be welcomed at <a href="http://www.wpsymposium.com">www.wpsymposium.com</a>.
 					</p>
 					
 					<p><strong>Note from the author</strong></p>
 					<p>
-					Thank you very much for using WP Symposium. Along with what is fast becoming a stable release, the WPS suite now includes initial versions of the 
- 					mail, friends and notification bar plugins, as well as a widgets plugin with a couple of widgets to get you going.
+					First of all, a very happy new year to you! I'd love to have a glimpse of what WP Symposium will look like in 12 months time - the goal is to make
+					it the most flexible, attractive and user-definable set of social networking components for WordPress.
+					</p>
+					<p>Thank you very much for using WP Symposium. Version 0.1.17 included the initial chat (optional part of the notification bar) - v0.1.18 further improves
+					on the code for the chat, plus a few extra bits and pieces. Check out the <a href='http://wordpress.org/extend/plugins/wp-symposium/changelog/'>Change Log</a> for full details.
 					</p>
 					<p>
-					You can now request another member becomes a friend of yours. Once they are a friend, you can send them mail and (depending on their privacy level 
-					see their more personal details).
+					As ever, I appreciate you trying WP Symposium, and pass on the usual recommendations that you back up your database and website prior to upgrading/installing
+					WP Symposium so that if necessary you can roll back to a previous version.
 					</p>
 					<p>
 					Again thank you for your support, and I look forward to hearing from you on <a href='http://www.wpsymposium.com'>www.wpsymposium.com</a>...
 					</p>
 					<p>
 					<em>Simon</em><br />
-					28th December 2010
+					4th January 2011
 					</p>
 					
 					<?php
@@ -1879,6 +1936,10 @@ function symposium_plugin_options() {
 					$use_chat = $wpdb->get_var($wpdb->prepare("SELECT use_chat FROM ".$wpdb->prefix."symposium_config"));
 					$bar_polling = $wpdb->get_var($wpdb->prepare("SELECT bar_polling FROM ".$wpdb->prefix."symposium_config"));
 					$chat_polling = $wpdb->get_var($wpdb->prepare("SELECT chat_polling FROM ".$wpdb->prefix."symposium_config"));
+					$use_wp_profile = $wpdb->get_var($wpdb->prepare("SELECT use_wp_profile FROM ".$wpdb->prefix."symposium_config"));
+					$use_wp_login = $wpdb->get_var($wpdb->prepare("SELECT use_wp_login FROM ".$wpdb->prefix."symposium_config"));
+					$custom_login_url = $wpdb->get_var($wpdb->prepare("SELECT custom_login_url FROM ".$wpdb->prefix."symposium_config"));
+					$custom_logout_url = $wpdb->get_var($wpdb->prepare("SELECT custom_logout_url FROM ".$wpdb->prefix."symposium_config"));
 					?>
 						
 					<form method="post" action=""> 
@@ -1942,7 +2003,30 @@ function symposium_plugin_options() {
 					<td><input name="chat_polling" type="text" id="chat_polling"  value="<?php echo $chat_polling; ?>" /> 
 					<span class="description">Frequency of chat window updates in seconds</td> 
 					</tr> 
+
+					<tr valign="top"> 
+					<th scope="row"><label for="use_wp_profile">WordPress Profile</label></th> 
+					<td><input type="checkbox" name="use_wp_profile" id="use_wp_profile" <?php if ($use_wp_profile == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Link to WordPress user profile page?</td> 
+					</tr> 
+
+					<tr valign="top"> 
+					<th scope="row"><label for="use_wp_login">WordPress Login/Logout</label></th> 
+					<td><input type="checkbox" name="use_wp_login" id="use_wp_login" <?php if ($use_wp_login == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Link to WordPress login and logout page?</td> 
+					</tr> 
 								
+					<tr valign="top"> 
+					<th scope="row"><label for="custom_login_url"></label></th> 
+					<td><input name="custom_login_url" type="text" id="custom_login_url"  value="<?php echo $custom_login_url; ?>" style="width:300px" class="regular-text" /> 
+					<span class="description">URL of login page, if <em>not</em> using Wordpress login page</td> 
+					</tr> 
+								
+					<tr valign="top"> 
+					<th scope="row"><label for="custom_logout_url"></label></th> 
+					<td><input name="custom_logout_url" type="text" id="custom_logout_url"  value="<?php echo $custom_logout_url; ?>" style="width:300px" class="regular-text" /> 
+					<span class="description">URL of logout page, if <em>not</em> using Wordpress logout page</td> 
+					</tr> 
 								
 					</table> 
 					 
@@ -1951,9 +2035,12 @@ function symposium_plugin_options() {
 					</p> 
 					</form> 
 					
-					<strong>Notes:</strong><br/>
-					The more frequent the polling intervals, the greater the load on your server. Recommended minimum values are 30 and 10 seconds. 
-					Disabling chat windows will reduce the load on the server.
+					<strong>Notes:</strong><ol>
+					<li>The polling intervals occur in addition to an initial check on each page load.</li>
+					<li>The more frequent the polling intervals, the greater the load on your server.</li>
+					<li>Disabling chat windows will reduce the load on the server.</li>
+					<li>The default sound and bar position can be changed by members</li>
+					</ol>
 					
 					<?php
 				}
@@ -1982,19 +2069,19 @@ function symposium_plugin_options() {
 					<tr valign="top"> 
 					<th scope="row"><label for="forum_url">Forum URL</label></th> 
 					<td><input name="forum_url" type="text" id="forum_url"  value="<?php echo $forum_url; ?>" class="regular-text" /> 
-					<span class="description">URL of the page that shows the forum</td> 
+					<span class="description">Full URL of the page that includes [symnposium-forum]</td> 
 					</tr> 
 								
 					<tr valign="top"> 
 					<th scope="row"><label for="mail_url">Mail URL</label></th> 
 					<td><input name="mail_url" type="text" id="mail_url"  value="<?php echo $mail_url; ?>" class="regular-text" /> 
-					<span class="description">URL of the page that shows mail</td> 
+					<span class="description">Full URL of the page that includes [symnposium-mail]</td> 
 					</tr> 
 								
 					<tr valign="top"> 
 					<th scope="row"><label for="profile_url">Profile URL</label></th> 
 					<td><input name="profile_url" type="text" id="profile_url"  value="<?php echo $profile_url; ?>" class="regular-text" /> 
-					<span class="description">URL of the page that shows member profiles</td> 
+					<span class="description">Full URL of the page that includes [symnposium-profile]</td> 
 					</tr> 					
 								
 					<tr valign="top"> 

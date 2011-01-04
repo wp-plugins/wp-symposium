@@ -8,7 +8,7 @@
 	-ms-overflow-x: hidden;
 	font-family: arial;
 	font-size: 14px;
-	line-height: 18px;
+	line-height: 22px;
 	color: #000;
 }
 #symposium-wrapper * {
@@ -53,7 +53,6 @@
 	color: white;
 }
 
-/* New/Reply Topic Post */
 #symposium-wrapper #new-topic, #symposium-wrapper #edit-topic-div
 {
 	width: 80%;

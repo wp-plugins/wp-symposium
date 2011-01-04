@@ -75,6 +75,17 @@ function symposium_get_language($uid) {
 	return $arr;
 }
 
+function symposium_get_core_language($uid) {
+	global $wpdb;
+
+	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . "symposium_config"));
+	$words = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
+
+	$arr = array("words" => $words, "key" => $language_key);
+	
+	return $arr;
+}
+
 function symposium_get_url($plugin) {
 	global $wpdb;
 	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
@@ -447,41 +458,41 @@ function symposium_time_ago($date,$language,$granularity=1) {
            $retval = str_replace("&eacute;vvels", "&eacute;vvel", $retval);
            $retval = $retval." ezel&ouml;tt";
            break; 
-    case "Portuguese":
-    		$retval = str_replace("second", "segundo", $retval);
-    		$retval = str_replace("segundos", "segundo", $retval);
-    		$retval = str_replace("minute", "minuto", $retval);
-    		$retval = str_replace("minutos", "minuto", $retval);
-    		$retval = str_replace("hour", "hora", $retval);
-    		$retval = str_replace("horas", "hora", $retval);
-    		$retval = str_replace("day", "dia", $retval);
-    		$retval = str_replace("dias", "dia", $retval);
-    		$retval = str_replace("week", "semana", $retval);
-    		$retval = str_replace("semanas", "semana", $retval);
-    		$retval = str_replace("month", "mes", $retval);
-    		$retval = str_replace("mess", "meses", $retval);
-    		$retval = str_replace("year", "ano", $retval);
-    		$retval = str_replace("anos", "ano", $retval);
-	    	$retval = "hace ".$retval;
-        	break;    
-    case "Brazilian Portuguese":
-    		$retval = str_replace("second", "segundo", $retval);
-    		$retval = str_replace("segundos", "segundo", $retval);
-    		$retval = str_replace("minute", "minuto", $retval);
-    		$retval = str_replace("minutos", "minuto", $retval);
-    		$retval = str_replace("hour", "hora", $retval);
-    		$retval = str_replace("horas", "hora", $retval);
-    		$retval = str_replace("day", "dia", $retval);
-    		$retval = str_replace("dias", "dia", $retval);
-    		$retval = str_replace("week", "semana", $retval);
-    		$retval = str_replace("semanas", "semana", $retval);
-    		$retval = str_replace("month", "mes", $retval);
-    		$retval = str_replace("mess", "mes", $retval);
-    		$retval = str_replace("mess", "meses", $retval);
-    		$retval = str_replace("year", "ano", $retval);
-    		$retval = str_replace("anos", "ano", $retval);
-	    	$retval = "hace ".$retval;
-        	break;    
+	case "Portuguese":
+			$retval = str_replace("second", "segundo", $retval);
+			$retval = str_replace("segundos", "segundos", $retval);
+			$retval = str_replace("minute", "minuto", $retval);
+			$retval = str_replace("minutos", "minuto", $retval);
+			$retval = str_replace("hour", "hora", $retval);
+			$retval = str_replace("horas", "horas", $retval);
+			$retval = str_replace("day", "dia", $retval);
+			$retval = str_replace("dias", "dias", $retval);
+			$retval = str_replace("week", "semana", $retval);
+			$retval = str_replace("semanas", "semanas", $retval);
+			$retval = str_replace("month", "mes", $retval);
+			$retval = str_replace("mess", "meses", $retval);
+			$retval = str_replace("year", "ano", $retval);
+			$retval = str_replace("anos", "ano", $retval);
+			$retval = "h&aacute; ".$retval;
+			break; 
+	case "Brazilian Portuguese":
+			$retval = str_replace("second", "segundo", $retval);
+			$retval = str_replace("segundos", "segundo", $retval);
+			$retval = str_replace("minute", "minuto", $retval);
+			$retval = str_replace("minutos", "minuto", $retval);
+			$retval = str_replace("hour", "hora", $retval);
+			$retval = str_replace("horas", "hora", $retval);
+			$retval = str_replace("day", "dia", $retval);
+			$retval = str_replace("dias", "dia", $retval);
+			$retval = str_replace("week", "semana", $retval);
+			$retval = str_replace("semanas", "semana", $retval);
+			$retval = str_replace("month", "mes", $retval);
+			$retval = str_replace("mess", "mes", $retval);
+			$retval = str_replace("mess", "meses", $retval);
+			$retval = str_replace("year", "ano", $retval);
+			$retval = str_replace("anos", "ano", $retval);
+			$retval = "h&aacute; ".$retval;
+			break;   
     case "Norwegian":
     		$retval = str_replace("second", "sekund", $retval);
     		$retval = str_replace("sekunds", "sekunder", $retval);
@@ -538,7 +549,7 @@ function symposium_time_ago($date,$language,$granularity=1) {
     		$retval = str_replace("minuts", "minuter", $retval);
     		$retval = str_replace("hour", "timme", $retval);
     		$retval = str_replace("timmes", "timmar", $retval);
-    		$retval = str_replace("day", "dag&#324;", $retval);
+    		$retval = str_replace("day", "dag", $retval);
     		$retval = str_replace("dags", "dagar", $retval);
     		$retval = str_replace("week", "vecka", $retval);
     		$retval = str_replace("veckas", "veckor", $retval);
@@ -553,14 +564,47 @@ function symposium_time_ago($date,$language,$granularity=1) {
 }
 
 // Send email
-function symposium_sendmail($email, $subject, $msg)
+function symposium_sendmail($email, $code, $msg)
 {
 	global $wpdb;
+	
+	// first get ID of recipient
+	$uid = $wpdb->get_var($wpdb->prepare("SELECT ID FROM ".$wpdb->prefix."users WHERE lower(user_email) = '".strtolower($email)."'"));
+	// now get language of recipient
+	$get_language = symposium_get_language($uid);
+	$language = $get_language['words'];
 
-	$subject = '=?UTF-8?B?' . base64_encode(html_entity_decode($subject)) . '?=';	
+	// get subject
+	switch ($code) {
+	    case "nft":
+			$subject = $language->nft;	
+	        break;
+	    case "nmm":
+			$subject = $language->nmm;	
+	        break;
+	    case "fr":
+			$subject = $language->fr;	
+	        break;
+	    case "mr":
+			$subject = $language->mr;	
+	        break;
+	    case "nfr":
+			$subject = $language->nfr;	
+	        break;
+	    case "fmr":
+			$subject = $language->fmr;	
+	        break;
+	    case "fma":
+			$subject = $language->fma;	
+	        break;
+	    default:
+	    	$subject = $code;
+   	}
 
+	// get footer
 	$footer = $wpdb->get_var($wpdb->prepare("SELECT footer FROM ".$wpdb->prefix.'symposium_config'));
 
+	// build body text
 	$body = "<style>";
 	$body .= "body { background-color: #eee; }";
 	$body .= "</style>";
@@ -576,6 +620,7 @@ function symposium_sendmail($email, $subject, $msg)
 	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 	$headers .= 'From: '.$wpdb->get_var($wpdb->prepare("SELECT from_email FROM ".$wpdb->prefix.'symposium_config'))."\r\n";
 	
+	// finally send mail
 	if (mail($email, $subject, $body, $headers))
 	{
 		return true;

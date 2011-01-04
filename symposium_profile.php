@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile] on any WordPress page to display forum.
-Version: 0.1.17
+Version: 0.1.18
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -219,7 +219,7 @@ function symposium_profile()
 						// send email
 						$friend_to = $wpdb->get_var($wpdb->prepare("SELECT user_email FROM ".$wpdb->prefix."users WHERE ID = ".$friend_to));
 						$body = "You have received a friend request from ".$current_user->display_name;
-						symposium_sendmail($friend_to->user_email, "Friend Request", $body);						
+						symposium_sendmail($friend_to->user_email, "fr", $body);						
 					    // add notification
 						$msg = '<a href="'.symposium_get_url('profile').'?view=friends">You have a friend request from '.$current_user->display_name.'...</a>';
 						symposium_add_notification($msg, $friend_to);

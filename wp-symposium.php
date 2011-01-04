@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.17
+Version: 0.1.18
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -85,8 +85,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.17";
-	$symposium_db_ver = 17;
+	$symposium_version = "0.1.18";
+	$symposium_db_ver = 18;
 	
 	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation started.'));
 	
@@ -147,6 +147,10 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "allow_personal_settings", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "online", "int(11)", "NOT NULL", "'3'");
 	symposium_alter_table("config", "ADD", "offline", "int(11)", "NOT NULL", "'15'");
+	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "use_wp_login", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "custom_login_url", "varchar(512)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "custom_logout_url", "varchar(512)", "NOT NULL", "''");
 	
 	// Profile
 	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
@@ -260,6 +264,9 @@ function symposium_activate() {
 			  too text,
 			  st text,
 			  fdd text,
+			  mr text,
+			  fr text,
+			  nmm text,
 			  ycs text,
 			  nty text,
 			  pen text,
@@ -432,7 +439,7 @@ function symposium_notification_trigger_schedule() {
 			$users = $wpdb->get_results("SELECT DISTINCT user_email FROM ".$wpdb->prefix.'users'." u INNER JOIN ".$wpdb->prefix.'symposium_usermeta'." m ON u.ID = m.uid WHERE m.forum_digest = 'on'"); 
 			if ($users) {
 				foreach ($users as $user) {
-					if(symposium_sendmail($user->user_email, $language->fdd, $body)) {
+					if(symposium_sendmail($user->user_email, 'fdd', $body)) {
 						update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
 					}			
 				}

@@ -147,13 +147,13 @@ if (is_user_logged_in()) {
 						
 					if ($query) {					
 						foreach ($query as $user) {
-							symposium_sendmail($user->user_email, $language->nft, $body);						
+							symposium_sendmail($user->user_email, "nft", $body);						
 						}						
 					}
 				} else {
 					// Email admin if post needs approval
-					$body = "<span style='font-size:24px font-style:italic;'>Topic Moderation Required</span><br /><br />".$body;
-					symposium_sendmail(get_bloginfo('admin_email'), 'Forum Topic requires moderation', $body);
+					$body = "<span style='font-size:24px font-style:italic;'>$language->mr</span><br /><br />".$body;
+					symposium_sendmail(get_bloginfo('admin_email'), 'mr', $body);
 				}	
 			}
 		}
@@ -256,13 +256,13 @@ if (is_user_logged_in()) {
 							
 						if ($query) {						
 							foreach ($query as $user) {		
-								symposium_sendmail($user->user_email, $language->nfr, $body);							
+								symposium_sendmail($user->user_email, 'nfr', $body);							
 							}
 						}						
 					} else {
 						// Email admin if post needs approval
 						$body = "<span style='font-size:24px; font-style:italic;'>Reply Moderation Required</span><br /><br />".$body;
-						symposium_sendmail(get_bloginfo('admin_email'), 'Forum Reply requires moderation', $body);
+						symposium_sendmail(get_bloginfo('admin_email'), 'mr', $body);
 					}					
 				}
 				

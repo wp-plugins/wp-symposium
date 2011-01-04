@@ -3,13 +3,13 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.17
+Version: 0.1.18
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
 */
 	
-/*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
+/*  Copyright 2010  Simon Goodchild  (info@wpsymposium.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
@@ -36,20 +36,32 @@ function add_notification_bar()
 		wp_get_current_user();
 
 		$plugin = WP_PLUGIN_URL.'/wp-symposium';
-		$allow_personal_settings = $wpdb->get_var($wpdb->prepare("SELECT allow_personal_settings FROM ".$wpdb->prefix.'symposium_config'));
+
+		$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_config'));
+
+		$allow_personal_settings = $config->allow_personal_settings;
 		if ($allow_personal_settings != "on") {
-			$sound = $wpdb->get_var($wpdb->prepare("SELECT sound FROM ".$wpdb->prefix . 'symposium_config'));
+			$sound = $config->sound;
 			$soundchat = $sound;
-			$bar_position = $wpdb->get_var($wpdb->prepare("SELECT bar_position FROM ".$wpdb->prefix . 'symposium_config'));
+			$bar_position = $config->bar_position;
 		} else {
 			$sound = get_symposium_meta($current_user->ID, 'sound');
 			$soundchat = get_symposium_meta($current_user->ID, 'soundchat');
 			$bar_position = get_symposium_meta($current_user->ID, 'bar_position');			
 		}
-		$border_radius = $wpdb->get_var($wpdb->prepare("SELECT border_radius FROM ".$wpdb->prefix . 'symposium_config'));
-		$use_chat = $wpdb->get_var($wpdb->prepare("SELECT use_chat FROM ".$wpdb->prefix.'symposium_config'));
-		$bar_polling = ( $wpdb->get_var($wpdb->prepare("SELECT bar_polling FROM ".$wpdb->prefix.'symposium_config')) ) * 1000;
-		$chat_polling = ( $wpdb->get_var($wpdb->prepare("SELECT chat_polling FROM ".$wpdb->prefix.'symposium_config')) ) * 1000;
+		$border_radius = $config->border_radius;
+		$use_chat = $config->use_chat;
+		$bar_polling = ($config->bar_polling*1000);
+		$chat_polling = ($config->chat_polling*1000);
+		$use_wp_profile = $config->use_wp_profile;
+		$use_wp_login = $config->use_wp_login;
+		$custom_login_url = $config->custom_login_url;
+		$custom_logout_url = $config->custom_logout_url;
+		$inactive = $config->online;
+		$offline = $config->offline;
+
+		$get_language = symposium_get_language($current_user->ID);
+		$language = $get_language['words'];
 
 		// maximum number of chat windows
 		$maxChatWindows = 3;
@@ -166,14 +178,17 @@ function add_notification_bar()
 				display: none;
 				padding: 2px;
 			}
+			#symposium-friends-online-list {
+				height: 218px;
+				max-height: 218px;
+				overflow: auto;
+			}
 
 			.symposium_online_name {
 				cursor:pointer;
 			}
 			.symposium_online_name:hover {
 				text-decoration:underline;
-			}
-			.symposium_online_name {
 			}
 			.symposium_offline_name {
 				text-decoration: none;
@@ -258,8 +273,10 @@ function add_notification_bar()
 			.symposium-friends-box-new {
 				background-image:url('<?php echo $plugin; ?>/images/friendsnew.gif');
 			}
-			
-
+			.corners {
+				border-radius: <?php echo $border_radius; ?>px;
+				-moz-border-radius: <?php echo $border_radius; ?>px;
+			}
 		</style>
 		<?php
 		$my_style='<span style="font-weight:bold;">';
@@ -296,7 +313,7 @@ function add_notification_bar()
 				}
 				echo "</div>";
 
-				echo "<div id='symposium-online-box' class='symposium-online-box'></div>";
+				echo "<div id='symposium-online-box' class='symposium-online-box-none'></div>";
 			} ?>
 
 			<div id="alerts">
@@ -305,7 +322,11 @@ function add_notification_bar()
 				<?php
 				if (is_user_logged_in()) {
 					echo 'Logged in as <a href="/wp-admin/profile.php">'.$current_user->user_login.'</a>.&nbsp;';
-					wp_loginout( '/index.php' );
+					if ($use_wp_login == "on") {
+						wp_loginout( '/index.php' );
+					} else {
+						echo '<a href="'.$custom_logout_url.'">Log out</a>';
+					}
 					echo '.&nbsp;';
 					
 					if (function_exists('symposium_mail')) {
@@ -319,7 +340,11 @@ function add_notification_bar()
 					}
 						
 				} else {
-					echo "<a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='Login'>Login</a>";
+					if ($use_wp_login == "on") {
+						echo "<a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='Login'>Login</a>";
+					} else {
+						echo '<a href="'.$custom_login_url.'">Login</a>';
+					}
 				}
 
 				?>	
@@ -335,58 +360,10 @@ function add_notification_bar()
 				echo "<div id='symposium-who-online'>";
 					echo "<div id='symposium-who-online_header' style='width:176px;height:18px;padding:2px;background-color:#000;color:#fff;'>";
 						echo "<div id='symposium-who-online_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='Close' /></div>";
-						echo "Friends Status";
+					echo "Friends Status";
 					echo "</div>";
-	
-					$sql = "SELECT f.*, m.last_activity, u.display_name, u.ID FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to LEFT JOIN ".$wpdb->prefix."users u ON u.ID = f.friend_to WHERE f.friend_accepted = 'on' AND f.friend_from = ".$current_user->ID." ORDER BY last_activity DESC";
-					$friends = $wpdb->get_results($sql);
-					
-					$inactivity = $wpdb->get_row($wpdb->prepare("SELECT online, offline FROM ".$wpdb->prefix . 'symposium_config'));
-					$inactive = $inactivity->online;
-					$offline = $inactivity->offline;
-					$friends_online = 0;
-					
-					foreach ($friends as $friend) {
-						
-						$time_now = time();
-						$last_active_minutes = strtotime($friend->last_activity);
-						$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
-														
-						echo "<div style='clear:both; margin-top:4px; overflow: auto;'>";		
-							echo "<div style='float: left; width:15px; padding-left:4px;'>";
-								if ($last_active_minutes >= $offline) {
-									echo "<img src='".$plugin."/images/loggedout.gif"."' alt='Logged Out'>";
-								} else {
-									$friends_online++;
-									if ($last_active_minutes >= $inactive) {
-										echo "<img src='".$plugin."/images/inactive.gif"."' alt='Inactive'>";
-									} else {
-										echo "<img src='".$plugin."/images/online.gif"."' alt='Online'>";
-									}
-								}
-							echo "</div>";
-							echo "<div style='float: left; width:20px;'>";
-								if (function_exists('symposium_profile')) {	
-									echo "<a href='".symposium_get_url('profile')."?uid=".$friend->ID."'>";
-									echo get_avatar($friend->friend_to, 16);
-									echo "</a>";
-								} else {
-									echo get_avatar($friend->friend_to, 16);
-								}
-							echo "</div>";
-							echo "<div>";
-								if ( $use_chat != 'on' ) {
-									if (function_exists('symposium_profile')) {	
-										echo "<a class='symposium_offline_name' href='".symposium_get_url('profile')."?uid=".$friend->ID."'>";
-										echo "<span title='".$friend->friend_to."'>".$friend->display_name."</span>";
-										echo "</a>";
-									}
-								} else {
-									echo "<span class='symposium_online_name' title='".$friend->friend_to."'>".$friend->display_name."</span>";
-								}
-							echo "</div>";
-						echo "</div>";
-					}
+					echo "<div id='symposium-friends-online-list'>";
+					echo "</div>";
 													
 				echo "</div>";
 				
@@ -417,14 +394,8 @@ function add_notification_bar()
 					
 					// Show friends online, etc?
 			    	if (<?php echo $current_user->ID; ?> == 0) {
-						jQuery('#symposium-online-box').hide("fast");
-						jQuery('#symposium-email-box').hide("fast");
-			    	} else {
-						jQuery("#symposium-online-box").html('<?php echo $friends_online; ?>');
-						if (<?php echo $friends_online; ?> == 0) {
-							jQuery("#symposium-online-box").removeClass("symposium-online-box");
-							jQuery("#symposium-online-box").addClass("symposium-online-box-none");
-						}
+						jQuery('#symposium-online-box').hide();
+						jQuery('#symposium-email-box').hide();
 			    	}
 	
 			    	// Who's online/mail/buttons
@@ -440,10 +411,64 @@ function add_notification_bar()
 			    	jQuery("#symposium-who-online_close").click(function() {
 						jQuery('#symposium-who-online').hide("fast");
 			    	});
-	
-			    	// Check for notifications 	
+
+			    	// Initial check for chat/unread mail/etc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			   		// Friends ******************************************************
+					jQuery.post("/wp-admin/admin-ajax.php", {
+						action:"symposium_friendrequests", 
+						me:<?php echo $current_user->ID; ?>
+						},
+					function(str)
+					{
+						if (str > 0) {
+							jQuery("#symposium-friends-box").html(str);
+							jQuery("#symposium-friends-box").removeClass("symposium-friends-box-none");
+							jQuery("#symposium-friends-box").addClass("symposium-friends-box-new");
+						}
+					});	
+										   		
+			   		// Email ******************************************************
+					jQuery.post("/wp-admin/admin-ajax.php", {
+						action:"symposium_getunreadmail", 
+						me:<?php echo $current_user->ID; ?>
+						},
+					function(str)
+					{
+						if (str > 0) {
+							jQuery("#symposium-email-box").html(str);
+							jQuery("#symposium-email-box").removeClass("symposium-email-box-read");
+							jQuery("#symposium-email-box").addClass("symposium-email-box-unread");
+						}
+					});	
+						
+					// Friends Online Status **************************************
+					jQuery.post("/wp-admin/admin-ajax.php", {
+						action:"symposium_getfriendsonline", 
+						me:<?php echo $current_user->ID; ?>,
+						inactive:<?php echo $inactive; ?>,
+						offline:<?php echo $offline; ?>,
+						use_chat:"<?php echo $use_chat; ?>"
+						},
+					function(str)
+					{
+						if (str != '') {
+							var split=str.split("[split]");
+							jQuery("#symposium-online-box").html(split[0]);
+							jQuery("#symposium-friends-online-list").html(split[1]);
+							if (split[0] > 0) {
+								jQuery("#symposium-online-box").removeClass("symposium-online-box-none");
+								jQuery("#symposium-online-box").addClass("symposium-online-box");
+							} else {
+								jQuery("#symposium-online-box").removeClass("symposium-online-box");
+								jQuery("#symposium-online-box").addClass("symposium-online-box-none");
+							}
+						}
+					});	
+						
+			    	// Check for notifications, unread mail, friend requests, etc
 					var refreshId = setInterval(function()
 				   	{
+				   		// Notifications ************************************************
 						jQuery.post("/wp-admin/admin-ajax.php", {
 							action:"checkForNotifications", 
 							tray:"in",
@@ -457,18 +482,73 @@ function add_notification_bar()
 					    		if ('<?php echo $sound; ?>' != 'None') {
 									soundManager.play('Alert','<?php echo $plugin; ?>/soundmanager/<?php echo $sound; ?>')
 					    		}
-								jQuery('#alerts').fadeIn('fast').delay(<?php echo floor($bar_polling*0.5); ?>).fadeOut('slow');
+								jQuery('#alerts').fadeIn().delay(<?php echo floor($bar_polling*0.5); ?>).fadeOut('slow');
 							}
 						});
 						
+				   		// Friends ******************************************************
+						jQuery.post("/wp-admin/admin-ajax.php", {
+							action:"symposium_friendrequests", 
+							me:<?php echo $current_user->ID; ?>
+							},
+						function(str)
+						{
+							if (str > 0) {
+								jQuery("#symposium-friends-box").html(str);
+								jQuery("#symposium-friends-box").removeClass("symposium-friends-box-none");
+								jQuery("#symposium-friends-box").addClass("symposium-friends-box-new");
+							}
+						});	
+											   		
+				   		// Email ********************************************************
+						jQuery.post("/wp-admin/admin-ajax.php", {
+							action:"symposium_getunreadmail", 
+							me:<?php echo $current_user->ID; ?>
+							},
+						function(str)
+						{
+							if (str > 0) {
+								jQuery("#symposium-email-box").html(str);
+								jQuery("#symposium-email-box").removeClass("symposium-email-box-read");
+								jQuery("#symposium-email-box").addClass("symposium-email-box-unread");
+							}
+						});	
+							
+						// Friends Online Status ****************************************
+						jQuery.post("/wp-admin/admin-ajax.php", {
+							action:"symposium_getfriendsonline", 
+							me:<?php echo $current_user->ID; ?>,
+							inactive:<?php echo $inactive; ?>,
+							offline:<?php echo $offline; ?>,
+							use_chat:"<?php echo $use_chat; ?>"
+							},
+						function(str)
+						{
+							if (str != '') {
+								var split=str.split("[split]");
+								jQuery("#symposium-online-box").html(split[0]);
+								jQuery("#symposium-friends-online-list").html(split[1]);
+								if (split[0] > 0) {
+									jQuery("#symposium-online-box").removeClass("symposium-online-box-none");
+									jQuery("#symposium-online-box").addClass("symposium-online-box");
+								} else {
+									jQuery("#symposium-online-box").removeClass("symposium-online-box");
+									jQuery("#symposium-online-box").addClass("symposium-online-box-none");
+								}
+							}
+						});	
+												
 				   	}, <?php echo $bar_polling; ?>); // Delay to check for new mail, etc
 			    	
+			    	
 					<?php if ($use_chat == 'on') { ?>
+					
+						// /////////////////////////////////////////////// CHAT ///////////////////////////////////////////////
 
 				   		var numChatWindows = <?php echo $maxChatWindows; ?>;
 	
 				    	// Click on a name to chat
-				    	jQuery(".symposium_online_name").click(function() {
+							jQuery(".symposium_online_name").live('click', function() {
 				    		// choose a chat box
 				    		var chatbox = 0;
 				    		var already_chatting = 0;
@@ -486,8 +566,9 @@ function add_notification_bar()
 					    			// found one
 									jQuery(".chatpleasewait").inmiddle().show();
 									jQuery('#chat'+chatbox+'_to').html(jQuery(this).attr("title"));
+									jQuery('#chat'+chatbox+'_display_name').html('<?php echo $language->pw; ?>');
 									jQuery("#chat"+chatbox+"_message").html('');
-									jQuery('#chat'+chatbox).show("fast");
+									jQuery('#chat'+chatbox).show();
 									jQuery.post("/wp-admin/admin-ajax.php", {
 										action:"symposium_openchat", 
 										chat_from:<?php echo $current_user->ID; ?>,
@@ -496,13 +577,13 @@ function add_notification_bar()
 									function(str)
 									{
 										if (str.substring(0, 2) == 'OK') { 
-											jQuery('#chat'+chatbox).show("fast");
+											jQuery('#chat'+chatbox).show();
 											var details = str.split("[split]");
 											jQuery('#chat'+chatbox+'_to').html(details[1]);
 											jQuery('#chat'+chatbox+'_display_name').html(details[2]);
 											jQuery('#chat'+chatbox+'_message').html('');
 										} else {
-											if (jQuery('#chat'+chatbox+'_to').html() == str) { jQuery('#chat'+chatbox).show("fast"); }
+											if (jQuery('#chat'+chatbox+'_to').html() == str) { jQuery('#chat'+chatbox).show(); }
 										}
 									});
 									jQuery(".chatpleasewait").hide();
@@ -520,10 +601,10 @@ function add_notification_bar()
 								function(str)
 								{
 									for (w=1;w<=numChatWindows;w++) {	
-										if (jQuery('#chat'+w+'_to').html() == str) { jQuery('#chat'+w).show("fast"); }
+										if (jQuery('#chat'+w+'_to').html() == str) { jQuery('#chat'+w).show(); }
 									}
 								});
-					    		if (already_chatting > 0) { jQuery('#chat'+already_chatting).show("fast"); }
+					    		if (already_chatting > 0) { jQuery('#chat'+already_chatting).show(); }
 				    		}
 				    	});
 				    	
@@ -535,7 +616,7 @@ function add_notification_bar()
 								echo "jQuery('#chat".$w."_message').attr({ scrollTop: jQuery('#chat".$w."_message').attr('scrollHeight') });";
 							echo "};";
 					    	echo "jQuery('#chat".$w."_close').click(function() {";
-								echo "jQuery('#chat".$w."').hide('fast');";
+								echo "jQuery('#chat".$w."_display_name').html('".$language->pw."');";
 								echo "jQuery.post('/wp-admin/admin-ajax.php', {";
 									echo "action:'symposium_closechat',"; 
 									echo "chat_from:".$current_user->ID.",";
@@ -543,7 +624,7 @@ function add_notification_bar()
 									echo "},";
 								echo "function(str)";
 								echo "{";
-									echo "if (str != '') { alert(str) };";
+									//echo "if (str != '') { alert(str) };";
 								echo "});";
 					    	echo "});";
 							// Track message box typing
@@ -568,93 +649,68 @@ function add_notification_bar()
 							echo "});";
 							
 						} ?>
-						
-				    	// Check for chat/unread mail/etc ******************************************************
+												
+				    	// Scheduled check for chat/unread mail/etc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 						var refreshChatId = setInterval(function()
 					   	{
 
-					   		// Friends ******************************************************
-							jQuery.post("/wp-admin/admin-ajax.php", {
-								action:"symposium_friendrequests", 
-								me:<?php echo $current_user->ID; ?>
-								},
-							function(str)
-							{
-								if (str > 0) {
-									jQuery("#symposium-friends-box").html(str);
-									jQuery("#symposium-friends-box").removeClass("symposium-friends-box-none");
-									jQuery("#symposium-friends-box").addClass("symposium-friends-box-new");
-								}
-							});	
-												   		
-					   		// Email ******************************************************
-							jQuery.post("/wp-admin/admin-ajax.php", {
-								action:"symposium_getunreadmail", 
-								me:<?php echo $current_user->ID; ?>
-								},
-							function(str)
-							{
-								if (str > 0) {
-									jQuery("#symposium-email-box").html(str);
-									jQuery("#symposium-email-box").removeClass("symposium-email-box-read");
-									jQuery("#symposium-email-box").addClass("symposium-email-box-unread");
-								}
-							});		
-
-					   		// Chat ******************************************************
 					   		var numChatWindows = <?php echo $maxChatWindows; ?>;
-	
+
 							jQuery.post("/wp-admin/admin-ajax.php", {
 								action:"symposium_getchat", 
-								me:<?php echo $current_user->ID; ?>
+								me:<?php echo $current_user->ID; ?>,
+								inactive:<?php echo $inactive; ?>,
+								offline:<?php echo $offline; ?>
 								},
 							function(str)
 							{
-
-								if (str != '[from]') {
-									
-									var from=str.split("[from]");
-									var last_post=from[0];
-									var rows=from[1].split("[split]");
-									var num_rows = rows.length-1;
-									var play_sound = false;
-									
-									// clear chat windows	
-									for (w=1;w<=numChatWindows;w++) {	
-										clearChatWindow(w);
-									}
-									
-									var allocated_windows = 0;
-									// loop through messages, setting up all the chat windows for each person, closed or not
-									for (i=0;i<num_rows;i++) {	
-										var details=rows[i].split("[|]");
-										var from = details[0];
-										var to = details[1];
-										var msg = details[2];
-										var name = details[3];
-										var other = 0;
+								if (str != '[topsplit]') {
+									var topsplit=str.split("[topsplit]");
+									if (topsplit.length == 2) {
+										var last_post=topsplit[0];
+										var rows=topsplit[1].split("[split]");
+										var num_rows = rows.length-1;
+										var play_sound = false;
 										
-										if (from == <?php echo $current_user->ID; ?>) {
-											other = to; 
-										} else {
-											other = from;
-										}
-										
-										// see if a window has been allocated
-										var chat_win = 0;
+										// clear chat windows	
 										for (w=1;w<=numChatWindows;w++) {	
-											if (jQuery('#chat'+w+'_to').html() == other) { chat_win = w; }
+											clearChatWindow(w);
 										}
 										
-										if (chat_win == 0) {
-											var allocated = false;
+										var allocated_windows = 0;
+										// loop through messages, setting up all the chat windows for each person, closed or not
+										for (i=0;i<num_rows;i++) {	
+											var details=rows[i].split("[|]");
+											var from = details[0];
+											var to = details[1];
+											var msg = details[2];
+											var name = details[3];
+											var status = details[4];
+	
+											var other = 0;
+											
+											if (from == <?php echo $current_user->ID; ?>) {
+												other = to; 
+											} else {
+												other = from;
+											}
+											
+											// see if a window has been allocated
+											var chat_win = 0;
 											for (w=1;w<=numChatWindows;w++) {	
-												if ( (jQuery('#chat'+w+'_to').html() == '') && (allocated == false) ) { 
-													jQuery('#chat'+w+'_to').html(other); 
-													jQuery('#chat'+w+'_display_name').html(name); 
- 													allocated_windows++; 
- 													allocated = true;
- 												}
+												if (jQuery('#chat'+w+'_to').html() == other) { chat_win = w; }
+											}
+											
+											if (chat_win == 0) {
+												var allocated = false;
+												for (w=1;w<=numChatWindows;w++) {	
+													if ( (jQuery('#chat'+w+'_to').html() == '') && (allocated == false) ) { 
+														jQuery('#chat'+w+'_to').html(other); 
+														jQuery('#chat'+w+'_display_name').html('<img src="<?php echo $plugin; ?>/images/'+status+'_header.gif"> '+name); 
+	 													allocated_windows++; 
+	 													allocated = true;
+	 												}
+												}
 											}
 										}
 									}		
@@ -709,7 +765,7 @@ function add_notification_bar()
 											var chat_to = jQuery('#chat'+w+'_to').html();
 											var new_message = message.replace("[closed-"+chat_to+"]<br>", "");
 											jQuery("#chat"+w+"_message").html(new_message);
-											jQuery('#chat'+w).show("fast");
+											jQuery('#chat'+w).show();
 											jQuery("#chat"+w+"_message").attr({ scrollTop: jQuery("#chat"+w+"_message").attr("scrollHeight") });
 										} else {
 											jQuery('#chat'+w).hide();
@@ -756,7 +812,9 @@ function add_notification_bar()
 	}
 
 	// Notices
-	echo "<div class='chatpleasewait' style='z-index:999999;'><img src='".$plugin."/busy.gif' /></div>";
+	if (is_user_logged_in()) {
+		echo "<div class='chatpleasewait' style='z-index:999999;'><img src='".$plugin."/busy.gif' /></div>";
+	}
 
 }  
 add_action('wp_footer', 'add_notification_bar', 1);
@@ -783,6 +841,63 @@ function addChatWindow($id) {
 }
 
 /* ====================================================== AJAX FUNCTIONS ====================================================== */
+
+// Get friends online
+function symposium_getfriendsonline() {
+	
+	global $wpdb;
+   	$inactive = $_POST['inactive'];
+   	$offline = $_POST['offline'];
+   	$me = $_POST['me'];
+	$time_now = time();
+	$use_chat = $_POST['use_chat'];
+	$friends_online = 0;
+	$plugin = WP_PLUGIN_URL.'/wp-symposium';
+   	
+   	$return = '';
+
+	$sql = "SELECT f.*, m.last_activity, u.display_name, u.ID FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to LEFT JOIN ".$wpdb->prefix."users u ON u.ID = f.friend_to WHERE f.friend_accepted = 'on' AND f.friend_from = ".$me." ORDER BY last_activity DESC";
+	
+	$friends = $wpdb->get_results($sql);
+		
+	foreach ($friends as $friend) {
+		
+		$time_now = time();
+		$last_active_minutes = strtotime($friend->last_activity);
+		$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
+										
+		$return .= "<div style='clear:both; margin-top:4px; overflow: auto;'>";		
+			$return .= "<div style='float: left; width:15px; padding-left:4px;'>";
+				if ($last_active_minutes >= $offline) {
+					$return .= "<img src='".$plugin."/images/loggedout.gif' alt='Logged Out'>";
+				} else {
+					$friends_online++;
+					if ($last_active_minutes >= $inactive) {
+						$return .= "<img src='".$plugin."/images/inactive.gif' alt='Inactive'>";
+					} else {
+						$return .= "<img src='".$plugin."/images/online.gif' alt='Online'>";
+					}
+				}
+			$return .= "</div>";
+			$return .= "<div>";
+				if ( $use_chat != 'on' ) {
+					if (function_exists('symposium_profile')) {	
+						$return .= "<a class='symposium_offline_name' href='".symposium_get_url('profile')."?uid=".$friend->ID."'>";
+						$return .= "<span title='".$friend->friend_to."'>".$friend->display_name."</span>";
+						$return .= "</a>";
+					}
+				} else {
+					$return .= "<span class='symposium_online_name' title='".$friend->friend_to."'>".$friend->display_name."</span>";
+				}
+			$return .= "</div>";
+		$return .= "</div>";
+	}
+	
+	echo $friends_online."[split]".$return;
+	exit;
+	
+}
+add_action('wp_ajax_symposium_getfriendsonline', 'symposium_getfriendsonline');
 
 // Get friend requests
 function symposium_friendrequests() {
@@ -816,26 +931,54 @@ function symposium_getchat() {
 
    	global $wpdb;
 	
+   	$inactive = $_POST['inactive'];
+   	$offline = $_POST['offline'];
    	$me = $_POST['me'];
    	$last_post = '';
+	$time_now = time();
    	
    	$results = '';
-   	$sql = "SELECT c.*, u1.display_name AS fromname, u2.display_name AS toname FROM ".$wpdb->prefix."symposium_chat c LEFT JOIN ".$wpdb->prefix."users u1 ON c.chat_from = u1.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.chat_to = u2.ID WHERE (chat_from = ".$me." OR chat_to = ".$me.") ORDER BY chid";
+
+	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
+	$sql .= "FROM wp_symposium_chat c ";
+	$sql .= "LEFT JOIN ".$wpdb->prefix."users u1 ON c.chat_from = u1.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->prefix."users u2 ON c.chat_to = u2.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
+	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
+	$sql .= "WHERE (";
+	$sql .= "chat_from = ".$me;
+	$sql .= " OR chat_to = ".$me;
+	$sql .= ")";
+	$sql .= "ORDER BY chid";
+
 	$chats = $wpdb->get_results($sql);
 	if ($chats) {
 		foreach ($chats as $chat) {
 			$results .= $chat->chat_from.'[|]'.$chat->chat_to.'[|]'.stripslashes($chat->chat_message).'[|]';
 			if ($chat->chat_from == $me) {
-				$results .= $chat->toname."[split]";
+				$results .= $chat->toname."[|]";
 				$last_post = "me";
+				$last_activity = $chat->tolast;
 			} else {
-				$results .= $chat->fromname."[split]";
+				$results .= $chat->fromname."[|]";
 				$last_post = "notme";
+				$last_activity = $chat->fromlast;
+			}
+			$last_active_minutes = strtotime($last_activity);
+			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
+			if ($last_active_minutes >= $offline) {
+				$results .= "loggedout[split]";
+			} else {
+				if ($last_active_minutes >= $inactive) {
+					$results .= "inactive[split]";
+				} else {
+					$results .= "online[split]";
+				}
 			}
 		}
 	}
-	
-   	echo $last_post."[from]".$results;
+
+   	echo $last_post."[topsplit]".$results;
    	exit;
 	
 }

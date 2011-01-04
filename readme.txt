@@ -3,20 +3,18 @@ Author: WP Symposium
 Contributors: Simon Goodchild
 Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
-Tags: symposium, forum, social, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
+Tags: symposium, forum, social, chat, friends, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
 Requires at least: 3.0
-Tested up to: 3.0.3
-Stable tag: 0.1.17
+Tested up to: 3.0.4
+Stable tag: 0.1.18
 
-A new suite of social networking plugins - forum, mail, private messaging, notification bar, profile page, widgets, and more!
+A new suite of social networking plugins - forum, mail, private messaging, notification bar, chat windows, profile page, widgets, and more!
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, mail, private messaging, notification bar, profile page, widgets, and more. You simply choose which you want to activate!
+WP Symposium is a new suite of social networking plugins - forum, mail, private messaging, notification bar, chat windows, profile page, widgets, and more. You simply choose which you want to activate!
 
 NOTICE: We are currently BETA testing this plugin. As such, although we have not found any problems, we do not recommend you use it on any production sites. However, we do welcome all feedback, bug reports and suggestions. Please do so at www.wpsymposium.com - thank you. 
-
-Currently the forum is well developed, and the mail and notification bar have both just been released for user testing.
 
 ---------------
 
@@ -28,8 +26,8 @@ Currently the forum is well developed, and the mail and notification bar have bo
 * Notification Bar
 * Forum
 * Mail/Private Messaging
-* Friends (available for testing)
-* Chat (available for testing)
+* Friends
+* Chat
 * Wall (not yet available)
 * ... more to come!!!
 
@@ -49,6 +47,7 @@ Currently the forum is well developed, and the mail and notification bar have bo
 * Supports 'SimpleModal Login' plugin
 * No need to edit stylesheet
 * Health Check page to help with maintenance
+* Option to not load jQuery
 * Full audit trail and event log (note, minimum event/error logging at the moment, next patch will add full logging)
 
 *Appearance/Styles*
@@ -85,6 +84,8 @@ Currently the forum is well developed, and the mail and notification bar have bo
 
 **MEMBER PROFILE PAGE**
 
+*Overview*
+
 The Member profile does not yet include all the functionality to form a useful page, but sets the foundation of sending mail to another another member, and linking the forum plugin and mail plugins. 
 
 Put `[symposium-profile]` on any WP page, and put the page URL in the Symposium options.
@@ -96,21 +97,35 @@ Put `[symposium-profile]` on any WP page, and put the page URL in the Symposium 
 * Depending on privacy level, displays location map, etc
 * ... many more features to be added to this plugin!
 
+*Settings*
+
+* Allow members to over-ride default settings
+* Set inactivity period for offline and logged out
+
 **NOTIFICATION BAR**
 
-The notification bar, if activated, can be placed at the bottom or top of every webpage. It shows a custom message to the left, and a login/logout link to the right.
+*Overview*
 
-However, when a member is logged in and a new mail arrives, an alert is shown to the right instead of the logout link for a short period of time. Optionally, an alert sound (from a list available, defaulting to a subtle chime) is played.
+The notification bar, if activated, can be placed at the bottom or top of every webpage. It shows a custom message to the left, a login/logout link to the right together with icons for specific purposes, ie: friends online, unread mail messages and friend requests.
+
+When a member is logged in and a new mail arrives or a friend request is received, an alert is shown to the right instead of the logout link for a short period of time. Optionally, an alert sound (from a list available, defaulting to a subtle chime) is played.
+
+The icons will also be highlighted with a number of unread messages or friend requests.
+
+Clicking the friends online icon, will display which friends are online, not active and logged out. Clicking on a name will open a chat window (and on the recipients screen) for real time chatting.
 
 Simply activate the plugin to use the notification bar.
+
+*Settings*
 
 * Place at top or bottom of page
 * Change message to left of the bar
 * Shows login/logout link to the right of the bar
+* Use WP login/logout or custom URLs
 * When logged in alerts show to the right of new mail
 * Plays a sound when alerts show (optional)
 * Shows friends online
-* Chat with any friend online in realtime!
+* Set polling intervals for notifications and chat messages
 
 **MAIL**
 
@@ -140,6 +155,12 @@ Put `[symposium-forum]` on any WP page, and put the page URL in the Symposium op
 
 *Settings*
 
+* Option to moderate topics and replies
+* Set preview text length
+* Enable a daily digest (optional for members)
+* Show or hide forum categories
+* Change order from newest of oldest replies first
+* Set a word to make posts slightly transparent (eg. [closed])
 * Limit viewing of forum to particular user levels
 * View all topics on the forum, with delete/approve option
 
@@ -238,10 +259,10 @@ IMPORTANT: Update settings on the Options page.
 Q. Where can I find more information?
 A. Go to www.wpsymposium.com
 
-Q. The admin side works, but the forum doesn't appear?
-A. Check you have `[symposium-forum]` on your page, with a hyphen, not an underscore.
+Q. The admin side works, but the forum (or another plugin) doesn't appear?
+A. Check you have `[symposium-forum]` on your page, with a hyphen, not an underscore. Replace [symposium-forum] with the shortcode of the plugin.
 
-Q. I've done that, but the forum still doesn't appear?
+Q. I've done that, but the forum (or another plugin) still doesn't appear?
 A. Have you put `[symposium-forum]` on a WordPress page, not an HTML file? 
 
 Q. My language isn't supported, can I add my language?
@@ -255,6 +276,20 @@ A. Sorry no, not at the moment - but it's planned to get this working at some po
 
 
 == Changelog ==
+
+= 0.1.18 =
+
+* Chat: Chatbox now shows friends status beside name
+* Chat: Friends online status now updates, at notification polling refresh frequency
+* Notification bar: Improved polling to reduce server load
+* Notification bar: busy image now hidden if not logged in
+* Notification bar: choose between login/logout via WP or your own URLs
+* Notification bar: choose between WP profile page or WPS profile page
+* Core: Email subjects sent in recipients language
+* Health Check: Added test for symposium_get_current_userlevel() function
+* Languages: Updated Swedish (thanks to Mattias Dahl)
+* Languages: Updated 'ago' in Portuguse (thanks to marclatino)
+* Lanaguges: Added 'Requires Moderation', 'Friend Request', 'New Message'
 
 = 0.1.17 =
 
