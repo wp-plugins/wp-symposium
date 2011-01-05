@@ -82,6 +82,26 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
 }
 
+// Create Comments (including status)
+$table_name = $wpdb->prefix . "symposium_comments";
+if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+	$sql = "CREATE TABLE " . $table_name . " (
+	cid int(11) NOT NULL AUTO_INCREMENT,
+	subject_uid int(11) NOT NULL,
+	author_uid int(11) NOT NULL,
+	comment_parent int(11) NOT NULL,
+	comment_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	comment varchar(1024) NOT NULL DEFAULT '',
+	PRIMARY KEY cid (cid)
+ 	);";
+
+	dbDelta($sql);
+
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
+
+}
+
 // Create Configuration
 $table_name = $wpdb->prefix . "symposium_config";
 if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
@@ -228,16 +248,35 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
 } 	
 
-// Create notifications table
-$table_name = $wpdb->prefix . "symposium_notifications";
+// Create WPS users meta table
+$table_name = $wpdb->prefix . "symposium_usermeta";
 if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
 	$sql = "CREATE TABLE " . $table_name . " (
-	nid int(11) NOT NULL AUTO_INCREMENT,
-	notification_to int(11) NOT NULL,
-	notification_shown varchar(2) NOT NULL,
-	notification_message varchar(1024) NOT NULL,
-	PRIMARY KEY nid (nid)
+	mid int(11) NOT NULL AUTO_INCREMENT,
+	uid int(11) NOT NULL,
+	forum_digest varchar(2) NOT NULL DEFAULT 'on',
+	PRIMARY KEY mid (mid)
+ 	);";
+
+    dbDelta($sql);
+
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
+	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Inserted '.$table_name.' default values.'));
+
+} 	
+
+// Create extended usermeta table
+$table_name = $wpdb->prefix . "symposium_extended";
+if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+	$sql = "CREATE TABLE " . $table_name . " (
+	eid int(11) NOT NULL AUTO_INCREMENT,
+	extended_name varchar(64) NOT NULL DEFAULT 'New field',
+	extended_type varchar(16) NOT NULL DEFAULT 'Text',
+	extended_default text NOT NULL DEFAULT '',
+	extended_order int(11) NOT NULL DEFAULT '0',
+	PRIMARY KEY eid (eid)
  	);";
 
     dbDelta($sql);

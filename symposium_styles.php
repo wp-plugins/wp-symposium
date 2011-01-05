@@ -74,17 +74,20 @@
 		}
 		$html .= "}";
 	
-		$html .= "#symposium-wrapper .new-topic-subject-input";
-		$html .= "{";
+		$html .= "#symposium-wrapper .new-topic-subject-input, #symposium-wrapper .input-field {";
 		$html .= "	font-family: ".$fontfamily.";";
 		$html .= "}";
 
-		$html .= "#symposium-wrapper .new-topic-subject-text, #symposium-wrapper .reply-topic-subject-text, #symposium-wrapper .reply-topic-text";
-		$html .= "{";
+		$html .= "#symposium-wrapper .new-topic-subject-text, #symposium-wrapper .reply-topic-subject-text, #symposium-wrapper .reply-topic-text {";
 		$html .= "	font-family: ".$fontfamily.";";
 		$html .= "}";
 	
 		$html .= "#symposium-wrapper #new-topic, #symposium-wrapper #reply-topic, #symposium-wrapper #edit-topic-div {";
+		$html .= "	background-color: ".$main_background.";";
+		$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";	
+		$html .= "}";
+
+		$html .= "#symposium-wrapper #profile_right_column {";
 		$html .= "	background-color: ".$main_background.";";
 		$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";	
 		$html .= "}";

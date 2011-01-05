@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, chat, friends, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.18.1
+Stable tag: 0.1.19
 
 A new suite of social networking plugins - forum, mail, private messaging, notification bar, chat windows, profile page, widgets, and more!
 
@@ -279,9 +279,10 @@ A. Sorry no, not at the moment - but it's planned to get this working at some po
 
 = 0.1.19 =
 
-* Profile: Added custom profile extension fields
+* Profile: Added Wall with personal status and post comment (this is to be improved with replies, etc)
+* Profile: Added custom profile extension fields (to be improved with delete, etc)
 * Profile: Added friends and profile extension fields
-* Profile: Added privacy for wall (coming in near future)
+* Profile: Added privacy for wall
 
 = 0.1.18.1 =
 

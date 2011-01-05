@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.18
+Version: 0.1.19
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -59,6 +59,8 @@ function add_notification_bar()
 		$custom_logout_url = $config->custom_logout_url;
 		$inactive = $config->online;
 		$offline = $config->offline;
+
+		include_once('symposium_functions.php');
 
 		$get_language = symposium_get_language($current_user->ID);
 		$language = $get_language['words'];
@@ -321,7 +323,13 @@ function add_notification_bar()
 			<div id="info">
 				<?php
 				if (is_user_logged_in()) {
-					echo 'Logged in as <a href="/wp-admin/profile.php">'.$current_user->user_login.'</a>.&nbsp;';
+					echo 'Logged in as ';
+					if ($use_wp_profile == 'on') {
+						echo '<a href="/wp-admin/profile.php">'.$current_user->user_login.'</a>';
+					} else {
+						echo '<a href="'.symposium_get_url("profile").'">'.$current_user->user_login.'</a>';
+					}
+					echo '.&nbsp;';
 					if ($use_wp_login == "on") {
 						wp_loginout( '/index.php' );
 					} else {
@@ -413,6 +421,7 @@ function add_notification_bar()
 			    	});
 
 			    	// Initial check for chat/unread mail/etc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			    	
 			   		// Friends ******************************************************
 					jQuery.post("/wp-admin/admin-ajax.php", {
 						action:"symposium_friendrequests", 

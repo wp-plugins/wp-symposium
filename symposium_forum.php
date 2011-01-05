@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.18
+Version: 0.1.19
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -56,7 +56,11 @@ function symposium_forum() {
 	$subs = $wpdb->prefix . 'symposium_subs';
 	$cats = $wpdb->prefix . 'symposium_cats';
 	$lang = $wpdb->prefix . 'symposium_lang';	
-	
+
+	// Includes
+	include_once('symposium_styles.php');
+	include_once('symposium_functions.php');
+
 	// Get user level
 	$user_level = symposium_get_current_userlevel();
 	
@@ -66,10 +70,6 @@ function symposium_forum() {
 	$snippet_length_long = $wpdb->get_var($wpdb->prepare("SELECT preview2 FROM ".$config));
 	if ($snippet_length_long == '') { $snippet_length_long = '45'; }
 		
-	// Includes
-	include_once('symposium_styles.php');
-	include_once('symposium_functions.php');
-
 	$get_language = symposium_get_language($current_user->ID);
 	$language_key = $get_language['key'];
 	$language = $get_language['words'];

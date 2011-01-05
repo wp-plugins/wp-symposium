@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium
-Version: 0.1.18
+Version: 0.1.19
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -29,9 +29,9 @@ License: GPL2
 add_action( 'widgets_init', 'symposium_load_widgets' );
 
 function symposium_load_widgets() {
+	include_once('symposium_functions.php');
 	register_widget( 'Forumrecentposts_Widget' );
 	register_widget( 'Symposium_members_Widget' );
-	include_once('symposium_functions.php');
 }
 
 /** Symposium: New Members ************************************************************************* **/

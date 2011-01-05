@@ -622,6 +622,23 @@ function symposium_plugin_debug() {
    	}   	
    	echo $status;
    	
+   	// Comments
+   	$table_name = $wpdb->prefix . "symposium_comments";
+   	$status = $ok;
+   	echo '<strong>Comments: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'cid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'subject_uid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'author_uid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'comment_parent')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'comment_timestamp')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'comment')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
   	// Friends
    	$table_name = $wpdb->prefix . "symposium_friends";
    	$status = $ok;
@@ -638,7 +655,24 @@ function symposium_plugin_debug() {
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
-
+   	   	
+   	// Comments
+   	$table_name = $wpdb->prefix . "symposium_comments";
+   	$status = $ok;
+   	echo '<strong>Comments: '.$table_name.'</strong><br />';
+   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+   		$status = $fail."Table doesn't exist".$fail2;
+   	} else {
+		if (!symposium_field_exists($table_name, 'cid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'subject_uid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'author_uid')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'comment_parent')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'comment_timestamp')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'comment')) { $status = "X"; }
+		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
+   	}   	
+   	echo $status;
+   	
   	// Chat
    	$table_name = $wpdb->prefix . "symposium_chat";
    	$status = $ok;
@@ -685,7 +719,6 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'mail_subject')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'mail_in_deleted')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'mail_sent_deleted')) { $status = "X"; }
-		if (!symposium_field_exists($table_name, 'mail_notified')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'mail_message')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
@@ -715,6 +748,9 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'language')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'last_activity')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'status')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'visible')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'wall_share')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'extended')) { $status = "X"; }
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -1641,6 +1677,42 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET online = '".$online."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET offline = '".$offline."'") );					
 			
+			// Update extended fields
+	   		if ($_POST['eid'] != '') {
+		   		$range = array_keys($_POST['eid']);
+				foreach ($range as $key) {
+				    $eid = $_POST['eid'][$key];
+				    $name = $_POST['name'][$key];
+				    $order = $_POST['order'][$key];
+				    $type = $_POST['type'][$key];
+				    $default = $_POST['default'][$key];
+				    
+					$wpdb->query( $wpdb->prepare( "
+						UPDATE ".$wpdb->prefix.'symposium_extended'."
+						SET extended_name = %s, extended_order = %s, extended_type = %s, extended_default = %s
+						WHERE eid = %d", 
+				        $name, $order, $type, $default, $eid  ) );
+				}		
+			}
+			
+			if ($_POST['new_name'] != '' && $_POST['new_name'] != 'New name') {
+				$wpdb->query( $wpdb->prepare( "
+					INSERT INTO ".$wpdb->prefix.'symposium_extended'."
+					( 	extended_name, 
+						extended_order,
+						extended_type,
+						extended_default
+					)
+					VALUES ( %s, %d, %s, %s )", 
+			        array(
+			        	$_POST['new_name'], 
+			        	$_POST['new_order'],
+			        	$_POST['new_type'],
+			        	$_POST['new_default']
+			        	) 
+			        ) );			        
+			}
+						
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>Member Profile options saved.</p></div>";
 			
@@ -1906,22 +1978,24 @@ function symposium_plugin_options() {
 					
 					<p><strong>Note from the author</strong></p>
 					<p>
-					First of all, a very happy new year to you! I'd love to have a glimpse of what WP Symposium will look like in 12 months time - the goal is to make
-					it the most flexible, attractive and user-definable set of social networking components for WordPress.
-					</p>
-					<p>Thank you very much for using WP Symposium. Version 0.1.17 included the initial chat (optional part of the notification bar) - v0.1.18 further improves
-					on the code for the chat, plus a few extra bits and pieces. Check out the <a href='http://wordpress.org/extend/plugins/wp-symposium/changelog/'>Change Log</a> for full details.
+					First of all, a very happy new year to you! I'd love to have a glimpse of what WP Symposium will look like in 12 months time - 
+					the goal is to make it the most flexible, attractive and user-definable set of social networking components for WordPress.
 					</p>
 					<p>
-					As ever, I appreciate you trying WP Symposium, and pass on the usual recommendations that you back up your database and website prior to upgrading/installing
-					WP Symposium so that if necessary you can roll back to a previous version.
+					Welcome to v0.1.19! This release introduces the profile wall. You can only post your status/what's on your mind, and post new comments 
+					on other members' walls. This will be developed to allow you to reply to posts on the wall, and display what your friends are up to on
+					each others walls next.
+					</p>
+					<p>
+					As ever, I appreciate you trying WP Symposium, and pass on the usual recommendations that you back up your database and website 
+					prior to upgrading/installing WP Symposium so that if necessary you can roll back to a previous version.
 					</p>
 					<p>
 					Again thank you for your support, and I look forward to hearing from you on <a href='http://www.wpsymposium.com'>www.wpsymposium.com</a>...
 					</p>
 					<p>
 					<em>Simon</em><br />
-					4th January 2011
+					5th January 2011
 					</p>
 					
 					<?php
@@ -2069,19 +2143,19 @@ function symposium_plugin_options() {
 					<tr valign="top"> 
 					<th scope="row"><label for="forum_url">Forum URL</label></th> 
 					<td><input name="forum_url" type="text" id="forum_url"  value="<?php echo $forum_url; ?>" class="regular-text" /> 
-					<span class="description">Full URL of the page that includes [symnposium-forum]</td> 
+					<span class="description">Full URL of the page that includes [symposium-forum]</td> 
 					</tr> 
 								
 					<tr valign="top"> 
 					<th scope="row"><label for="mail_url">Mail URL</label></th> 
 					<td><input name="mail_url" type="text" id="mail_url"  value="<?php echo $mail_url; ?>" class="regular-text" /> 
-					<span class="description">Full URL of the page that includes [symnposium-mail]</td> 
+					<span class="description">Full URL of the page that includes [symposium-mail]</td> 
 					</tr> 
 								
 					<tr valign="top"> 
 					<th scope="row"><label for="profile_url">Profile URL</label></th> 
 					<td><input name="profile_url" type="text" id="profile_url"  value="<?php echo $profile_url; ?>" class="regular-text" /> 
-					<span class="description">Full URL of the page that includes [symnposium-profile]</td> 
+					<span class="description">Full URL of the page that includes [symposium-profile]</td> 
 					</tr> 					
 								
 					<tr valign="top"> 
@@ -2361,10 +2435,75 @@ function symposium_plugin_options() {
 					<td><input name="offline" type="text" id="offline"  value="<?php echo $offline; ?>" /> 
 					<span class="description">How many minutes before a member is assumed logged out</td> 
 					</tr> 
-										
-					</table>
-					 					
+					
+					<tr valign="top"> 
+					<th scope="row"><label for="offline">Extended Fields</label></th><td>
 					<?php
+					echo '<table class="widefat">';
+					echo '<thead>';
+					echo '<tr>';
+					echo '<th>Order</th>';
+					echo '<th>Name</th>';
+					echo '<th>Type</th>';
+					echo '<th>Default Value</th>';
+					echo '</tr>';
+					echo '</thead>';
+					echo '<tbody>';
+					$extensions = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_extended ORDER BY extended_order, extended_name"));
+					if ($extensions) {
+						foreach ($extensions as $extension) {
+							echo '<tr>';
+								echo '<td>';
+								echo '<input type="hidden" name="eid[]" value="'.$extension->eid.'" />';
+								echo '<input type="text" name="order[]" value="'.$extension->extended_order.'" />';
+								echo '</td>';
+								echo '<td>';
+								echo '<input type="text" name="name[]" value="'.$extension->extended_name.'" />';
+								echo '</td>';
+								echo '<td>';
+								echo '<select name="type[]">';
+								echo '<option value="Text"';
+									if ($extension->extended_type == 'Text') { echo ' SELECTED'; }
+									echo '>Text</option>';
+								echo '<option value="List"';
+									if ($extension->extended_type == 'List') { echo ' SELECTED'; }
+									echo '>List</option>';
+								echo '</select>';
+								echo '</td>';
+								echo '<td>';
+								echo '<input type="text" name="default[]" value="'.$extension->extended_default.'" />';
+								echo '</td>';
+							echo '</tr>';
+						}
+					}
+					echo '<tr>';
+						echo '<td><p>New extended field:</p>';
+						echo '<input type="text" name="new_order" onclick="javascript:this.value = \'\'" value="0" />';
+						echo '</td>';
+						echo '<td><p>&nbsp;</p>';
+						echo '<input type="text" name="new_name" onclick="javascript:this.value = \'\'" value="New name" />';
+						echo '</td>';
+						echo '<td><p>&nbsp;</p>';
+						echo '<select name="new_type">';
+						echo '<option value="Text" SELECTED>Text</option>';
+						echo '<option value="List">List</option>';
+						echo '</select>';
+						echo '</td>';
+						echo '<td><p>&nbsp;</p>';
+						echo '<input type="text" name="new_default" onclick="javascript:this.value = \'\'" value="" />';
+						echo '</td>';
+					echo '</tr>';
+					echo '<tr><td colspan="4"><span class="description">For lists, enter all the values separated by commas as the default value - the first value is the default choice.';
+					echo '<br />Members extended field values are blank until they save them for the first time.';
+					echo '<br />If you rename a field, all values for that field will be lost (can be retrieved by renaming it back).';
+					echo '<br />Field names must be unique.</span></td></tr>';
+					echo '</tbody>';
+					echo '</thead>';
+					echo '</table>';
+
+					echo '</td></tr>';										
+					echo '</table>';
+					 					
 					echo '<p class="submit">';
 					echo '<input type="submit" name="Submit" class="button-primary" value="Save Changes" />';
 					echo '</p>';

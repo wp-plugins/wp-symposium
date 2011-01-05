@@ -19,19 +19,21 @@ include_once('../../../wp-config.php');
 include_once('../../../wp-includes/wp-db.php');
 include_once('symposium_functions.php');
 
-global $wpdb;
-$users = $wpdb->prefix . 'users';
-$config = $wpdb->prefix . 'symposium_config';
-$topics = $wpdb->prefix . 'symposium_topics';
-$subs = $wpdb->prefix . 'symposium_subs';
-$cats = $wpdb->prefix . 'symposium_cats';
-$lang = $wpdb->prefix . 'symposium_lang';
-
-$get_language = symposium_get_language($current_user->ID);
-$language_key = $get_language['key'];
-$language = $get_language['words'];
-
+global $wpdb, $current_user;
+wp_get_current_user();
+	
 if (is_user_logged_in()) {
+
+	$users = $wpdb->prefix . 'users';
+	$config = $wpdb->prefix . 'symposium_config';
+	$topics = $wpdb->prefix . 'symposium_topics';
+	$subs = $wpdb->prefix . 'symposium_subs';
+	$cats = $wpdb->prefix . 'symposium_cats';
+	$lang = $wpdb->prefix . 'symposium_lang';
+	
+	$get_language = symposium_get_language($current_user->ID);
+	$language_key = $get_language['key'];
+	$language = $get_language['words'];
 
 	// Get forum_url
 	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));

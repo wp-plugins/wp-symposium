@@ -340,7 +340,7 @@ function symposium_permalink($id, $type) {
 function symposium_time_ago($date,$language,$granularity=1) {
 	
     $date = strtotime($date);
-    $difference = time() - $date;
+    $difference = (time() - $date) + 1;
     $periods = array('decade' => 315360000,
         'year' => 31536000,
         'month' => 2628000,
@@ -584,6 +584,9 @@ function symposium_sendmail($email, $code, $msg)
 	        break;
 	    case "fr":
 			$subject = $language->fr;	
+	        break;
+	    case "fdd":
+			$subject = $language->fdd;	
 	        break;
 	    case "mr":
 			$subject = $language->mr;	
