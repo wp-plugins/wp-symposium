@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, chat, friends, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.18
+Stable tag: 0.1.18.1
 
 A new suite of social networking plugins - forum, mail, private messaging, notification bar, chat windows, profile page, widgets, and more!
 
@@ -277,18 +277,28 @@ A. Sorry no, not at the moment - but it's planned to get this working at some po
 
 == Changelog ==
 
+= 0.1.19 =
+
+* Profile: Added custom profile extension fields
+* Profile: Added friends and profile extension fields
+* Profile: Added privacy for wall (coming in near future)
+
+= 0.1.18.1 =
+
+* Forum: Fixed inclusion of functions file prior to function call
+
 = 0.1.18 =
 
 * Chat: Chatbox now shows friends status beside name
 * Chat: Friends online status now updates, at notification polling refresh frequency
 * Notification bar: Improved polling to reduce server load
-* Notification bar: busy image now hidden if not logged in
-* Notification bar: choose between login/logout via WP or your own URLs
-* Notification bar: choose between WP profile page or WPS profile page
+* Notification bar: Busy image now hidden if not logged in
+* Notification bar: Choose between login/logout via WP or your own URLs
+* Notification bar: Choose between WP profile page or WPS profile page
 * Core: Email subjects sent in recipients language
 * Health Check: Added test for symposium_get_current_userlevel() function
 * Languages: Updated Swedish (thanks to Mattias Dahl)
-* Languages: Updated 'ago' in Portuguse (thanks to marclatino)
+* Languages: Updated 'ago' in Portuguese (thanks to marclatino)
 * Lanaguges: Added 'Requires Moderation', 'Friend Request', 'New Message'
 
 = 0.1.17 =
