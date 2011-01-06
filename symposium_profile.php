@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile] on any WordPress page to display forum.
-Version: 0.1.19
+Version: 0.1.20
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -70,6 +70,35 @@ function symposium_profile()
 		$get_language = symposium_get_language($current_user->ID);
 		$language_key = $get_language['key'];
 		$language = $get_language['words'];
+		
+		$js_script = '<script type="text/javascript">
+	
+		    jQuery(document).ready(function() { 	
+
+				// Centre in screen
+				jQuery.fn.inmiddle = function () {
+			    	this.css("position","absolute");
+			    	this.css("top", ( jQuery(window).height() - this.height() ) / 2+jQuery(window).scrollTop() + "px");
+			    	this.css("left", ( jQuery(window).width() - this.width() ) / 2+jQuery(window).scrollLeft() + "px");
+				    return this;
+				}
+		    		
+		    	// Notices	    	
+				jQuery(".notice").hide();
+				jQuery(".pleasewait").hide();
+		
+				// Click on a button
+		    	jQuery(".button").click(function() {
+					jQuery(".pleasewait").inmiddle().show();
+		    	});		
+		
+		    });
+	 
+		</script>
+		';
+		
+		$html .= $js_script;
+
 
 		// Wrapper
 		$html .= "<div id='symposium-wrapper'>";
@@ -131,448 +160,483 @@ function symposium_profile()
 					$html .= '</div>';
 					
 					$html .= '<div id="mail-main">';
-	
-					$html .= symposium_profile_header($uid, $current_user->ID, $mail_url, $current_user->display_name);
-					
-					// Wall
-					if ($view == 'wall') {
-						$html .= symposium_profile_body($uid, $current_user->ID);
-					}
-										
-					// Settings
-					if ($view == 'settings') {
-						
-						$allow_personal_settings = $wpdb->get_var($wpdb->prepare("SELECT allow_personal_settings FROM ".$wpdb->prefix.'symposium_config'));
-						
-						// get values
-						if ($allow_personal_settings == "on") {						
-							$sound = get_symposium_meta($current_user->ID, 'sound');
-							$soundchat = get_symposium_meta($current_user->ID, 'soundchat');
-							$bar_position = get_symposium_meta($current_user->ID, 'bar_position');
-							$language = get_symposium_meta($current_user->ID, 'language');
+
+						if ($_GET['msg']) {
+							$html .= "<div class='alert'>".addslashes($_GET['msg'])."</div>";
 						}
-						
-						$timezone = get_symposium_meta($current_user->ID, 'timezone');
-						$notify_new_messages = get_symposium_meta($current_user->ID, 'notify_new_messages');
-						
-						$html .= "<div style='clear:both'>";
-						
-						$html .= '<form method="post" action="'.$dbpage.'"> ';
-						$html .= '<input type="hidden" name="symposium_update" value="U">';
-						$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
 					
-						$html .= '<div id="symposium_settings_table" style="padding-top: 15px">';
+						$html .= symposium_profile_header($uid, $current_user->ID, $mail_url, $current_user->display_name);
 						
-							// Language
-							$html .= '<div style="clear:both">';
-								$html .= 'Select a language for screen messages';
-								$html .= '<div style="float:right;">';
-									$html .= '<select name="language">';
-									$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
-									if ($language_options) {
-										foreach ($language_options as $option)
-										{
-											$html .= "<option value='".$option->language."'";
-											if ($language == $option->language) { $html .= ' SELECTED'; }
-											$html .= ">".$option->language."</option>";
-										}
-									}		
-									$html .= '</select>';
-									$html .= '</div>';
-							$html .= '</div>';
-	
-							// Time zone adjustment
-							$html .= '<div style="clear:both">';
-								$html .= 'Your local time zone adjustment in hours (difference from GMT which is '.date('jS \of M h:i:s A').')';
-								$html .= '<div style="float:right;">';
-									$html .= '<select name="timezone">';
-									for ($i = -12; $i <= 14; $i++) {
-										$html .= "<option value='".$i."'";
-											if ($timezone == $i) { $html .= ' SELECTED'; }
-											$html .= '>'.$i.'</option>';
-									}
-									$html .= '</select>';									
-								$html .= '</div>';
-							$html .= '</div>';
-	
-							// Email notifications
-							$html .= '<div style="clear:both;">';
-								$html .= 'Do you want to receive an email when you get new mail messages?';
-								$html .= '<div style="float:right;">';
-									$html .= '<input type="checkbox" name="notify_new_messages" id="notify_new_messages"';
-										if ($notify_new_messages == "on") { $html .= "CHECKED"; }
-										$html .= '/>';
-								$html .= '</div>';
-							$html .= '<div>';
-							
-							if ( ($allow_personal_settings == "on") && (function_exists('add_notification_bar')) ) {
-								
-								// Sound alert
-								$html .= '<div style="clear:both">';
-									$html .= 'Notification bar alert that sounds when you get new mail, relevant forum posts, etc';
-									$html .= '<div style="float:right;">';
-										$html .= '<select name="sound">';
-											$html .= "<option value='None'";
-												if ($sound == 'None') { $html .= ' SELECTED'; }
-												$html .= '>None</option>';
-											$html .= "<option value='baby.mp3'";
-												if ($sound == 'baby.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Baby</option>';
-											$html .= "<option value='beep.mp3'";
-												if ($sound == 'beep.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Beep</option>';
-											$html .= "<option value='bell.mp3'";
-												if ($sound == 'bell.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Bell</option>';
-											$html .= "<option value='buzzer.mp3'";
-												if ($sound == 'buzzer.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Buzzer</option>';
-											$html .= "<option value='chime.mp3'";
-												if ($sound == 'chime.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Chime</option>';
-											$html .= "<option value='doublechime.mp3'";
-												if ($sound == 'doublechime.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Double Chime</option>';
-											$html .= "<option value='dudeyougotmail.mp3'";
-												if ($sound == 'dudeyougotmail.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Dude! You got mail!</option>';
-											$html .= "<option value='hacksaw.mp3'";
-												if ($sound == 'hacksaw.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Hacksaw</option>';
-											$html .= "<option value='incoming.mp3'";
-												if ($sound == 'incoming.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Incoming!</option>';
-											$html .= "<option value='tap.mp3'";
-												if ($sound == 'tap.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Tap</option>';
-											$html .= "<option value='youvegotmail.mp3'";
-												if ($sound == 'youvegotmail.mp3') { $html .= ' SELECTED'; }
-												$html .= ">You've got mail</option>";
-										$html .= '</select>';									
-									$html .= '</div>';								
-								$html .= '</div>';
-								
-								// Sound alert (for chat)
-								$html .= '<div style="clear:both">';;
-									$html .= 'Notification bar alert that sounds when a new chat message arrives';
-									$html .= '<div style="float:right;">';
-										$html .= '<select name="soundchat">';
-											$html .= "<option value='None'";
-												if ($soundchat == 'None') { $html .= ' SELECTED'; }
-												$html .= '>None</option>';
-											$html .= "<option value='baby.mp3'";
-												if ($soundchat == 'baby.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Baby</option>';
-											$html .= "<option value='beep.mp3'";
-												if ($soundchat == 'beep.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Beep</option>';
-											$html .= "<option value='bell.mp3'";
-												if ($soundchat == 'bell.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Bell</option>';
-											$html .= "<option value='buzzer.mp3'";
-												if ($soundchat == 'buzzer.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Buzzer</option>';
-											$html .= "<option value='chime.mp3'";
-												if ($soundchat == 'chime.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Chime</option>';
-											$html .= "<option value='doublechime.mp3'";
-												if ($soundchat == 'doublechime.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Double Chime</option>';
-											$html .= "<option value='dudeyougotmail.mp3'";
-												if ($soundchat == 'dudeyougotmail.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Dude! You got mail!</option>';
-											$html .= "<option value='hacksaw.mp3'";
-												if ($soundchat == 'hacksaw.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Hacksaw</option>';
-											$html .= "<option value='incoming.mp3'";
-												if ($soundchat == 'incoming.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Incoming!</option>';
-											$html .= "<option value='tap.mp3'";
-												if ($soundchat == 'tap.mp3') { $html .= ' SELECTED'; }
-												$html .= '>Tap</option>';
-											$html .= "<option value='youvegotmail.mp3'";
-												if ($soundchat == 'youvegotmail.mp3') { $html .= ' SELECTED'; }
-												$html .= ">You've got mail</option>";
-										$html .= '</select>';									
-									$html .= '</div>';								
-								$html .= '</div>';
-								
-								// Bar position
-								$html .= '<div style="clear:both">';
-									$html .= 'Where do you want the notification bar?';
-									$html .= '<div style="float: right;">';
-										$html .= '<select name="bar_position">';
-											$html .= "<option value='bottom'";
-												if ($bar_position == 'bottom') { $html .= ' SELECTED'; }
-												$html .= '>Bottom</option>';
-											$html .= "<option value='top'";
-												if ($bar_position == 'top') { $html .= ' SELECTED'; }
-												$html .= '>Top</option>';
-										$html .= '</select>';
-									$html .= '</div>';
-								$html .= '</div>';	
-								
-							}
-						
-						$html .= '</div> ';
-						 
-						$html .= '<p style="clear: both; padding-top:15px;" class="submit"> ';
-						$html .= '<input type="submit" name="Submit" class="button" value="Save" /> ';
-						$html .= '</p> ';
-						$html .= '</form> ';
-						
-						$html .= "</div>";
-	
-					}
-	
-					// Personal
-					if ($view == 'personal') {
-						
-						// get values
-						$dob_day = get_symposium_meta($current_user->ID, 'dob_day');
-						$dob_month = get_symposium_meta($current_user->ID, 'dob_month');
-						$dob_year = get_symposium_meta($current_user->ID, 'dob_year');
-						$city = get_symposium_meta($current_user->ID, 'city');
-						$country = get_symposium_meta($current_user->ID, 'country');
-						$share = get_symposium_meta($current_user->ID, 'share');
-						$wall_share = get_symposium_meta($current_user->ID, 'wall_share');
-						$extended = get_symposium_meta($current_user->ID, 'extended');
-						
-						$html .= "<div style='clear:both'>";
-						
-							$html .= '<form method="post" action="'.$dbpage.'"> ';
-								$html .= '<input type="hidden" name="symposium_update" value="P">';
-								$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
-							
-								$html .= '<div id="symposium_settings_table" style="padding-top: 15px">';
-								
-									// Sharing personal information
-									$html .= '<div style="clear:both;">';
-										$html .= 'Who do you want to share personal information with?';
-										$html .= '<div style="float:right;">';
-											$html .= '<select name="share">';
-												$html .= "<option value='Nobody'";
-													if ($share == 'Nobody') { $html .= ' SELECTED'; }
-													$html .= '>Nobody</option>';
-												$html .= "<option value='Friends Only'";
-													if ($share == 'Friends Only') { $html .= ' SELECTED'; }
-													$html .= '>Friends Only</option>';
-												$html .= "<option value='Everyone'";
-													if ($share == 'Everyone') { $html .= ' SELECTED'; }
-													$html .= '>Everyone</option>';
-											$html .= '</select>';
-										$html .= '</div>';
-									$html .= '</div>';
-									
-									// Sharing wall
-									$html .= '<div style="clear:both;">';
-										$html .= 'Who do you want to share your wall with?';
-										$html .= '<div style="float:right;">';
-											$html .= '<select name="wall_share">';
-												$html .= "<option value='Nobody'";
-													if ($wall_share == 'Nobody') { $html .= ' SELECTED'; }
-													$html .= '>Nobody</option>';
-												$html .= "<option value='Friends Only'";
-													if ($wall_share == 'Friends Only') { $html .= ' SELECTED'; }
-													$html .= '>Friends Only</option>';
-												$html .= "<option value='Everyone'";
-													if ($wall_share == 'Everyone') { $html .= ' SELECTED'; }
-													$html .= '>Everyone</option>';
-											$html .= '</select>';
-										$html .= '</div>';
-									$html .= '</div>';
-									
-									// Birthday
-									$html .= '<div style="clear:both">';
-										$html .= 'Your date of birth (day/month/year)';
-										$html .= '<div style="float:right;">';
-											$html .= "<select name='dob_day'>";
-												for ($i = 1; $i <= 31; $i++) {
-													$html .= "<option value='".$i."'";
-														if ($dob_day == $i) { $html .= ' SELECTED'; }
-														$html .= '>'.$i.'</option>';
-												}
-											$html .= '</select> / ';									
-											$html .= "<select name='dob_month'>";
-												for ($i = 1; $i <= 12; $i++) {
-													$html .= "<option value='".$i."'";
-														if ($dob_month == $i) { $html .= ' SELECTED'; }
-														$html .= '>'.$i.'</option>';
-												}
-											$html .= '</select> / ';									
-											$html .= "<select name='dob_year'>";
-												for ($i = date("Y"); $i >= 1900; $i--) {
-													$html .= "<option value='".$i."'";
-														if ($dob_year == $i) { $html .= ' SELECTED'; }
-														$html .= '>'.$i.'</option>';
-												}
-											$html .= '</select>';									
-										$html .= '</div>';
-									$html .= '</div>';
-										
-									// City
-									$html .= '<div style="clear:both">';
-										$html .= 'Which town/city are you in?';
-										$html .= '<div style="float:right;">';
-											$html .= '<input type="text" name="city" value="'.$city.'">';
-										$html .= '</div>';
-									$html .= '</div>';
-										
-									// Country
-									$html .= '<div style="clear:both">';
-										$html .= 'Which country are you in?';
-										$html .= '<div style="float:right;">';
-											$html .= '<input type="text" name="country" value="'.$country.'">';
-										$html .= '</div>';
-									$html .= '</div>';
-									
-									// Extensions
-									$extensions = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_extended ORDER BY extended_order, extended_name"));
-									$fields = explode('[|]', $extended);
-									if ($extensions) {
-										foreach ($extensions as $extension) {
-											$value = $extension->extended_default;
-											if ($extension->extended_type == "List") {
-												$tmp = explode(',', $extension->extended_default);
-												$value = $tmp[0];
-		
-											}
-											foreach ($fields as $field) {
-												$split = explode('[]', $field);
-												if ($split[0] == $extension->extended_name) { 
-													$value = $split[1];
-												 }
-											}
+						// Wall
+						if ($view == 'wall') {
+							$html .= symposium_profile_body($uid, $current_user->ID);
+						}
 											
+						// Settings
+						if ($view == 'settings') {
+							
+							$allow_personal_settings = $wpdb->get_var($wpdb->prepare("SELECT allow_personal_settings FROM ".$wpdb->prefix.'symposium_config'));
+							
+							// get values
+							if ($allow_personal_settings == "on") {						
+								$sound = get_symposium_meta($current_user->ID, 'sound');
+								$soundchat = get_symposium_meta($current_user->ID, 'soundchat');
+								$bar_position = get_symposium_meta($current_user->ID, 'bar_position');
+								$lang = get_symposium_meta($current_user->ID, 'language');
+							}
+							
+							$timezone = get_symposium_meta($current_user->ID, 'timezone');
+							$notify_new_messages = get_symposium_meta($current_user->ID, 'notify_new_messages');
+							
+							$html .= "<div style='clear:both'>";
+							
+								$html .= '<form method="post" action="'.$dbpage.'"> ';
+									$html .= '<input type="hidden" name="symposium_update" value="U">';
+									$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
+								
+									$html .= '<div id="symposium_settings_table" style="padding-top: 15px">';
+									
+										// Language
+										$html .= '<div style="clear:both">';
+											$html .= 'Select a language for screen messages';
+											$html .= '<div style="float:right;">';
+												$html .= '<select name="language">';
+												$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
+												if ($language_options) {
+													foreach ($language_options as $option)
+													{
+														$html .= "<option value='".$option->language."'";
+														if ($lang == $option->language) { $html .= ' SELECTED'; }
+														$html .= ">".$option->language."</option>";
+													}
+												}		
+												$html .= '</select>';
+												$html .= '</div>';
+										$html .= '</div>';
+				
+										// Time zone adjustment
+										$html .= '<div style="clear:both">';
+											$html .= 'Your local time zone adjustment in hours (difference from GMT which is '.date('jS \of M h:i:s A').')';
+											$html .= '<div style="float:right;">';
+												$html .= '<select name="timezone">';
+												for ($i = -12; $i <= 14; $i++) {
+													$html .= "<option value='".$i."'";
+														if ($timezone == $i) { $html .= ' SELECTED'; }
+														$html .= '>'.$i.'</option>';
+												}
+												$html .= '</select>';									
+											$html .= '</div>';
+										$html .= '</div>';
+				
+										if ( ($allow_personal_settings == "on") && (function_exists('add_notification_bar')) ) {
+											
+											// Sound alert
 											$html .= '<div style="clear:both">';
-												$html .= $extension->extended_name;
-												$html .= '<input type="hidden" name="eid[]" value="'.$extension->eid.'">';
-												$html .= '<input type="hidden" name="extended_name[]" value="'.$extension->extended_name.'">';
+												$html .= 'Notification bar alert that sounds when you get new mail, relevant forum posts, etc';
 												$html .= '<div style="float:right;">';
-													if ($extension->extended_type == 'Text') {
-														$html .= '<input type="text" name="extended_value[]" value="'.$value.'">';
-													}
-													if ($extension->extended_type == 'List') {
-														$html .= '<select name="extended_value[]">';
-														$items = explode(',', $extension->extended_default);
-														foreach ($items as $item) {
-															$html .= '<option value="'.$item.'"';
-																if ($value == $item) { $html .= " SELECTED"; }
-																$html .= '>'.$item.'</option>';
-														}												
-														$html .= '</select>';
-													}
+													$html .= '<select name="sound">';
+														$html .= "<option value='None'";
+															if ($sound == 'None') { $html .= ' SELECTED'; }
+															$html .= '>None</option>';
+														$html .= "<option value='baby.mp3'";
+															if ($sound == 'baby.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Baby</option>';
+														$html .= "<option value='beep.mp3'";
+															if ($sound == 'beep.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Beep</option>';
+														$html .= "<option value='bell.mp3'";
+															if ($sound == 'bell.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Bell</option>';
+														$html .= "<option value='buzzer.mp3'";
+															if ($sound == 'buzzer.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Buzzer</option>';
+														$html .= "<option value='chime.mp3'";
+															if ($sound == 'chime.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Chime</option>';
+														$html .= "<option value='doublechime.mp3'";
+															if ($sound == 'doublechime.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Double Chime</option>';
+														$html .= "<option value='dudeyougotmail.mp3'";
+															if ($sound == 'dudeyougotmail.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Dude! You got mail!</option>';
+														$html .= "<option value='hacksaw.mp3'";
+															if ($sound == 'hacksaw.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Hacksaw</option>';
+														$html .= "<option value='incoming.mp3'";
+															if ($sound == 'incoming.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Incoming!</option>';
+														$html .= "<option value='tap.mp3'";
+															if ($sound == 'tap.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Tap</option>';
+														$html .= "<option value='youvegotmail.mp3'";
+															if ($sound == 'youvegotmail.mp3') { $html .= ' SELECTED'; }
+															$html .= ">You've got mail</option>";
+													$html .= '</select>';									
+												$html .= '</div>';								
+											$html .= '</div>';
+											
+											// Sound alert (for chat)
+											$html .= '<div style="clear:both">';;
+												$html .= 'Notification bar alert that sounds when a new chat message arrives';
+												$html .= '<div style="float:right;">';
+													$html .= '<select name="soundchat">';
+														$html .= "<option value='None'";
+															if ($soundchat == 'None') { $html .= ' SELECTED'; }
+															$html .= '>None</option>';
+														$html .= "<option value='baby.mp3'";
+															if ($soundchat == 'baby.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Baby</option>';
+														$html .= "<option value='beep.mp3'";
+															if ($soundchat == 'beep.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Beep</option>';
+														$html .= "<option value='bell.mp3'";
+															if ($soundchat == 'bell.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Bell</option>';
+														$html .= "<option value='buzzer.mp3'";
+															if ($soundchat == 'buzzer.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Buzzer</option>';
+														$html .= "<option value='chime.mp3'";
+															if ($soundchat == 'chime.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Chime</option>';
+														$html .= "<option value='doublechime.mp3'";
+															if ($soundchat == 'doublechime.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Double Chime</option>';
+														$html .= "<option value='dudeyougotmail.mp3'";
+															if ($soundchat == 'dudeyougotmail.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Dude! You got mail!</option>';
+														$html .= "<option value='hacksaw.mp3'";
+															if ($soundchat == 'hacksaw.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Hacksaw</option>';
+														$html .= "<option value='incoming.mp3'";
+															if ($soundchat == 'incoming.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Incoming!</option>';
+														$html .= "<option value='tap.mp3'";
+															if ($soundchat == 'tap.mp3') { $html .= ' SELECTED'; }
+															$html .= '>Tap</option>';
+														$html .= "<option value='youvegotmail.mp3'";
+															if ($soundchat == 'youvegotmail.mp3') { $html .= ' SELECTED'; }
+															$html .= ">You've got mail</option>";
+													$html .= '</select>';									
+												$html .= '</div>';								
+											$html .= '</div>';
+											
+											// Bar position
+											$html .= '<div style="clear:both">';
+												$html .= 'Where do you want the notification bar?';
+												$html .= '<div style="float: right;">';
+													$html .= '<select name="bar_position">';
+														$html .= "<option value='bottom'";
+															if ($bar_position == 'bottom') { $html .= ' SELECTED'; }
+															$html .= '>Bottom</option>';
+														$html .= "<option value='top'";
+															if ($bar_position == 'top') { $html .= ' SELECTED'; }
+															$html .= '>Top</option>';
+													$html .= '</select>';
+												$html .= '</div>';
+											$html .= '</div>';	
+
+											// Display name
+											$html .= '<div style="clear:both; margin-top:15px;">';
+												$html .= 'Your name as shown';
+												$html .= '<div style="float:right;">';
+													$html .= '<input type="text" class="input-field" name="display_name" value="'.$current_user->display_name.'">';
 												$html .= '</div>';
 											$html .= '</div>';
+											
+											// Email address
+											$html .= '<div style="clear:both; margin-top:15px;">';
+												$html .= 'Your email address';
+												$html .= '<div style="float:right;">';
+													$html .= '<input type="text" class="input-field" name="user_email" style="width:300px" value="'.$current_user->user_email.'">';
+												$html .= '</div>';
+											$html .= '</div>';
+											
+											// Email notifications
+											$html .= '<div style="clear:both;">';
+												$html .= 'Do you want to receive an email when you get new mail messages?';
+												$html .= '<div style="float:right;">';
+													$html .= '<input type="checkbox" name="notify_new_messages" id="notify_new_messages"';
+														if ($notify_new_messages == "on") { $html .= "CHECKED"; }
+														$html .= '/>';
+												$html .= '</div>';
+											$html .= '<div>';
+											
+											// Password
+											$html .= '<div class="sep"></div>';
+											$html .= '<div style="clear:both; margin-top:15px;">';
+												$html .= 'Change your password';
+												$html .= '<div style="float:right;">';
+													$html .= '<input type="text" class="input-field" name="xyz1" value="">';
+												$html .= '</div>';
+											$html .= '</div>';
+											$html .= '<div style="clear:both">';
+												$html .= 'Re-enter to confirm';
+												$html .= '<div style="float:right;">';
+													$html .= '<input type="text" class="input-field" name="xyz2" value="">';
+												$html .= '</div>';
+											$html .= '</div>';
+																						
 										}
-									}
-				
-										
-								$html .= '</div> ';
-								 
-								$html .= '<p style="clear: both" class="submit"> ';
+									
+									$html .= '</div> ';
+									 
+									$html .= '<p style="clear: both; padding-top:15px;" class="submit"> ';
 									$html .= '<input type="submit" name="Submit" class="button" value="Save" /> ';
-								$html .= '</p> ';
-							$html .= '</form> ';
-						
-						$html .= "</div>";
-	
-					}
-									
-					// Friends
-					if ($view == 'friends') {
-						
-						$html .= '<div style="clear:both; padding-top:15px; ">';
+									$html .= '</p> ';
+									$html .= '</form> ';
 							
-							$sql = "SELECT u1.display_name, u1.ID, f.friend_timestamp, f.friend_message, f.friend_from FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."users u1 ON f.friend_from = u1.ID WHERE f.friend_to = ".$current_user->ID." AND f.friend_accepted != 'on' ORDER BY f.friend_timestamp DESC";
+							$html .= "</div>";
 		
-							$requests = $wpdb->get_results($sql);
-							if ($requests) {
+						}
+		
+						// Personal
+						if ($view == 'personal') {
+							
+							// get values
+							$dob_day = get_symposium_meta($current_user->ID, 'dob_day');
+							$dob_month = get_symposium_meta($current_user->ID, 'dob_month');
+							$dob_year = get_symposium_meta($current_user->ID, 'dob_year');
+							$city = get_symposium_meta($current_user->ID, 'city');
+							$country = get_symposium_meta($current_user->ID, 'country');
+							$share = get_symposium_meta($current_user->ID, 'share');
+							$wall_share = get_symposium_meta($current_user->ID, 'wall_share');
+							$extended = get_symposium_meta($current_user->ID, 'extended');
+							
+							$html .= "<div style='clear:both'>";
+							
+								$html .= '<form method="post" action="'.$dbpage.'"> ';
+									$html .= '<input type="hidden" name="symposium_update" value="P">';
+									$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
 								
-								$html .= '<h2>Requests...</h2>';
-								foreach ($requests as $request) {
-									$html .= "<div style='clear:both; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
-										$html .= "<div style='float: left; width:64px; margin-right: 15px'>";
-											$html .= get_avatar($request->ID, 64);
-										$html .= "</div>";
-										$html .= "<div style='float: left; width:50%'>";
-											$html .= symposium_profile_link($request->ID)."<br />";
-											$html .= symposium_time_ago($request->friend_timestamp, $language_key)."<br />";
-											$html .= "<em>".stripslashes($request->friend_message)."</em>";
-										$html .= "</div>";
-										$html .= "<div style='float:right'>";
-											$html .= '<form method="post" action="'.$dbpage.'">';
-											$html .= '<input type="hidden" name="symposium_update" value="R">';
-											$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
-											$html .= '<input type="hidden" name="friend_from" value="'.$request->friend_from.'">';
-											$html .= '<input type="submit" name="friendreject" class="button" value="Reject" /> ';
-											$html .= '</form>';
-										$html .= "</div>";
-										$html .= "<div style='float:right'>";
-											$html .= '<form method="post" action="'.$dbpage.'">';
-											$html .= '<input type="hidden" name="symposium_update" value="A">';
-											$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
-											$html .= '<input type="hidden" name="friend_from" value="'.$request->friend_from.'">';
-											$html .= '<input type="submit" name="friendaccept" class="button" value="Accept" /> ';
-											$html .= '</form>';
-										$html .= "</div>";
-									$html .= "</div>";
-								}
-							}
-	
-							$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$current_user->ID." ORDER BY last_activity DESC";
-							$friends = $wpdb->get_results($sql);
-	
-							if ($friends) {
-								
-								$inactivity = $wpdb->get_row($wpdb->prepare("SELECT online, offline FROM ".$wpdb->prefix . 'symposium_config'));
-								$inactive = $inactivity->online;
-								$offline = $inactivity->offline;
-								
-								$html .= '<h2>Friends...</h2>';
-								foreach ($friends as $friend) {
+									$html .= '<div id="symposium_settings_table" style="padding-top: 15px">';
 									
-									$time_now = time();
-									$last_active_minutes = strtotime($friend->last_activity);
-									$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
-																	
-									$html .= "<div style='clear:both; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
-										$html .= "<div style='float: left; width:64px; margin-right: 15px'>";
-											$html .= get_avatar($friend->friend_to, 64);
-										$html .= "</div>";
-										$html .= "<div style='float: left; width:50%'>";
-											$html .= symposium_profile_link($friend->friend_to)."<br />";
-											if ($last_active_minutes >= $offline) {
-												$html .= 'Logged out. Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
-											} else {
-												if ($last_active_minutes >= $inactive) {
-													$html .= 'Offline. Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
-												} else {
-													$html .= 'Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
+										// Sharing personal information
+										$html .= '<div style="clear:both;">';
+											$html .= 'Who do you want to share personal information with?';
+											$html .= '<div style="float:right;">';
+												$html .= '<select name="share">';
+													$html .= "<option value='Nobody'";
+														if ($share == 'Nobody') { $html .= ' SELECTED'; }
+														$html .= '>Nobody</option>';
+													$html .= "<option value='Friends Only'";
+														if ($share == 'Friends Only') { $html .= ' SELECTED'; }
+														$html .= '>Friends Only</option>';
+													$html .= "<option value='Everyone'";
+														if ($share == 'Everyone') { $html .= ' SELECTED'; }
+														$html .= '>Everyone</option>';
+												$html .= '</select>';
+											$html .= '</div>';
+										$html .= '</div>';
+										
+										// Sharing wall
+										$html .= '<div style="clear:both;">';
+											$html .= 'Who do you want to share your wall with?';
+											$html .= '<div style="float:right;">';
+												$html .= '<select name="wall_share">';
+													$html .= "<option value='Nobody'";
+														if ($wall_share == 'Nobody') { $html .= ' SELECTED'; }
+														$html .= '>Nobody</option>';
+													$html .= "<option value='Friends Only'";
+														if ($wall_share == 'Friends Only') { $html .= ' SELECTED'; }
+														$html .= '>Friends Only</option>';
+													$html .= "<option value='Everyone'";
+														if ($wall_share == 'Everyone') { $html .= ' SELECTED'; }
+														$html .= '>Everyone</option>';
+												$html .= '</select>';
+											$html .= '</div>';
+										$html .= '</div>';
+										
+										// Birthday
+										$html .= '<div style="clear:both">';
+											$html .= 'Your date of birth (day/month/year)';
+											$html .= '<div style="float:right;">';
+												$html .= "<select name='dob_day'>";
+													for ($i = 1; $i <= 31; $i++) {
+														$html .= "<option value='".$i."'";
+															if ($dob_day == $i) { $html .= ' SELECTED'; }
+															$html .= '>'.$i.'</option>';
+													}
+												$html .= '</select> / ';									
+												$html .= "<select name='dob_month'>";
+													for ($i = 1; $i <= 12; $i++) {
+														$html .= "<option value='".$i."'";
+															if ($dob_month == $i) { $html .= ' SELECTED'; }
+															$html .= '>'.$i.'</option>';
+													}
+												$html .= '</select> / ';									
+												$html .= "<select name='dob_year'>";
+													for ($i = date("Y"); $i >= 1900; $i--) {
+														$html .= "<option value='".$i."'";
+															if ($dob_year == $i) { $html .= ' SELECTED'; }
+															$html .= '>'.$i.'</option>';
+													}
+												$html .= '</select>';									
+											$html .= '</div>';
+										$html .= '</div>';
+											
+										// City
+										$html .= '<div style="clear:both">';
+											$html .= 'Which town/city are you in?';
+											$html .= '<div style="float:right;">';
+												$html .= '<input type="text" name="city" value="'.$city.'">';
+											$html .= '</div>';
+										$html .= '</div>';
+											
+										// Country
+										$html .= '<div style="clear:both">';
+											$html .= 'Which country are you in?';
+											$html .= '<div style="float:right;">';
+												$html .= '<input type="text" name="country" value="'.$country.'">';
+											$html .= '</div>';
+										$html .= '</div>';
+										
+										// Extensions
+										$extensions = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_extended ORDER BY extended_order, extended_name"));
+										$fields = explode('[|]', $extended);
+										if ($extensions) {
+											foreach ($extensions as $extension) {
+												$value = $extension->extended_default;
+												if ($extension->extended_type == "List") {
+													$tmp = explode(',', $extension->extended_default);
+													$value = $tmp[0];
+			
 												}
+												foreach ($fields as $field) {
+													$split = explode('[]', $field);
+													if ($split[0] == $extension->extended_name) { 
+														$value = $split[1];
+													 }
+												}
+												
+												$html .= '<div style="clear:both">';
+													$html .= $extension->extended_name;
+													$html .= '<input type="hidden" name="eid[]" value="'.$extension->eid.'">';
+													$html .= '<input type="hidden" name="extended_name[]" value="'.$extension->extended_name.'">';
+													$html .= '<div style="float:right;">';
+														if ($extension->extended_type == 'Text') {
+															$html .= '<input type="text" name="extended_value[]" value="'.$value.'">';
+														}
+														if ($extension->extended_type == 'List') {
+															$html .= '<select name="extended_value[]">';
+															$items = explode(',', $extension->extended_default);
+															foreach ($items as $item) {
+																$html .= '<option value="'.$item.'"';
+																	if ($value == $item) { $html .= " SELECTED"; }
+																	$html .= '>'.$item.'</option>';
+															}												
+															$html .= '</select>';
+														}
+													$html .= '</div>';
+												$html .= '</div>';
 											}
+										}
+					
+											
+									$html .= '</div> ';
+									 
+									$html .= '<p style="clear: both" class="submit"> ';
+										$html .= '<input type="submit" name="Submit" class="button" value="Save" /> ';
+									$html .= '</p> ';
+								$html .= '</form> ';
+							
+							$html .= "</div>";
+		
+						}
+										
+						// Friends
+						if ($view == 'friends') {
+							
+							$html .= '<div style="clear:both; padding-top:15px; ">';
+								
+								$sql = "SELECT u1.display_name, u1.ID, f.friend_timestamp, f.friend_message, f.friend_from FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."users u1 ON f.friend_from = u1.ID WHERE f.friend_to = ".$current_user->ID." AND f.friend_accepted != 'on' ORDER BY f.friend_timestamp DESC";
+			
+								$requests = $wpdb->get_results($sql);
+								if ($requests) {
+									
+									$html .= '<h2>Requests...</h2>';
+									foreach ($requests as $request) {
+										$html .= "<div style='clear:both; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
+											$html .= "<div style='float: left; width:64px; margin-right: 15px'>";
+												$html .= get_avatar($request->ID, 64);
+											$html .= "</div>";
+											$html .= "<div style='float: left; width:50%'>";
+												$html .= symposium_profile_link($request->ID)."<br />";
+												$html .= symposium_time_ago($request->friend_timestamp, $language_key)."<br />";
+												$html .= "<em>".stripslashes($request->friend_message)."</em>";
+											$html .= "</div>";
+											$html .= "<div style='float:right'>";
+												$html .= '<form method="post" action="'.$dbpage.'">';
+												$html .= '<input type="hidden" name="symposium_update" value="R">';
+												$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
+												$html .= '<input type="hidden" name="friend_from" value="'.$request->friend_from.'">';
+												$html .= '<input type="submit" name="friendreject" class="button" value="Reject" /> ';
+												$html .= '</form>';
+											$html .= "</div>";
+											$html .= "<div style='float:right'>";
+												$html .= '<form method="post" action="'.$dbpage.'">';
+												$html .= '<input type="hidden" name="symposium_update" value="A">';
+												$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
+												$html .= '<input type="hidden" name="friend_from" value="'.$request->friend_from.'">';
+												$html .= '<input type="submit" name="friendaccept" class="button" value="Accept" /> ';
+												$html .= '</form>';
+											$html .= "</div>";
 										$html .= "</div>";
-	
-										$html .= "<div style='float:right'>";
-											$html .= '<form method="post" action="'.$dbpage.'">';
-											$html .= '<input type="hidden" name="symposium_update" value="D">';
-											$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
-											$html .= '<input type="hidden" name="friend" value="'.$friend->friend_to.'">';
-											$html .= '<input type="submit" name="frienddelete" class="button" value="Remove" /> ';
-											$html .= '</form>';
-										$html .= "</div>";
-	
-										$html .= "<div style='float:right'>";
-											$html .='<input type="button" value="Send Mail" class="button" onclick="document.location = \''.symposium_get_url('mail').'?view=compose&to='.$friend->friend_to.'\';">';
-										$html .= "</div>";
-	
-									$html .= "</div>";
+									}
 								}
-							}						
-	
-						$html .= '</div>';
-	
-					}
+		
+								$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$current_user->ID." ORDER BY last_activity DESC";
+								$friends = $wpdb->get_results($sql);
+		
+								if ($friends) {
+									
+									$inactivity = $wpdb->get_row($wpdb->prepare("SELECT online, offline FROM ".$wpdb->prefix . 'symposium_config'));
+									$inactive = $inactivity->online;
+									$offline = $inactivity->offline;
+									
+									$html .= '<h2>Friends...</h2>';
+									foreach ($friends as $friend) {
+										
+										$time_now = time();
+										$last_active_minutes = strtotime($friend->last_activity);
+										$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
+																		
+										$html .= "<div style='clear:both; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
+											$html .= "<div style='float: left; width:64px; margin-right: 15px'>";
+												$html .= get_avatar($friend->friend_to, 64);
+											$html .= "</div>";
+											$html .= "<div style='float: left; width:50%'>";
+												$html .= symposium_profile_link($friend->friend_to)."<br />";
+												if ($last_active_minutes >= $offline) {
+													$html .= 'Logged out. Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
+												} else {
+													if ($last_active_minutes >= $inactive) {
+														$html .= 'Offline. Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
+													} else {
+														$html .= 'Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
+													}
+												}
+											$html .= "</div>";
+		
+											$html .= "<div style='float:right'>";
+												$html .= '<form method="post" action="'.$dbpage.'">';
+												$html .= '<input type="hidden" name="symposium_update" value="D">';
+												$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
+												$html .= '<input type="hidden" name="friend" value="'.$friend->friend_to.'">';
+												$html .= '<input type="submit" name="frienddelete" class="button" value="Remove" /> ';
+												$html .= '</form>';
+											$html .= "</div>";
+		
+											$html .= "<div style='float:right'>";
+												$html .='<input type="button" value="Send Mail" class="button" onclick="document.location = \''.symposium_get_url('mail').'?view=compose&to='.$friend->friend_to.'\';">';
+											$html .= "</div>";
+		
+										$html .= "</div>";
+									}
+								}						
+		
+							$html .= '</div>';
+		
+						}
 					
 					$html .= "</div>";
 					
@@ -586,11 +650,17 @@ function symposium_profile()
 				$html .= symposium_profile_header($uid, 0, $mail_url, $user->display_name);
 			}				
 			
-			// Notices
-			$html .= "<div class='notice' style='display:none;z-index:999999;'><img src='".$plugin."busy.gif' /> ".$language->sav."</div>";
-			$html .= "<div class='pleasewait' style='display:none;z-index:999999;'><img src='".$plugin."busy.gif' /> ".$language->pw."</div>";
+			// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
+			$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>Powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress, ".get_option("symposium_version")."</div>";
 		
 		$html .= "</div>";
+		
+		$html .= "<div style='clear: both'></div>";
+
+		// Notices
+		$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin."/busy.gif' /> ".$language->sav."</div>";
+		$html .= "<div class='pleasewait' style='display:none;z-index:999999;'><img src='".$plugin."/busy.gif' /> ".$language->pw."</div>";
+
 											
 		return $html;
 		exit;
@@ -672,7 +742,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 								$html .= '<input type="hidden" name="symposium_update" value="S">';
 								$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
 								$html .= '<input type="text" name="status" class="input-field" value="What\'s on your mind?" onfocus="this.value = \'\';" style="width:300px" />';
-								$html .= '&nbsp;<input type="submit" style="width:75px" class="button" value="Update" /> ';
+								$html .= '&nbsp;<input type="submit" style="width:90px" class="button" value="Update" /> ';
 								$html .= '</form>';
 								
 							} else {
@@ -737,7 +807,6 @@ function symposium_profile_body($uid1, $uid2) {
 	global $wpdb;
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
 	$dbpage = $plugin.'/symposium_profile_db.php';
-
 
 	$get_language = symposium_get_language($uid2);
 	$language_key = $get_language['key'];
@@ -815,29 +884,69 @@ function symposium_profile_body($uid1, $uid2) {
 					$html .= '&nbsp;<input type="submit" style="width:75px" class="button" value="Post" /> ';
 					$html .= '</form>';
 				}
-				
-				$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID WHERE c.subject_uid = ".$uid1." ORDER BY c.comment_timestamp DESC";
+
+				// Get some styles
+				$styles = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
+				$row_border_style = $styles->row_border_style;
+				$row_border_size = $styles->row_border_size;
+				$text_color_2 = $styles->text_color_2;
+									
+				$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID WHERE c.subject_uid = ".$uid1." AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC";
 				$comments = $wpdb->get_results($sql);	
 				if ($comments) {
 					foreach ($comments as $comment) {
-						$html .= "<div style='overflow: auto; margin-bottom:15px;'>";
+
+						$html .= "<div style='overflow: auto; padding-top: 10px;margin-right: 15px;margin-bottom:15px;border-top: ".$row_border_size."px ".$row_border_style." ".$text_color_2.";'>";
 							$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
-								$html .= "<div style='margin-left: 70px;overflow:auto;'>";
+								$html .= "<div style='margin-left: 74px;overflow:auto;'>";
 									$html .= '<a href="'.symposium_get_url('profile').'?uid='.$comment->author_uid.'">'.stripslashes($comment->display_name).'</a> ';
 									$html .= symposium_time_ago($comment->comment_timestamp, $language_key).".<br />";
 									$html .= stripslashes($comment->comment);
+
+									// Replies
+									$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID WHERE c.subject_uid = ".$uid1." AND c.comment_parent = ".$comment->cid." ORDER BY c.cid";
+									$replies = $wpdb->get_results($sql);	
+									if ($replies) {
+										foreach ($replies as $reply) {
+											$html .= "<div style='clear: both; overflow: auto; margin-top:10px;'>";
+												$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
+													$html .= "<div style='margin-left: 45px;overflow:auto;'>";
+														$html .= '<a href="'.symposium_get_url('profile').'?uid='.$reply->author_uid.'">'.stripslashes($reply->display_name).'</a> ';
+														$html .= symposium_time_ago($reply->comment_timestamp, $language_key).".<br />";
+														$html .= stripslashes($reply->comment);
+													$html .= "</div>";
+												$html .= "</div>";
+												
+												$html .= "<div style='float:left;width:45px;margin-left:-100%;'>";
+													$html .= get_avatar($reply->author_uid, 40);
+												$html .= "</div>";
+																					
+											$html .= "</div>";
+										}
+									}
+
+									// Reply field
+									$html .= '<form method="post" action="'.$dbpage.'">';
+									$html .= '<input type="hidden" name="symposium_update" value="WC">';
+									$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
+									$html .= '<input type="hidden" name="comment_parent" value="'.$comment->cid.'">';
+									$html .= '<input type="text" name="wall_comment" class="input-field" style="margin-top:10px; width:300px;" value="Write a comment..." onfocus="this.value = \'\';" />';
+									$html .= '&nbsp;<input type="submit" style="width:90px" class="button" value="Comment" /> ';
+									$html .= '</form>';
+									
 								$html .= "</div>";
 							$html .= "</div>";
-							$html .= "<div style='float:left;width:70px;margin-left:-100%;'>";
+							$html .= "<div style='float:left;width:74px;margin-left:-100%;'>";
 								$html .= get_avatar($comment->author_uid, 64);
 							$html .= "</div>";
 						$html .= "</div>";
+						
+
+						
 					}
 				}
-										
-				$html .= "</div>";
-			}
-		$html .= "</div>";
+			$html .= "</div>";
+		}
 		
 		return $html;
 		
@@ -848,16 +957,6 @@ function symposium_profile_body($uid1, $uid2) {
 	}
 
 }
-
-/* ====================================================== AJAX FUNCTIONS ====================================================== */
-
-// Check for new mail, forum messages, etc
-function xxx() {
-
-	exit;
-}
-add_action('wp_ajax_xxx', 'xxx');
-
 
 /* ====================================================== ADMIN/ACTIVATE/DEACTIVATE ====================================================== */
 

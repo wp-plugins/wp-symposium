@@ -67,6 +67,10 @@ if (is_user_logged_in()) {
 			$sound = $_POST['sound'];
 			$soundchat = $_POST['soundchat'];
 			$language = $_POST['language'];
+			$password1 = $_POST['xyz1'];
+			$password2 = $_POST['xyz2'];
+			$display_name = $_POST['display_name'];
+			$user_email = $_POST['user_email'];
 			
 			update_symposium_meta($current_user->ID, 'timezone', $timezone);
 			update_symposium_meta($current_user->ID, 'notify_new_messages', "'".$notify_new_messages."'");
@@ -75,7 +79,33 @@ if (is_user_logged_in()) {
 			update_symposium_meta($current_user->ID, 'soundchat', "'".$soundchat."'");
 			update_symposium_meta($current_user->ID, 'language', "'".$language."'");
 			
-			header("Location: ".symposium_get_url('profile')."?view=settings");
+			$wpdb->show_errors();
+			$pwmsg = '';
+			if ($password1 != '') {
+				if ($password1 == $password2) {
+					$sql = "UPDATE ".$wpdb->prefix."users SET user_pass = '".wp_hash_password($password1)."' WHERE ID = ".$current_user->ID;
+				    if ($wpdb->query( $wpdb->prepare($sql) ) ) {
+				    	$pwmsg = "Password updated. ";
+						wp_safe_redirect(symposium_get_url('profile')."?view=settings&msg=".$pwmsg);
+						exit;
+				    } else {
+				    	$pwmsg = "Failed to update password, sorry. ";
+				    }
+				} else {
+			    	$pwmsg = "Passwords different, please try again. ";
+				}
+			}
+
+			$rows_affected = $wpdb->update( $wpdb->prefix.'users', array( 'display_name' => $display_name, 'user_email' => $user_email ), array( 'ID' => $current_user->ID ), array( '%s', '%s' ), array( '%d' ) );
+			if ($rows_affected > 0) {
+				if ($rows_affected == 1) {
+					$pwmsg .= 'Details Updated.';
+				} else {
+					$pwmsg .= 'Problem updating details, sorry. '.$wpdb->last_query;
+				}
+			}
+				
+			header ("Location: ".symposium_get_url('profile')."?view=settings&msg=".$pwmsg);
 			exit;
 			
 		}
@@ -200,7 +230,7 @@ if (is_user_logged_in()) {
 		if ($_POST['symposium_update'] == "W") {
 			$post_comment = $_POST['post_comment'];
 			
-			if ( $post_comment != 'Write a comment...') {
+			if ( ($post_comment != 'Write a comment...') && ($post_comment != '') ){
 				$wpdb->query( $wpdb->prepare( "
 					INSERT INTO ".$wpdb->prefix."symposium_comments
 					( 	subject_uid, 
@@ -222,7 +252,7 @@ if (is_user_logged_in()) {
 			header("Location: ".symposium_get_url('profile')."?uid=".$uid);
 			exit;
 		}
-
+		
 		// Is someone trying to add this person as a friend?
 		if ($_POST['symposium_update'] == "F") {
 			$friend_from = $current_user->ID;
@@ -276,6 +306,32 @@ if (is_user_logged_in()) {
 					
 	}
 
+	if ($_POST['symposium_update'] == "WC") {
+		$wall_comment = $_POST['wall_comment'];
+		$comment_parent = $_POST['comment_parent'];
+		
+		if ( ($wall_comment != 'Write a comment...') && ($wall_comment != '') ){
+			$wpdb->query( $wpdb->prepare( "
+				INSERT INTO ".$wpdb->prefix."symposium_comments
+				( 	subject_uid, 
+					author_uid,
+					comment_parent,
+					comment
+				)
+				VALUES ( %d, %d, %d, %s )", 
+		        array(
+		        	$uid, 
+		        	$current_user->ID, 
+		        	$comment_parent,
+		        	$wall_comment
+		        	) 
+		        ) );
+		        
+		}
+
+		header("Location: ".symposium_get_url('profile')."?uid=".$uid);
+		exit;
+	}
 }
 
 	

@@ -17,6 +17,7 @@
 
 		// Set dynamic styles
 		$wp_width = $wpdb->get_var($wpdb->prepare("SELECT wp_width FROM ".$wpdb->prefix . 'symposium_config'));
+		$wp_alignment = $wpdb->get_var($wpdb->prepare("SELECT wp_alignment FROM ".$wpdb->prefix . 'symposium_config'));
 		$border_radius = $wpdb->get_var($wpdb->prepare("SELECT border_radius FROM ".$wpdb->prefix . 'symposium_config'));
 		$bigbutton_background = $wpdb->get_var($wpdb->prepare("SELECT bigbutton_background FROM ".$wpdb->prefix . 'symposium_config'));
 		$bigbutton_color = $wpdb->get_var($wpdb->prepare("SELECT bigbutton_color FROM ".$wpdb->prefix . 'symposium_config'));
@@ -51,6 +52,14 @@
 		$html .= "<style>";
 		
 		$html .= "#symposium-wrapper {";
+		if ($wp_alignment == 'Center') {
+			$html .= "margin: 0 auto;";
+		}
+		if ($wp_alignment == 'Left' || $wp_alignment == 'Right') {
+			$html .= "clear: both";
+			$html .= "margin: 0;";
+			$html .= "float: ".strtolower($wp_alignment).";";
+		}
 		$html .= "	font-family: ".$fontfamily.";";
 		$html .= "	font-size: ".$fontsize."px;";
 		$html .= "	color: ".$text_color.";";
@@ -76,6 +85,7 @@
 	
 		$html .= "#symposium-wrapper .new-topic-subject-input, #symposium-wrapper .input-field {";
 		$html .= "	font-family: ".$fontfamily.";";
+		$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";	
 		$html .= "}";
 
 		$html .= "#symposium-wrapper .new-topic-subject-text, #symposium-wrapper .reply-topic-subject-text, #symposium-wrapper .reply-topic-text {";
@@ -189,6 +199,15 @@
 		$html .= "	border-bottom: ".$row_border_size."px ".$row_border_style." ".$text_color_2.";";
 		$html .= "}";
 
+		$html .= "#symposium-wrapper .alert {";
+		$html .= "	clear:both;";
+		$html .= "	padding:6px;";
+		$html .= "	margin-bottom:15px;";
+		$html .= "	border: 1px solid #666;";	
+		$html .= "	background-color: #eee;";
+		$html .= "	color: #000;";
+		$html .= "}";
+
 		$html .= "#symposium-wrapper .transparent {";
 		$html .= '  -ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity='.($closed_opacity*100).')";';
 		$html .= "  filter: alpha(opacity=".($closed_opacity*100).");";
@@ -233,6 +252,15 @@
 
 		$html .= "#symposium-wrapper .mail_item:hover {";
 		$html .= "	background-color: ".$table_rollover.";";
+		$html .= "}";
+
+		$html .= "#symposium-wrapper .notice, #symposium-wrapper .pleasewait";
+		$html .= "{";
+		$html .= "	position: absolute;";
+		$html .= "	padding: 6px;";
+		$html .= "	border: 2px solid ".$primary_color.";";	
+		$html .= "	background-color: ".$main_background.";";
+		$html .= "	display: none;";
 		$html .= "}";
 
 		$html .= "</style>";

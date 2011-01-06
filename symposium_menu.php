@@ -483,6 +483,9 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'use_wp_login')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'custom_login_url')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'custom_logout_url')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'visitors')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'wp_alignment')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'login_redirect')) { $status = "X"; }
 	
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
@@ -1650,6 +1653,7 @@ function symposium_plugin_options() {
 	        $use_wp_login = $_POST[ 'use_wp_login' ];
 	        $custom_login_url = $_POST[ 'custom_login_url' ];
 	        $custom_logout_url = $_POST[ 'custom_logout_url' ];
+	        $visitors = $_POST[ 'visitors' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET sound = '".$sound."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_position = '".$bar_position."'") );					
@@ -1661,6 +1665,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_login = '".$use_wp_login."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_login_url = '".$custom_login_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_logout_url = '".$custom_logout_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET visitors = '".$visitors."'") );					
 			
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>Notification bar options saved.</p></div>";
@@ -1728,6 +1733,8 @@ function symposium_plugin_options() {
 	        $forum_url = $_POST[ 'forum_url' ];
 	        $mail_url = $_POST[ 'mail_url' ];
 	        $profile_url = $_POST[ 'profile_url' ];
+	        $wp_alignment = $_POST[ 'wp_alignment' ];
+	        $login_redirect = $_POST[ 'login_redirect' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET jquery = '".$jquery."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET seo = '".$seo."'") );					
@@ -1737,6 +1744,8 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET mail_url = '".$mail_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET profile_url = '".$profile_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_alignment = '".$wp_alignment."'") );				
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_redirect = '".$login_redirect."'") );					
 			
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>Settings saved.</p></div>";
@@ -1967,9 +1976,9 @@ function symposium_plugin_options() {
 					<ol>
 					<li>Core (activated)</li>
 					<li>Forum<?php if (function_exists('symposium_forum')) { echo ' (activated)'; } ?></li>
-					<li>Mail/Private Messaging <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /><?php if (function_exists('symposium_mail')) { echo ' (activated)'; } ?></li>
-					<li>Member Profile <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /><?php if (function_exists('symposium_profile')) { echo ' (activated)'; } ?></li>
-					<li>Notification Bar <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /><?php if (function_exists('add_notification_bar')) { echo ' (activated)'; } ?></li>
+					<li>Mail/Private Messaging<?php if (function_exists('symposium_mail')) { echo ' (activated)'; } ?></li>
+					<li>Member Profile<?php if (function_exists('symposium_profile')) { echo ' (activated)'; } ?></li>
+					<li>Notification Bar<?php if (function_exists('add_notification_bar')) { echo ' (activated)'; } ?></li>
 					</ol>
 					
 					<p>
@@ -1982,9 +1991,7 @@ function symposium_plugin_options() {
 					the goal is to make it the most flexible, attractive and user-definable set of social networking components for WordPress.
 					</p>
 					<p>
-					Welcome to v0.1.19! This release introduces the profile wall. You can only post your status/what's on your mind, and post new comments 
-					on other members' walls. This will be developed to allow you to reply to posts on the wall, and display what your friends are up to on
-					each others walls next.
+					Check out the <a href='http://WordPress.org/extend/plugins/wp-symposium/changelog/'>change log</a> for the list of new additions/changes/fixes...
 					</p>
 					<p>
 					As ever, I appreciate you trying WP Symposium, and pass on the usual recommendations that you back up your database and website 
@@ -1995,7 +2002,7 @@ function symposium_plugin_options() {
 					</p>
 					<p>
 					<em>Simon</em><br />
-					5th January 2011
+					6th January 2011
 					</p>
 					
 					<?php
@@ -2014,12 +2021,20 @@ function symposium_plugin_options() {
 					$use_wp_login = $wpdb->get_var($wpdb->prepare("SELECT use_wp_login FROM ".$wpdb->prefix."symposium_config"));
 					$custom_login_url = $wpdb->get_var($wpdb->prepare("SELECT custom_login_url FROM ".$wpdb->prefix."symposium_config"));
 					$custom_logout_url = $wpdb->get_var($wpdb->prepare("SELECT custom_logout_url FROM ".$wpdb->prefix."symposium_config"));
+					$visitors = $wpdb->get_var($wpdb->prepare("SELECT visitors FROM ".$wpdb->prefix."symposium_config"));
 					?>
 						
 					<form method="post" action=""> 
 					<input type="hidden" name="symposium_update" value="B">
 				
-					<table class="form-table"> 
+					<table class="form-table">
+
+					<tr valign="top"> 
+					<th scope="row"><label for="visitors">Show to visitors <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th>
+					<td>
+					<input type="checkbox" name="visitors" id="visitors" <?php if ($visitors == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Should visitors to the site see the notification bar before logging in?</span></td> 
+					</tr> 
 				
 					<tr valign="top"> 
 					<th scope="row"><label for="bar_label">Label</label></th> 
@@ -2093,13 +2108,13 @@ function symposium_plugin_options() {
 					<tr valign="top"> 
 					<th scope="row"><label for="custom_login_url"></label></th> 
 					<td><input name="custom_login_url" type="text" id="custom_login_url"  value="<?php echo $custom_login_url; ?>" style="width:300px" class="regular-text" /> 
-					<span class="description">URL of login page, if <em>not</em> using Wordpress login page</td> 
+					<span class="description">URL of login page, if <em>not</em> using WordPress login page</td> 
 					</tr> 
 								
 					<tr valign="top"> 
 					<th scope="row"><label for="custom_logout_url"></label></th> 
 					<td><input name="custom_logout_url" type="text" id="custom_logout_url"  value="<?php echo $custom_logout_url; ?>" style="width:300px" class="regular-text" /> 
-					<span class="description">URL of logout page, if <em>not</em> using Wordpress logout page</td> 
+					<span class="description">URL of logout page, if <em>not</em> using WordPress logout page</td> 
 					</tr> 
 								
 					</table> 
@@ -2131,6 +2146,8 @@ function symposium_plugin_options() {
 					$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
 					$mail_url = $wpdb->get_var($wpdb->prepare("SELECT mail_url FROM ".$wpdb->prefix.'symposium_config'));
 					$profile_url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix.'symposium_config'));
+					$wp_alignment = $wpdb->get_var($wpdb->prepare("SELECT wp_alignment FROM ".$wpdb->prefix.'symposium_config'));
+					$login_redirect = $wpdb->get_var($wpdb->prepare("SELECT login_redirect FROM ".$wpdb->prefix.'symposium_config'));
 					?>
 									
 					<form method="post" action=""> 
@@ -2157,7 +2174,21 @@ function symposium_plugin_options() {
 					<td><input name="profile_url" type="text" id="profile_url"  value="<?php echo $profile_url; ?>" class="regular-text" /> 
 					<span class="description">Full URL of the page that includes [symposium-profile]</td> 
 					</tr> 					
-								
+										
+					<tr valign="top">
+					<th scope="row"><label for="login_redirect">Page after log in <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
+					<td>
+					<select name="login_redirect">
+						<option value='WordPress default'<?php if ($login_redirect == 'WordPress default') { echo ' SELECTED'; } ?>>WordPress default</option>
+						<option value='Profile Wall'<?php if ($login_redirect == 'Profile Wall') { echo ' SELECTED'; } ?>>Profile Wall</option>
+						<option value='Profile Settings'<?php if ($login_redirect == 'Profile Settings') { echo ' SELECTED'; } ?>>Profile Settings</option>
+						<option value='Profile Personal'<?php if ($login_redirect == 'Profile Personal') { echo ' SELECTED'; } ?>>Profile Personal</option>
+						<option value='Mail'<?php if ($login_redirect == 'Mail') { echo ' SELECTED'; } ?>>Mail</option>
+						<option value='Forum'<?php if ($login_redirect == 'Forum') { echo ' SELECTED'; } ?>>Forum</option>
+					</select> 
+					<span class="description">Where the member is taken after logging in</span></td> 
+					</tr> 					
+													
 					<tr valign="top"> 
 					<th scope="row"><label for="jquery">Load jQuery</label></th>
 					<td>
@@ -2188,7 +2219,7 @@ function symposium_plugin_options() {
 					// Check that languages have been loaded
 					$language_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_lang');
 					if ($language_count == 0) {
-						echo '<div class="error"><p>The language file has not been loaded, have you changed it? Try downloading the latest version from <a href="http://wordpress.org/extend/plugins/wp-symposium/">the plugin page</a> and replacing your language.xml file. Then <a href="plugins.php">de-activate</a> the core WP-Symposium plugin and re-activate it. If the file has still not loaded, please report this on the <a href="http://www.wpsymposium.com">Support Forum</a>.</p></div>';
+						echo '<div class="error"><p>The language file has not been loaded, have you changed it? Try downloading the latest version from <a href="http://WordPress.org/extend/plugins/wp-symposium/">the plugin page</a> and replacing your language.xml file. Then <a href="plugins.php">de-activate</a> the core WP-Symposium plugin and re-activate it. If the file has still not loaded, please report this on the <a href="http://www.wpsymposium.com">Support Forum</a>.</p></div>';
 						echo 'Language file not loaded.';
 					} else {
 						echo '<select name="language">';
@@ -2212,7 +2243,17 @@ function symposium_plugin_options() {
 					<td><input name="wp_width" type="text" id="wp_width" value="<?php echo $wp_width; ?>"/> 
 					<span class="description">Width of all WP Symposium plugins, eg: 600px or 85%</span></td> 
 					</tr> 
-					
+
+					<tr valign="top">
+					<th scope="row"><label for="wp_alignment">Alignment <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
+					<td>
+					<select name="wp_alignment">
+						<option value='Left'<?php if ($wp_alignment == 'Left') { echo ' SELECTED'; } ?>>Left</option>
+						<option value='Center'<?php if ($wp_alignment == 'Center') { echo ' SELECTED'; } ?>>Center</option>
+						<option value='Right'<?php if ($wp_alignment == 'Right') { echo ' SELECTED'; } ?>>Right</option>
+					</select> 
+					<span class="description">Alignment of all WP Symposium plugins</span></td> 
+					</tr> 					
 					</table>
 					 
 					<p class="submit"> 

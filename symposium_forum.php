@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.19
+Version: 0.1.20
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -1029,12 +1029,15 @@ function symposium_forum() {
 		} else {
 			$html .= "<p>Sorry, the minimum user level for this forum is ".$viewer.". :(</p>";
 		}
-	}				
+	}			
+	
+	// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
+	$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>Powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress, ".get_option("symposium_version")."</div>";
+		
 	// End Wrapper
 	$html .= "</div>";
 	
-	// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-	$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>Forum powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress, ".get_option("symposium_version")."</div>";
+	$html .= "<div style='clear: both'></div>";
 
 	// Send HTML
 	return $html;

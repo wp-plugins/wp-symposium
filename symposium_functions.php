@@ -68,6 +68,7 @@ function symposium_get_language($uid) {
 	} else {
 		$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . "symposium_config"));
 	}
+	
 	$words = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
 
 	$arr = array("words" => $words, "key" => $language_key);
@@ -223,7 +224,9 @@ function get_symposium_meta($uid, $meta) {
 	// check if exists, and create record if not
 	if ($wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
 	} else {
-		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 'uid' => $uid ) );
+		// get system default language
+		$sys_lang = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix.'symposium_config'));
+		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 'uid' => $uid, 'language' => $sys_lang ) );
 	}
 
 	if ($value = $wpdb->get_var($wpdb->prepare("SELECT ".$meta." FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid)) ) {
@@ -368,8 +371,22 @@ function symposium_time_ago($date,$language,$granularity=1) {
 	    	$retval .= " ago";
         	break;    
     case "Russian":
-	    	$retval = "";
-        	break;    
+			$retval = str_replace("second", "се&#1082;у&#1085;&#1076;а", $retval);
+			$retval = str_replace("се&#1082;у&#1085;&#1076;аs", "се&#1082;у&#1085;&#1076;&#1099;", $retval);
+			$retval = str_replace("minute", "&#1084;&#1080;&#1085;у&#1090;а", $retval);
+			$retval = str_replace("&#1084;&#1080;&#1085;у&#1090;аs", "&#1084;&#1080;&#1085;у&#1090;&#1099;", $retval);
+			$retval = str_replace("hour", "&#1095;ас", $retval);
+			$retval = str_replace("&#1095;асs", "&#1095;аса", $retval);
+			$retval = str_replace("day", "&#1076;е&#1085;&#1100;", $retval);
+			$retval = str_replace("&#1076;е&#1085;&#1100;s", "&#1076;&#1085;&#1103;", $retval);
+			$retval = str_replace("week", "&#1085;е&#1076;е&#1083;&#1103;", $retval);
+			$retval = str_replace("&#1085;е&#1076;е&#1083;&#1103;s", "&#1085;е&#1076;е&#1083;&#1080;", $retval);
+			$retval = str_replace("month", "&#1084;ес&#1103;&#1094;", $retval);
+			$retval = str_replace("&#1084;ес&#1103;&#1094;s", "&#1084;ес&#1103;&#1094;а", $retval);
+			$retval = str_replace("year", "&#1075;о&#1076;", $retval);
+			$retval = str_replace("&#1075;о&#1076;s", "&#1083;е&#1090;", $retval);
+			$retval = $retval." &#1085;а&#1079;а&#1076;";
+			break;   
     case "French":
     		$retval = str_replace("second", "seconde", $retval);
     		$retval = str_replace("hour", "heure", $retval);

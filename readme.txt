@@ -6,13 +6,13 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, chat, friends, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.19
+Stable tag: 0.1.20
 
-A new suite of social networking plugins - forum, mail, private messaging, notification bar, chat windows, profile page, widgets, and more!
+A new suite of social networking plugins - forum, wall, mail, private messaging, notification bar, chat windows, profile page, widgets, and more!
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, mail, private messaging, notification bar, chat windows, profile page, widgets, and more. You simply choose which you want to activate!
+WP Symposium is a new suite of social networking plugins - forum, wall, mail, private messaging, notification bar, chat windows, profile page, widgets, and more. You simply choose which you want to activate!
 
 NOTICE: We are currently BETA testing this plugin. As such, although we have not found any problems, we do not recommend you use it on any production sites. However, we do welcome all feedback, bug reports and suggestions. Please do so at www.wpsymposium.com - thank you. 
 
@@ -276,6 +276,20 @@ A. Sorry no, not at the moment - but it's planned to get this working at some po
 
 
 == Changelog ==
+
+= 0.1.20 =
+
+* Profile: Added reply to wall posts
+* Profile: Can update Email address
+* Profile: Can update Display name
+* Profile: Password change (currently logs you out to re-authenticate)
+* Notification bar: Hides email/friends icons if plugins deactivated
+* Notification bar: Added option to show only to logged in members
+* Core: option to redirect user to a particular page
+* Core: Fixed return value from "ago" for less than 1 second
+* Core: Member's default language set to the default language
+* Core: Added "ago" for Russian
+* Core: Added alignment setting for all WPS plugins
 
 = 0.1.19 =
 

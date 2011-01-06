@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.19
+Version: 0.1.20
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -87,8 +87,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.19";
-	$symposium_db_ver = 19;
+	$symposium_version = "0.1.20";
+	$symposium_db_ver = 20;
 	
 	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation started.'));
 	
@@ -153,6 +153,8 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "use_wp_login", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "custom_login_url", "varchar(512)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "custom_logout_url", "varchar(512)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "wp_alignment", "varchar(16)", "NOT NULL", "'Center'");
+	symposium_alter_table("config", "ADD", "login_redirect", "varchar(256)", "NOT NULL", "'WordPress default'");
 	
 	// Profile
 	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
@@ -165,6 +167,7 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "use_chat", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "bar_polling", "int(11)", "NOT NULL", "'120'");
 	symposium_alter_table("config", "ADD", "chat_polling", "int(11)", "NOT NULL", "'10'");
+	symposium_alter_table("config", "ADD", "visitors", "varchar(2)", "NOT NULL", "'on'");
 
 	// Add/Modify option fields for languages for all versions (if fields already exist, ADD will be skipped)
 	symposium_alter_table("config", "ADD", "language", "varchar(64)", "NOT NULL", "'English'");
@@ -465,6 +468,36 @@ function symposium_notification_trigger_schedule() {
 }
 
 /* ====================================================== PHP FUNCTIONS ====================================================== */
+
+// Redirect user after log in
+function symposium_redirect_login() {
+	global $wpdb;
+	$login_redirect = $wpdb->get_var($wpdb->prepare("SELECT login_redirect FROM ".$wpdb->prefix . 'symposium_config'));
+
+	if ($login_redirect != "WordPress default") {
+		switch($login_redirect) {			
+			case "Profile Wall":
+				wp_redirect(symposium_get_url('profile'));	
+				exit;
+			case "Profile Settings":
+				wp_redirect(symposium_get_url('profile')."?view=settings");	
+				exit;
+			case "Profile Personal":
+				wp_redirect(symposium_get_url('profile')."?view=personal");	
+				exit;
+			case "Mail":
+				wp_redirect(symposium_get_url('mail'));	
+				exit;
+			case "Forum":
+				wp_redirect(symposium_get_url('mail'));	
+				exit;
+			default:
+				wp_redirect(symposium_get_url('profile'));	
+				exit;
+		}
+	}
+}
+add_action('wp_login', 'symposium_redirect_login', 10);
 
 // Update user activity on page load
 function symposium_lastactivity() {
