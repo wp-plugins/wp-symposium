@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile] on any WordPress page to display forum.
-Version: 0.1.20
+Version: 0.1.20.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -418,9 +418,9 @@ function symposium_profile()
 													$html .= "<option value='Nobody'";
 														if ($share == 'Nobody') { $html .= ' SELECTED'; }
 														$html .= '>Nobody</option>';
-													$html .= "<option value='Friends Only'";
-														if ($share == 'Friends Only') { $html .= ' SELECTED'; }
-														$html .= '>Friends Only</option>';
+													$html .= "<option value='Friends only'";
+														if ($share == 'Friends only') { $html .= ' SELECTED'; }
+														$html .= '>Friends only</option>';
 													$html .= "<option value='Everyone'";
 														if ($share == 'Everyone') { $html .= ' SELECTED'; }
 														$html .= '>Everyone</option>';
@@ -436,9 +436,9 @@ function symposium_profile()
 													$html .= "<option value='Nobody'";
 														if ($wall_share == 'Nobody') { $html .= ' SELECTED'; }
 														$html .= '>Nobody</option>';
-													$html .= "<option value='Friends Only'";
-														if ($wall_share == 'Friends Only') { $html .= ' SELECTED'; }
-														$html .= '>Friends Only</option>';
+													$html .= "<option value='Friends only'";
+														if ($wall_share == 'Friends only') { $html .= ' SELECTED'; }
+														$html .= '>Friends only</option>';
 													$html .= "<option value='Everyone'";
 														if ($wall_share == 'Everyone') { $html .= ' SELECTED'; }
 														$html .= '>Everyone</option>';
@@ -687,7 +687,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 	
 				$html .= "<div id='profile_details' style='margin-left: 215px;overflow:auto;'>";
 
-					if ( ($uid1 == $uid2) || ($privacy == 'Everyone') || ($privacy == 'Friends Only' && symposium_friend_of($uid1)) ) {
+					if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
 
 
 					}
@@ -742,7 +742,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 								$html .= '<input type="hidden" name="symposium_update" value="S">';
 								$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
 								$html .= '<input type="text" name="status" class="input-field" value="What\'s on your mind?" onfocus="this.value = \'\';" style="width:300px" />';
-								$html .= '&nbsp;<input type="submit" style="width:90px" class="button" value="Update" /> ';
+								$html .= '&nbsp;<input type="submit" style="width:75px" class="button" value="Update" /> ';
 								$html .= '</form>';
 								
 							} else {
@@ -814,7 +814,7 @@ function symposium_profile_body($uid1, $uid2) {
 	if ($uid1 > 0) {
 		
 		$privacy = get_symposium_meta($uid1, 'wall_share');		
-		if ( ($uid1 == $uid2) || ($privacy == 'Everyone') || ($privacy == 'Friends Only' && symposium_friend_of($uid1)) ) {
+		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
 		
 			$html .= "<div id='profile_left_column'>";
 
@@ -828,7 +828,7 @@ function symposium_profile_body($uid1, $uid2) {
 						if ($fields) {
 							foreach ($fields as $field) {
 								$split = explode('[]', $field);
-								if ($split[0] != '') {
+								if ( ($split[0] != '') && ($split[1] != '') ) {
 									$html .= "<p><strong>".$split[0]."</strong><br />";
 									$html .= $split[1]."</p>";
 								}
@@ -891,7 +891,8 @@ function symposium_profile_body($uid1, $uid2) {
 				$row_border_size = $styles->row_border_size;
 				$text_color_2 = $styles->text_color_2;
 									
-				$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID WHERE c.subject_uid = ".$uid1." AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC";
+				$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR (c.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC";
+				
 				$comments = $wpdb->get_results($sql);	
 				if ($comments) {
 					foreach ($comments as $comment) {
@@ -900,11 +901,15 @@ function symposium_profile_body($uid1, $uid2) {
 							$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
 								$html .= "<div style='margin-left: 74px;overflow:auto;'>";
 									$html .= '<a href="'.symposium_get_url('profile').'?uid='.$comment->author_uid.'">'.stripslashes($comment->display_name).'</a> ';
+									if ($comment->author_uid != $comment->subject_uid) {
+										$html .= ' &rarr; <a href="'.symposium_get_url('profile').'?uid='.$comment->subject_uid.'">'.stripslashes($comment->subject_name).'</a> ';
+									}
 									$html .= symposium_time_ago($comment->comment_timestamp, $language_key).".<br />";
 									$html .= stripslashes($comment->comment);
 
 									// Replies
-									$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID WHERE c.subject_uid = ".$uid1." AND c.comment_parent = ".$comment->cid." ORDER BY c.cid";
+									$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."symposium_comments p ON c.comment_parent = p.cid WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR (p.subject_uid = ".$uid1.") OR (p.author_uid = ".$uid1.") OR (p.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) OR ( p.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) ) AND c.comment_parent = ".$comment->cid." ORDER BY c.cid";
+									
 									$replies = $wpdb->get_results($sql);	
 									if ($replies) {
 										foreach ($replies as $reply) {
@@ -929,9 +934,10 @@ function symposium_profile_body($uid1, $uid2) {
 									$html .= '<form method="post" action="'.$dbpage.'">';
 									$html .= '<input type="hidden" name="symposium_update" value="WC">';
 									$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
+									$html .= '<input type="hidden" name="subject_uid" value="'.$comment->subject_uid.'">';
 									$html .= '<input type="hidden" name="comment_parent" value="'.$comment->cid.'">';
 									$html .= '<input type="text" name="wall_comment" class="input-field" style="margin-top:10px; width:300px;" value="Write a comment..." onfocus="this.value = \'\';" />';
-									$html .= '&nbsp;<input type="submit" style="width:90px" class="button" value="Comment" /> ';
+									$html .= '&nbsp;<input type="submit" style="width:75px" class="button" value="Add" /> ';
 									$html .= '</form>';
 									
 								$html .= "</div>";

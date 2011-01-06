@@ -309,6 +309,7 @@ if (is_user_logged_in()) {
 	if ($_POST['symposium_update'] == "WC") {
 		$wall_comment = $_POST['wall_comment'];
 		$comment_parent = $_POST['comment_parent'];
+		$subject_uid = $_POST['subject_uid'];
 		
 		if ( ($wall_comment != 'Write a comment...') && ($wall_comment != '') ){
 			$wpdb->query( $wpdb->prepare( "
@@ -320,7 +321,7 @@ if (is_user_logged_in()) {
 				)
 				VALUES ( %d, %d, %d, %s )", 
 		        array(
-		        	$uid, 
+		        	$subject_uid, 
 		        	$current_user->ID, 
 		        	$comment_parent,
 		        	$wall_comment

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.20
+Version: 0.1.20.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.20
+Version: 0.1.20.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -87,7 +87,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.20";
+	$symposium_version = "0.1.20.1";
 	$symposium_db_ver = 20;
 	
 	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation started.'));

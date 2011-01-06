@@ -226,7 +226,19 @@ function get_symposium_meta($uid, $meta) {
 	} else {
 		// get system default language
 		$sys_lang = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix.'symposium_config'));
-		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 'uid' => $uid, 'language' => $sys_lang ) );
+		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 
+			'uid' => $uid, 
+			'language' => $sys_lang,
+			'sound' => 'chime.mp3',
+			'soundchat' => 'tap.mp3',
+			'bar_position' => 'bottom',
+			'notify_new_messages' => 'on',
+			'timezone' => 0,
+			'share' => 'Friends only',
+			'visible' => 'on',
+			'wall_share' => 'Friends only'
+			 ) );
+			
 	}
 
 	if ($value = $wpdb->get_var($wpdb->prepare("SELECT ".$meta." FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid)) ) {
