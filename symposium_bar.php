@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.20.1
+Version: 0.1.21
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -451,6 +451,12 @@ function add_notification_bar()
 									}
 								});	
 								// Friends Online Status **************************************
+						    	jQuery("#symposium-online-box").click(function() {
+									jQuery('#symposium-who-online').toggle("fast");
+						    	});
+						    	jQuery("#symposium-who-online_close").click(function() {
+									jQuery('#symposium-who-online').hide("fast");
+						    	});
 								jQuery.post("/wp-admin/admin-ajax.php", {
 									action:"symposium_getfriendsonline", 
 									me:<?php echo $current_user->ID; ?>,
@@ -558,7 +564,7 @@ function add_notification_bar()
 						   		var numChatWindows = <?php echo $maxChatWindows; ?>;
 			
 						    	// Click on a name to chat
-									jQuery(".symposium_online_name").live('click', function() {
+								jQuery(".symposium_online_name").live('click', function() {
 						    		// choose a chat box
 						    		var chatbox = 0;
 						    		var already_chatting = 0;

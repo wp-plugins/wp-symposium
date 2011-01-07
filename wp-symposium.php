@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.20.1
+Version: 0.1.21
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -87,8 +87,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.20.1";
-	$symposium_db_ver = 20;
+	$symposium_version = "0.1.21";
+	$symposium_db_ver = 21;
 	
 	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation started.'));
 	
@@ -155,6 +155,9 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "custom_logout_url", "varchar(512)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "wp_alignment", "varchar(16)", "NOT NULL", "'Center'");
 	symposium_alter_table("config", "ADD", "login_redirect", "varchar(256)", "NOT NULL", "'WordPress default'");
+	symposium_alter_table("config", "ADD", "login_redirect_url", "varchar(256)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "logout_redirect", "varchar(256)", "NOT NULL", "'WordPress default'");
+	symposium_alter_table("config", "ADD", "logout_redirect_url", "varchar(256)", "NOT NULL", "''");
 	
 	// Profile
 	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
@@ -491,6 +494,10 @@ function symposium_redirect_login() {
 			case "Forum":
 				wp_redirect(symposium_get_url('mail'));	
 				exit;
+			case "Custom":
+				$login_redirect_url = $wpdb->get_var($wpdb->prepare("SELECT login_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
+				wp_redirect($login_redirect_url);	
+				exit;
 			default:
 				wp_redirect(symposium_get_url('profile'));	
 				exit;
@@ -498,6 +505,22 @@ function symposium_redirect_login() {
 	}
 }
 add_action('wp_login', 'symposium_redirect_login', 10);
+
+// Redirect user after logging out
+function symposium_redirect_logout() {
+	global $wpdb;
+	$logout_redirect = $wpdb->get_var($wpdb->prepare("SELECT logout_redirect FROM ".$wpdb->prefix . 'symposium_config'));
+
+	if ($logout_redirect != "WordPress default") {
+		switch($logout_redirect) {			
+			default:
+				$logout_redirect_url = $wpdb->get_var($wpdb->prepare("SELECT logout_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
+				wp_redirect($logout_redirect_url);	
+				exit;
+		}
+	}
+}
+add_action('wp_logout', 'symposium_redirect_logout', 10);
 
 // Update user activity on page load
 function symposium_lastactivity() {

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile] on any WordPress page to display forum.
-Version: 0.1.20.1
+Version: 0.1.21
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -716,20 +716,20 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 						if ($year != '' && $month != '' && $day != '') {
 							if ($city != '' || $country != '') { $html .= ".<br />"; }
 							switch($month) {									
-								case "1":$month = "January";
-								case "2":$month = "February";
-								case "3":$month = "March";
-								case "4":$month = "April";
-								case "5":$month = "May";
-								case "6":$month = "June";
-								case "7":$month = "July";
-								case "8":$month = "August";
-								case "9":$month = "September";
-								case "10":$month = "October";
-								case "11":$month = "November";
-								case "12":$month = "December";
+								case 1:$monthname = "January";break;
+								case 2:$monthname = "February";break;
+								case 3:$monthname = "March";break;
+								case 4:$monthname = "April";break;
+								case 5:$monthname = "May";break;
+								case 6:$monthname = "June";break;
+								case 7:$monthname = "July";break;
+								case 8:$monthname = "August";break;
+								case 9:$monthname = "September";break;
+								case 10:$monthname = "October";break;
+								case 11:$monthname = "November";break;
+								case 12:$monthname = "December";break;
 							}
-							$html .= "Born ".$day." ".$month." ".$year.".";
+							$html .= "Born ".$day." ".$monthname." ".$year.".";
 						}
 						$html .= "</p>";
 						
@@ -891,7 +891,7 @@ function symposium_profile_body($uid1, $uid2) {
 				$row_border_size = $styles->row_border_size;
 				$text_color_2 = $styles->text_color_2;
 									
-				$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR (c.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC";
+				$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC";
 				
 				$comments = $wpdb->get_results($sql);	
 				if ($comments) {

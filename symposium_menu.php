@@ -486,7 +486,10 @@ function symposium_plugin_debug() {
 		if (!symposium_field_exists($table_name, 'visitors')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'wp_alignment')) { $status = "X"; }
 		if (!symposium_field_exists($table_name, 'login_redirect')) { $status = "X"; }
-	
+		if (!symposium_field_exists($table_name, 'login_redirect_url')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'logout_redirect')) { $status = "X"; }
+		if (!symposium_field_exists($table_name, 'logout_redirect_url')) { $status = "X"; }
+
 		if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
    	}   	
    	echo $status;
@@ -793,7 +796,7 @@ function symposium_plugin_debug() {
    	echo "<p>To re-run the database table modifications, de-activate and re-activate the core plugin. This will <strong>not</strong> destory any tables or any data.</p>";
 
 	// ********** Test AJAX
-   	echo '<h2>AJAX test</h2>';
+   	echo '<h2>Anindya AJAX test</h2>';
    	echo '<p>An AJAX function will be called, passing a random number as a parameter. If the AJAX call is successful, that value will be returned multipled by 100, and shown below on screen. The AJAX function should also log an event in the <a href="admin.php?page=symposium_event">audit trail</a>.</p>';
    	echo '<input type="text" id="testAJAX_results" style="width: 200px" value="Result will be posted here.">';   		
    	echo '<p class="submit"><input type="submit" id="testAJAX" name="Submit" class="button-primary" value="Click to test" /></p>';
@@ -1735,6 +1738,9 @@ function symposium_plugin_options() {
 	        $profile_url = $_POST[ 'profile_url' ];
 	        $wp_alignment = $_POST[ 'wp_alignment' ];
 	        $login_redirect = $_POST[ 'login_redirect' ];
+	        $login_redirect_url = $_POST[ 'login_redirect_url' ];
+	        $logout_redirect = $_POST[ 'logout_redirect' ];
+	        $logout_redirect_url = $_POST[ 'logout_redirect_url' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET jquery = '".$jquery."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET seo = '".$seo."'") );					
@@ -1746,6 +1752,9 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET profile_url = '".$profile_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_alignment = '".$wp_alignment."'") );				
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_redirect = '".$login_redirect."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_redirect_url = '".$login_redirect_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET logout_redirect = '".$logout_redirect."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET logout_redirect_url = '".$logout_redirect_url."'") );					
 			
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>Settings saved.</p></div>";
@@ -2148,6 +2157,9 @@ function symposium_plugin_options() {
 					$profile_url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix.'symposium_config'));
 					$wp_alignment = $wpdb->get_var($wpdb->prepare("SELECT wp_alignment FROM ".$wpdb->prefix.'symposium_config'));
 					$login_redirect = $wpdb->get_var($wpdb->prepare("SELECT login_redirect FROM ".$wpdb->prefix.'symposium_config'));
+					$login_redirect_url = $wpdb->get_var($wpdb->prepare("SELECT login_redirect_url FROM ".$wpdb->prefix.'symposium_config'));
+					$logout_redirect = $wpdb->get_var($wpdb->prepare("SELECT logout_redirect FROM ".$wpdb->prefix.'symposium_config'));
+					$logout_redirect_url = $wpdb->get_var($wpdb->prepare("SELECT logout_redirect_url FROM ".$wpdb->prefix.'symposium_config'));
 					?>
 									
 					<form method="post" action=""> 
@@ -2174,7 +2186,7 @@ function symposium_plugin_options() {
 					<td><input name="profile_url" type="text" id="profile_url"  value="<?php echo $profile_url; ?>" class="regular-text" /> 
 					<span class="description">Full URL of the page that includes [symposium-profile]</td> 
 					</tr> 					
-										
+
 					<tr valign="top">
 					<th scope="row"><label for="login_redirect">Page after log in <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
 					<td>
@@ -2185,10 +2197,33 @@ function symposium_plugin_options() {
 						<option value='Profile Personal'<?php if ($login_redirect == 'Profile Personal') { echo ' SELECTED'; } ?>>Profile Personal</option>
 						<option value='Mail'<?php if ($login_redirect == 'Mail') { echo ' SELECTED'; } ?>>Mail</option>
 						<option value='Forum'<?php if ($login_redirect == 'Forum') { echo ' SELECTED'; } ?>>Forum</option>
+						<option value='Custom'<?php if ($login_redirect == 'Custom') { echo ' SELECTED'; } ?>>Custom (enter below)</option>
 					</select> 
 					<span class="description">Where the member is taken after logging in</span></td> 
 					</tr> 					
-													
+
+					<tr valign="top"> 
+					<th scope="row"><label for="login_redirect_url">Custom URL</label></th> 
+					<td><input name="login_redirect_url" type="text" id="login_redirect_url"  value="<?php echo $login_redirect_url; ?>" class="regular-text" /> 
+					<span class="description">To use a custom URL, enter Custom above</td> 
+					</tr> 					
+
+					<tr valign="top">
+					<th scope="row"><label for="logout_redirect">Page after logging out <img src="../wp-content/plugins/wp-symposium/new.png" alt="New!" /></label></th> 
+					<td>
+					<select name="logout_redirect">
+						<option value='WordPress default'<?php if ($logout_redirect == 'WordPress default') { echo ' SELECTED'; } ?>>WordPress default</option>
+						<option value='Custom'<?php if ($logout_redirect == 'Custom') { echo ' SELECTED'; } ?>>Custom (enter below)</option>
+					</select> 
+					<span class="description">Where the member is taken after logging out</span></td> 
+					</tr> 					
+
+					<tr valign="top"> 
+					<th scope="row"><label for="logout_redirect_url">Custom URL</label></th> 
+					<td><input name="logout_redirect_url" type="text" id="logout_redirect_url"  value="<?php echo $logout_redirect_url; ?>" class="regular-text" /> 
+					<span class="description">To use a custom URL, enter Custom above</td> 
+					</tr> 					
+							
 					<tr valign="top"> 
 					<th scope="row"><label for="jquery">Load jQuery</label></th>
 					<td>
@@ -2570,10 +2605,20 @@ function symposium_test_head() {
 	   	jQuery("#testAJAX").click(function() {
 	   		random = Math.floor(Math.random()*10)+1;
 	   		alert("The random number being sent is "+random);
-			jQuery.post('/wp-admin/admin-ajax.php', { action:'symposium_test', postID:random }, 
-			function(str_test) { 
-				jQuery("#testAJAX_results").val('Value of '+str_test+' returned.');
-			});
+			
+			jQuery.ajax({
+				type: 'POST',
+				url: '/wp-admin/admin-ajax.php', 
+				async: false,
+				data: ({
+					action:"symposium_test", 
+					postID:random
+				}),
+				success: function(str_test){
+					jQuery("#testAJAX_results").val('Value of '+str_test+' returned.');
+				}				
+	   		});
+	   		
    		});
 
 	    // Check if really want to delete	    

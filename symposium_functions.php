@@ -205,7 +205,19 @@ function update_symposium_meta($uid, $meta, $value) {
 	// check if exists, and create record if not
 	if ($wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
 	} else {
-		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 'uid' => $uid ) );
+		$sys_lang = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix.'symposium_config'));
+		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 
+			'uid' => $uid, 
+			'language' => $sys_lang,
+			'sound' => 'chime.mp3',
+			'soundchat' => 'tap.mp3',
+			'bar_position' => 'bottom',
+			'notify_new_messages' => 'on',
+			'timezone' => 0,
+			'share' => 'Friends only',
+			'visible' => 'on',
+			'wall_share' => 'Friends only'
+			 ) );
 	}
 
 	// now update value

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.1.20.1
+Version: 0.1.21
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -79,7 +79,7 @@ class Symposium_members_Widget extends WP_Widget {
 				foreach ($members as $member)
 				{
 					echo "<div class='Forumrecentposts_row' style='clear:both; margin-top:8px;'>";		
-						echo "<div style='float: left; width:32px; margin-right: 5px'>";
+						echo "<div style='float: left; width:32px; margin-right: 5px;'>";
 							echo get_avatar($member->ID, 32);
 						echo "</div>";
 						echo "<div>";
@@ -184,7 +184,7 @@ class Forumrecentposts_Widget extends WP_Widget {
 				foreach ($posts as $post)
 				{
 					echo "<div class='Forumrecentposts_row' style='clear:both; margin-top:8px;'>";		
-						echo "<div style='float: left; width:32px; margin-right: 5px'>";
+						echo "<div style='float: left; width:32px; margin-right: 5px;'>";
 							echo get_avatar($post->topic_owner, 32);
 						echo "</div>";
 						echo "<div>";
