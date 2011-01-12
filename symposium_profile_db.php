@@ -102,9 +102,11 @@ if (is_user_logged_in()) {
 			$pwmsg = '';
 			if ($password1 != '') {
 				if ($password1 == $password2) {
-					$sql = "UPDATE ".$wpdb->prefix."users SET user_pass = '".wp_hash_password($password1)."' WHERE ID = ".$current_user->ID;
+					$pwd = wp_hash_password($password1);
+					$sql = "UPDATE ".$wpdb->prefix."users SET user_pass = '".$pwd."' WHERE ID = ".$current_user->ID;
 				    if ($wpdb->query( $wpdb->prepare($sql) ) ) {
 				    	$pwmsg = "Password updated. ";
+				    	// The following will actually fail as you will need to re-authenticate into WordPress
 						wp_safe_redirect(symposium_get_url('profile')."?view=settings&msg=".$pwmsg);
 						exit;
 				    } else {

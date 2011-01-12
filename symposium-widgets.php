@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.1.22
+Version: 0.1.23
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2

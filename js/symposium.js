@@ -1044,10 +1044,49 @@ function removeHTMLTags(strInputCode){
 	return strTagStrippedText;	
 }
 
-// For Forum
+// Form validations
 function validate_form(thisform)
 {
 	form_id = thisform.id;
+
+	// Registration
+	if ( (form_id) == "symposium_registration") {
+		var r = true;
+		with (thisform)
+		{
+			if (pwd.value == '' || pwd.value == null) {
+				jQuery("#password-warning").show("slow");
+				pwd.focus(); 
+				r = false;
+			} else {
+				jQuery("#password-warning").hide("slow");
+			}
+			if (youremail.value == '' || youremail.value == null) {
+				jQuery("#youremail-warning").show("slow");
+				youremail.focus(); 
+				r = false;
+			} else {
+				jQuery("#youremail-warning").hide("slow");
+			}
+			if (display_name.value == '' || display_name.value == null) {
+				jQuery("#display_name-warning").show("slow");
+				display_name.focus(); 
+				r = false;
+			} else {
+				jQuery("#display_name-warning").hide("slow");
+			}
+			if (username.value == '' || username.value == null) {
+				jQuery("#username-warning").show("slow");
+				username.focus(); 
+				r = false;
+			} else {
+				jQuery("#username-warning").hide("slow");
+			}
+		}
+		return r;
+	}
+		
+	// Forum	
 	if ( (form_id) == "start-new-topic") {
 		with (thisform)
 		{

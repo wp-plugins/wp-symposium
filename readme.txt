@@ -3,10 +3,10 @@ Author: WP Symposium
 Contributors: Simon Goodchild
 Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
-Tags: symposium, forum, social, chat, friends, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
+Tags: symposium, forum, social, chat, friends, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish 
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.22
+Stable tag: 0.1.23
 
 A new suite of social networking plugins - forum, wall, mail, member directory, private messaging, notification bar, chat windows, profile page, widgets, and more!
 
@@ -290,6 +290,13 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.23 =
+
+* New Plugin: Site Registration (note: doesn't require email verification)
+* Notification Bar: Custom Registration link
+* Core: Improved the pagination function
+* Forum: Fixed 'Back to Forum' incorrectly showing on top level
 
 = 0.1.22 =
 

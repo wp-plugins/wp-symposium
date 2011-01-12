@@ -344,6 +344,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'seo')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'moderation')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'mail_url')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'register_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'bar_position')) { $status = "X"; }
@@ -366,7 +367,11 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'logout_redirect_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'enable_redirects')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'enable_password')) { $status = "X"; }
-	
+			if (!symposium_field_exists($table_name, 'register_use_sum')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'register_use_captcha')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'use_wp_register')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'custom_register_url')) { $status = "X"; }
+
 			if ($status == "X") { $status = $fail."Incomplete table".$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -675,7 +680,7 @@ function symposium_plugin_debug() {
 		  		echo $db_ver."<br />";
 		  	}
 	
-			if ( ($config->forum_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
+			if ( ($config->forum_url == "Important: Please update!") || ($config->register_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
 				echo $fail."You must update your plugin URLs on the <a href='admin.php?page=symposium_options&view=settings'>options page</a>.".$fail2;
 			} else {
 			  	echo "According to the <a href='admin.php?page=symposium_options&view=settings'>options page</a>:<br />";
@@ -687,6 +692,9 @@ function symposium_plugin_debug() {
 			  	}
 			  	if (function_exists('symposium_profile')) { 
 			  		echo "&nbsp;&middot;&nbsp;the profile page is at <a href='".$config->profile_url."'>$config->profile_url</a><br />";
+			  	}
+			  	if (function_exists('symposium_register')) { 
+			  		echo "&nbsp;&middot;&nbsp;the register page is at <a href='".$config->register_url."'>$config->register_url</a><br />";
 			  	}
 			  	echo "Click the links above to check.";
 			}
@@ -1473,6 +1481,8 @@ function symposium_plugin_options() {
 	        $custom_login_url = $_POST[ 'custom_login_url' ];
 	        $custom_logout_url = $_POST[ 'custom_logout_url' ];
 	        $visitors = $_POST[ 'visitors' ];
+	        $use_wp_register = $_POST[ 'use_wp_register' ];
+	        $custom_register_url = $_POST[ 'custom_register_url' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET sound = '".$sound."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_position = '".$bar_position."'") );					
@@ -1485,6 +1495,8 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_login_url = '".$custom_login_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_logout_url = '".$custom_logout_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET visitors = '".$visitors."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_register = '".$use_wp_register."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_register_url = '".$custom_register_url."'") );					
 			
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>Notification bar options saved.</p></div>";
@@ -1541,6 +1553,19 @@ function symposium_plugin_options() {
 			echo "<div class='updated'><p>Member Profile options saved.</p></div>";
 			
 	    }
+
+	    // See if the user has posted registration settings
+	    if( $_POST[ 'symposium_update' ] == 'R' ) {
+	        $register_use_sum = $_POST[ 'register_use_sum' ];
+	        $register_use_captcha = $_POST[ 'register_use_captcha' ];
+
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_use_sum = '".$register_use_sum."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_use_captcha = '".$register_use_captcha."'") );					
+									
+	        // Put an settings updated message on the screen
+			echo "<div class='updated'><p>Registration options saved.</p></div>";
+			
+	    }
 	    	
 	    // See if the user has posted general settings
 	    if( $_POST[ 'symposium_update' ] == 'S' ) {
@@ -1551,6 +1576,7 @@ function symposium_plugin_options() {
 	        $language = $_POST[ 'language' ];
 	        $forum_url = $_POST[ 'forum_url' ];
 	        $mail_url = $_POST[ 'mail_url' ];
+	        $register_url = $_POST[ 'register_url' ];
 	        $profile_url = $_POST[ 'profile_url' ];
 	        $wp_alignment = $_POST[ 'wp_alignment' ];
 	        $login_redirect = $_POST[ 'login_redirect' ];
@@ -1566,6 +1592,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET language = '".$language."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET mail_url = '".$mail_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET register_url = '".$register_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET profile_url = '".$profile_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_alignment = '".$wp_alignment."'") );				
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_redirect = '".$login_redirect."'") );					
@@ -1688,7 +1715,7 @@ function symposium_plugin_options() {
 		$notes_active = 'inactive';
 		$settings_active = 'active';
 		$forum_active = 'inactive';
-		$mail_active = 'inactive';
+		$register_active = 'inactive';
 		$bar_active = 'inactive';
 		$profile_active = 'inactive';
 		$view = "settings";
@@ -1696,7 +1723,7 @@ function symposium_plugin_options() {
 			$notes_active = 'active';
 			$settings_active = 'inactive';
 			$forum_active = 'inactive';
-			$mail_active = 'inactive';
+			$register_active = 'inactive';
 			$bar_active = 'inactive';
 			$profile_active = 'inactive';
 			$view = "notes";
@@ -1705,7 +1732,7 @@ function symposium_plugin_options() {
 			$notes_active = 'inactive';
 			$settings_active = 'inactive';
 			$forum_active = 'inactive';
-			$mail_active = 'inactive';
+			$register_active = 'inactive';
 			$bar_active = 'inactive';
 			$profile_active = 'active';
 			$view = "profile";
@@ -1714,25 +1741,25 @@ function symposium_plugin_options() {
 			$notes_active = 'inactive';
 			$settings_active = 'inactive';
 			$forum_active = 'active';
-			$mail_active = 'inactive';
+			$register_active = 'inactive';
 			$bar_active = 'inactive';
 			$profile_active = 'inactive';
 			$view = "forum";
 		} 
-		if ($_GET['view'] == 'mail') {
+		if ($_GET['view'] == 'register') {
 			$notes_active = 'inactive';
 			$settings_active = 'inactive';
 			$forum_active = 'inactive';
-			$mail_active = 'active';
+			$register_active = 'active';
 			$bar_active = 'inactive';
 			$profile_active = 'inactive';
-			$view = "mail";
+			$view = "register";
 		} 
 		if ($_GET['view'] == 'bar') {
 			$notes_active = 'inactive';
 			$settings_active = 'inactive';
 			$forum_active = 'inactive';
-			$mail_active = 'inactive';
+			$register_active = 'inactive';
 			$bar_active = 'active';
 			$view = "bar";
 		} 
@@ -1740,7 +1767,7 @@ function symposium_plugin_options() {
 			$notes_active = 'inactive';
 			$settings_active = 'active';
 			$forum_active = 'inactive';
-			$mail_active = 'inactive';
+			$register_active = 'inactive';
 			$bar_active = 'inactive';
 			$profile_active = 'inactive';
 			$view = "settings";
@@ -1754,8 +1781,8 @@ function symposium_plugin_options() {
 			if (function_exists('symposium_forum')) {
 				echo '<div class="mail_tab nav-tab-'.$forum_active.'"><a href="admin.php?page=symposium_options&view=forum" class="nav-tab-'.$forum_active.'-link">Forum</a></div>';
 			};
-			if (function_exists('symposium_mail')) {
-				echo '<div class="mail_tab nav-tab-'.$mail_active.'"><a href="admin.php?page=symposium_options&view=mail" class="nav-tab-'.$mail_active.'-link">Mail</a></div>';
+			if (function_exists('symposium_register')) {
+				echo '<div class="mail_tab nav-tab-'.$register_active.'"><a href="admin.php?page=symposium_options&view=register" class="nav-tab-'.$register_active.'-link">Register</a></div>';
 			}
 			if (function_exists('symposium_profile')) {
 				echo '<div class="mail_tab nav-tab-'.$profile_active.'"><a href="admin.php?page=symposium_options&view=profile" class="nav-tab-'.$profile_active.'-link">Profile</a></div>';
@@ -1807,9 +1834,11 @@ function symposium_plugin_options() {
 					<ol>
 					<li>Core (activated)</li>
 					<li>Forum<?php if (function_exists('symposium_forum')) { echo ' (activated)'; } ?></li>
-					<li>Mail/Private Messaging<?php if (function_exists('symposium_mail')) { echo ' (activated)'; } ?></li>
+					<li>Mail/Private Messaging<?php if (function_exists('symposium_mail')) { echo ' (activated) Note: no options tab used'; } ?></li>
 					<li>Member Profile<?php if (function_exists('symposium_profile')) { echo ' (activated)'; } ?></li>
 					<li>Notification Bar<?php if (function_exists('add_notification_bar')) { echo ' (activated)'; } ?></li>
+					<li>Members Directory<?php if (function_exists('symposium_members')) { echo ' (activated) Note: no options tab used'; } ?></li>
+					<li>Registration<?php if (function_exists('symposium_register')) { echo ' (activated)'; } ?></li>
 					</ol>
 					
 					<p>
@@ -1853,8 +1882,10 @@ function symposium_plugin_options() {
 					$custom_login_url = $config->custom_login_url;
 					$custom_logout_url = $config->custom_logout_url;
 					$visitors = $config->visitors;
+					$use_wp_register = $config->use_wp_register;
+					$custom_register_url = $config->custom_register_url;
 					?>
-						
+
 					<form method="post" action=""> 
 					<input type="hidden" name="symposium_update" value="B">
 				
@@ -1948,6 +1979,19 @@ function symposium_plugin_options() {
 					<span class="description">URL of logout page, if <em>not</em> using WordPress logout page</td> 
 					</tr> 
 
+					<tr valign="top"> 
+					<th scope="row"><label for="use_wp_register">Registration Link</label></th> 
+					<td><input type="checkbox" name="use_wp_register" id="use_wp_register" <?php if ($use_wp_register == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Link to WordPress registration page? Or...</td> 
+					</tr> 
+								
+					<tr valign="top"> 
+					<th scope="row"><label for="custom_register_url"></label></th> 
+					<td><input name="custom_register_url" type="text" id="custom_register_url"  value="<?php echo $custom_register_url; ?>" style="width:300px" class="regular-text" /> 
+					<span class="description">URL of registration page, if <em>not</em> using WordPress login page</td> 
+					</tr> 
+								
+
 					</table> 
 					 
 					<p class="submit"> 
@@ -1955,7 +1999,8 @@ function symposium_plugin_options() {
 					</p> 
 					</form> 
 					
-					<strong>Notes:</strong><ol>
+					<strong>Notes:</strong>
+					<ol>
 					<li>The polling intervals occur in addition to an initial check on each page load.</li>
 					<li>The more frequent the polling intervals, the greater the load on your server.</li>
 					<li>Disabling chat windows will reduce the load on the server.</li>
@@ -1976,6 +2021,7 @@ function symposium_plugin_options() {
 					$emoticons = $config->emoticons;	
 					$forum_url = $config->forum_url;
 					$mail_url = $config->mail_url;
+					$register_url = $config->register_url;
 					$profile_url = $config->profile_url;
 					$wp_alignment = $config->wp_alignment;
 					$login_redirect = $config->login_redirect;
@@ -1990,7 +2036,7 @@ function symposium_plugin_options() {
 				
 					<table class="form-table"> 
 
-					<tr><td colspan="2"><strong>Very Important!</strong> You must set the URL's of the components you are using, eg: http://www.example.com/forum</span></td></tr>
+					<tr><td colspan="2"><strong>Very Important!</strong> You must set the URL's of the components you are using, eg: http://www.example.com/forum - enter 'none' if not being used</span></td></tr>
 					
 					<tr valign="top"> 
 					<th scope="row"><label for="forum_url">Forum URL</label></th> 
@@ -2008,6 +2054,12 @@ function symposium_plugin_options() {
 					<th scope="row"><label for="profile_url">Profile URL</label></th> 
 					<td><input name="profile_url" type="text" id="profile_url"  value="<?php echo $profile_url; ?>" class="regular-text" /> 
 					<span class="description">Full URL of the page that includes [symposium-profile]</td> 
+					</tr> 					
+
+					<tr valign="top"> 
+					<th scope="row"><label for="register_url">Register URL</label></th> 
+					<td><input name="register_url" type="text" id="register_url"  value="<?php echo $register_url; ?>" class="regular-text" /> 
+					<span class="description">Full URL of the page that includes [symposium-register]</td> 
 					</tr> 					
 
 					<tr valign="top"> 
@@ -2290,27 +2342,43 @@ function symposium_plugin_options() {
 				  
 				} // End of Forum
 
-				// MAIL
-				if ($view == "mail") {
+				// REGISTER
+				if ($view == "register") {
 
 				    // Get values from database  
+					$register_use_sum = $config->register_use_sum;
+					$register_use_captcha = $config->register_use_captcha;
 					?>
 						
 					<form method="post" action=""> 
-					<input type="hidden" name="symposium_update" value="M">
+					<input type="hidden" name="symposium_update" value="R">
 				
 					<table class="form-table"> 
 				
 					<tr valign="top"> 
-					<td>No options available.</td>
+					<th scope="row"><label for="register_use_sum">Use Maths question</label></th>
+					<td>
+					<input type="checkbox" name="register_use_sum" id="register_use_sum" <?php if ($register_use_sum == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">A simple addition question to combat spam</span></td> 
 					</tr> 
-										
-					</table>					 
-					</form> 
-					
+
+					<tr valign="top"> 
+					<th scope="row"><label for="register_use_captcha">Use CAPTCHA</label></th>
+					<td>
+					<input type="checkbox" name="register_use_captcha" id="register_use_captcha" <?php if ($register_use_captcha == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">An image based anti-spam technique</span></td> 
+					</tr> 
+
+					</table>
+					 					
+					<p class="submit">
+					<input type="submit" name="Submit" class="button-primary" value="Save Changes" />
+					</p>
+					</form>
+
 					<?php
 									  
-				} // End of Mail
+				} // End of Register
 
 				// PROFILE
 				if ($view == "profile") {

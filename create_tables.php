@@ -35,8 +35,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
     dbDelta($sql);
 
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
-
 }
 
 // Create Categories
@@ -59,9 +57,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	$rows_affected = $wpdb->insert( $table_name, array( 'title' => 'Support Issues' ) );
 	$rows_affected = $wpdb->insert( $table_name, array( 'title' => 'Feedback' ) );
 
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Inserted '.$table_name.' default values.'));
-
 } 
  
 // Create Subscriptions
@@ -77,8 +72,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
  	);";
 
 	dbDelta($sql);
-
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
 
 }
 
@@ -97,8 +90,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
  	);";
 
 	dbDelta($sql);
-
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
 
 }
 
@@ -166,9 +157,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	'from_email' => 'noreply@example.com'
 	) );
 
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Inserted '.$table_name.' default values.'));
-
 } 
 
 // Create Topics
@@ -225,9 +213,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	'topic_started' => date("Y-m-d H:i:s")
 	 ) );
 
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Inserted '.$table_name.' default values.'));
- 		
 } 	
 
 // Create WPS users meta table
@@ -243,9 +228,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
     dbDelta($sql);
 
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Inserted '.$table_name.' default values.'));
-
 } 	
 
 // Create WPS users meta table
@@ -260,9 +242,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
  	);";
 
     dbDelta($sql);
-
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Inserted '.$table_name.' default values.'));
 
 } 	
 
@@ -280,8 +259,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
  	);";
 
     dbDelta($sql);
-
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
 
 } 	
 
@@ -301,8 +278,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
     dbDelta($sql);
 
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
-
 } 	
 
 // Create chat table
@@ -319,8 +294,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
  	);";
 
     dbDelta($sql);
-
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
 
 } 	
 
@@ -343,8 +316,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
     dbDelta($sql);
 
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
-
 	// Mail to administrator
 	$rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_mail", array( 
 	'mail_from' => $current_user->ID, 
@@ -352,8 +323,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	'mail_subject' => 'Welcome to WP Symposium Mail.',
 	'mail_message' => 'This is an example message, from me to myself...'
 	 ) );
-
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Sent first mail to user ID '.$current_user->ID.'.'));
 
 } 	
 
@@ -539,9 +508,6 @@ $sql = "CREATE TABLE " . $table_name . " (
 	'link_hover' => '#000', 
 	'label' => '#505050'
 	) );
-
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Created table '.$table_name.'.'));
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Inserted '.$table_name.' default values.'));
 
 } 
 
