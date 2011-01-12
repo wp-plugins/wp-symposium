@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.1.21
+Version: 0.1.22
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -242,27 +242,5 @@ class Forumrecentposts_Widget extends WP_Widget {
 	}
 
 }
-
-/* ====================================================== ACTIVATE/DEACTIVATE ====================================================== */
-
-function symposium_widgets_activate() {
-
-	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>5, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Widgets activated.'));
-	} else {
-	    wp_die( __('Core plugin must be actived first.') );
-	}
-}
-
-function symposium_widgets_deactivate() {
-
-	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>6, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Widgets de-activated.'));
-	}
-
-}
-
-register_activation_hook(__FILE__,'symposium_widgets_activate');
-register_deactivation_hook(__FILE__, 'symposium_widgets_deactivate');
 
 ?>

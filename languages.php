@@ -15,7 +15,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 	// Install English
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'English', 
 		'sant' => 'Start a New Topic',
 		'p' => 'Post',
@@ -71,14 +71,10 @@
 		'sav' => 'Saving...',
 		'prs' => 'Please enter a subject.',
 		'prm' => 'Please enter a message.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed English language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install English language.'));
-  	}
+  	) );
 
 	// Install Swedish
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Swedish', 
 		'sant' => 'Starta Nytt &Auml;mne',
 		'p' => 'Skicka',
@@ -134,14 +130,10 @@
 		'sav' => 'Sparar...',
 		'prs' => 'Var v&auml;nlig &amp; fyll i en rubrik.',
 		'prm' => 'Var v&auml;nlig &amp; skriv ett meddelande.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Swedish language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Swedish language.'));
-  	}
+  	) );
 
 	// Polish English
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Polish', 
 		'sant' => 'Rozpocznij nowy w&#261;tek',
 		'p' => 'Wpis',
@@ -197,14 +189,10 @@
 		'sav' => 'Zapisywanie zmian...',
 		'prs' => 'Wprowad&#378; temat.',
 		'prm' => 'Napisz wiadomość.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Polish language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Polish language.'));
-  	}
+  	) );
 
 	// Install Russian
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Russian', 
 		'sant' => '&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100; &#1085;&#1086;&#1074;&#1099;&#1081; &#1090;&#1086;&#1087;&#1080;&#1082;',
 		'p' => '&#1087;&#1086;&#1089;&#1090;',
@@ -260,14 +248,10 @@
 		'sav' => '&#1089;&#1086;&#1093;&#1088;&#1072;&#1085;&#1077;&#1085;&#1080;&#1077;...',
 		'prs' => '&#1087;&#1086;&#1078;&#1072;&#1083;&#1091;&#1081;&#1089;&#1090;&#1072;, &#1085;&#1072;&#1087;&#1080;&#1096;&#1080;&#1090;&#1077; &#1090;&#1077;&#1084;&#1091;.',
 		'prm' => '&#1087;&#1086;&#1078;&#1072;&#1083;&#1091;&#1081;&#1089;&#1090;&#1072;, &#1085;&#1072;&#1087;&#1080;&#1096;&#1080;&#1090;&#1077; &#1089;&#1086;&#1086;&#1073;&#1097;&#1077;&#1085;&#1080;&#1077;.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Russian language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Russian language.'));
-  	}
+  	) );
 
 	// Install Dutch
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Dutch', 
 		'sant' => 'Start een nieuw onderwerp',
 		'p' => 'Verzend',
@@ -323,14 +307,10 @@
 		'sav' => 'Bewaren...',
 		'prs' => 'Onderwerp invoeren a.u.b.',
 		'prm' => 'Bericht invoeren a.u.b.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Dutch language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Dutch language.'));
-  	}
+  	) );
 
 	// Install Norwegian
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Norwegian', 
 		'sant' => 'Opprett nytt emne',
 		'p' => 'Post',
@@ -386,14 +366,10 @@
 		'sav' => 'Lagrer...',
 		'prs' => 'Vennligst angi et tema.',
 		'prm' => 'Vennligst skriv en beskjed.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Norwegian language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Norwegian language.'));
-  	}
+  	) );
 
 	// Install Brazilian Portuguese
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Brazilian Portuguese', 
 		'sant' => 'Iniciar Novo T&oacute;pico',
 		'p' => 'Post',
@@ -449,14 +425,10 @@
 		'sav' => 'Salvando...',
 		'prs' => 'Por favor insira um assunto.',
 		'prm' => 'Por favor insira uma mensagem.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Brazilian Portuguese language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Brazilian Portuguese language.'));
-  	}
+  	) );
 		
 	// Install Portugese
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Portugese', 
 		'sant' => 'Novo T&oacute;pico',
 		'p' => 'Post',
@@ -512,14 +484,10 @@
 		'sav' => 'Guardar...',
 		'prs' => 'Por favor coloque um assunto.',
 		'prm' => 'Por favor coloque uma mensagem.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Portugese language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Portugese language.'));
-  	}
+  	) );
 		
 	// Install French
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'French', 
 		'sant' => 'D&eacute;marrer un nouveau sujet',
 		'p' => 'Envoi',
@@ -575,79 +543,71 @@
 		'sav' => 'Sauvegarde...',
 		'prs' => 'Veuillez entrer le sujet.',
 		'prm' => 'Veuillez entrer votre message'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed French language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install French language.'));
-  	}
+  	) );
 
-	// Install Spanish
-   if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
-      	'language' => 'Spanish', 
-      	'sant' => 'Comenzar un nuevo topico',
-      	'p' => 'Anunciar',
-      	'rtt' => 'Responder a este topico',
-      	'c' => 'Cancellar',
-      	'e' => 'Editar',
-      	'd' => 'Dorrar',
-      	'reb' => 'Responder',
-      	'rdv' => 'Recibir res&uacute;menes por correo electr&oacute;nico',
-      	'rep' => 'RESPONDER',
-      	'u' => 'Actualizar',
-      	'ts' => 'Tema del topico',
-      	'fpit' => 'Primer anuncio en el topico',
-      	'cat' => 'Categoria',
-      	'top' => 'TOPICOS',
-      	't' => 'TOPICO',
-      	'tp' => 'MENSAJE',
-      	'tps' => 'MENSAJES',
-      	'lac' => 'Ultimo topico activo',
-      	'r' => 'RESPONDER',
-      	'v' => 'OBSERVACIONES',
-      	'nty' => 'Ning&uacute;n tema empezado.',
-      	'sac' => 'Seleccione una categoria',
-      	'emw' => 'Enviar un correo electronico cuando tenga una respuesta',
-      	'rew' => 'Recibir correos electronicos cuando halla nuevos topicos anunciados',
-      	'rdv' => 'Reciba resumenes por correo electronico',
-      	'sb' => 'Comensar',
-      	'st' => 'comenzo',
-      	're' => 'respondio',
-      	'rer' => 'Recivir emails cuando halla respuestas a este topico',
-      	'tis' => 'Topico es anadido',
-      	'fdd' => 'Foro de resumen diario',
-      	'mr' => 'Moderaci&oacute;n Requerido',
-      	'fr' => 'Solicitud de amistad',
-      	'nmm' => 'Nuevo mensaje',
-      	'ycs' => 'Usted puede dejar de recibir estos correos electronicos en',
-		'fma' => 'Su mensaje en el foro ha sido aprobado por el moderador.',
-		'fmr' => 'Su mensaje en el foro ha sido rechazado por el moderador.',
-      	'ar' => 'Autoriser les r&eacute;ponses',
-      	'aar' => 'Anadir una respuesta a este topico',
-      	'lrb' => '&Uacute;ltima respuesta de',
-      	'nft' => 'Nuevo topico en el foro',
-      	'nfr' => 'Repuesta del nuevo topico en el foro',
-      	'wir' => 'Cuando respondo, enviar un correo electronico cuando halla mas de una respuesta en el topico',
-      	'tt' => 'Texto del topico',
-      	'btf' => 'Regresar al foro',
-      	'bt' => 'Regresar a',
-      	'mc' => 'Mover catogoria',
-      	's' => 'Seleccionar...',
-      	'hsa' => 'ha comensado un topico',
-      	'i' => 'en',
-      	'pen' => 'pendiente de aprobacion',
-      	'too' => 'a',
-      	'pw' => 'Por favor espere......',
-      	'sav' => 'Salvando...',
-      	'prs' => 'Por favor entre un tema.',
-      	'prm' => 'Por favor entre un mensaje.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Spanish language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Spanish language.'));
-  	}
+	// Install Spanish 
+	$rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+		'language' => 'Espa&ntilde;ol', 
+		'sant' => 'Nuevo Tema', 
+		'p' => 'Enviar', 
+		'rtt' => 'Responder a este tema', 
+		'c' => 'Cancelar', 
+		'e' => 'Editar', 
+		'd' => 'Borrar', 
+		'reb' => 'Responder', 
+		'rdv' => 'Recibir res&uacute;menes por correo electr&oacute;nico', 
+		'rep' => 'RESPONDER', 
+		'u' => 'Actualizar', 
+		'ts' => 'T&iacute;tulo del tema', 
+		'fpit' => 'Texto del tema', 
+		'cat' => 'Categor&iacute;a', 
+		'top' => 'TEMAS', 
+		't' => 'TEMA', 
+		'tp' => 'MENSAJE', 
+		'tps' => 'MENSAJES', 
+		'lac' => '&Uacute;ltimo tema activo', 
+		'r' => 'RESPONDER', 
+		'v' => 'OBSERVACIONES', 
+		'nty' => 'Ning&uacute;n tema.', 
+		'sac' => 'Seleccione una categor&iacute;a', 
+		'emw' => 'Enviar un correo electr&oacute;nico cuando reciba una respuesta', 
+		'rew' => 'Recibir correos electr&oacute;nicos cuando haya nuevos temas escritos', 
+		'rdv' => 'Reciba res&uacute;menes por correo electr&oacute;nico', 
+		'sb' => 'Empezar', 
+		'st' => 'comenz&oacute;', 
+		're' => 'respondido', 
+		'rer' => 'Recibir emails cuando haya respuestas a este tema', 
+		'tis' => 'Tema escrito correctamente', 
+		'fdd' => 'Resumen de la actividad diaria del foro', 
+		'mr' => 'Moderaci&oacute;n requerida', 
+		'fr' => 'Solicitud de amistad', 
+		'nmm' => 'Nuevo mensaje', 
+		'ycs' => 'Usted puede dejar de recibir estos correos electronicos en', 
+		'fma' => 'Su mensaje en el foro ha sido aprobado por el moderador.', 
+		'fmr' => 'Su mensaje en el foro ha sido rechazado por el moderador.', 
+		'ar' => 'Autorizar respuestas', 
+		'aar' => 'Responder este tema', 
+		'lrb' => '&Uacute;ltima respuesta de', 
+		'nft' => 'Nuevo tema en el foro', 
+		'nfr' => 'Repuesta del nuevo tema en el foro', 
+		'wir' => 'Recibir notificaciones por email si respondo el tema', 
+		'tt' => 'Texto del tema', 
+		'btf' => 'Regresar al foro', 
+		'bt' => 'Regresar a', 
+		'mc' => 'Mover catogor&iacute;a', 
+		's' => 'Seleccionar...', 
+		'hsa' => 'ha empezado un tema', 
+		'i' => 'en', 
+		'pen' => 'pendiente de aprobaci&oacute;n', 
+		'too' => 'a', 
+		'pw' => 'Por favor espere......', 
+		'sav' => 'Guardando...', 
+		'prs' => 'Por favor escriba un tema.', 
+		'prm' => 'Por favor escriba un mensaje.'
+	 ) );
 						
 	// Install German
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'German', 
       	'sant' => 'Neues Thema erstellen',
       	'p' => 'Eintragen',
@@ -705,14 +665,10 @@
       	'sav' => 'Speichern...',
       	'prs' => 'Bitte gib einen Betreff ein.',
       	'prm' => 'Bitte gib ein Text ein.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed German language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install German language.'));
-  	}
+  	) );
 						
 	// Install Czech
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Czech', 
       	'sant' => 'Nov&eacute; t&eacute;ma',
       	'p' => 'P&#345;&iacute;sp&#283;vek',
@@ -749,8 +705,8 @@
       	'fr' => '&#381;&aacute;dost o p&#341;&aacute;telstv&iacute;',
       	'nmm' => 'Nov&aacute; zpr&aacute;va',
       	'ycs' => 'M&#367;&#382;ete zastavit p&#345;ij&#237;m&#225;n&#237; t&#283;chto e-mail&#367; na',
-		'fma' => 'Váš příspěvek byl přijat moderátor.',
-		'fmr' => 'Váš příspěvek byl odmítnut moderátor.',
+		'fma' => 'Váš př&iacute;spěvek byl přijat moderátor.',
+		'fmr' => 'Váš př&iacute;spěvek byl odm&iacute;tnut moderátor.',
       	'ar' => 'Povolit odpov&#283;di',
       	'aar' => 'P&#345;idat odpov&#283;&#271; k t&eacute;matu',
       	'lrb' => 'Posledn&iacute; odpov&#283;&#271;',
@@ -770,14 +726,10 @@
       	'sav' => 'Ukl&aacute;d&aacute;n&iacute;...',
       	'prs' => 'Pros&iacute;m zadat p&#345;edm&#283;t.',
       	'prm' => 'Pros&iacute;m zadat zpr&aacute;vu.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Czech language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Czech language.'));
-  	}
+  	) );
 
 	// Install Italian
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Italian', 
       	'sant' => 'Aggiungi nuovo argomento',
       	'p' => 'Post',
@@ -833,14 +785,10 @@
       	'sav' => 'Salvataggio in corso...',
       	'prs' => 'Per favore inserire un oggetto.',
       	'prm' => 'Per favore inserire un messaggio.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Italian language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Failed to install Italian language.'));
-  	}
-
+  	) );
+  	
 	// Install Turkish
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Turkish', 
       	'sant' => 'Yeni konu ba&#351;lat',
       	'p' => 'Mesaj',
@@ -896,14 +844,10 @@
       	'sav' => 'Kaydediliyor...',
       	'prs' => 'L&uuml;rfen bir konu girin.',
       	'prm' => 'L&uuml;rfen bir mesaj girin.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Turkish language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Turkish language.'));
-  	}
+  	) );
 
 	// Install Hungarian
-    if ($rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
+    $rows_affected = $wpdb->insert( $wpdb->prefix."symposium_lang", array( 
       	'language' => 'Hungarian', 
 	     'sant' => '&Uacute;j t&eacute;ma ind&iacute;t&aacute;sa',
 		 'p' => 'Elk&uuml;ld',
@@ -954,16 +898,12 @@
       	 'nmm' => '&Uacute;j &uuml;zenet',
 		 'ycs' => 'Leiratkoz&aacute;s az e-mail &eacute;rtes&iacute;t&eacute;sr&ouml;l:',
 		 'fma' => 'Az Ön üzenete elfogadta a moderátor.',
-		 'fmr' => 'Az Ön üzenete elutasították a moderátor.',
+		 'fmr' => 'Az Ön üzenete elutas&iacute;tották a moderátor.',
 		 'pw' => 'T&uuml;relem...',
 		 'sav' => 'Ment&eacute;s...',
 		 'prs' => ' Meg kell adni a t&eacute;ma c&iacute;m&eacute;t.',
 		 'prm' => 'Meg kell adni a hozz&aacute;sz&oacute;l&aacute;s sz&ouml;veg&eacute;t.'
-  	) ) ) {
-		symposium_audit(array ('code'=>20, 'type'=>'system', 'plugin'=>'core', 'message'=>'Installed Hungarian language.'));
-  	} else {
-		symposium_audit(array ('code'=>20, 'type'=>'error', 'plugin'=>'core', 'message'=>'Failed to install Hungarian language.'));
-  	}
+  	) );
 
 
 

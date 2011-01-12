@@ -118,10 +118,7 @@ if (is_user_logged_in()) {
 				
 				// Set category to the category posted into
 				$cat_id = $new_topic_category;
-				
-				// Log
-				symposium_audit(array ('code'=>50, 'type'=>'info', 'plugin'=>'forum', 'tid'=>$new_tid, 'cid'=>$cat_id, 'message'=>'New topic posted.'));
-				
+								
 				// Get post owner name and prepare email body
 				$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$users." WHERE ID = ".$current_user->ID));
 				$body = "<p>".$owner_name." ".$language->hsa;
@@ -235,9 +232,6 @@ if (is_user_logged_in()) {
 				        ) );
 					}
 
-					// Log
-					symposium_audit(array ('code'=>51, 'type'=>'info', 'plugin'=>'forum', 'tid'=>$wpdb->insert_id, 'cid'=>$cat_id, 'message'=>'New reply posted.'));
-					
 					// Email people who want to know and prepare body
 					$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$users." WHERE ID = ".$current_user->ID));
 					$parent = $wpdb->get_var($wpdb->prepare("SELECT topic_subject FROM ".$topics." WHERE tid = ".$tid));

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.21
+Version: 0.1.22
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -85,347 +85,6 @@ function symposium_forum() {
 	$cat_id = 0;
 	if (isset($_GET['cid'])) { $cat_id = $_GET['cid']; }
 	if (isset($_POST['cid'])) { $cat_id = $_POST['cid']; }
-
-	// Javascript and jQuery
-	$html .= '<script type="text/javascript">
-
-	function validate_form(thisform)
-	{
-		form_id = thisform.id;
-		if ( (form_id) == "start-new-topic") {
-			with (thisform)
-			{
-				if (new_topic_subject.value == \'\' || new_topic_subject.value == null) {
-					jQuery(".new-topic-subject-warning").show("slow");
-					new_topic_subject.focus(); 
-					return false;
-				}
-				if (new_topic_text.value == \'\' || new_topic_text.value == null) {
-					jQuery(".new_topic_text-warning").show("slow");
-					new_topic_text.focus(); 
-					return false;
-				}
-			}
-		}
-		if ( (form_id) == "start-reply-topic") {
-			with (thisform)
-			{
-				if (reply_text.value == \'\' || reply_text.value == null) {
-					jQuery(".reply_text-warning").show("slow");
-					reply_text.focus(); 
-					return false;
-				}
-			}
-		}
-		if ( (form_id) == "quick-reply") {
-			with (thisform)
-			{
-				if (reply_text.value == \'\' || reply_text.value == null) {
-					jQuery(".quick-reply-warning").show("slow");
-					reply_text.focus(); 
-					return false;
-				}
-			}
-		}			
-	}
-
-    jQuery(document).ready(function() { 	
-    		
-    	// Notices	    	
-		jQuery(".notice").hide();
-		jQuery(".pleasewait").hide();
-	    	jQuery(".backto").click(function() {
-			jQuery(".pleasewait").inmiddle().show();
-	    	});		
-		jQuery(".new-topic-subject-warning").hide();
-		jQuery(".new_topic_text-warning").hide();
-		jQuery(".reply_text-warning").hide();
-		jQuery(".quick-reply-warning").hide();
-		
-		// Centre in screen
-		jQuery.fn.inmiddle = function () {
-	    	this.css("position","absolute");
-	    	this.css("top", ( jQuery(window).height() - this.height() ) / 2+jQuery(window).scrollTop() + "px");
-	    	this.css("left", ( jQuery(window).width() - this.width() ) / 2+jQuery(window).scrollLeft() + "px");
-		    return this;
-		}
-		
-		// Edit topic (AJAX)
-	   	jQuery("#starting-post").hover(function() {
-	        jQuery(this).find("#edit-this-topic").show();
-	   	}, function() {
-	        jQuery(this).find("#edit-this-topic").hide();
-	   	});
-		// Edit the topic
-	   	jQuery("#edit-this-topic").click(function() {
-			jQuery(".pleasewait").inmiddle().show();
-			jQuery("#new-category-div").show();
-	    	var tid = jQuery(".edit-topic-tid").attr("id");	
-			jQuery("#edit_topic_subject").val("Please wait...");
-			jQuery("#edit_topic_text").html("Retrieving content...");
-			jQuery.post("/wp-admin/admin-ajax.php", {
-				action:"getEditDetails", 
-				\'tid\':'.$show_tid.'
-				},
-			function(str)
-			{
-				var details = str.split("[split]");
-				jQuery("#edit_topic_subject").val(details[0]);
-				jQuery("#edit_topic_subject").removeAttr("disabled");
-				jQuery("#edit_topic_text").html(details[1]);
-				jQuery(".edit-topic-parent").attr("id", details[2]);
-				jQuery("#new-category").val(details[4]);
-			});
-			jQuery("#edit-topic-div").inmiddle().fadeIn();
-			jQuery(".pleasewait").fadeOut("slow");
-	   	});	    	
-
-	   	// Edit a reply
-	   	jQuery(".edit-child-topic").click(function() {
-			jQuery(".pleasewait").inmiddle().show();
-			jQuery("#new-category-div").hide();
-	    	var tid = jQuery(this).attr("id");	
-			jQuery("#edit_topic_subject").val("Please wait...");
-			jQuery("#edit_topic_text").html("Retrieving content...");
-			jQuery.post("/wp-admin/admin-ajax.php", {
-				action:"getEditDetails", 
-				\'tid\':tid
-				},
-			function(str)
-			{
-				var details = str.split("[split]");
-				jQuery("#edit_topic_subject").val(details[0]);
-				jQuery("#edit_topic_subject").attr("disabled", "enabled");
-				jQuery("#edit_topic_text").html(details[1]);
-				jQuery(".edit-topic-parent").attr("id", details[2]);
-				jQuery(".edit-topic-tid").attr("id", details[3]);
-			});
-			jQuery("#edit-topic-div").inmiddle().fadeIn();
-			jQuery(".pleasewait").fadeOut("slow");
-	   	});	 
-	   	
-	   	// Update contents of edit form
-		jQuery(".edit_topic_submit").click(function(){
-			jQuery(".notice").inmiddle().show();
-    		var tid = jQuery(".edit-topic-tid").attr("id");	
-    		var parent = jQuery(".edit-topic-parent").attr("id");
-			var topic_subject = jQuery("#edit_topic_subject").val();	
-			var topic_post = jQuery("#edit_topic_text").val();	
-			var topic_category = jQuery("#new-category").val();	
-				
-			if (parent == 0) {
-				jQuery(".topic-post-header").html(topic_subject);
-				jQuery(".topic-post-post").html(topic_post.replace(/\n/g, "<br />"));
-			}
-
-			jQuery.post("/wp-admin/admin-ajax.php", {
-				action:"updateEditDetails", 
-				\'tid\':tid,
-				\'topic_subject\':topic_subject,
-				\'topic_post\':topic_post,
-				\'topic_category\':topic_category
-				},
-			function(tid)
-			{
-				jQuery(".notice").fadeOut("fast");
-				jQuery("#edit-topic-div").fadeOut("fast");
-				window.location.href=window.location.href;
-			});
-		});
-		// Cancel form
-		jQuery(".edit_topic_cancel").click(function(){
-			jQuery("#edit-topic-div").fadeOut("fast");
-	   	});
-
-		// Show delete link on row hover
-	    jQuery(".row").hover(function() {
-	        jQuery(this).find(".delete").show()
-	    }, function() {
-	        jQuery(this).find(".delete").hide();
-	    });
-	    jQuery(".row_odd").hover(function() {
-	        jQuery(this).find(".delete").show()
-	    }, function() {
-	        jQuery(this).find(".delete").hide();
-	    });	    
-	    jQuery(".child-reply").hover(function() {
-	        jQuery(this).find(".delete").show();
-	        jQuery(this).find(".edit").show();
-	    }, function() {
-	        jQuery(this).find(".delete").hide();
-	        jQuery(this).find(".edit").hide();
-	    });
-	    
-	    // Check if really want to delete	    
-		jQuery(".delete").click(function(){
-		  var answer = confirm("Are you sure?");
-		  return answer // answer is a boolean
-		});
-
-		// Show new topic and reply topic forms
-		jQuery("#new-topic-link").click(function() {
-		  	jQuery("#new-topic").toggle("slow");
-		});
-		jQuery("#cancel_post").click(function() {
-		  	jQuery("#new-topic").hide("slow");
-		});
-
-		jQuery("#reply-topic-link").click(function() {
-		  	jQuery("#reply-topic").toggle("slow");
-		});
-		jQuery("#cancel_reply").click(function() {
-		  	jQuery("#reply-topic").hide("slow");
-		});
-		
-		// Has a checkbox been clicked? If so, check if one for symposium (AJAX)
-	    jQuery("input[type=\'checkbox\']").bind("click",function() {
-	    	
-	    	var checkbox = jQuery(this).attr("id");		    		
-	    	
-	    	// Subscribe to New Forum Topics in a category
-	    	if (checkbox == "symposium_subscribe") {
-				jQuery(".notice").inmiddle().fadeIn();
-		        if(jQuery(this).is(":checked")) {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateForumSubscribe", 
-						\'cid\':'.$cat_id.',
-						"value":1
-						},
-					function(str)
-					{
-					      // Subscribed
-					});
-		        } else {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateForumSubscribe", 
-						\'cid\':'.$cat_id.',
-						"value":0
-						},
-					function(str)
-					{
-				      // Un-subscribed
-					});
-		        }
-				jQuery(".notice").delay(100).fadeOut("slow");
-	    	}
-
-	    	// Subscribe to Topic Posts
-	    	if (checkbox == "subscribe") {
-				jQuery(".notice").inmiddle().fadeIn();
-		        if(jQuery(this).is(":checked")) {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateForum", 
-						\'tid\':'.$show_tid.', 
-						\'value\':1
-						},
-					function(str)
-					{
-						// Subscribed
-					});
-		        } else {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateForum", 
-						\'tid\':'.$show_tid.', 
-						\'value\':0
-						},
-					function(str)
-					{
-					      // Un-subscribed
-					});
-		        }
-				jQuery(".notice").delay(100).fadeOut("slow");
-	    	}
-	    	
-	    	// Sticky Topics
-	    	if (checkbox == "sticky") {
-				jQuery(".notice").inmiddle().fadeIn();
-		        if(jQuery(this).is(":checked")) {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateForumSticky", 
-						\'tid\':'.$show_tid.', 
-						\'value\':1
-						},
-					function(str)
-					{
-					      // Stuck
-					});
-					
-		        } else {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateForumSticky", 
-						\'tid\':'.$show_tid.', 
-						\'value\':0
-						},
-					function(str)
-					{
-					      // Unstuck
-					});
-		        }
-				jQuery(".notice").delay(100).fadeOut("slow");
-	    	}
-	    			    	
-	    	// Digest
-	    	if (checkbox == "symposium_digest") {
-				jQuery(".notice").inmiddle().fadeIn();
-		        if(jQuery(this).is(":checked")) {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateDigest", 
-						\'value\':\'on\'
-						},
-					function(str)
-					{
-					      // Subscribed
-					});
-					
-		        } else {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateDigest", 
-						\'value\':\'\'
-						},
-					function(str)
-					{
-					      // Unsubscribed
-					});
-		        }
-				jQuery(".notice").delay(100).fadeOut("slow");
-	    	}
-	    		
-	    	// Replied
-	    	if (checkbox == "replies") {
-				jQuery(".notice").inmiddle().fadeIn();
-		        if(jQuery(this).is(":checked")) {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateTopicReplies", 
-						\'tid\':'.$show_tid.', 
-						\'value\':\'on\'
-						},
-					function(str)
-					{
-					      // Replies
-					});
-					
-		        } else {
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"updateTopicReplies", 
-						\'tid\':'.$show_tid.', 
-						\'value\':\'\'
-						},
-					function(str)
-					{
-					      // No replies
-					});
-		        }
-				jQuery(".notice").delay(100).fadeOut("slow");
-	    	}
-
-		});
-					
-
-    });
-
- 
-	</script>
-	';
 	
 	// Wrapper
 	$html .= "<div id='symposium-wrapper' style='z-index:900000;'>";
@@ -440,9 +99,14 @@ function symposium_forum() {
 		$wpdb->query("DELETE FROM ".$subs." WHERE tid = ".$_GET['tid']);
 	}
 	
-	// Check for delete post (admin only)
-	if ( ($_GET['action'] == 'del') && (current_user_can('level_10')) ) {	
-		$wpdb->query("DELETE FROM ".$topics." WHERE tid = ".$_GET['tid']);
+	// Check for delete post (admin and owner only)
+	if ($_GET['action'] == 'del') {	
+		// get owner
+		$post_owner = $wpdb->get_var($wpdb->prepare("SELECT topic_owner FROM ".$wpdb->prefix."symposium_topics WHERE tid=".$_GET['tid']));
+		// delete if you can
+		if ( (current_user_can('level_10')) || ($current_user->ID == $post_owner) ) {
+			$wpdb->query("DELETE FROM ".$topics." WHERE tid = ".$_GET['tid']);
+		}
 	}
 			
 	// any page id
@@ -501,7 +165,7 @@ function symposium_forum() {
 				if ($wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$show_tid)) == "on") {
 					$html .= "<li id='reply-topic-link'>".$language->aar."</li>";
 				} else {
-					$html .= '<p class="label"><img src="'.$plugin.'padlock.gif" alt="Replies locked" /> Replies are not allowed for this topic.</p>';
+					$html .= '<p class="label"><img src="'.$plugin.'images/padlock.gif" alt="Replies locked" /> Replies are not allowed for this topic.</p>';
 
 				}
 			}
@@ -558,29 +222,31 @@ function symposium_forum() {
 				$html .= '</form>';
 				$html .= '<input id="cancel_post" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
 			$html .= '</div>';
-			$allow_replies = $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$show));
-			// Reply Form
-			if ($show != '' && $allow_replies=="on") {
-				$html .= '<div id="reply-topic" name="reply-topic" style="display:none;">';
-					$html .= '<form id="start-reply-topic" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
-					$html .= '<input type="hidden" name="action" value="reply">';
-					$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
-					$html .= '<input type="hidden" name="tid" value="'.$show.'">';
-					$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
-					$html .= '<div class="reply-topic-subject label">'.$language->rtt.'</div>';
-					$html .= '<textarea class="reply-topic-subject-text" name="reply_text"></textarea>';
-					$html .= '<div class="reply_text-warning warning">'.$language->prm.'</div>';
-					$html .= '<div class="emailreplies label"><input type="checkbox" name="reply_topic_subscribe"';
-					$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$show." and uid = ".$current_user->ID));
-					$subscribed = false;	
-					if ($subscribed_count > 0) { $html .= ' checked'; $subscribed = true; } 
-					$html .= '> '.$language->wir.'</div>';
-					$html .= '<input type="submit" class="button" style="float: left" value="'.$language->reb.'" />';
-					$html .= '</form>';
-					$html .= '<input id="cancel_reply" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
-				$html .= '</div>';
+
+			if ($show != '') {
+				$allow_replies = $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$show));
+				// Reply Form
+				if ($show != '' && $allow_replies=="on") {
+					$html .= '<div id="reply-topic" name="reply-topic" style="display:none;">';
+						$html .= '<form id="start-reply-topic" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
+						$html .= '<input type="hidden" name="action" value="reply">';
+						$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
+						$html .= '<input type="hidden" name="tid" value="'.$show.'">';
+						$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
+						$html .= '<div class="reply-topic-subject label">'.$language->rtt.'</div>';
+						$html .= '<textarea class="reply-topic-subject-text" name="reply_text"></textarea>';
+						$html .= '<div class="reply_text-warning warning">'.$language->prm.'</div>';
+						$html .= '<div class="emailreplies label"><input type="checkbox" name="reply_topic_subscribe"';
+						$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$show." and uid = ".$current_user->ID));
+						$subscribed = false;	
+						if ($subscribed_count > 0) { $html .= ' checked'; $subscribed = true; } 
+						$html .= '> '.$language->wir.'</div>';
+						$html .= '<input type="submit" class="button" style="float: left" value="'.$language->reb.'" />';
+						$html .= '</form>';
+						$html .= '<input id="cancel_reply" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.$language->c.'" />';
+					$html .= '</div>';
+				}
 			}
-			
 				
 		} else {
 	
@@ -707,7 +373,7 @@ function symposium_forum() {
 						$html .= '<div style="padding-left:8px;padding-top:13px">';
 						$html .= '<a class="backto row_link" href="'.$thispage.symposium_permalink($category->cid, "category").$q.'cid='.$category->cid.'">'.stripslashes($category->title).'</a>';
 						$subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE cid = ".$category->cid." AND uid = ".$current_user->ID));
-						if ($subscribed > 0) { $html .= ' <img src="'.$plugin.'orange-tick.gif" alt="Subscribed" />'; } 
+						if ($subscribed > 0) { $html .= ' <img src="'.$plugin.'images/orange-tick.gif" alt="Subscribed" />'; } 
 						$html .= '</div>';
 
 												
@@ -829,10 +495,10 @@ function symposium_forum() {
 							if ($topic->topic_approved != 'on') { $html .= " <em>[".$language->pen."]</em>"; }
 							if (is_user_logged_in()) {
 								$is_subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = ".$topic->tid." AND uid = ".$current_user->ID));
-								if ($is_subscribed > 0) { $html .= ' <img src="'.$plugin.'orange-tick.gif" alt="Subscribed" />'; } 
+								if ($is_subscribed > 0) { $html .= ' <img src="'.$plugin.'images/orange-tick.gif" alt="Subscribed" />'; } 
 							}
-							if ($topic->allow_replies != 'on') { $html .= ' <img src="'.$plugin.'padlock.gif" alt="Replies locked" />'; } 
-							if ($topic->topic_sticky) { $html .= ' <img src="'.$plugin.'pin.gif" alt="Sticky Topic" />'; } 
+							if ($topic->allow_replies != 'on') { $html .= ' <img src="'.$plugin.'images/padlock.gif" alt="Replies locked" />'; } 
+							if ($topic->topic_sticky) { $html .= ' <img src="'.$plugin.'images/pin.gif" alt="Sticky Topic" />'; } 
 							
 							// Delete link if applicable
 							if (current_user_can('level_10')) {
@@ -1019,8 +685,8 @@ function symposium_forum() {
 		}
 	
 		// Notices
-		$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin."busy.gif' /> ".$language->sav."</div>";
-		$html .= "<div class='pleasewait' style='z-index:999999;'><img src='".$plugin."busy.gif' /> ".$language->pw."</div>";
+		$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin."images/busy.gif' /> ".$language->sav."</div>";
+		$html .= "<div class='pleasewait' style='z-index:999999;'><img src='".$plugin."images/busy.gif' /> ".$language->pw."</div>";
 
 	} else {
 		
@@ -1043,229 +709,6 @@ function symposium_forum() {
 	return $html;
 
 }
-
-/* ====================================================== AJAX FUNCTIONS ====================================================== */
-
-// AJAX function to get topic details for editing
-function getEditDetails(){
-
-	global $wpdb;
-	
-	$tid = $_POST['tid'];	
-	
-	$details = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix.'symposium_topics'." WHERE tid = ".$tid); 
-	if ($details->topic_subject == '') {
-		$parent = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix.'symposium_topics'." WHERE tid = ".$details->topic_parent); 
-		$subject = $parent->topic_subject;
-	} else {
-		$subject = $details->topic_subject;
-	}
-
-	if ($details) {
-		echo stripslashes($subject)."[split]".stripslashes($details->topic_post)."[split]".$details->topic_parent."[split]".$details->tid."[split]".$details->topic_category;
-	} else {
-		echo "Problem retrieving topic information[split]Passed Topic ID = ".$tid;
-	}
-	exit;
-}
-add_action('wp_ajax_getEditDetails', 'getEditDetails');
-
-// AJAX function to update topic details after editing
-function updateDigest(){
-	global $wpdb, $current_user;
-	wp_get_current_user();
-
-	$value = $_POST['value'];	
-
-	// Update meta record exists for user
-	update_symposium_meta($current_user->ID, "forum_digest", "'".$value."'");
-	echo $value;
-	exit;
-
-}
-add_action('wp_ajax_updateDigest', 'updateDigest');
-
-// AJAX function to update topic details after editing
-function updateEditDetails(){
-
-	global $wpdb;
-	
-	$tid = $_POST['tid'];	
-	$topic_subject = addslashes($_POST['topic_subject']);	
-	$topic_post = addslashes($_POST['topic_post']);	
-	$topic_post = str_replace("\n", chr(13), $topic_post);	
-	$topic_category = $_POST['topic_category'];
-
-	// Log
-	symposium_audit(array ('code'=>52, 'type'=>'info', 'plugin'=>'forum', 'tid'=>$tid, 'cid'=>$topic_category, 'message'=>'AJAX post update request received.'));
-	
-	if ($topic_category == "") {
-		$topic_category = $wpdb->get_var($wpdb->prepare("SELECT topic_category FROM ".$wpdb->prefix.'symposium_topics'." WHERE tid = ".$tid));
-	}
-
-	$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_topics'." SET topic_category = ".$topic_category." WHERE topic_parent = ".$tid) );
-
-	$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_topics'." SET topic_subject = '".$topic_subject."', topic_post = '".$topic_post."', topic_category = ".$topic_category." WHERE tid = ".$tid) );
-	
-	$parent = $wpdb->get_var($wpdb->prepare("SELECT topic_parent FROM ".$wpdb->prefix.'symposium_topics'." WHERE tid = ".$tid));
-
-	// Log
-	symposium_audit(array ('code'=>52, 'type'=>'info', 'plugin'=>'forum', 'tid'=>$tid, 'cid'=>$topic_category, 'message'=>'Post updated.'));
-
-	echo $topic_post;
-	
-	exit;
-}
-add_action('wp_ajax_updateEditDetails', 'updateEditDetails');
-
-// AJAX function to subscribe/unsubscribe to symposium topic
-function updateForum(){
-
-	global $wpdb, $current_user;
-	wp_get_current_user();
-	$subs = $wpdb->prefix . 'symposium_subs';
-
-	$tid = $_POST['tid'];
-	$action = $_POST['value'];
-
-	// Store subscription if wanted
-	$wpdb->query("DELETE FROM ".$subs." WHERE uid = ".$current_user->ID." AND tid = ".$tid);
-	
-	if ($action == 1)
-	{		
-		// Store subscription if wanted
-		$wpdb->query( $wpdb->prepare( "
-			INSERT INTO ".$subs."
-			( 	uid, 
-				tid
-			)
-			VALUES ( %d, %d )", 
-	        array(
-	        	$current_user->ID, 
-	        	$tid
-	        	) 
-	        ) );
-		exit;
-		
-	} else {
-			
-		exit;
-		// Removed, and not re-added
-	}
-	
-	echo "Sorry - subscription failed";
-	exit;
-}
-add_action('wp_ajax_updateForum', 'updateForum');
-
-// AJAX function to change sticky status
-function updateForumSticky(){
-
-	global $wpdb;
-	$topics = $wpdb->prefix . 'symposium_topics';
-
-	$tid = $_POST['tid'];
-	$value = $_POST['value'];
-
-	// Store subscription if wanted
-	$wpdb->query("UPDATE ".$topics." SET topic_sticky = ".$value." WHERE tid = ".$tid);
-	
-	if ($value==1) {
-		echo "Topic is sticky";
-	} else {
-		echo "Topic is NOT sticky";
-	}
-	exit;
-}
-add_action('wp_ajax_updateForumSticky', 'updateForumSticky');
-
-// AJAX function to change sticky status
-function updateTopicReplies(){
-
-	global $wpdb;
-	$topics = $wpdb->prefix . 'symposium_topics';
-
-	$tid = $_POST['tid'];
-	$value = $_POST['value'];
-
-	// Store subscription if wanted
-	$wpdb->query("UPDATE ".$topics." SET allow_replies = '".$value."' WHERE tid = ".$tid);
-	
-	if ($value=='on') {
-		echo "Topic is sticky";
-	} else {
-		echo "Topic is NOT sticky";
-	}
-	exit;
-}
-add_action('wp_ajax_updateTopicReplies', 'updateTopicReplies');
-
-// AJAX function to subscribe/unsubscribe to new symposium topics
-function updateForumSubscribe(){
-
-	global $wpdb, $current_user;
-	wp_get_current_user();
-	$subs = $wpdb->prefix . 'symposium_subs';
-
-	$action = $_POST['value'];
-	$cid = $_POST['cid'];
-
-	// Store subscription if wanted
-	$wpdb->query("DELETE FROM ".$subs." WHERE uid = ".$current_user->ID." AND tid = 0 AND (cid = ".$cid." OR cid = 0)");
-	
-	if ($action == 1)
-	{		
-		// Store subscription if wanted
-		$wpdb->query( $wpdb->prepare( "
-			INSERT INTO ".$subs."
-			( 	uid, 
-				tid,
-				cid
-			)
-			VALUES ( %d, %d, %d )", 
-	        array(
-	        	$current_user->ID, 
-	        	0,
-	        	$cid
-	        	) 
-	        ) );
-		exit;
-		
-	} else {
-
-		echo 'Sorry - the subscription was not added.';			
-		exit;
-		// Removed, and not re-added
-	}
-	
-	echo "Sorry - subscription failed";
-	exit;
-
-}
-add_action('wp_ajax_updateForumSubscribe', 'updateForumSubscribe');
-
-/* ====================================================== ACTIVATE/DEACTIVATE ====================================================== */
-
-function symposium_forum_activate() {
-
-	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>5, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Forum activated.'));
-	} else {
-	    wp_die( __('Core plugin must be actived first.') );
-	}
-
-}
-
-function symposium_forum_deactivate() {
-
-	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>6, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Forum de-activated.'));
-	}
-
-}
-
-register_activation_hook(__FILE__,'symposium_forum_activate');
-register_deactivation_hook(__FILE__, 'symposium_forum_deactivate');
 
 /* ====================================================== SET SHORTCODE ====================================================== */
 add_shortcode('symposium-forum', 'symposium_forum');  

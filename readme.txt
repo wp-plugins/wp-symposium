@@ -6,9 +6,9 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, chat, friends, wall, status, message, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.21
+Stable tag: 0.1.22
 
-A new suite of social networking plugins - forum, wall, mail, private messaging, notification bar, chat windows, profile page, widgets, and more!
+A new suite of social networking plugins - forum, wall, mail, member directory, private messaging, notification bar, chat windows, profile page, widgets, and more!
 
 == Description ==
 
@@ -28,7 +28,8 @@ NOTICE: We are currently BETA testing this plugin. As such, although we have not
 * Mail/Private Messaging
 * Friends
 * Chat
-* Wall (not yet available)
+* Wall
+* Member Directory
 * ... more to come!!!
 
 *Widgets*
@@ -144,6 +145,16 @@ Put `[symposium-mail]` on any WP page, and put the page URL in the Symposium opt
 * AJAX enabled when switching between messages
 * In Box messages highlighted when not read
 * Sent messages highlighted that not read by recipient
+
+**DIRECTORY**
+
+A list of members, showing who is online together with their latest status post and location. Basic at the moment, but will improve.
+
+Put `[symposium-members]` on any WP page.
+
+* Lists members by who was most recent
+* Search for members (by name or location) with intelligent search
+* Includes location, latest status post and link to their profile page
 
 **FORUM**
 
@@ -272,10 +283,29 @@ Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page at http://www.wpsymposium.com/forum/forum-smilies
 
 Q. Will WP Symposium work on WPMU?
-A. Sorry no, not at the moment - but it's planned to get this working at some point
+A. Sorry no, not at the moment - but it's planned to get this working at some point.
+
+Q. I don't see friends when there online, can't edit forum posts or read all mail in my inbox
+A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.22 =
+
+* New Plugin: Members Directory/Search (basic for now, but will improve)
+* Core: Re-wrote AJAX functions
+* Core: Organised files with folder structure
+* Core: Reduced number of SQL calls throughout
+* Core: If profile plugin deactivated, language is taken from core options
+* Admin: Added option to clear event audit table
+* Admin: Added options to disable certain features (in case of plugin clashes/server load issues)
+* Admin: Added option to disable password change
+* Notification Bar: Added Register link if enabled in WordPress
+* Notification Bar: Added Site Admin link if site administrator
+* Profile: Added option to recieve email on new wall post/reply
+* Profile: If birthday still system default (1/1/2010+) then not shown
+* Forum: Fixed post author can delete as well as administrators
 
 = 0.1.21 =
 

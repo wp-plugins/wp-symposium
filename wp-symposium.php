@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.21
+Version: 0.1.22
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -25,27 +25,58 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-/* ====================================================== MENU ====================================================== */
-
-if (is_admin()) {
-	include('symposium_menu.php');
-}		   	
+/* ====================================================== SETUP ====================================================== */
 
 include_once('symposium_functions.php');
 
-/* ====================================================== ADMIN ====================================================== */
-
-global $symposium_db_version;
+global $wpdb, $symposium_db_version;
 $symposium_db_version = "1";
+
+add_action('init', 'js_init');
+add_action('init', 'symposium_notification_setoptions');
+add_action('symposium_notification_hook','symposium_notification_trigger_schedule');
+add_action('wp_login', 'symposium_redirect_login', 10);
+add_action('wp_logout', 'symposium_redirect_logout', 10);
+add_action('wp_footer', 'symposium_lastactivity', 10);
+add_action('template_redirect', 'symposium_replace');
+add_action('wp_print_styles', 'add_symposium_stylesheet');
+add_action('wp_print_scripts', 'symposium_scriptsAction');
+
+if (is_admin()) {
+	include('symposium_menu.php');
+	add_action('admin_notices', 'symposium_mail_warning');
+	add_action('wp_dashboard_setup', 'symposium_dashboard_widget');	
+	add_action('init', 'symposium_admin_init');
+	add_action('admin_notices', 'symposium_admin_check');
+}		   	
+
+register_activation_hook(__FILE__,'symposium_activate');
+register_deactivation_hook(__FILE__, 'symposium_deactivate');
+register_uninstall_hook(__FILE__, 'symposium_uninstall');
+
+/* ===================================================== ADMIN ====================================================== */
+
 
 // Any admin warnings
 function symposium_mail_warning() {
-	//echo "<div class='updated'>Warning</p></div>";
+
+   	global $wpdb;
+
+	$parts = explode('.',get_option("symposium_version"));	
+	$major = $parts[0];
+	$minor = $parts[1];
+	$db = $parts[2];
+	$patch = $parts[3];
+	$db_ver = get_option("symposium_db_version");
+
+	if ($db != $db_ver) {
+		echo "<div class='updated'><p>";
+		echo "You need to update your WP Symposium database - please deactivate, then re-activate the WP Symposium core plugin.";
+		echo "</p></div>";
+	}
 }
-add_action('admin_notices', 'symposium_mail_warning');
 
 // Dashboard Widget
-add_action('wp_dashboard_setup', 'symposium_dashboard_widget');
 function symposium_dashboard_widget(){
 	wp_add_dashboard_widget('symposium_id', 'WP Symposium', 'symposium_widget');
 }
@@ -53,7 +84,7 @@ function symposium_widget() {
 	
 	global $wpdb;
 	
-	echo '<img src="'.WP_PLUGIN_URL.'/wp-symposium/logo_small.gif" alt="WP Symposium logo" style="float:right; width:100px;height:120px;" />';
+	echo '<img src="'.WP_PLUGIN_URL.'/wp-symposium/images/logo_small.gif" alt="WP Symposium logo" style="float:right; width:100px;height:120px;" />';
 
 	echo '<table>';
 	echo '<tr><td style="padding:4px"><a href="admin.php?page=symposium_categories">Categories</a></td>';
@@ -87,20 +118,12 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.21";
-	$symposium_db_ver = 21;
-	
-	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation started.'));
+	$symposium_version = "0.1.22";
+	$symposium_db_ver = 22;
 	
 	// Code version *************************************************************************************
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Applying code version '.$symposium_version.'.'));
 	$ver = get_option("symposium_version");
-	if ($ver != false) {
-		symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Existing code version = '.$ver.'.'));
-		if ($ver != $symposium_version) {
-			symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Updated to '.$symposium_version.'.'));
-		}
-		 
+	if ($ver != false) {		 
 	    update_option("symposium_version", $symposium_version);	    	   	
 	} else {
 		// Set Database Version		
@@ -111,9 +134,7 @@ function symposium_activate() {
 	$db_ver = get_option("symposium_db_version");
 	if ($db_ver != false) {
 		$db_ver = (int) $db_ver;
-		symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Existing database version = '.$db_ver.'.'));
 	} else {
-		symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'No current database version, setting to 1.'));
 		// Set Database Version		
 	    add_option("symposium_db_version", 1);	    	   	
 	}
@@ -146,23 +167,33 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "seo", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "moderation", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "mail_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
-	symposium_alter_table("config", "ADD", "allow_personal_settings", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "online", "int(11)", "NOT NULL", "'3'");
 	symposium_alter_table("config", "ADD", "offline", "int(11)", "NOT NULL", "'15'");
-	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "use_wp_login", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "custom_login_url", "varchar(512)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "custom_logout_url", "varchar(512)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "wp_alignment", "varchar(16)", "NOT NULL", "'Center'");
+	symposium_alter_table("config", "ADD", "enable_password", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "enable_redirects", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "login_redirect", "varchar(256)", "NOT NULL", "'WordPress default'");
 	symposium_alter_table("config", "ADD", "login_redirect_url", "varchar(256)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "logout_redirect", "varchar(256)", "NOT NULL", "'WordPress default'");
 	symposium_alter_table("config", "ADD", "logout_redirect_url", "varchar(256)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "use_wp_login", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "custom_login_url", "varchar(512)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "custom_logout_url", "varchar(512)", "NOT NULL", "''");
 	
-	// Profile
+	// Modify Mail table
+	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
+
+	// Modify Profile table
 	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+
+	// Modify Comments table
+	symposium_alter_table("comments", "MODIFY", "comment_timestamp", "datetime", "", "");
 	
-	// Notification bar
+	// Modify Friends table
+	symposium_alter_table("friends", "MODIFY", "friend_timestamp", "datetime", "", "");
+
+	// Modify Notification bar table
 	symposium_alter_table("config", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
 	symposium_alter_table("config", "ADD", "bar_position", "varchar(6)", "NOT NULL", "'bottom'");
 	symposium_alter_table("config", "ADD", "bar_label", "varchar(256)", "NOT NULL", "'Powered by WP Symposium'");
@@ -175,15 +206,13 @@ function symposium_activate() {
 	// Add/Modify option fields for languages for all versions (if fields already exist, ADD will be skipped)
 	symposium_alter_table("config", "ADD", "language", "varchar(64)", "NOT NULL", "'English'");
 	symposium_alter_table("config", "MODIFY", "language", "varchar(64)", "NOT NULL", "'English'");
-	
-	// Modify audit table
-	symposium_alter_table("audit", "MODIFY", "message", "text", "", "''");
-	
+		
 	// Modify user meta table
 	symposium_alter_table("usermeta", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
 	symposium_alter_table("usermeta", "ADD", "soundchat", "varchar(32)", "NOT NULL", "'tap.mp3'");
 	symposium_alter_table("usermeta", "ADD", "bar_position", "varchar(6)", "NOT NULL", "'bottom'");
 	symposium_alter_table("usermeta", "ADD", "notify_new_messages", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("usermeta", "ADD", "notify_new_wall", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("usermeta", "ADD", "timezone", "int(11)", "", "0");
 	symposium_alter_table("usermeta", "ADD", "city", "varchar(128)", "", "");
 	symposium_alter_table("usermeta", "ADD", "country", "varchar(128)", "", "");
@@ -193,6 +222,7 @@ function symposium_activate() {
 	symposium_alter_table("usermeta", "ADD", "share", "varchar(32)", "", "'Friends only'");
 	symposium_alter_table("usermeta", "ADD", "language", "varchar(64)", "", "'English'");
 	symposium_alter_table("usermeta", "ADD", "last_activity", "timestamp", "", "");
+	symposium_alter_table("usermeta", "MODIFY", "last_activity", "datetime", "", "");
 	symposium_alter_table("usermeta", "ADD", "status", "varchar(1024)", "NOT NULL", "''");
 	symposium_alter_table("usermeta", "ADD", "visible", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("usermeta", "ADD", "wall_share", "varchar(32)", "", "'Friends only'");
@@ -295,11 +325,6 @@ function symposium_activate() {
 	// ***********************************************************************************************
  	// Update Database Version ***********************************************************************
 	update_option("symposium_db_version", $symposium_db_ver);
-	symposium_audit(array ('code'=>1, 'type'=>'system', 'plugin'=>'core', 'message'=>'Database version updated to '.$symposium_db_ver.'.'));
-
-	// Audit activation
-	symposium_audit(array ('code'=>1, 'type'=>'info', 'plugin'=>'core', 'message'=>'Core activation complete.'));
-
 	
 }
 /* End of Activation */
@@ -316,8 +341,8 @@ function symposium_uninstall() {
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_styles");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_lang");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_usermeta");
-   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_audit");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_mail");
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_audit");
 
 	// Delete Notification options
 	delete_option("symposium_notification_inseconds");
@@ -334,15 +359,11 @@ function symposium_uninstall() {
 function symposium_deactivate() {
 
 	wp_clear_scheduled_hook('symposium_notification_hook');
-	// Audit de-activation
-	symposium_audit(array ('code'=>2, 'type'=>'system', 'plugin'=>'core', 'message'=>'Core de-activated.'));
 
 }
 
+/* ====================================================== NOTIFICATIONS ====================================================== */
 
-/* NOTIFICATIONS */
-
-add_action('init', 'symposium_notification_setoptions');
 function symposium_notification_setoptions() {
 	update_option("symposium_notification_inseconds",86400);
 	// 60 = 1 minute, 3600 = 1 hour, 10800 = 3 hours, 21600 = 6 hours, 43200 = 12 hours, 86400 = Daily, 604800 = Weekly
@@ -363,7 +384,6 @@ function symposium_notification_more_reccurences($recc) {
 }
 	
 /* This is the scheduling hook for our plugin that is triggered by cron */
-add_action('symposium_notification_hook','symposium_notification_trigger_schedule');
 function symposium_notification_trigger_schedule() {
 	
 	global $wpdb;
@@ -371,7 +391,15 @@ function symposium_notification_trigger_schedule() {
 	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix."symposium_lang"));
 	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
 	
-	// Check to see if we should be sending a digest
+	// *************************************** First do daily jobs ***************************************
+	// Wipe Audit
+	$wpdb->query("DELETE FROM ".$wbdb->prefix."symposium_audit");
+	// Clear Chat Windows (tidy up anyone who didn't close a chat window)
+	$wpdb->query("DELETE FROM ".$wbdb->prefix."symposium_chat");
+	// Clean irrelevant notifications
+	$wpdb->query("DELETE FROM ".$wbdb->prefix."symposium_notifications WHERE notification_to = 0");
+	
+	// ******************************************* Daily Digest ******************************************
 	$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix . 'symposium_config'));
 	if ($send_summary == "on") {
 		// Calculate yesterday			
@@ -475,10 +503,10 @@ function symposium_notification_trigger_schedule() {
 // Redirect user after log in
 function symposium_redirect_login() {
 	global $wpdb;
-	$login_redirect = $wpdb->get_var($wpdb->prepare("SELECT login_redirect FROM ".$wpdb->prefix . 'symposium_config'));
+	$redirect = $wpdb->get_row($wpdb->prepare("SELECT enable_redirects, login_redirect, login_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
 
-	if ($login_redirect != "WordPress default") {
-		switch($login_redirect) {			
+	if ( ($redirect->enable_redirects == 'on') && ($redirect->login_redirect != "WordPress default") ) {
+		switch($redirect->login_redirect) {			
 			case "Profile Wall":
 				wp_redirect(symposium_get_url('profile'));	
 				exit;
@@ -492,11 +520,10 @@ function symposium_redirect_login() {
 				wp_redirect(symposium_get_url('mail'));	
 				exit;
 			case "Forum":
-				wp_redirect(symposium_get_url('mail'));	
+				wp_redirect(symposium_get_url('forum'));	
 				exit;
 			case "Custom":
-				$login_redirect_url = $wpdb->get_var($wpdb->prepare("SELECT login_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
-				wp_redirect($login_redirect_url);	
+				wp_redirect($redirect->login_redirect_url);	
 				exit;
 			default:
 				wp_redirect(symposium_get_url('profile'));	
@@ -504,23 +531,20 @@ function symposium_redirect_login() {
 		}
 	}
 }
-add_action('wp_login', 'symposium_redirect_login', 10);
 
 // Redirect user after logging out
 function symposium_redirect_logout() {
 	global $wpdb;
-	$logout_redirect = $wpdb->get_var($wpdb->prepare("SELECT logout_redirect FROM ".$wpdb->prefix . 'symposium_config'));
+	$redirect = $wpdb->get_var($wpdb->prepare("SELECT enable_redirects, logout_redirect, logout_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
 
-	if ($logout_redirect != "WordPress default") {
-		switch($logout_redirect) {			
+	if ( ($redirect->enable_redirects == 'on') && ($redirect->logout_redirect != "WordPress default") ) {
+		switch($redirect) {			
 			default:
-				$logout_redirect_url = $wpdb->get_var($wpdb->prepare("SELECT logout_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
-				wp_redirect($logout_redirect_url);	
+				wp_redirect($redirect->logout_redirect_url);	
 				exit;
 		}
 	}
 }
-add_action('wp_logout', 'symposium_redirect_logout', 10);
 
 // Update user activity on page load
 function symposium_lastactivity() {
@@ -528,11 +552,10 @@ function symposium_lastactivity() {
 	wp_get_current_user();
 			
 	if (is_user_logged_in()) {
-		update_symposium_meta($current_user->ID, 'last_activity', "NOW()");
+		update_symposium_meta($current_user->ID, 'last_activity', "'".date("Y-m-d H:i:s")."'");
 	}
 	
 }
-add_action('wp_footer', 'symposium_lastactivity', 10);
 
 // Hook to replace Smilies
 function symposium_smilies($buffer){ // $buffer contains entire page
@@ -541,8 +564,8 @@ function symposium_smilies($buffer){ // $buffer contains entire page
 	
 	if ($emoticons == "on") {
 		
-		$smileys = WP_PLUGIN_URL . '/wp-symposium/smilies/';
-		$smileys_dir = WP_PLUGIN_DIR . '/wp-symposium/smilies/';
+		$smileys = WP_PLUGIN_URL . '/wp-symposium/images/smilies/';
+		$smileys_dir = WP_PLUGIN_DIR . '/wp-symposium/images/smilies/';
 		// Smilies as classic text
 		$buffer = str_replace(":)", "<img src='".$smileys."smile.png' alt='emoticon'/>", $buffer);
 		$buffer = str_replace(":(", "<img src='".$smileys."sad.png' alt='emoticon'/>", $buffer);
@@ -590,6 +613,8 @@ function symposium_redirect($buffer){
 
 	$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix . 'symposium_config'));
 	
+	// check for forum redirect
+		
 	if ($seo == "on") {
 	
 		$thispage = get_permalink();
@@ -678,7 +703,8 @@ function symposium_admin_check() {
 		echo "<div class='updated'><p><strong>Important!</strong> Please set <a href='admin.php?page=symposium_options&view=settings'>WP Symposium Options</a> immediately (set to &apos;none&apos; if you are not using a particular plugin).</p></div>";
 	}
 }
-add_action('admin_notices', 'symposium_admin_check');
+
+/* ====================================================== PAGE LOADED FUNCTIONS ====================================================== */
 
 function symposium_replace(){
 	ob_start();
@@ -686,17 +712,16 @@ function symposium_replace(){
 	ob_start('symposium_smilies');
 	ob_start('symposium_redirect');
 }
-add_action('template_redirect', 'symposium_replace');
 
-/* ====================================================== AJAX FUNCTIONS ====================================================== */
+/* ====================================================== ADMIN FUNCTIONS ====================================================== */
 
 // Add Stylesheet
 function add_symposium_stylesheet() {
 	global $wpdb;
 
 	if (!is_admin()) {
-	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/symposium.css';
-	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/symposium.css';
+	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/css/symposium.css';
+	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/css/symposium.css';
 	    if ( file_exists($myStyleFile) ) {
 	        wp_register_style('symposium_StyleSheet', $myStyleUrl);
 	        wp_enqueue_style('symposium_StyleSheet');
@@ -709,12 +734,11 @@ function add_symposium_stylesheet() {
 	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix . 'symposium_config'));
 	if ($jquery=="on" && !is_admin()) {
 
-        wp_register_style('symposium_jquery-ui-css', WP_PLUGIN_URL.'/wp-symposium/jquery-ui.css');
+        wp_register_style('symposium_jquery-ui-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery-ui.css');
         wp_enqueue_style('symposium_jquery-ui-css');
 	    
 	}    
 }
-add_action('wp_print_styles', 'add_symposium_stylesheet');
 
 
 // Add jQuery and jQuery scripts
@@ -724,33 +748,80 @@ function js_init() {
 	// Only load if chosen
 	if ($jquery=="on" && !is_admin()) {
 		wp_enqueue_script('jquery');
-
-        wp_register_script('symposium_jquery-ui-js', WP_PLUGIN_URL.'/wp-symposium/jquery-ui.min.js');
-        wp_enqueue_script('symposium_jquery-ui-js');
-				
 	}
-
 }
-add_action('init', 'js_init');
 
 // Add jQuery and jQuery scripts
 function symposium_admin_init() {
 	if (is_admin()) {
 		// Color Picker
-		wp_register_script('symposium_iColorPicker', WP_PLUGIN_URL . '/wp-symposium/iColorPicker.js');
-	    	wp_enqueue_script('symposium_iColorPicker');
+		wp_register_script('symposium_iColorPicker', WP_PLUGIN_URL . '/wp-symposium/js/iColorPicker.js');
+	    wp_enqueue_script('symposium_iColorPicker');
 
 	}
 
 }
-add_action('init', 'symposium_admin_init');
 
+// Ann Symposium JS scripts to WordPress for use
+function symposium_scriptsAction()
+{
 
+	$symposium_plugin_url = WP_PLUGIN_URL.'/wp-symposium/';
+ 
+	global $wpdb, $current_user;
+	wp_get_current_user();
 
+	// Language
+	$get_language = symposium_get_language($current_user->ID);
 
-register_activation_hook(__FILE__,'symposium_activate');
-register_deactivation_hook(__FILE__, 'symposium_deactivate');
-register_uninstall_hook(__FILE__, 'symposium_uninstall');
+	// Config
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_config"));
+	
+	// Mail
+	$view = "sent";
+	if ( !isset($_GET['view']) || ($_GET['view'] == "in") ) { $view = "in"; } 
+	
+	// Forum
+	if (isset($_GET['show'])) {
+		$show_tid = $_GET['show']*1;
+	} else {
+		$show_tid = 0;
+		if (isset($_POST['tid'])) { $show_tid = $_POST['tid']*1; }
+	}
+	$cat_id = 0;
+	if (isset($_GET['cid'])) { $cat_id = $_GET['cid']; }
+	if (isset($_POST['cid'])) { $cat_id = $_POST['cid']; }
+
+	// Load jQuery UI
+	if (!is_admin()) {
+ 		wp_enqueue_script('jquery-ui-custom', '/wp-content/plugins/wp-symposium/js/jquery-ui-1.8.7.custom.min.js', array('jquery'));
+	}
+	
+	// Load Symposium JS
+ 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
+	
+	// Set JS variables
+	wp_localize_script( 'symposium', 'symposium', array(
+		'plugins' => WP_PLUGIN_URL, 
+		'plugin_url' => WP_PLUGIN_URL.'/wp-symposium/', 
+		'inactive' => $config->online,
+		'forum_url' => $config->forum_url,
+		'mail_url' => $config->mail_url,
+		'profile_url' => $config->profile_url,
+		'offline' => $config->offline,
+		'use_chat' => $config->use_chat,
+		'chat_polling' => $config->chat_polling,
+		'bar_polling' => $config->bar_polling,
+		'soundchat' => $config->soundchat,
+		'sound' => $config->sound,
+		'view' => $view,
+		'show_tid' => $show_tid,
+		'cat_id' => $cat_id,
+		'language_key' => $get_language['key'],
+		'current_user_id' => $current_user->ID
+	));
+	
+}
 
 
 ?>

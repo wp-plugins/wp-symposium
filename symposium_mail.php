@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.1.21
+Version: 0.1.22
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -27,7 +27,6 @@ License: GPL2
 
 function symposium_mail() {	
 	
-
 	global $wpdb, $current_user;
 	wp_get_current_user();
 
@@ -50,6 +49,9 @@ function symposium_mail() {
 	// Includes
 	include_once('symposium_styles.php');
 	include_once('symposium_functions.php');
+
+
+	/* ================================================================================================================== */
 
 	if (is_user_logged_in()) {
 
@@ -79,107 +81,13 @@ function symposium_mail() {
 			$compose_active = 'active';
 			$view = "compose";
 		} 
-		
-		// Javascript and jQuery
-		$js_script .= '<script type="text/javascript">
-	
-		    jQuery(document).ready(function() { 	
-
-				// Centre in screen
-				jQuery.fn.inmiddle = function () {
-			    	this.css("position","absolute");
-			    	this.css("top", ( jQuery(window).height() - this.height() ) / 2+jQuery(window).scrollTop() + "px");
-			    	this.css("left", ( jQuery(window).width() - this.width() ) / 2+jQuery(window).scrollLeft() + "px");
-				    return this;
-				}
-		    		
-		    	// Notices	    	
-				jQuery(".notice").hide();
-				jQuery(".pleasewait").hide();
-		
-				// Change between boxes
-		    	jQuery(".mail_tab").click(function() {
-					jQuery(".pleasewait").inmiddle().show();
-		    	});		
-		
-				// React to click on message list
-		    	jQuery(".mail_item").click(function() {
-					jQuery("#in_message").html(\'<img src="'.$plugin_dir."busy.gif".'" />\');
-					jQuery("#sent_message").html(\'<img src="'.$plugin_dir."busy.gif".'" />\');
-					var mail_mid = jQuery(this).attr("id");
-					jQuery.post("/wp-admin/admin-ajax.php", {
-						action:"getMailMessage", 
-						tray:"'.$view.'",
-						\'mid\':mail_mid
-						},
-					function(str)
-					{
-						var details = str.split("[split]");
-						if ("'.$view.'" == "in") {
-							if (details[1] > 0) {
-								jQuery("#'.$view.'count").html(\' (\'+details[1]+\')\');
-							} else {
-								jQuery("#'.$view.'count").html(\'\');
-							}
-							if (details[2] == "in") {
-								jQuery("#"+details[0]).removeClass("row");
-								jQuery("#"+details[0]).addClass("row_odd");
-							}
-						}
-						jQuery("#'.$view.'_message").html(details[3]);
-					});
-		    	});';		
-					
-				if ($view == 'compose') {
-					$js_script .= 'var recipients = [';
-					
-					// Autocomplete values for recipient list
-					$list = $wpdb->get_results("SELECT u.display_name, m.city, m.country FROM ".$wpdb->prefix."users u LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON u.ID = m.uid ORDER BY u.display_name");
-					if ($list) {
-						foreach ($list as $item) {
-							$js_script .= "{";
-								$js_script .= 'value: "'.$item->display_name.'",';
-								$js_script .= 'label: "'.$item->display_name.'",';
-								$js_script .= 'city: "'.$item->city.'",';
-								$js_script .= 'country: "'.$item->country.'"';
-							$js_script .= "},";
-						}
-					}		
-							    
-					$js_script .= ']
-	
-					jQuery( "input#compose_recipient" ).autocomplete({
-							minLength: 0,
-							source: recipients,
-							focus: function( event, ui ) {
-								jQuery( "input#compose_recipient" ).val( ui.item.value );
-								return false;
-							},
-							select: function( event, ui ) {
-								jQuery( "input#compose_recipient" ).val( ui.item.value );
-								return false;
-							}
-						})
-						.data( "autocomplete" )._renderItem = function( ul, item ) {
-							return jQuery( "<li></li>" )
-								.data( "item.autocomplete", item )
-								.append( "<a>" + item.label + "<div style=\'float:right\'>" + item.city + " " + item.country + "</div></a>" )
-								.appendTo( ul );
-						};';
-				}
 				
-		    $js_script .= '});
-	 
-		</script>
-		';
-		
-		$html .= $js_script;
-		
 		// Send a dummy email
 		if ($_GET['dummy'] != '') {
 			$rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_mail", array( 
 			'mail_from' => $current_user->ID, 
 			'mail_to' => $current_user->ID, 
+			'mail_sent' => date("Y-m-d H:i:s"), 
 			'mail_subject' => 'Welcome to WP Symposium Mail.',
 			'mail_message' => 'This is an example message, from me to myself. It is a dummy message used to test the mail system.'
 			 ) );
@@ -221,11 +129,10 @@ function symposium_mail() {
 					$rows_affected = $wpdb->prepare( $wpdb->insert( $wpdb->prefix . "symposium_mail", array( 
 					'mail_from' => $current_user->ID, 
 					'mail_to' => $recipient->ID, 
+					'mail_sent' => date("Y-m-d H:i:s"), 
 					'mail_subject' => $subject,
 					'mail_message' => $message
 					 ) ) );		
-
-					$mail_sent_result = 'Message sent to '.$recipient_name.'.';
 					
 					// Add notification
 					$msg = '<a href="'.symposium_get_url('mail').'">You have a new mail message from '.$current_user->display_name.'...</a>';
@@ -246,7 +153,11 @@ function symposium_mail() {
 						$body = str_replace("\\r\\n", "<br />", $body);
 						$body = str_replace("\\", "", $body);
 						
-						symposium_sendmail($recipient->user_email, 'nmm', $body);
+						if ( symposium_sendmail($recipient->user_email, 'nmm', $body) ) {
+							$mail_sent_result = 'Message sent to '.$recipient_name.'.';
+						} else {
+							$mail_sent_result = '<p><strong>Warning:</strong> There was a problem sending to '.$recipient_name.'.</p>';
+						}
 					}
 
 				}
@@ -445,8 +356,8 @@ function symposium_mail() {
 				$html .= '</div>'; 
 				 
 				// Notices
-				$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin_dir."busy.gif' /> ".$language->sav."</div>";
-				$html .= "<div class='pleasewait' style='z-index:999999;'><img src='".$plugin_dir."busy.gif' /> ".$language->pw."</div>";
+				$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin_dir."images/busy.gif' /> ".$language->sav."</div>";
+				$html .= "<div class='pleasewait' style='z-index:999999;'><img src='".$plugin_dir."images/busy.gif' /> ".$language->pw."</div>";
 		
 			$html .= '</div>'; // End of Wrapper
 		
@@ -461,120 +372,6 @@ function symposium_mail() {
 	return $html;
 
 }
-
-/* ====================================================== PHP FUNCTIONS ====================================================== */
-
-function get_message($mail_mid, $del, $language_key) {
-
-	global $wpdb, $current_user;
-	wp_get_current_user();
-
-	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
-
-	if ($del == "in") {
-		$mail = $wpdb->get_row("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->prefix."users u ON m.mail_from = u.ID WHERE mail_mid = ".$mail_mid);
-	} else {
-		$mail = $wpdb->get_row("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->prefix."users u ON m.mail_to = u.ID WHERE mail_mid = ".$mail_mid);
-	}
-	
-	$styles = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."symposium_config");
-	
-	$mail_url = $wpdb->get_var($wpdb->prepare("SELECT mail_url FROM ".$wpdb->prefix . 'symposium_config'));
-
-	$msg = "<div style='padding-bottom:10px; overflow:auto;'>";
-	
-		$msg .= "<div style='width:32px; margin-right: 5px'>";
-			$msg .= get_avatar($mail->mail_from, 32);
-		$msg .= "</div>";
-
-		// Delete
-		$msg .= "<div style='float:right'>";
-		$msg .= "<form action='' method='POST'>";
-		$msg .= "<input type='hidden' name='del".$del."' value=".$mail_mid." />";
-		$msg .= '<input type="submit" class="button" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.$language->d.'" />';
-		$msg .= "</form>";
-		$msg .= "</div>";
-		
-		// Reply
-		if ($del == "in") {
-			$msg .= "<div style='clear:both;margin-top:-16px;float:right'>";
-			$msg .= "<form action='' method='POST'>";
-			$msg .= "<input type='hidden' name='reply_recipient' value=".$mail->mail_from." />";
-			$msg .= "<input type='hidden' name='reply_mid' value=".$mail_mid." />";
-			$msg .= '<input type="submit" class="button" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.$language->reb.'" />';
-			$msg .= "</form>";
-			$msg .= "</div>";
-		}
-		
-		$msg .= "<span style='font-family:".$styles->headingsfamily."; font-size:".$styles->headingssize."px; font-weight:bold;'>".stripslashes($mail->mail_subject)."</span><br />";
-		if ($del == "in") {
-			$msg .= "From ";
-		} else {
-			$msg .= "To ";
-		}
-		$msg .= stripslashes($mail->display_name)." ".symposium_time_ago($mail->mail_sent, $language_key).".<br />";
-		
-	$msg .= "</div>";
-	
-	$msg .= "<div style='padding-top:10px'>";
-	$msg .= stripslashes(str_replace(chr(13), "<br />", $mail->mail_message));
-	$msg .= "</div>";
-	
-	// Mark as read
-	if ($del == "in") {
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_mail SET mail_read = 'on' WHERE mail_mid = ".$mail_mid." AND mail_to = ".$current_user->ID) );
-	}
-
-	$msg = symposium_smilies($msg);
-	
-	return $msg;
-	
-}
-/* ====================================================== AJAX FUNCTIONS ====================================================== */
-
-// AJAX function to get topic details for editing
-function getMailMessage(){
-
-	global $wpdb, $current_user;
-	wp_get_current_user();
-	
-	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . "symposium_config"));
-	
-	$mail_mid = $_POST['mid'];	
-	$tray = $_POST['tray'];	
-	
-	$message = get_message($mail_mid, $tray, $language_key);
-	
-	// Fetch new unread count
-	$unread = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail'." WHERE mail_to = ".$current_user->ID." AND mail_".$tray."_deleted != 'on' AND mail_read != 'on'");
-
-	echo $mail_mid."[split]".$unread."[split]".$tray."[split]".$message;
-	exit;
-}
-add_action('wp_ajax_getMailMessage', 'getMailMessage');
-
-/* ====================================================== ADMIN/ACTIVATE/DEACTIVATE ====================================================== */
-
-function symposium_mail_activate() {
-
-	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>5, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Mail activated.'));
-	} else {
-	    wp_die( __('Core plugin must be actived first.') );
-	}
-
-}
-
-function symposium_mail_deactivate() {
-
-	if (function_exists('symposium_audit')) {
-		symposium_audit(array ('code'=>6, 'type'=>'info', 'plugin'=>'forum', 'message'=>'Mail de-activated.'));
-	}
-
-}
-
-register_activation_hook(__FILE__,'symposium_mail_activate');
-register_deactivation_hook(__FILE__, 'symposium_mail_deactivate');
 
 /* ====================================================== SET SHORTCODE ====================================================== */
 add_shortcode('symposium-mail', 'symposium_mail');  

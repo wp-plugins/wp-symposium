@@ -15,6 +15,94 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+function symposium_pagination($total, $current, $url) {
+	
+	$r = '';
+
+	$r .= '<div class="tablenav"><div class="tablenav-pages">';
+	for ($i = 0; $i < $total; $i++) {
+		if ($i == $current) {
+            $r .= "<b>".($i+1)."</b> ";
+        } else {
+        	if ( ($i == 0) || ($i == $total-1) || ($i+1 == $current) || ($i+1 == $current+2) ) {
+	            $r .= " <a href='".$url.($i+1)."'>".($i+1)."</a> ";
+        	} else {
+        		$r .= ".";
+        	}
+        }
+	}
+	$r .= '</div></div>';
+	
+	return $r;
+}
+
+function get_message($mail_mid, $del, $language_key) {
+
+	global $wpdb, $current_user;
+	wp_get_current_user();
+
+	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
+
+	if ($del == "in") {
+		$mail = $wpdb->get_row("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->prefix."users u ON m.mail_from = u.ID WHERE mail_mid = ".$mail_mid);
+	} else {
+		$mail = $wpdb->get_row("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->prefix."users u ON m.mail_to = u.ID WHERE mail_mid = ".$mail_mid);
+	}
+	
+	$styles = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."symposium_config");
+	
+	$mail_url = $wpdb->get_var($wpdb->prepare("SELECT mail_url FROM ".$wpdb->prefix . 'symposium_config'));
+
+	$msg = "<div style='padding-bottom:10px; overflow:auto;'>";
+	
+		$msg .= "<div style='width:44px; margin-right: 5px'>";
+			$msg .= get_avatar($mail->mail_from, 44);
+		$msg .= "</div>";
+
+		// Delete
+		$msg .= "<div style='float:right'>";
+		$msg .= "<form action='' method='POST'>";
+		$msg .= "<input type='hidden' name='del".$del."' value=".$mail_mid." />";
+		$msg .= '<input type="submit" class="button" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.$language->d.'" />';
+		$msg .= "</form>";
+		$msg .= "</div>";
+		
+		// Reply
+		if ($del == "in") {
+			$msg .= "<div style='clear:both;margin-top:-16px;float:right'>";
+			$msg .= "<form action='' method='POST'>";
+			$msg .= "<input type='hidden' name='reply_recipient' value=".$mail->mail_from." />";
+			$msg .= "<input type='hidden' name='reply_mid' value=".$mail_mid." />";
+			$msg .= '<input type="submit" class="button" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.$language->reb.'" />';
+			$msg .= "</form>";
+			$msg .= "</div>";
+		}
+		
+		$msg .= "<span style='font-family:".$styles->headingsfamily."; font-size:".$styles->headingssize."px; font-weight:bold;'>".stripslashes($mail->mail_subject)."</span><br />";
+		if ($del == "in") {
+			$msg .= "From ";
+		} else {
+			$msg .= "To ";
+		}
+		$msg .= stripslashes($mail->display_name)." ".symposium_time_ago($mail->mail_sent, $language_key).".<br />";
+		
+	$msg .= "</div>";
+	
+	$msg .= "<div style='padding-top:10px'>";
+	$msg .= stripslashes(str_replace(chr(13), "<br />", $mail->mail_message));
+	$msg .= "</div>";
+	
+	// Mark as read
+	if ($del == "in") {
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_mail SET mail_read = 'on' WHERE mail_mid = ".$mail_mid." AND mail_to = ".$current_user->ID) );
+	}
+
+	$msg = symposium_smilies($msg);
+	
+	return $msg;
+	
+}
+
 function symposium_pending_friendship($uid) {
    	global $wpdb, $current_user;
 	wp_get_current_user();
@@ -63,7 +151,7 @@ function symposium_get_language($uid) {
 
 	$allow_personal_settings = $wpdb->get_var($wpdb->prepare("SELECT allow_personal_settings FROM ".$wpdb->prefix.'symposium_config'));
 
-	if ($allow_personal_settings == 'on') {
+	if ( ($allow_personal_settings == 'on') && (function_exists('symposium_profile')) ) {
 		$language_key = get_symposium_meta($uid, 'language');
 	} else {
 		$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . "symposium_config"));
@@ -120,80 +208,19 @@ function symposium_alter_table($table, $action, $field, $format, $null, $default
 	
 	if ($action == "ADD") {
 		if ($ok == 'exists' || $ok == 'same') {
-			symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Skipped '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default.' as field already exists.')));
+			// Do Nothing
 		} else {
-		  	if ($wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$null." ".$default) ) {
-				symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default)));
-				$success = true;
-		  	} else {
-				symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default." ".$ok)));
-		  	}
+		  	$wpdb->query("ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$null." ".$default);
 		}			
 	}
 
 	if ($action == "MODIFY COLUMN") {
 		$sql = "ALTER TABLE ".$wpdb->prefix."symposium_".$table." ".$action." ".$field." ".$format." ".$null." ".$default;
-	  	if ($wpdb->query($sql) ) {
-			symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Succeeded to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default)));
-			$success = true;
-	  	} else {
-			// check to see if existing field matches new type;
-			$fields = mysql_query("SHOW FIELDS FROM ".$wpdb->prefix."symposium_".$table);
-			$found = false;
-			while ($row = mysql_fetch_row($fields)) {
-				if ($row[0] == $field) {
-					$found = true;
-					if ($row[1] != $format) {
-						symposium_audit(array ('code'=>21, 'type'=>'error', 'plugin'=>'core', 'message'=> 'Failed to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default).' ('.$sql.'). Field type is still wrong.'));
-					} else {
-						symposium_audit(array ('code'=>21, 'type'=>'system', 'plugin'=>'core', 'message'=> 'Failed, but ok, to '.strtolower($action.' field '.$field.' in table '.$table.' to '.$format.' '.$null.' '.$default).' ('.$sql.') as type is already correct ('.$format.').'));
-					}
-				}
-			}
-	  	}
+	  	$wpdb->query($sql);
 	}
 	
 	return $success;
 
-}
-
-// Add audit
-function symposium_audit($array) {
-
-   	global $wpdb, $current_user;
-	wp_get_current_user();
-
-    $rows_affected = $wpdb->insert( $wpdb->prefix.'symposium_audit', array( 
-    	'code' => $array[code], 
-		'type' => $array[type],
-		'plugin' => $array[plugin],
-		'uid' => $current_user->ID,
-		'cid' => $array[cid]+1-1,
-		'tid' => $array[tid]+1-1,
-		'gid' => $array[gid]+1-1,
-     	'message' => $array[message]
-   		) );
-   		
-   	if (!$rows_affected) {
-   		    		
-	$rows_affected = $wpdb->insert( $wpdb->prefix.'symposium_audit', array( 
-    	'code' => 13, 
-		'type' => 'error',
-		'plugin' => 'core',
-		'uid' => $current_user->ID,
-		'cid' => 0,
-		'tid' => 0,
-		'gid' => 0,
-     	'message' => 'Failed to log audit item. Code:'.$array[code].' Type:'.$array[type].' Plugin:'.$array['plugin']
-     	) );
-   	
-   	}
-   	
-    if ($array[debug] == 1) {
-    	echo $wpdb->last_query;
-    }
-    	
-    return $rows_affected;
 }
 
 // Checks is user meta exists, and if not creates it
@@ -260,6 +287,44 @@ function get_symposium_meta($uid, $meta) {
 	}
 }
 
+// Get user meta data row
+function get_symposium_meta_row($uid) {
+   	global $wpdb;
+
+	$row = '';
+	
+	// check if exists, and create record if not
+	if ($row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
+	} else {
+		// get system default language
+		$sys_lang = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix.'symposium_config'));
+		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 
+			'uid' => $uid, 
+			'language' => $sys_lang,
+			'sound' => 'chime.mp3',
+			'soundchat' => 'tap.mp3',
+			'bar_position' => 'bottom',
+			'notify_new_messages' => 'on',
+			'timezone' => 0,
+			'share' => 'Friends only',
+			'visible' => 'on',
+			'wall_share' => 'Friends only'
+			 ) );
+			
+	}
+	
+	if ($row == '') {
+		if ($row = $wpdb->get_row($wpdb->prepare("SELECT ".$meta." FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid)) ) {
+			return $row;
+		} else {
+			return false; 	
+		}
+	} else {
+		return $row;
+	}
+	
+}
+
 // Display array contents (for de-bugging only)
 function symposium_displayArrayContentFunction($arrayname,$tab="&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp",$indent=0) {
  $curtab ="";
@@ -285,8 +350,6 @@ function symposium_add_notification($msg, $recipient) {
 		'notification_to' => $recipient, 
 		'notification_message' => $msg
 	 	) ) ) {
-	 } else {
-		symposium_audit(array ('code'=>23, 'type'=>'error', 'plugin'=>'mail', 'message'=>'Failed to add notification.'));	 	
 	 }
 }
 
@@ -640,6 +703,12 @@ function symposium_sendmail($email, $code, $msg)
 	        break;
 	    case "fma":
 			$subject = $language->fma;	
+	        break;
+	    case "nwp":
+			$subject = "New Wall Post";	
+	        break;
+	    case "nwr":
+			$subject = "New Wall Post Reply";	
 	        break;
 	    default:
 	    	$subject = $code;
