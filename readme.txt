@@ -293,10 +293,12 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 = 0.1.23 =
 
-* New Plugin: Site Registration (note: doesn't require email verification)
+* New Plugin: Site Registration
 * Notification Bar: Custom Registration link
-* Core: Improved the pagination function
+* Members Directory: Highlights friends, shows country and latest status/wall post
 * Forum: Fixed 'Back to Forum' incorrectly showing on top level
+* Forum: Don't get sent an email on your own posts/replies
+* Core: Improved the pagination function
 
 = 0.1.22 =
 

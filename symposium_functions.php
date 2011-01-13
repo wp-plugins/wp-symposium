@@ -156,7 +156,7 @@ function symposium_get_language($uid) {
 
 	$allow_personal_settings = $wpdb->get_var($wpdb->prepare("SELECT allow_personal_settings FROM ".$wpdb->prefix.'symposium_config'));
 
-	if ( ($allow_personal_settings == 'on') && (function_exists('symposium_profile')) ) {
+	if ( function_exists('symposium_profile') ) {
 		$language_key = get_symposium_meta($uid, 'language');
 	} else {
 		$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . "symposium_config"));
@@ -712,6 +712,9 @@ function symposium_sendmail($email, $code, $msg)
 	    case "fma":
 			$subject = $language->fma;	
 	        break;
+	    case "nm":
+			$subject = "New Member";	
+	        break;
 	    case "nwp":
 			$subject = "New Wall Post";	
 	        break;
@@ -733,7 +736,7 @@ function symposium_sendmail($email, $code, $msg)
 	$body .= $msg."<br /><hr />";
 	$body .= "<div style='width:430px;font-size:10px;border:0px solid #eee;text-align:left;float:left;'>".$footer."</div>";
 	// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-	$body .= "<div style='width:370px;font-size:10px;border:0px solid #eee;text-align:right;float:right;'>Forum powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress</div>";
+	$body .= "<div style='width:370px;font-size:10px;border:0px solid #eee;text-align:right;float:right;'>Powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress</div>";
 	$body .= "</div>";
 
 	// To send HTML mail, the Content-type header must be set

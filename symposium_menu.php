@@ -368,7 +368,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'enable_redirects')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'enable_password')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'register_use_sum')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'register_use_captcha')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_wp_register')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'custom_register_url')) { $status = "X"; }
 
@@ -1557,10 +1556,8 @@ function symposium_plugin_options() {
 	    // See if the user has posted registration settings
 	    if( $_POST[ 'symposium_update' ] == 'R' ) {
 	        $register_use_sum = $_POST[ 'register_use_sum' ];
-	        $register_use_captcha = $_POST[ 'register_use_captcha' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_use_sum = '".$register_use_sum."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_use_captcha = '".$register_use_captcha."'") );					
 									
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>Registration options saved.</p></div>";
@@ -2347,12 +2344,11 @@ function symposium_plugin_options() {
 
 				    // Get values from database  
 					$register_use_sum = $config->register_use_sum;
-					$register_use_captcha = $config->register_use_captcha;
 					?>
 						
 					<form method="post" action=""> 
 					<input type="hidden" name="symposium_update" value="R">
-				
+			
 					<table class="form-table"> 
 				
 					<tr valign="top"> 
@@ -2362,19 +2358,13 @@ function symposium_plugin_options() {
 					<span class="description">A simple addition question to combat spam</span></td> 
 					</tr> 
 
-					<tr valign="top"> 
-					<th scope="row"><label for="register_use_captcha">Use CAPTCHA</label></th>
-					<td>
-					<input type="checkbox" name="register_use_captcha" id="register_use_captcha" <?php if ($register_use_captcha == "on") { echo "CHECKED"; } ?>/>
-					<span class="description">An image based anti-spam technique</span></td> 
-					</tr> 
-
 					</table>
 					 					
 					<p class="submit">
 					<input type="submit" name="Submit" class="button-primary" value="Save Changes" />
 					</p>
 					</form>
+					
 
 					<?php
 									  

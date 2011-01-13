@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile] on any WordPress page to display forum.
-Version: 0.1.23
+Version: 0.1.24
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -675,9 +675,6 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 				$html .= "<div id='profile_details' style='margin-left: 215px;overflow:auto;'>";
 
 					if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
-
-
-					}
 	
 						$city = $meta->city;
 						$country = $meta->country;
@@ -691,7 +688,11 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 							
 						}
 						
-						$html .= "<h1 style='clear:none'>".$display_name."</h1>";
+					}
+						
+					$html .= "<h1 style='clear:none'>".$display_name."</h1>";
+
+					if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
 
 						$html .= "<p>";
 						if ($city != '') { $html .= $city; }
@@ -724,53 +725,55 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 						}
 						$html .= "</p>";
 						
-						if ( is_user_logged_in() ) {
+					}
+					
+					if ( is_user_logged_in() ) {
 
-							if ($uid1 == $uid2) {
+						if ($uid1 == $uid2) {
 
-								// Status Input
-								$html .= '<form method="post" action="'.$dbpage.'">';
-								$html .= '<input type="hidden" name="symposium_update" value="S">';
-								$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
-								$html .= '<input type="text" name="status" class="input-field" value="What\'s on your mind?" onfocus="this.value = \'\';" style="width:300px" />';
-								$html .= '&nbsp;<input type="submit" style="width:75px" class="button" value="Update" /> ';
-								$html .= '</form>';
+							// Status Input
+							$html .= '<form method="post" action="'.$dbpage.'">';
+							$html .= '<input type="hidden" name="symposium_update" value="S">';
+							$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
+							$html .= '<input type="text" name="status" class="input-field" value="What\'s on your mind?" onfocus="this.value = \'\';" style="width:300px" />';
+							$html .= '&nbsp;<input type="submit" style="width:75px" class="button" value="Update" /> ';
+							$html .= '</form>';
+							
+						} else {
+													
+							// Buttons									
+							if (symposium_friend_of($uid1)) {
+		
+								// A friend
+		
+								// Send mail
+								$html .='<input type="button" value="Send Mail" class="button" onclick="document.location = \''.$url.'?view=compose&to='.$uid1.'\';">';
 								
 							} else {
-														
-								// Buttons									
-								if (symposium_friend_of($uid1)) {
-			
-									// A friend
-			
-									// Send mail
-									$html .='<input type="button" value="Send Mail" class="button" onclick="document.location = \''.$url.'?view=compose&to='.$uid1.'\';">';
-									
-								} else {
-									
-									if (symposium_pending_friendship($uid1)) {
-										// Pending
-										$html .= 'Friend request sent...<br />';
-										$html .= '<form method="post" action="'.$dbpage.'">';
-										$html .= '<input type="hidden" name="symposium_update" value="C">';
-										$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
-										$html .= '<input type="hidden" name="friend_to" value="'.$_GET['uid'].'">';
-										$html .= '<input type="submit" name="cancelfriend" class="button" value="Cancel" /> ';
-										$html .= '</form>';
-									} else {							
-										// Not a friend
-										$html .= '<strong>Add as a Friend...</strong><br />';
-										$html .= '<form method="post" action="'.$dbpage.'">';
-										$html .= '<input type="hidden" name="symposium_update" value="F">';
-										$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
-										$html .= '<input type="hidden" name="friend_to" value="'.$_GET['uid'].'">';
-										$html .= '<input type="text" name="friendmessage" class="input-field" style="width:200px" onclick="this.value=\'\'" value="Add a personal message...">';
-										$html .= '&nbsp;&nbsp;<input type="submit" name="addasfriend" class="button" value="Add as Friend" /> ';
-										$html .= '</form>';
-									}
+								
+								if (symposium_pending_friendship($uid1)) {
+									// Pending
+									$html .= 'Friend request sent...<br />';
+									$html .= '<form method="post" action="'.$dbpage.'">';
+									$html .= '<input type="hidden" name="symposium_update" value="C">';
+									$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
+									$html .= '<input type="hidden" name="friend_to" value="'.$_GET['uid'].'">';
+									$html .= '<input type="submit" name="cancelfriend" class="button" value="Cancel" /> ';
+									$html .= '</form>';
+								} else {							
+									// Not a friend
+									$html .= '<strong>Add as a Friend...</strong><br />';
+									$html .= '<form method="post" action="'.$dbpage.'">';
+									$html .= '<input type="hidden" name="symposium_update" value="F">';
+									$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
+									$html .= '<input type="hidden" name="friend_to" value="'.$_GET['uid'].'">';
+									$html .= '<input type="text" name="friendmessage" class="input-field" style="width:200px" onclick="this.value=\'\'" value="Add a personal message...">';
+									$html .= '&nbsp;&nbsp;<input type="submit" name="addasfriend" class="button" value="Add as Friend" /> ';
+									$html .= '</form>';
 								}
 							}
-						}
+						}						
+					}
 	
 				$html .= "</div>";
 					
@@ -808,7 +811,9 @@ function symposium_profile_body($uid1, $uid2, $reply_color) {
 		$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
 
 		$privacy = $meta->wall_share;		
-		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
+		$is_friend = symposium_friend_of($uid1);
+		
+		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
 		
 			$html .= "<div id='profile_left_column'>";
 
@@ -868,7 +873,7 @@ function symposium_profile_body($uid1, $uid2, $reply_color) {
 				
 				// Wall
 				
-				if ( ($uid1 != $uid2) && (is_user_logged_in()) ) {
+				if ( ($uid1 != $uid2) && (is_user_logged_in()) && $is_friend) {
 					// Post Comment Input
 					$html .= '<form method="post" action="'.$dbpage.'">';
 					$html .= '<input type="hidden" name="symposium_update" value="W">';
@@ -878,7 +883,7 @@ function symposium_profile_body($uid1, $uid2, $reply_color) {
 					$html .= '</form>';
 				}
 
-				$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC";
+				$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,10";
 				
 				$comments = $wpdb->get_results($sql);	
 				if ($comments) {
@@ -930,7 +935,7 @@ function symposium_profile_body($uid1, $uid2, $reply_color) {
 									}
 
 									// Reply field
-									if ( is_user_logged_in() ) {
+									if ( is_user_logged_in() && $is_friend) {
 										$html .= '<form method="post" action="'.$dbpage.'">';
 										$html .= '<input type="hidden" name="symposium_update" value="WC">';
 										$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';

@@ -2,8 +2,8 @@
 /*
 Plugin Name: WP Symposium Registration
 Plugin URI: http://www.wpsymposium.com
-Description: NOTE READY FOR USE YET! Registration component for the Symposium suite of plug-ins. Put [symposium-register] on any WordPress page.
-Version: 0.1.23
+Description: Registration component for the Symposium suite of plug-ins. Put [symposium-register] on any WordPress page.
+Version: 0.1.24
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -53,7 +53,7 @@ function symposium_register() {
 		$display_name = $_GET['display_name'];
 
 		$html .= '<form id="symposium_registration" onsubmit="return validate_form(this)" method="post" action="'.$plugin.'/symposium_register_db.php"> ';
-		
+			
 		$html .= '<div style="margin-left:0px">';
 
 			$html .= '<div id="new-topic-subject-label" class="new-topic-subject label">A username</div>';
@@ -72,11 +72,28 @@ function symposium_register() {
 			$html .= '<input type="text" id="pwd" name="pwd" class="new-topic-subject-input" style="width:96%" value="" /></div>';
 			$html .= '<div id="password-warning" class="warning hidden">Please enter a password</div>';
 	
+			$sum1 = rand(1,5);
+			$sum2 = rand(1,4);
+			$result = $sum1 + $sum2;
+			$use_sum = $wpdb->get_var($wpdb->prepare("SELECT register_use_sum FROM ".$wpdb->prefix."symposium_config"));
+			if ( $use_sum == "on" ) {
+				$html .= '<div style="float:left; width: 400px;">What is the answer?<br />';
+				$html .= '<input type="text" id="sum1" name="sum1" class="new-topic-subject-input" style="width:30px; text-align:center;" value="'.$sum1.'"/> + ';
+				$html .= '<input type="text" id="sum2" name="sum2" class="new-topic-subject-input" style="width:30px; text-align:center;" value="'.$sum2.'"/> = ';
+				$html .= '<input type="text" id="result" name="result" class="new-topic-subject-input" style="width:30px; text-align:center;" /></div>';
+				$html .= '<div id="sum-warning" class="warning hidden" style="float:left; width: 400px;">Please enter the result of the sum</div>';
+			} else {
+				$html .= '<input type="hidden" id="sum1" name="sum1" value="'.$sum1.'"/>';
+				$html .= '<input type="hidden" id="sum2" name="sum2" value="'.$sum2.'"/>';
+				$html .= '<input type="hidden" id="result" name="result" value="'.$result.'"/>';
+			}
+	
 			$html .= '<input type="text" id="hdn" name="hdn" />';
 			
 		$html .= '</div>';
 
-		$html .= '<div style="padding:0px;margin-left:5px">';
+		$html .= '<div style="padding:0px;float:right; margin-left:5px;  margin-right:5px">';
+		if ( $use_sum == "on" ) { $html .= "<br />"; }
 		$html .= '<input type="submit" class="button" style="float: left; height:46px;" value="Register" />';
 		$html .= '</div>';
 

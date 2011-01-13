@@ -141,12 +141,12 @@ if (is_user_logged_in()) {
 					// Email people who want to know	
 					$query = $wpdb->get_results("
 						SELECT user_email
-						FROM ".$users." RIGHT JOIN ".$subs." ON ".$subs.".uid = ".$users.".ID 
-						WHERE tid = 0 AND cid = ".$cat_id);
+						FROM ".$users." u RIGHT JOIN ".$subs." ON ".$subs.".uid = u.ID 
+						WHERE tid = 0 AND u.ID != ".$current_user->ID." AND cid = ".$cat_id);
 						
 					if ($query) {					
 						foreach ($query as $user) {
-							symposium_sendmail($user->user_email, "nft", $body);						
+							symposium_sendmail($user->user_email, "nft", $body.$wpdb->last_query);						
 						}						
 					}
 				} else {
@@ -247,8 +247,8 @@ if (is_user_logged_in()) {
 					if ($topic_approved == "on") {
 						$query = $wpdb->get_results("
 							SELECT user_email
-							FROM ".$users." RIGHT JOIN ".$subs." ON ".$subs.".uid = ".$users.".ID 
-							WHERE tid = ".$tid);
+							FROM ".$users." u RIGHT JOIN ".$subs." ON ".$subs.".uid = u.ID 
+							WHERE u.ID != ".$current_user->ID." AND tid = ".$tid);
 							
 						if ($query) {						
 							foreach ($query as $user) {		

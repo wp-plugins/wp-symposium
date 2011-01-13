@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Members Directory
 Plugin URI: http://www.wpsymposium.com
 Description: Directory component for the Symposium suite of plug-ins. Put [symposium-members] on any WordPress page.
-Version: 0.1.23
+Version: 0.1.24
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -58,10 +58,6 @@ function symposium_members() {
 
 		$html .= '<div id="symposium_members"><img src="'.$plugin.'/images/busy.gif" /></div>';
 		
-		// Notices
-		$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin_dir."images/busy.gif' /> ".$language->sav."</div>";
-		$html .= "<div class='pleasewait' style='z-index:999999;'><img src='".$plugin_dir."images/busy.gif' /> ".$language->pw."</div>";
-
 	$html .= '</div>'; // End of Wrapper
 	
 	// Send HTML

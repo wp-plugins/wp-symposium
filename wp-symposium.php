@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.23
+Version: 0.1.24
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -118,8 +118,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.23";
-	$symposium_db_ver = 23;
+	$symposium_version = "0.1.24";
+	$symposium_db_ver = 24;
 	
 	// Code version *************************************************************************************
 	$ver = get_option("symposium_version");
@@ -183,7 +183,6 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "use_wp_register", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "custom_register_url", "varchar(512)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "register_use_sum", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "register_use_captcha", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "register_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	
 	// Modify Mail table
@@ -703,8 +702,8 @@ function symposium_unread($buffer){
 
 function symposium_admin_check() {
 	global $wpdb;
-	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
-	if ( ($urls->forum_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
+	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, register_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
+	if ( ($urls->forum_url == "Important: Please update!") || ($urls->register_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
 		echo "<div class='updated'><p><strong>Important!</strong> Please set <a href='admin.php?page=symposium_options&view=settings'>WP Symposium Options</a> immediately (set to &apos;none&apos; if you are not using a particular plugin).</p></div>";
 	}
 }
