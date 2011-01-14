@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Registration
 Plugin URI: http://www.wpsymposium.com
 Description: Registration component for the Symposium suite of plug-ins. Put [symposium-register] on any WordPress page.
-Version: 0.1.24
+Version: 0.1.25
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -71,6 +71,10 @@ function symposium_register() {
 			$html .= '<div>A password<br />';
 			$html .= '<input type="text" id="pwd" name="pwd" class="new-topic-subject-input" style="width:96%" value="" /></div>';
 			$html .= '<div id="password-warning" class="warning hidden">Please enter a password</div>';
+	
+			$html .= '<div>Re-enter the password<br />';
+			$html .= '<input type="text" id="pwd2" name="pwd2" class="new-topic-subject-input" style="width:96%" value="" /></div>';
+			$html .= '<div id="password2-warning" class="warning hidden" style="margin-top:20px">You entered different passwords</div>';
 	
 			$sum1 = rand(1,5);
 			$sum2 = rand(1,4);

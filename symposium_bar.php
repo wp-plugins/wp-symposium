@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.24
+Version: 0.1.25
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -31,6 +31,9 @@ License: GPL2
 function add_notification_bar()  
 {  
 	if (!is_admin()) {
+
+		//$plugin_path = dirname(plugin_basename(__FILE__)) . '/language';
+		//load_plugin_textdomain( 'wp-symposium', false, $plugin_path );
 		
 	   	global $wpdb, $current_user;
 		wp_get_current_user();
@@ -60,7 +63,6 @@ function add_notification_bar()
 			$use_wp_login = $config->use_wp_login;
 			$use_wp_register = $config->use_wp_register;
 			$custom_login_url = $config->custom_login_url;
-			$custom_logout_url = $config->custom_logout_url;
 			$custom_register_url = $config->custom_register_url;
 			$inactive = $config->online;
 			$offline = $config->offline;
@@ -322,12 +324,13 @@ function add_notification_bar()
 					<?php
 					if (is_user_logged_in()) {
 
-						
-						echo 'Logged in as ';
+
+						//_e('Logged in as', 'wp-symposium');
+						echo "Logged in as";					    
 						if ($use_wp_profile == 'on') {
-							echo '<a href="/wp-admin/profile.php">'.$current_user->user_login.'</a>';
+							echo ' <a href="/wp-admin/profile.php">'.$current_user->user_login.'</a>';
 						} else {
-							echo '<a href="'.symposium_get_url("profile").'">'.$current_user->user_login.'</a>';
+							echo ' <a href="'.symposium_get_url("profile").'">'.$current_user->user_login.'</a>';
 						}
 						
 						if (current_user_can('activate_plugins')) {
@@ -338,7 +341,7 @@ function add_notification_bar()
 						if ($use_wp_login == "on") {
 							wp_loginout( '/index.php' );
 						} else {
-							echo '<a href="'.$custom_logout_url.'">Log out</a>';
+							echo '<a href="'.$custom_login_url.'">'.__('Log out', 'wp-symposium').'</a>';
 						}
 						echo '.&nbsp;';
 													

@@ -340,11 +340,14 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'headingsfamily')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'headingssize')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'jquery')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'jqueryui')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'emoticons')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'seo')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'moderation')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'mail_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'register_url')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'members_url')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'login_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'bar_position')) { $status = "X"; }
@@ -358,7 +361,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'use_wp_profile')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_wp_login')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'custom_login_url')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'custom_logout_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'visitors')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'wp_alignment')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'login_redirect')) { $status = "X"; }
@@ -679,7 +681,7 @@ function symposium_plugin_debug() {
 		  		echo $db_ver."<br />";
 		  	}
 	
-			if ( ($config->forum_url == "Important: Please update!") || ($config->register_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
+			if ( ($config->forum_url == "Important: Please update!") || ($config->login_url == "Important: Please update!") || ($config->members_url == "Important: Please update!") || ($config->register_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
 				echo $fail."You must update your plugin URLs on the <a href='admin.php?page=symposium_options&view=settings'>options page</a>.".$fail2;
 			} else {
 			  	echo "According to the <a href='admin.php?page=symposium_options&view=settings'>options page</a>:<br />";
@@ -692,8 +694,14 @@ function symposium_plugin_debug() {
 			  	if (function_exists('symposium_profile')) { 
 			  		echo "&nbsp;&middot;&nbsp;the profile page is at <a href='".$config->profile_url."'>$config->profile_url</a><br />";
 			  	}
+			  	if (function_exists('symposium_members')) { 
+			  		echo "&nbsp;&middot;&nbsp;the members directory page is at <a href='".$config->members_url."'>$config->members_url</a><br />";
+			  	}
 			  	if (function_exists('symposium_register')) { 
 			  		echo "&nbsp;&middot;&nbsp;the register page is at <a href='".$config->register_url."'>$config->register_url</a><br />";
+			  	}
+			  	if (function_exists('symposium_login')) { 
+			  		echo "&nbsp;&middot;&nbsp;the login page is at <a href='".$config->login_url."'>$config->login_url</a><br />";
 			  	}
 			  	echo "Click the links above to check.";
 			}
@@ -1478,7 +1486,6 @@ function symposium_plugin_options() {
 	        $use_wp_profile = $_POST[ 'use_wp_profile' ];
 	        $use_wp_login = $_POST[ 'use_wp_login' ];
 	        $custom_login_url = $_POST[ 'custom_login_url' ];
-	        $custom_logout_url = $_POST[ 'custom_logout_url' ];
 	        $visitors = $_POST[ 'visitors' ];
 	        $use_wp_register = $_POST[ 'use_wp_register' ];
 	        $custom_register_url = $_POST[ 'custom_register_url' ];
@@ -1492,7 +1499,6 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_profile = '".$use_wp_profile."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_login = '".$use_wp_login."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_login_url = '".$custom_login_url."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_logout_url = '".$custom_logout_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET visitors = '".$visitors."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_register = '".$use_wp_register."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_register_url = '".$custom_register_url."'") );					
@@ -1567,6 +1573,7 @@ function symposium_plugin_options() {
 	    // See if the user has posted general settings
 	    if( $_POST[ 'symposium_update' ] == 'S' ) {
 	        $jquery = $_POST[ 'jquery' ];
+	        $jqueryui = $_POST[ 'jqueryui' ];
 	        $seo = $_POST[ 'seo' ];
 	        $emoticons = $_POST[ 'emoticons' ];
 	        $wp_width = str_replace('%', 'pc', ($_POST[ 'wp_width' ]));
@@ -1574,6 +1581,8 @@ function symposium_plugin_options() {
 	        $forum_url = $_POST[ 'forum_url' ];
 	        $mail_url = $_POST[ 'mail_url' ];
 	        $register_url = $_POST[ 'register_url' ];
+	        $members_url = $_POST[ 'members_url' ];
+	        $login_url = $_POST[ 'login_url' ];
 	        $profile_url = $_POST[ 'profile_url' ];
 	        $wp_alignment = $_POST[ 'wp_alignment' ];
 	        $login_redirect = $_POST[ 'login_redirect' ];
@@ -1583,6 +1592,7 @@ function symposium_plugin_options() {
 	        $enable_redirects = $_POST[ 'enable_redirects' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET jquery = '".$jquery."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET jqueryui = '".$jqueryui."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET seo = '".$seo."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET emoticons = '".$emoticons."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_width = '".$wp_width."'") );					
@@ -1590,6 +1600,8 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET mail_url = '".$mail_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET register_url = '".$register_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET members_url = '".$members_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_url = '".$login_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET profile_url = '".$profile_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_alignment = '".$wp_alignment."'") );				
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_redirect = '".$login_redirect."'") );					
@@ -1835,7 +1847,8 @@ function symposium_plugin_options() {
 					<li>Member Profile<?php if (function_exists('symposium_profile')) { echo ' (activated)'; } ?></li>
 					<li>Notification Bar<?php if (function_exists('add_notification_bar')) { echo ' (activated)'; } ?></li>
 					<li>Members Directory<?php if (function_exists('symposium_members')) { echo ' (activated) Note: no options tab used'; } ?></li>
-					<li>Registration<?php if (function_exists('symposium_register')) { echo ' (activated)'; } ?></li>
+					<li>Login<?php if (function_exists('symposium_login')) { echo ' (activated)'; } ?> <img src="../wp-content/plugins/wp-symposium/images/new.png" alt="New!" /></li>
+					<li>Registration<?php if (function_exists('symposium_register')) { echo ' (activated)'; } ?> <img src="../wp-content/plugins/wp-symposium/images/new.png" alt="New!" /></li>
 					</ol>
 					
 					<p>
@@ -1877,7 +1890,6 @@ function symposium_plugin_options() {
 					$use_wp_profile = $config->use_wp_profile;
 					$use_wp_login = $config->use_wp_login;
 					$custom_login_url = $config->custom_login_url;
-					$custom_logout_url = $config->custom_logout_url;
 					$visitors = $config->visitors;
 					$use_wp_register = $config->use_wp_register;
 					$custom_register_url = $config->custom_register_url;
@@ -1889,7 +1901,7 @@ function symposium_plugin_options() {
 					<table class="form-table">
 
 					<tr valign="top"> 
-					<th scope="row"><label for="visitors">Show to visitors <img src="../wp-content/plugins/wp-symposium/images/new.png" alt="New!" /></label></th>
+					<th scope="row"><label for="visitors">Show to visitors</label></th>
 					<td>
 					<input type="checkbox" name="visitors" id="visitors" <?php if ($visitors == "on") { echo "CHECKED"; } ?>/>
 					<span class="description">Should visitors to the site see the notification bar before logging in?</span></td> 
@@ -1967,15 +1979,9 @@ function symposium_plugin_options() {
 					<tr valign="top"> 
 					<th scope="row"><label for="custom_login_url"></label></th> 
 					<td><input name="custom_login_url" type="text" id="custom_login_url"  value="<?php echo $custom_login_url; ?>" style="width:300px" class="regular-text" /> 
-					<span class="description">URL of login page, if <em>not</em> using WordPress login page</td> 
+					<span class="description">URL of login/logout page, if <em>not</em> using WordPress login page</td> 
 					</tr> 
 								
-					<tr valign="top"> 
-					<th scope="row"><label for="custom_logout_url"></label></th> 
-					<td><input name="custom_logout_url" type="text" id="custom_logout_url"  value="<?php echo $custom_logout_url; ?>" style="width:300px" class="regular-text" /> 
-					<span class="description">URL of logout page, if <em>not</em> using WordPress logout page</td> 
-					</tr> 
-
 					<tr valign="top"> 
 					<th scope="row"><label for="use_wp_register">Registration Link</label></th> 
 					<td><input type="checkbox" name="use_wp_register" id="use_wp_register" <?php if ($use_wp_register == "on") { echo "CHECKED"; } ?>/>
@@ -2014,11 +2020,14 @@ function symposium_plugin_options() {
 					$wp_width = str_replace('pc', '%', $config->wp_width);
 					$language = $config->language;
 					$jquery = $config->jquery;
+					$jqueryui = $config->jqueryui;
 					$seo = $config->seo;
 					$emoticons = $config->emoticons;	
 					$forum_url = $config->forum_url;
 					$mail_url = $config->mail_url;
 					$register_url = $config->register_url;
+					$members_url = $config->members_url;
+					$login_url = $config->login_url;
 					$profile_url = $config->profile_url;
 					$wp_alignment = $config->wp_alignment;
 					$login_redirect = $config->login_redirect;
@@ -2054,9 +2063,21 @@ function symposium_plugin_options() {
 					</tr> 					
 
 					<tr valign="top"> 
+					<th scope="row"><label for="login_url">Login URL</label></th> 
+					<td><input name="login_url" type="text" id="login_url"  value="<?php echo $login_url; ?>" class="regular-text" /> 
+					<span class="description">Full URL of the page that includes [symposium-login]</td> 
+					</tr> 					
+
+					<tr valign="top"> 
 					<th scope="row"><label for="register_url">Register URL</label></th> 
 					<td><input name="register_url" type="text" id="register_url"  value="<?php echo $register_url; ?>" class="regular-text" /> 
 					<span class="description">Full URL of the page that includes [symposium-register]</td> 
+					</tr> 					
+
+					<tr valign="top"> 
+					<th scope="row"><label for="members_url">Members Directory URL</label></th> 
+					<td><input name="members_url" type="text" id="members_url"  value="<?php echo $members_url; ?>" class="regular-text" /> 
+					<span class="description">Full URL of the page that includes [symposium-members]</td> 
 					</tr> 					
 
 					<tr valign="top"> 
@@ -2093,7 +2114,7 @@ function symposium_plugin_options() {
 					</tr> 
 
 					<tr valign="top">
-					<th scope="row"><label for="wp_alignment">Alignment <img src="../wp-content/plugins/wp-symposium/images/new.png" alt="New!" /></label></th> 
+					<th scope="row"><label for="wp_alignment">Alignment</label></th> 
 					<td>
 					<select name="wp_alignment">
 						<option value='Left'<?php if ($wp_alignment == 'Left') { echo ' SELECTED'; } ?>>Left</option>
@@ -2115,6 +2136,13 @@ function symposium_plugin_options() {
 					</tr> 
 				
 					<tr valign="top"> 
+					<th scope="row"><label for="jqueryui">Load jQuery UI</label></th>
+					<td>
+					<input type="checkbox" name="jqueryui" id="jqueryui" <?php if ($jqueryui == "on") { echo "CHECKED"; } ?>/>
+					<span class="description">Load jQuery UI on non-admin pages, disable if causing problems</span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
 					<th scope="row"><label for="seo">SEO extended links</label></th>
 					<td>
 					<input type="checkbox" name="seo" id="seo" <?php if ($seo == "on") { echo "CHECKED"; } ?>/>
@@ -2128,7 +2156,7 @@ function symposium_plugin_options() {
 					<span class="description">Automatically replace smilies/emoticons with graphical images</span></td> 
 					</tr> 
 					<tr valign="top"> 
-					<th scope="row"><label for="enable_redirects">Enable redirects <img src="../wp-content/plugins/wp-symposium/images/new.png" alt="New!" /></label></th>
+					<th scope="row"><label for="enable_redirects">Enable redirects</label></th>
 					<td>
 					<input type="checkbox" name="enable_redirects" id="enable_redirects" <?php if ($enable_redirects == "on") { echo "CHECKED"; } ?>/>
 					<span class="description">Must be enabled for following redirects to work, disable if plugin clashes occur</span></td> 

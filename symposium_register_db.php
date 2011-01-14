@@ -50,26 +50,36 @@ if (!is_user_logged_in()) {
 					$html .= 'Please enter the sum of the two numbers.';
 				} else {
 					
-					// Store member
+					// Store wp_user
 					$wpdb->query( $wpdb->prepare( "
 						INSERT INTO ".$wpdb->prefix."users
 						( 	user_login,
 							user_nicename,
 							user_email, 
 							display_name,
-							user_pass
+							user_pass,
+							user_registered
 						)
-						VALUES ( %s, %s, %s, %s, %s )", 
+						VALUES ( %s, %s, %s, %s, %s, %s )", 
 				        array(
 				        	$username, 
 				        	$username, 
 				        	$youremail,
 				        	$display_name,
-				        	wp_hash_password($pwd)
+				        	wp_hash_password($pwd),
+				        	date("Y-m-d H:i:s")
 				        	) 
-				        ) );
-	
+				        ) );	
 					$new_id = $wpdb->insert_id;
+					
+					// Store wp_usermeta
+				    list($firstname, $lastname) = explode(' ', $display_name); 
+					$wpdb->query( $wpdb->prepare( "INSERT INTO ".$wpdb->prefix."usermeta ( user_id, meta_key, meta_value ) VALUES ( %d, %s, %d )", array($new_id, 'wp_user_level', 0) ) );	
+					$wpdb->query( $wpdb->prepare( "INSERT INTO ".$wpdb->prefix."usermeta ( user_id, meta_key, meta_value ) VALUES ( %d, %s, %s )", array($new_id, 'wp_capabilities', 'a:1:{s:10:"subscriber";s:1:"1";}') ) );	
+					$wpdb->query( $wpdb->prepare( "INSERT INTO ".$wpdb->prefix."usermeta ( user_id, meta_key, meta_value ) VALUES ( %d, %s, %s )", array($new_id, 'first_name', $firstname) ) );	
+					$wpdb->query( $wpdb->prepare( "INSERT INTO ".$wpdb->prefix."usermeta ( user_id, meta_key, meta_value ) VALUES ( %d, %s, %s )", array($new_id, 'last_name', $lastname) ) );	
+					$wpdb->query( $wpdb->prepare( "INSERT INTO ".$wpdb->prefix."usermeta ( user_id, meta_key, meta_value ) VALUES ( %d, %s, %s )", array($new_id, 'nickname', $username) ) );	
+					
 					wp_login($username, $pwd, true);
 			        wp_setcookie($username, $pwd, true);
 			        wp_set_current_user($new_id, $username);

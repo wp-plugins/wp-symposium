@@ -22,13 +22,13 @@ include_once('symposium_functions.php');
 global $wpdb, $current_user;
 wp_get_current_user();
 
-if (is_user_logged_in()) {
-
-	if ($_POST['member_id'] != '') {
-		header("Location: ".symposium_get_url('profile')."?uid=".$_POST['member_id']);
-		exit;
-	}
-
+// Non AJAX search (hit submit without selecting)
+if ($_POST['member_id'] != '') {
+	header("Location: ".symposium_get_url('profile')."?uid=".$_POST['member_id']);
+	exit;
+} else {
+	header("Location: ".symposium_get_url('members')."?term=".$_POST['member']);
+	exit;	
 }
 
 	

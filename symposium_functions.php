@@ -169,7 +169,7 @@ function symposium_get_language($uid) {
 	return $arr;
 }
 
-function symposium_get_core_language($uid) {
+function symposium_get_core_language() {
 	global $wpdb;
 
 	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . "symposium_config"));
@@ -182,7 +182,7 @@ function symposium_get_core_language($uid) {
 
 function symposium_get_url($plugin) {
 	global $wpdb;
-	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, register_url, mail_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
+	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, members_url, register_url, mail_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
 	$return = false;
 	if ($plugin == 'mail') {
 		$return = $urls->mail_url;
@@ -195,6 +195,9 @@ function symposium_get_url($plugin) {
 	}
 	if ($plugin == 'register') {
 		$return = $urls->register_url;
+	}
+	if ($plugin == 'members') {
+		$return = $urls->members_url;
 	}
 	return $return;
 }
@@ -720,6 +723,9 @@ function symposium_sendmail($email, $code, $msg)
 	        break;
 	    case "nwr":
 			$subject = "New Wall Post Reply";	
+	        break;
+	    case "fp":
+			$subject = "Forgotten Password";	
 	        break;
 	    default:
 	    	$subject = $code;

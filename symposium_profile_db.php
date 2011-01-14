@@ -98,7 +98,6 @@ if (is_user_logged_in()) {
 			update_symposium_meta($current_user->ID, 'soundchat', "'".$soundchat."'");
 			update_symposium_meta($current_user->ID, 'language', "'".$language."'");
 			
-			$wpdb->show_errors();
 			$pwmsg = '';
 			if ($password1 != '') {
 				if ($password1 == $password2) {
@@ -106,8 +105,19 @@ if (is_user_logged_in()) {
 					$sql = "UPDATE ".$wpdb->prefix."users SET user_pass = '".$pwd."' WHERE ID = ".$current_user->ID;
 				    if ($wpdb->query( $wpdb->prepare($sql) ) ) {
 				    	$pwmsg = "Password updated. ";
+
+						$sql = "SELECT user_login FROM ".$wpdb->prefix."users WHERE ID = ".$current_user->ID;
+						$username = $wpdb->get_var($sql);
+						$id = $current_user->ID;
+						$url = symposium_get_url('profile')."?view=settings&msg=".$pwmsg;
+
+				    	wp_login($username, $pwd, true);
+				        wp_setcookie($username, $pwd, true);
+				        wp_set_current_user($id, $username);
+				    	
 				    	// The following will actually fail as you will need to re-authenticate into WordPress
-						wp_safe_redirect(symposium_get_url('profile')."?view=settings&msg=".$pwmsg);
+						wp_redirect($url);
+						
 						exit;
 				    } else {
 				    	$pwmsg = "Failed to update password, sorry. ";
@@ -117,12 +127,17 @@ if (is_user_logged_in()) {
 				}
 			}
 
-			$rows_affected = $wpdb->update( $wpdb->prefix.'users', array( 'display_name' => $display_name, 'user_email' => $user_email ), array( 'ID' => $current_user->ID ), array( '%s', '%s' ), array( '%d' ) );
-			if ($rows_affected > 0) {
-				if ($rows_affected == 1) {
-					$pwmsg .= 'Details Updated.';
-				} else {
-					$pwmsg .= 'Problem updating details, sorry. '.$wpdb->last_query;
+			$email_exists = $wpdb->get_row("SELECT ID, user_email FROM ".$wpdb->prefix."users WHERE lower(user_email) = '".strtolower($user_email)."'");
+			if ($email_exists->user_email == $user_email && $email_exists->ID != $current_user->ID) {
+		    	$pwmsg = "Email already exists, sorry. ";				
+			} else {
+				$rows_affected = $wpdb->update( $wpdb->prefix.'users', array( 'display_name' => $display_name, 'user_email' => $user_email ), array( 'ID' => $current_user->ID ), array( '%s', '%s' ), array( '%d' ) );
+				if ($rows_affected > 0) {
+					if ($rows_affected == 1) {
+						$pwmsg .= 'Details Updated.';
+					} else {
+						$pwmsg .= 'Problem updating details, sorry. '.$wpdb->last_query;
+					}
 				}
 			}
 				

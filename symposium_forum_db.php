@@ -146,7 +146,7 @@ if (is_user_logged_in()) {
 						
 					if ($query) {					
 						foreach ($query as $user) {
-							symposium_sendmail($user->user_email, "nft", $body.$wpdb->last_query);						
+							symposium_sendmail($user->user_email, "nft", $body);						
 						}						
 					}
 				} else {

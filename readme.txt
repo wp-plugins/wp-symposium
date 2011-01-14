@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish 
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.24
+Stable tag: 0.1.25
 
 A new suite of social networking plugins - forum, wall, mail, member directory, private messaging, notification bar, chat windows, profile page, widgets, and more!
 
@@ -30,6 +30,7 @@ NOTICE: We are currently BETA testing this plugin. As such, although we have not
 * Chat
 * Wall
 * Member Directory
+* Registration
 * ... more to come!!!
 
 *Widgets*
@@ -41,15 +42,13 @@ NOTICE: We are currently BETA testing this plugin. As such, although we have not
 *Configuration*
 
 * Works with any WordPress theme, and standard WordPress users
-* Optional moderation of new topics/replies
-* Set width of forum in % or pixels
+* Set width of WPS plugins in % or pixels
 * Supports all permalink, and default no-permalink settings
 * Supports '.html on PAGES' plugin
 * Supports 'SimpleModal Login' plugin
-* No need to edit stylesheet
+* No need to edit a stylesheet
 * Health Check page to help with maintenance
-* Option to not load jQuery
-* Full audit trail and event log (note, minimum event/error logging at the moment, next patch will add full logging)
+* Option to not load jQuery and other components if plugins are clashing
 
 *Appearance/Styles*
 
@@ -59,9 +58,9 @@ NOTICE: We are currently BETA testing this plugin. As such, although we have not
 * Even add your own smilies/emoticons
 * Change the styles (look and feel) through the admin panel
 * Colour Picker popup, no codes needed!
-* Set the length of the preview text
+* Set the length of preview text
 * Set optional rounded corners
-* Uses member avatars
+* Uses WordPress member avatars
 
 *Languages*
 
@@ -87,35 +86,58 @@ NOTICE: We are currently BETA testing this plugin. As such, although we have not
 
 *Overview*
 
-The Member profile does not yet include all the functionality to form a useful page, but sets the foundation of sending mail to another another member, and linking the forum plugin and mail plugins. 
+The Member profile is the "home" page of a member, showing a wall of posts/replies, information on the member and request they become a friend. If activated, you can send mail to a member. 
 
 Put `[symposium-profile]` on any WP page, and put the page URL in the Symposium options.
 
 * Displays member photo (as set via WordPress)
+* Displays a wall of posts and replies
+* Set privacy levels for personal information and wall posts/replies
 * Send Mail to member (if on another member's page)
 * Set personal preferences for site language, layout, sounds, etc
-* Set privacy level
 * Depending on privacy level, displays location map, etc
-* ... many more features to be added to this plugin!
+* Displays recently active friends 
 
 *Settings*
 
-* Allow members to over-ride default settings
-* Set inactivity period for offline and logged out
+* Set personal language, timezone, notification sounds and position
+* Set the name displayed on the site and email address
+* Set to receive email notification, or not
+* If permitted, change password
+
+*Personal*
+
+* Set privacy levels for personal information and their wall
+* Date of birth
+* City and Country
+* Extended information set by the site administrator (any number of additional fields)
+
+*Friends*
+
+* Friend requests
+* Send mail to friends
+* Remove friends
+
+*Wall*
+
+* Add posts (most recent acts as a status)
+* Reply to posts
+* Restricted by privacy levels and friends
 
 **NOTIFICATION BAR**
 
+Simply activate the plugin to use the notification bar and chat windows.
+
 *Overview*
 
-The notification bar, if activated, can be placed at the bottom or top of every webpage. It shows a custom message to the left, a login/logout link to the right together with icons for specific purposes, ie: friends online, unread mail messages and friend requests.
-
-When a member is logged in and a new mail arrives or a friend request is received, an alert is shown to the right instead of the logout link for a short period of time. Optionally, an alert sound (from a list available, defaulting to a subtle chime) is played.
-
-The icons will also be highlighted with a number of unread messages or friend requests.
-
-Clicking the friends online icon, will display which friends are online, not active and logged out. Clicking on a name will open a chat window (and on the recipients screen) for real time chatting.
-
-Simply activate the plugin to use the notification bar.
+* Can be placed at the bottom or top of every page. 
+* Shows a login/logout link, register link
+* Site admin link if an administrator
+* Icons for specific purposes, ie: friends online, unread mail messages and friend requests.
+* New mail and friend request alerts
+* Icons will highlighted with the number of unread messages or friend requests.
+* Clicking the friends online icon, will display which friends are online, not active and logged out.
+* Clicking on a friends name will open a chat window (and on the recipients screen) for real time chatting.
 
 *Settings*
 
@@ -128,14 +150,19 @@ Simply activate the plugin to use the notification bar.
 * Shows friends online
 * Set polling intervals for notifications and chat messages
 
+*Chat*
+
+* Real-time live chat
+* Messages stored if recipient not online for when they next login
+
 **MAIL**
 
-Private messaging for all your members! At present they can easily send a mail to another member of the site just by typing their display name. 
-
-This will shortly be improved so that multiple recipients can be added. Furthermore mail can be limited to friends if the friends plugin is activated (yes - another plugin, but it's not available yet).
-
+Private messaging for all your members! 
 Put `[symposium-mail]` on any WP page, and put the page URL in the Symposium options.
 
+*Overview*
+
+* Easily send a mail to another member of the site just by typing their display name or location. 
 * In Box
 * Sent 'box'
 * Compose new message
@@ -144,27 +171,42 @@ Put `[symposium-mail]` on any WP page, and put the page URL in the Symposium opt
 * Simple layout
 * AJAX enabled when switching between messages
 * In Box messages highlighted when not read
-* Sent messages highlighted that not read by recipient
 
 **DIRECTORY**
 
-A list of members, showing who is online together with their latest status post and location. Basic at the moment, but will improve.
+A list of members, showing who is online together with their latest status post and location.
 
 Put `[symposium-members]` on any WP page.
 
-* Lists members by who was most recent
-* Search for members (by name or location) with intelligent search
+* Lists members by who was most recently active
+* Live search by name and location
 * Includes location, latest status post and link to their profile page
+* Can search on part of name or location to filter list shown
 
-**FORUM**
+**REGISTRATION**
+
+A simply registration page to avoid having to re-check emails - one simple step.
+The member account is immediately activated as a "proper" WordPress user (with all default mandatory fields filled in "wp_user").
+Also creates WordPress core meta data (wp_user_level, wp_capabilites, first_name, last_name and nickname in "wp_usermeta").
+
+Put `[symposium-register]` on any WP page.
 
 *Overview*
 
-The goal of the forum is to be simple and as uncluttered as possible, whilst having powerful features within.
+* Simple and straightforward
+* Checks for valid email address
+* Displays password strength indicator
+* Checks for unique username and email address
+* Takes new member straight to profile page for additional information
+* Sends email alert to site administrator when someone joins
+
+**FORUM**
+
+Simple and as uncluttered as possible, whilst having powerful features within.
 
 Put `[symposium-forum]` on any WP page, and put the page URL in the Symposium options.
 
-*Settings*
+*Overview*
 
 * Option to moderate topics and replies
 * Set preview text length
@@ -270,6 +312,9 @@ IMPORTANT: Update settings on the Options page.
 Q. Where can I find more information?
 A. Go to www.wpsymposium.com
 
+Q. What's the one thing I probably haven't done?
+A. Set up your page URL's in the admin Options -> Settings page!
+
 Q. The admin side works, but the forum (or another plugin) doesn't appear?
 A. Check you have `[symposium-forum]` on your page, with a hyphen, not an underscore. Replace [symposium-forum] with the shortcode of the plugin.
 
@@ -285,11 +330,21 @@ A. Yes, if you look in the smilies folder you can use any of the images there by
 Q. Will WP Symposium work on WPMU?
 A. Sorry no, not at the moment - but it's planned to get this working at some point.
 
-Q. I don't see friends when there online, can't edit forum posts or read all mail in my inbox
+Q. I don't see friends when they're online, can't edit forum posts or read all mail in my inbox. Not much works...
 A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.25 =
+
+* New Plugin: Login/Forgotten Password
+* Member Directory: Added search on submit prior to name selection (non-JS)
+* Registration: Added email address format validation
+* Registration: Added dual password fields that have to match
+* Registration: Added addition of wp_usermeta, and now complete wp_user field insert
+* Admin: Added option to not load jQuery UI (in case of plugin clashes)
+* Notification Bar: Combined login and logout custom redirect (to support Login plugin)
 
 = 0.1.24 =
 

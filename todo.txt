@@ -1,2 +1,17 @@
 todo.txt
 
+- login/forgotten password/logout plugin (handles both situations)
+
+   Log the current user out, by destroying the current user session.
+   <?php wp_logout(); ?> 
+   
+- when changing email address, make sure it's not already taken
+
+- update dashboard widget
+
+I had about 12 emails with things like "Simon has replied to Simon's post: h Go to their wall..." and the link is http://127.0.0.1:8888/profile?uid=2
+
+
+
+echo __('Logged in as', 'wp-symposium');
+printf (__('Logged in as %s.', 'wp-symposium'), $current_user->user_login);

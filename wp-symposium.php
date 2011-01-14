@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.24
+Version: 0.1.25
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -118,8 +118,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.24";
-	$symposium_db_ver = 24;
+	$symposium_version = "0.1.25";
+	$symposium_db_ver = 25;
 	
 	// Code version *************************************************************************************
 	$ver = get_option("symposium_version");
@@ -163,6 +163,7 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "headingsfamily", "varchar(64)", "NOT NULL", "'Arial,Helvetica'");
 	symposium_alter_table("config", "ADD", "headingssize", "varchar(16)", "NOT NULL", "'20'");
 	symposium_alter_table("config", "ADD", "jquery", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "jqueryui", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "emoticons", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "seo", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "moderation", "varchar(2)", "NOT NULL", "''");
@@ -179,11 +180,12 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_login", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "custom_login_url", "varchar(512)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "custom_logout_url", "varchar(512)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_register", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "custom_register_url", "varchar(512)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "register_use_sum", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "register_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "members_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "login_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
@@ -614,7 +616,7 @@ function symposium_smilies($buffer){ // $buffer contains entire page
 function symposium_redirect($buffer){ 
 	
 	global $wpdb;
-
+	
 	$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix . 'symposium_config'));
 	
 	// check for forum redirect
@@ -702,8 +704,8 @@ function symposium_unread($buffer){
 
 function symposium_admin_check() {
 	global $wpdb;
-	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, register_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
-	if ( ($urls->forum_url == "Important: Please update!") || ($urls->register_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
+	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, login_url, members_url, register_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
+	if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->login_url == "Important: Please update!") || ($urls->register_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
 		echo "<div class='updated'><p><strong>Important!</strong> Please set <a href='admin.php?page=symposium_options&view=settings'>WP Symposium Options</a> immediately (set to &apos;none&apos; if you are not using a particular plugin).</p></div>";
 	}
 }
@@ -730,7 +732,7 @@ function add_symposium_stylesheet() {
 	        wp_register_style('symposium_StyleSheet', $myStyleUrl);
 	        wp_enqueue_style('symposium_StyleSheet');
 	    } else {
-		    wp_die( __('Stylesheet ('.$myStyleFile.' not found.') );
+		    wp_die( __('Stylesheet (%s) not found.'), $myStyleFile  );		    
 	    }
 	}
 
@@ -748,11 +750,19 @@ function add_symposium_stylesheet() {
 // Add jQuery and jQuery scripts
 function js_init() {
 	global $wpdb;
-	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix . 'symposium_config'));
+	$jquery = $wpdb->get_row($wpdb->prepare("SELECT jquery, jqueryui FROM ".$wpdb->prefix . 'symposium_config'));
+
 	// Only load if chosen
-	if ($jquery=="on" && !is_admin()) {
-		wp_enqueue_script('jquery');
-	}
+	if (!is_admin()) {
+		if ($jquery->jquery == "on") {
+			wp_enqueue_script('jquery');
+		}
+		if ($jquery->jqueryui == "on") {
+			$plugin = get_site_url().'/wp-content/plugins/wp-symposium';
+	 		wp_enqueue_script('jquery-ui-custom', $plugin.'/js/jquery-ui-1.8.7.custom.min.js', array('jquery'));
+		}
+	}		
+	
 }
 
 // Add jQuery and jQuery scripts
@@ -796,11 +806,6 @@ function symposium_scriptsAction()
 	if (isset($_GET['cid'])) { $cat_id = $_GET['cid']; }
 	if (isset($_POST['cid'])) { $cat_id = $_POST['cid']; }
 
-	// Load jQuery UI
-	if (!is_admin()) {
- 		wp_enqueue_script('jquery-ui-custom', '/wp-content/plugins/wp-symposium/js/jquery-ui-1.8.7.custom.min.js', array('jquery'));
-	}
-	
 	// Load Symposium JS
  	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
 	

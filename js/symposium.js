@@ -18,12 +18,103 @@ jQuery(document).ready(function() {
 	jQuery(".notice").hide();
 	jQuery(".pleasewait").hide();
 
+	/*
+	   +------------------------------------------------------------------------------------------+
+	   |                                          REGISTER                                        |
+	   +------------------------------------------------------------------------------------------+
+	*/
+
 	// Password strength field	
-	if (jQuery("input#pwd").length) {
+	if (jQuery("input#pwd2").length) {
 		jQuery(function() {
-			jQuery('#pwd').pstrength();
+			jQuery('#pwd2').pstrength();
 		});
 	}
+
+	/*
+	   +------------------------------------------------------------------------------------------+
+	   |                                           LOGIN                                          |
+	   +------------------------------------------------------------------------------------------+
+	*/
+
+	if (jQuery("input#symposium_login").length) {
+
+		jQuery('#symposium_login').submit(function() {		
+
+	   		var username = jQuery("#symposium_login_username").val();
+	   		var pwd = jQuery("#symposium_login_pwd").val();
+	   		var forgot = jQuery("#forgotten_email").val();
+
+			if (forgot == '') {
+				if (username != '' && pwd != '') {
+					jQuery(".pleasewait").inmiddle().show();
+					jQuery.ajax({
+						url: symposium.plugin_url+"ajax/symposium_login_functions.php", 
+						type: "POST",
+						data: ({
+							action:"doLogin",
+							username:username,
+							pwd:pwd
+						}),
+					    dataType: "html",
+						async: false,
+						success: function(str){
+							if (str == "FAIL") {
+								jQuery(".pleasewait").hide();
+								alert("Login failed, please try again");
+							} else {
+								window.location.href=str;
+							}
+						},
+						error: function(err){
+							alert("L:"+err);
+						}		
+			   		});	
+				}
+				
+			} else {
+
+			   		var sum1 = parseFloat(jQuery("#sum1").val());
+			   		var sum2 = parseFloat(jQuery("#sum2").val());
+			   		var actual = sum1+sum2;
+			   		var result = parseFloat(jQuery("#result").val());
+			   		
+			   		if (actual == result) {
+				
+						jQuery(".pleasewait").inmiddle().show();
+						jQuery.ajax({
+							url: symposium.plugin_url+"ajax/symposium_login_functions.php", 
+							type: "POST",
+							data: ({
+								action:"doForgot",
+								email:forgot
+							}),
+						    dataType: "html",
+							async: false,
+							success: function(str){
+								jQuery(".pleasewait").hide();
+								if (str.substring(0, 2) == 'OK') { 
+									jQuery('#symposium_forgotten_password_msg').show("slow");
+								} else {
+									alert(str);
+								}
+							},
+							error: function(err){
+								alert("L2: "+err);
+							}		
+				   		});
+			   		} else {
+			   			alert('Answer to the sum is incorrect.');
+			   		}					
+			}
+	   	});	
+	   	
+		jQuery('#symposium_forgotten').click(function() {		
+			jQuery('#symposium_forgotten_password').toggle("slow");
+	   	});	
+
+	}
+
 
 	/*
 	   +------------------------------------------------------------------------------------------+
@@ -1057,11 +1148,42 @@ function validate_form(thisform)
 {
 	form_id = thisform.id;
 
+	// Login
+	if ( (form_id) == "symposium_login") {
+		var r = true;
+		with (thisform)
+		{
+			if (forgotten_email.value == '') {
+				if (username.value == '' || username.value == null) {
+					jQuery("#username-warning").show("slow");
+					username.focus(); 
+				} else {
+					jQuery("#username-warning").hide("slow");
+				}
+				if (pwd.value == '' || pwd.value == null) {
+					jQuery("#pwd-warning").show("slow");
+					username.focus(); 
+				} else {
+					jQuery("#pwd-warning").hide("slow");
+				}
+			}
+		}
+		// return false to avoid submit, redirect handled in jQuery
+		return false;
+	}
+	
 	// Registration
 	if ( (form_id) == "symposium_registration") {
 		var r = true;
 		with (thisform)
 		{
+			if ( (pwd.value != '' || pwd2.value != null) && (pwd.value != pwd2.value) ) {
+				jQuery("#password2-warning").show("slow");
+				pwd.focus(); 
+				r = false;
+			} else {
+				jQuery("#password2-warning").hide("slow");
+			}
 			if (pwd.value == '' || pwd.value == null) {
 				jQuery("#password-warning").show("slow");
 				pwd.focus(); 
@@ -1070,6 +1192,14 @@ function validate_form(thisform)
 				jQuery("#password-warning").hide("slow");
 			}
 			if (youremail.value == '' || youremail.value == null) {
+				jQuery("#youremail-warning").show("slow");
+				youremail.focus(); 
+				r = false;
+			} else {
+				jQuery("#youremail-warning").hide("slow");
+			}
+			var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+   			if (reg.test(youremail.value) == false) {
 				jQuery("#youremail-warning").show("slow");
 				youremail.focus(); 
 				r = false;

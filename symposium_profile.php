@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile] on any WordPress page to display forum.
-Version: 0.1.24
+Version: 0.1.25
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -134,7 +134,11 @@ function symposium_profile()
 					$html .= '<div id="mail-main">';
 
 						if ($_GET['msg']) {
-							$html .= "<div class='alert'>".addslashes($_GET['msg'])."</div>";
+							if ($_GET['msg'] == 'Details Updated.') {
+								$html .= "<div class='alert'>".addslashes($_GET['msg'])."</div>";
+							} else {
+								$html .= "<div class='alert' style='background-color:#f99;color:#300'>".addslashes($_GET['msg'])."</div>";
+							}
 						}
 					
 						$html .= symposium_profile_header($uid, $current_user->ID, $mail_url, $current_user->display_name);
@@ -352,13 +356,13 @@ function symposium_profile()
 											$html .= '<div style="clear:both; margin-top:15px;">';
 												$html .= 'Change your password';
 												$html .= '<div style="float:right;">';
-													$html .= '<input type="text" class="input-field" name="xyz1" value="">';
+													$html .= '<input class="input-field" type="text" name="xyz1" value="">';
 												$html .= '</div>';
 											$html .= '</div>';
 											$html .= '<div style="clear:both">';
 												$html .= 'Re-enter to confirm';
 												$html .= '<div style="float:right;">';
-													$html .= '<input type="text" class="input-field" name="xyz2" value="">';
+													$html .= '<input class="input-field" type="text" name="xyz2" value="">';
 												$html .= '</div>';
 											$html .= '</div>';
 																						
@@ -638,13 +642,14 @@ function symposium_profile()
 			// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
 			$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>Powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress, ".get_option("symposium_version")."</div>";
 		
+			// Notices
+			$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin."/images/busy.gif' /> ".$language->sav."</div>";
+			$html .= "<div class='pleasewait' style='display:none;z-index:999999;'><img src='".$plugin."/images/busy.gif' /> ".$language->pw."</div>";
+	
+
 		$html .= "</div>";
 		
 		$html .= "<div style='clear: both'></div>";
-
-		// Notices
-		$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin."/images/busy.gif' /> ".$language->sav."</div>";
-		$html .= "<div class='pleasewait' style='display:none;z-index:999999;'><img src='".$plugin."/images/busy.gif' /> ".$language->pw."</div>";
 
 											
 		return $html;
@@ -873,7 +878,7 @@ function symposium_profile_body($uid1, $uid2, $reply_color) {
 				
 				// Wall
 				
-				if ( ($uid1 != $uid2) && (is_user_logged_in()) && $is_friend) {
+				if ( ($uid1 == $uid2) || (is_user_logged_in() && $is_friend)) {
 					// Post Comment Input
 					$html .= '<form method="post" action="'.$dbpage.'">';
 					$html .= '<input type="hidden" name="symposium_update" value="W">';
@@ -935,7 +940,7 @@ function symposium_profile_body($uid1, $uid2, $reply_color) {
 									}
 
 									// Reply field
-									if ( is_user_logged_in() && $is_friend) {
+									if ( $uid1 == $uid2 || (is_user_logged_in() && $is_friend)) {
 										$html .= '<form method="post" action="'.$dbpage.'">';
 										$html .= '<input type="hidden" name="symposium_update" value="WC">';
 										$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
