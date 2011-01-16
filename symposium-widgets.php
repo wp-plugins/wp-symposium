@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.1.25
+Version: 0.1.26
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -45,7 +45,7 @@ class Symposium_members_Widget extends WP_Widget {
 		$control_ops = array( 'id_base' => 'symposium_members-widget' );
 		
 		/* Create the widget. */
-		$this->WP_Widget( 'symposium_members-widget', 'Symposium: Latest New Members', $widget_ops, $control_ops );
+		$this->WP_Widget( 'symposium_members-widget', 'Symposium: '.__('Latest New Members', 'wp-symposium'), $widget_ops, $control_ops );
 	}
 	
 	// This is shown on the page
@@ -54,9 +54,6 @@ class Symposium_members_Widget extends WP_Widget {
 		wp_get_current_user();
 	
 		extract( $args );
-		$get_language = symposium_get_language($current_user->ID);
-		$language_key = $get_language['key'];
-		$language = $get_language['words'];
 		
 		// Get options
 		$symposium_members_count_title = apply_filters('widget_title', $instance['symposium_members_count_title'] );
@@ -83,8 +80,8 @@ class Symposium_members_Widget extends WP_Widget {
 							echo get_avatar($member->ID, 32);
 						echo "</div>";
 						echo "<div>";
-							echo symposium_profile_link($member->ID)." joined ";
-							echo symposium_time_ago($member->user_registered, $language_key).".";
+							echo symposium_profile_link($member->ID)." ".__('joined', 'wp-symposium')." ";
+							echo symposium_time_ago($member->user_registered).".";
 						echo "</div>";
 					echo "</div>";
 				}
@@ -116,10 +113,10 @@ class Symposium_members_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'symposium_members_count_title' ); ?>">Widget Title:</label>
+			<label for="<?php echo $this->get_field_id( 'symposium_members_count_title' ); ?>"><?php echo __('Widget Title', 'wp-symposium'); ?>:</label>
 			<input id="<?php echo $this->get_field_id( 'symposium_members_count_title' ); ?>" name="<?php echo $this->get_field_name( 'symposium_members_count_title' ); ?>" value="<?php echo $instance['symposium_members_count_title']; ?>" />
 		<br /><br />
-			<label for="<?php echo $this->get_field_id( 'symposium_members_count' ); ?>">Max number shown:</label>
+			<label for="<?php echo $this->get_field_id( 'symposium_members_count' ); ?>"><?php echo __('Max number shown', 'wp-symposium'); ?>:</label>
 			<input id="<?php echo $this->get_field_id( 'symposium_members_count' ); ?>" name="<?php echo $this->get_field_name( 'symposium_members_count' ); ?>" value="<?php echo $instance['symposium_members_count']; ?>" style="width: 30px" />
 		</p>
 		<?php
@@ -138,7 +135,7 @@ class Forumrecentposts_Widget extends WP_Widget {
 		$control_ops = array( 'id_base' => 'forumrecentposts-widget' );
 		
 		/* Create the widget. */
-		$this->WP_Widget( 'forumrecentposts-widget', 'Symposium: Latest Forum Posts', $widget_ops, $control_ops );
+		$this->WP_Widget( 'forumrecentposts-widget', 'Symposium: '.__('Latest Forum Posts', 'wp-symposium'), $widget_ops, $control_ops );
 	}
 	
 	// This is shown on the page
@@ -147,9 +144,6 @@ class Forumrecentposts_Widget extends WP_Widget {
 		wp_get_current_user();
 	
 		extract( $args );
-		$get_language = symposium_get_language($current_user->ID);
-		$language_key = $get_language['key'];
-		$language = $get_language['words'];
 		
 		$border_radius = $wpdb->get_var($wpdb->prepare("SELECT border_radius FROM ".$wpdb->prefix.'symposium_config'));
 		$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
@@ -191,11 +185,11 @@ class Forumrecentposts_Widget extends WP_Widget {
 							if ($post->topic_parent > 0) {
 								$text = stripslashes($post->topic_post);
 								if ( strlen($text) > $preview ) { $text = substr($text, 0, $preview)."..."; }
-								echo symposium_profile_link($post->topic_owner)." ".$language->re." <a href='".$forum_url.symposium_permalink($post->topic_parent, "topic")."?cid=".$post->topic_category."&show=".$post->topic_parent."'>".$text."</a> ".symposium_time_ago($post->topic_date, $language_key).".<br>";
+								echo symposium_profile_link($post->topic_owner)." ".__('replied', 'wp-symposium')." <a href='".$forum_url.symposium_permalink($post->topic_parent, "topic")."?cid=".$post->topic_category."&show=".$post->topic_parent."'>".$text."</a> ".symposium_time_ago($post->topic_date).".<br>";
 							} else {
 								$text = stripslashes($post->topic_subject);
 								if ( strlen($text) > $preview ) { $text = substr($text, 0, $preview)."..."; }
-								echo symposium_profile_link($post->topic_owner)." ".$language->st." <a href='".$forum_url.symposium_permalink($post->tid, "topic")."?cid=".$post->topic_category."&show=".$post->tid."'>".$text."</a> ".symposium_time_ago($post->topic_date, $language_key).".<br>";
+								echo symposium_profile_link($post->topic_owner)." ".__('started', 'wp-symposium')." <a href='".$forum_url.symposium_permalink($post->tid, "topic")."?cid=".$post->topic_category."&show=".$post->tid."'>".$text."</a> ".symposium_time_ago($post->topic_date).".<br>";
 							}
 						echo "</div>";
 					echo "</div>";
@@ -229,13 +223,13 @@ class Forumrecentposts_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 
 		<p>
-			<label for="<?php echo $this->get_field_id( 'wtitle' ); ?>">Widget Title:</label>
+			<label for="<?php echo $this->get_field_id( 'wtitle' ); ?>"><?php echo __('Widget Title', 'wp-symposium'); ?>:</label>
 			<input id="<?php echo $this->get_field_id( 'wtitle' ); ?>" name="<?php echo $this->get_field_name( 'wtitle' ); ?>" value="<?php echo $instance['wtitle']; ?>" />
 		<br /><br />
-			<label for="<?php echo $this->get_field_id( 'postcount' ); ?>">Max number of posts:</label>
+			<label for="<?php echo $this->get_field_id( 'postcount' ); ?>"><?php echo __('Max number of posts', 'wp-symposium'); ?>:</label>
 			<input id="<?php echo $this->get_field_id( 'postcount' ); ?>" name="<?php echo $this->get_field_name( 'postcount' ); ?>" value="<?php echo $instance['postcount']; ?>" style="width: 30px" />
 		<br /><br />
-			<label for="<?php echo $this->get_field_id( 'preview' ); ?>">Max length of preview:</label>
+			<label for="<?php echo $this->get_field_id( 'preview' ); ?>"><?php echo __('Max length of preview', 'wp-symposium'); ?>:</label>
 			<input id="<?php echo $this->get_field_id( 'preview' ); ?>" name="<?php echo $this->get_field_name( 'preview' ); ?>" value="<?php echo $instance['preview']; ?>" style="width: 30px" />
 		</p>
 		<?php

@@ -24,57 +24,9 @@ wp_get_current_user();
 
 if (is_user_logged_in()) {
 
-	$get_language = symposium_get_language($current_user->ID);
-	$language_key = $get_language['key'];
-	$language = $get_language['words'];
-	
 	$uid = $_POST['uid'];
 		
 	if ($uid == $current_user->ID) {
-
-		// Wall Status/Post
-		if ($_POST['symposium_update'] == "S") {
-			$status = $_POST['status'];
-			
-			if ( $status != 'What\\\'s on your mind?' ) {
-				$wpdb->query( $wpdb->prepare( "
-					INSERT INTO ".$wpdb->prefix."symposium_comments
-					( 	subject_uid, 
-						author_uid,
-						comment_parent,
-						comment_timestamp,
-						comment
-					)
-					VALUES ( %d, %d, %d, %s, %s )", 
-			        array(
-			        	$current_user->ID, 
-			        	$current_user->ID, 
-			        	0,
-			        	date("Y-m-d H:i:s"),
-			        	$status
-			        	) 
-			        ) );
-			        
-				// Email all friends who want to know about it
-				$sql = "SELECT u.ID, f.friend_to, u.user_email FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON f.friend_to = m.uid LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID WHERE f.friend_from = ".$current_user->ID." AND m.notify_new_wall = 'on'";
-				$recipients = $wpdb->get_results($sql);			
-				if ($recipients) {
-					$body = "<p>".$current_user->display_name." has added a new status to their wall:</p>";
-					$body .= "<p>".stripslashes($status)."</p>";
-					$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$current_user->ID."'>Go to their wall...</a></p>";
-					foreach ($recipients as $recipient) {
-						if ($recipient->ID != $current_user->ID) {
-							symposium_sendmail($recipient->user_email, "nwp", $body);
-						}
-					}
-				}
-				
-			}
-		
-			header("Location: ".symposium_get_url('profile'));
-			exit;
-
-		}
 
 		// settings updates
 		if ($_POST['symposium_update'] == "U") {
@@ -84,7 +36,6 @@ if (is_user_logged_in()) {
 			$timezone = $_POST['timezone'];
 			$sound = $_POST['sound'];
 			$soundchat = $_POST['soundchat'];
-			$language = $_POST['language'];
 			$password1 = $_POST['xyz1'];
 			$password2 = $_POST['xyz2'];
 			$display_name = $_POST['display_name'];
@@ -96,7 +47,6 @@ if (is_user_logged_in()) {
 			update_symposium_meta($current_user->ID, 'bar_position', "'".$bar_position."'");
 			update_symposium_meta($current_user->ID, 'sound', "'".$sound."'");
 			update_symposium_meta($current_user->ID, 'soundchat', "'".$soundchat."'");
-			update_symposium_meta($current_user->ID, 'language', "'".$language."'");
 			
 			$pwmsg = '';
 			if ($password1 != '') {
@@ -120,23 +70,23 @@ if (is_user_logged_in()) {
 						
 						exit;
 				    } else {
-				    	$pwmsg = "Failed to update password, sorry. ";
+				    	$pwmsg = __("Failed to update password, sorry.", "wp-symposium");
 				    }
 				} else {
-			    	$pwmsg = "Passwords different, please try again. ";
+			    	$pwmsg = __("Passwords different, please try again.", "wp-symposium");
 				}
 			}
 
 			$email_exists = $wpdb->get_row("SELECT ID, user_email FROM ".$wpdb->prefix."users WHERE lower(user_email) = '".strtolower($user_email)."'");
 			if ($email_exists->user_email == $user_email && $email_exists->ID != $current_user->ID) {
-		    	$pwmsg = "Email already exists, sorry. ";				
+		    	$pwmsg = __("Email already exists, sorry.", "wp-symposium");				
 			} else {
 				$rows_affected = $wpdb->update( $wpdb->prefix.'users', array( 'display_name' => $display_name, 'user_email' => $user_email ), array( 'ID' => $current_user->ID ), array( '%s', '%s' ), array( '%d' ) );
 				if ($rows_affected > 0) {
 					if ($rows_affected == 1) {
-						$pwmsg .= 'Details Updated.';
+						$pwmsg .= __('Details Updated.', 'wp-symposium');
 					} else {
-						$pwmsg .= 'Problem updating details, sorry. '.$wpdb->last_query;
+						$pwmsg .= __('Problem updating details, sorry.', 'wp-symposium');
 					}
 				}
 			}
@@ -193,7 +143,9 @@ if (is_user_logged_in()) {
 			
 				// Delete pending request
 				$sql = "DELETE FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$_POST['friend_from']." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$_POST['friend_from']." AND friend_from = ".$current_user->ID.")";
-				$wpdb->query( $wpdb->prepare( $sql ) );	
+				if (symposium_safe_param($_POST['friend_from'])) {
+					$wpdb->query( $wpdb->prepare( $sql ) );	
+				}
 				
 				// Add the two friendship rows
 				$wpdb->query( $wpdb->prepare( "
@@ -228,7 +180,7 @@ if (is_user_logged_in()) {
 			        ) );
 
 				// notify friendship requestor
-				$msg = '<a href="'.symposium_get_url('profile').'?uid='.$current_user->ID.'">Your friend request has been accepted by '.$current_user->display_name.'...</a>';
+				$msg = '<a href="'.symposium_get_url('profile').'?uid='.$current_user->ID.'">'.__('Your friend request has been accepted by', 'wp-symposium').' '.$current_user->display_name.'...</a>';
 				
 				symposium_add_notification($msg, $_POST['friend_from']);
 			}
@@ -242,7 +194,9 @@ if (is_user_logged_in()) {
 			// Delete friendship
 
 			$sql = "DELETE FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$_POST['friend']." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$_POST['friend']." AND friend_from = ".$current_user->ID.")";
-			$wpdb->query( $wpdb->prepare( $sql ) );	
+			if (symposium_safe_para($_POST['friend'])) {
+				$wpdb->query( $wpdb->prepare( $sql ) );	
+			}
 
 			header("Location: ".symposium_get_url('profile')."?view=friends");
 			exit;
@@ -251,41 +205,15 @@ if (is_user_logged_in()) {
 		if ($_POST['symposium_update'] == "R") {
 			// Rejected friendship
 			$sql = "DELETE FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$_POST['friend_from']." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$_POST['friend_from']." AND friend_from = ".$current_user->ID.")";
-			$wpdb->query( $wpdb->prepare( $sql ) );	
+			if (symposium_safe_para($_POST['friend_from'])) {
+				$wpdb->query( $wpdb->prepare( $sql ) );	
+			}
 			
 			header("Location: ".symposium_get_url('profile')."?view=friends");
 			exit;
 		}
 		
 	} else {
-		
-		if ($_POST['symposium_update'] == "W") {
-			$post_comment = $_POST['post_comment'];
-			
-			if ( ($post_comment != 'Write a comment...') && ($post_comment != '') ){
-				$wpdb->query( $wpdb->prepare( "
-					INSERT INTO ".$wpdb->prefix."symposium_comments
-					( 	subject_uid, 
-						author_uid,
-						comment_parent,
-						comment_timestamp,
-						comment
-					)
-					VALUES ( %d, %d, %d, %s, %s )", 
-			        array(
-			        	$uid, 
-			        	$current_user->ID, 
-			        	0,
-			        	date("Y-m-d H:i:s"),
-			        	$post_comment
-			        	) 
-			        ) );
-			        
-			}
-
-			header("Location: ".symposium_get_url('profile')."?uid=".$uid);
-			exit;
-		}
 		
 		// Is someone trying to add this person as a friend?
 		if ($_POST['symposium_update'] == "F") {
@@ -319,7 +247,7 @@ if (is_user_logged_in()) {
 			$body = "You have received a friend request from ".$current_user->display_name;
 			symposium_sendmail($friend_to->user_email, "fr", $body);						
 		    // add notification
-			$msg = '<a href="'.symposium_get_url('profile').'?view=friends">You have a friend request from '.$current_user->display_name.'...</a>';
+			$msg = '<a href="'.symposium_get_url('profile').'?view=friends">'.__('You have a friend request from', 'wp-symposium').' '.$current_user->display_name.'...</a>';
 			symposium_add_notification($msg, $friend_to);
 			
 			header("Location: ".symposium_get_url('profile')."?uid=".$uid);
@@ -331,7 +259,9 @@ if (is_user_logged_in()) {
 		if ($_POST['symposium_update'] == "C") {
 			$friend_from = $current_user->ID;
 			$friend_to = $uid;					
-			$wpdb->query( $wpdb->prepare( "DELETE FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$friend_from." AND friend_to = ".$friend_to.") OR (friend_from = ".$friend_to." AND friend_to = ".$friend_from.")" ) );	
+			if (symposium_safe_param($friend_from)) {
+				$wpdb->query( $wpdb->prepare( "DELETE FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$friend_from." AND friend_to = ".$friend_to.") OR (friend_from = ".$friend_to." AND friend_to = ".$friend_from.")" ) );	
+			}
 			
 			header("Location: ".symposium_get_url('profile')."?uid=".$uid);
 			exit;
@@ -340,51 +270,6 @@ if (is_user_logged_in()) {
 					
 	}
 
-	if ($_POST['symposium_update'] == "WC") {
-		$wall_comment = $_POST['wall_comment'];
-		$comment_parent = $_POST['comment_parent'];
-		$subject_uid = $_POST['subject_uid'];
-		
-		if ( ($wall_comment != 'Write a comment...') && ($wall_comment != '') ){
-			$wpdb->query( $wpdb->prepare( "
-				INSERT INTO ".$wpdb->prefix."symposium_comments
-				( 	subject_uid, 
-					author_uid,
-					comment_parent,
-					comment_timestamp,
-					comment
-				)
-				VALUES ( %d, %d, %d, %s, %s )", 
-		        array(
-		        	$subject_uid, 
-		        	$current_user->ID, 
-		        	$comment_parent,
-		        	date("Y-m-d H:i:s"),
-		        	$wall_comment
-		        	) 
-		        ) );
-
-			// Email all friends who want to know about it
-			$sql = "SELECT u.ID, f.friend_to, u.user_email FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON f.friend_to = m.uid LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID WHERE f.friend_from = ".$current_user->ID." AND m.notify_new_wall = 'on'";
-			$recipients = $wpdb->get_results($sql);			
-			if ($recipients) {
-
-				$subject = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$subject_uid));
-
-				$body = "<p>".$current_user->display_name." has replied to ".$subject."'s post:</p>";
-				$body .= "<p>".stripslashes($wall_comment)."</p>";
-				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$subject_uid."'>Go to their wall...</a></p>";
-				foreach ($recipients as $recipient) {
-					if ($recipient->ID != $current_user->ID) {
-						symposium_sendmail($recipient->user_email, "nwr", $body);
-					}
-				}
-			}		        
-		}
-
-		header("Location: ".symposium_get_url('profile')."?uid=".$uid);
-		exit;
-	}
 }
 
 	

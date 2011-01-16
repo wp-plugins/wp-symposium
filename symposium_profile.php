@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile] on any WordPress page to display forum.
-Version: 0.1.25
+Version: 0.1.26
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -38,7 +38,7 @@ function symposium_profile()
 		} else {
 			$uid = $current_user->ID;
 		}
-
+	
 		$plugin = WP_PLUGIN_URL.'/wp-symposium';
 		$dbpage = $plugin.'/symposium_profile_db.php';
 		
@@ -66,12 +66,7 @@ function symposium_profile()
 		// Includes
 		include_once('symposium_styles.php');
 		include_once('symposium_functions.php');
-
-		// Language
-		$get_language = symposium_get_language($current_user->ID);
-		$language_key = $get_language['key'];
-		$language = $get_language['words'];
-
+		
 		// Wrapper
 		$html .= "<div id='symposium-wrapper'>";
 
@@ -125,16 +120,16 @@ function symposium_profile()
 					}
 					
 					$html .= '<div id="mail_tabs">';
-					$html .= '<div class="mail_tab nav-tab-'.$settings_active.'"><a href="'.$thispage.$q.'view=settings" class="nav-tab-'.$settings_active.'-link">Settings</a></div>';
-					$html .= '<div class="mail_tab nav-tab-'.$personal_active.'"><a href="'.$thispage.$q.'view=personal" class="nav-tab-'.$personal_active.'-link">Personal</a></div>';
-					$html .= '<div class="mail_tab nav-tab-'.$friends_active.'"><a href="'.$thispage.$q.'view=friends" class="nav-tab-'.$friends_active.'-link">Friends'.$pending_friends.'</a></div>';
-					$html .= '<div class="mail_tab nav-tab-'.$wall_active.'"><a href="'.$thispage.$q.'view=wall" class="nav-tab-'.$wall_active.'-link">Wall</a></div>';
+					$html .= '<div class="mail_tab nav-tab-'.$settings_active.'"><a href="'.$thispage.$q.'view=settings" class="nav-tab-'.$settings_active.'-link">'.__('Preferences', 'wp-symposium').'</a></div>';
+					$html .= '<div class="mail_tab nav-tab-'.$personal_active.'"><a href="'.$thispage.$q.'view=personal" class="nav-tab-'.$personal_active.'-link">'.__('Personal', 'wp-symposium').'</a></div>';
+					$html .= '<div class="mail_tab nav-tab-'.$friends_active.'"><a href="'.$thispage.$q.'view=friends" class="nav-tab-'.$friends_active.'-link">'.__('Friends', 'wp-symposium').$pending_friends.'</a></div>';
+					$html .= '<div class="mail_tab nav-tab-'.$wall_active.'"><a href="'.$thispage.$q.'view=wall" class="nav-tab-'.$wall_active.'-link">'.__('Wall', 'wp-symposium').'</a></div>';
 					$html .= '</div>';
 					
 					$html .= '<div id="mail-main">';
 
 						if ($_GET['msg']) {
-							if ($_GET['msg'] == 'Details Updated.') {
+							if ($_GET['msg'] == __('Details updated', 'wp-symposium').'.') {
 								$html .= "<div class='alert'>".addslashes($_GET['msg'])."</div>";
 							} else {
 								$html .= "<div class='alert' style='background-color:#f99;color:#300'>".addslashes($_GET['msg'])."</div>";
@@ -145,7 +140,7 @@ function symposium_profile()
 						
 						// Wall
 						if ($view == 'wall') {
-							$html .= symposium_profile_body($uid, $current_user->ID, $row_color);
+							$html .= symposium_profile_body($uid, $current_user->ID, $styles);
 						}
 											
 						// Settings
@@ -158,7 +153,6 @@ function symposium_profile()
 								$sound = $meta->sound;
 								$soundchat = $meta->soundchat;
 								$bar_position = $meta->bar_position;
-								$lang = $meta->language;
 							}
 							
 							$timezone = $meta->timezone;
@@ -170,30 +164,13 @@ function symposium_profile()
 								$html .= '<form method="post" action="'.$dbpage.'"> ';
 									$html .= '<input type="hidden" name="symposium_update" value="U">';
 									$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
+
 								
 									$html .= '<div id="symposium_settings_table" style="padding-top: 15px">';
 									
-										// Language
-										$html .= '<div style="clear:both">';
-											$html .= 'Select a language for screen messages';
-											$html .= '<div style="float:right;">';
-												$html .= '<select name="language">';
-												$language_options = $wpdb->get_results("SELECT DISTINCT language FROM ".$wpdb->prefix.'symposium_lang');
-												if ($language_options) {
-													foreach ($language_options as $option)
-													{
-														$html .= "<option value='".$option->language."'";
-														if ($lang == $option->language) { $html .= ' SELECTED'; }
-														$html .= ">".$option->language."</option>";
-													}
-												}		
-												$html .= '</select>';
-												$html .= '</div>';
-										$html .= '</div>';
-				
 										// Time zone adjustment
 										$html .= '<div style="clear:both">';
-											$html .= 'Your local time zone adjustment in hours (difference from GMT which is '.date('jS \of M h:i:s A').')';
+											$html .= sprintf (__('Your local time zone adjustment in hours (difference from GMT which is %s).', 'wp-symposium'), date('jS \of M h:i:s A'));
 											$html .= '<div style="float:right;">';
 												$html .= '<select name="timezone">';
 												for ($i = -12; $i <= 14; $i++) {
@@ -209,7 +186,7 @@ function symposium_profile()
 											
 											// Sound alert
 											$html .= '<div style="clear:both">';
-												$html .= 'Notification bar alert that sounds when you get new mail, relevant forum posts, etc';
+												$html .= __('Notification bar alert that sounds when you get new mail, relevant forum posts, etc', 'wp-symposium');
 												$html .= '<div style="float:right;">';
 													$html .= '<select name="sound">';
 														$html .= "<option value='None'";
@@ -254,7 +231,7 @@ function symposium_profile()
 											
 											// Sound alert (for chat)
 											$html .= '<div style="clear:both">';;
-												$html .= 'Notification bar alert that sounds when a new chat message arrives';
+												$html .= __('Notification bar alert that sounds when a new chat message arrives', 'wp-symposium');
 												$html .= '<div style="float:right;">';
 													$html .= '<select name="soundchat">';
 														$html .= "<option value='None'";
@@ -299,7 +276,7 @@ function symposium_profile()
 											
 											// Bar position
 											$html .= '<div style="clear:both">';
-												$html .= 'Where do you want the notification bar?';
+												$html .= __('Where do you want the notification bar?', 'wp-symposium');
 												$html .= '<div style="float: right;">';
 													$html .= '<select name="bar_position">';
 														$html .= "<option value='bottom'";
@@ -316,7 +293,7 @@ function symposium_profile()
 
 										// Display name
 										$html .= '<div style="clear:both; margin-top:15px;">';
-											$html .= 'Your name as shown';
+											$html .= __('Your name as shown', 'wp-symposium');
 											$html .= '<div style="float:right;">';
 												$html .= '<input type="text" class="input-field" name="display_name" value="'.$current_user->display_name.'">';
 											$html .= '</div>';
@@ -324,7 +301,7 @@ function symposium_profile()
 										
 										// Email address
 										$html .= '<div style="clear:both; margin-top:15px;">';
-											$html .= 'Your email address';
+											$html .= __('Your email address', 'wp-symposium');
 											$html .= '<div style="float:right;">';
 												$html .= '<input type="text" class="input-field" name="user_email" style="width:300px" value="'.$current_user->user_email.'">';
 											$html .= '</div>';
@@ -332,7 +309,7 @@ function symposium_profile()
 										
 										// Email notifications
 										$html .= '<div style="clear:both;">';
-											$html .= 'Do you want to receive an email when you get new mail messages?';
+											$html .= __('Do you want to receive an email when you get new mail messages?', 'wp-symposium');
 											$html .= '<div style="float:right;">';
 												$html .= '<input type="checkbox" name="notify_new_messages" id="notify_new_messages"';
 													if ($notify_new_messages == "on") { $html .= "CHECKED"; }
@@ -342,7 +319,7 @@ function symposium_profile()
 
 										// Email wall
 										$html .= '<div style="clear:both;">';
-											$html .= 'Do you want to receive an email when a friend adds a new wall post or reply?';
+											$html .= __('Do you want to receive an email when a friend adds a new wall post or reply?', 'wp-symposium');
 											$html .= '<div style="float:right;">';
 												$html .= '<input type="checkbox" name="notify_new_wall" id="notify_new_wall"';
 													if ($notify_new_wall == "on") { $html .= "CHECKED"; }
@@ -354,13 +331,13 @@ function symposium_profile()
 										if ($config->enable_password == "on") {
 											$html .= '<div class="sep"></div>';
 											$html .= '<div style="clear:both; margin-top:15px;">';
-												$html .= 'Change your password';
+												$html .= __('Change your password', 'wp-symposium');
 												$html .= '<div style="float:right;">';
 													$html .= '<input class="input-field" type="text" name="xyz1" value="">';
 												$html .= '</div>';
 											$html .= '</div>';
 											$html .= '<div style="clear:both">';
-												$html .= 'Re-enter to confirm';
+												$html .= __('Re-enter to confirm', 'wp-symposium');
 												$html .= '<div style="float:right;">';
 													$html .= '<input class="input-field" type="text" name="xyz2" value="">';
 												$html .= '</div>';
@@ -371,9 +348,9 @@ function symposium_profile()
 									$html .= '</div> ';
 									 
 									$html .= '<p style="clear: both; padding-top:15px;" class="submit"> ';
-									$html .= '<input type="submit" name="Submit" class="button" value="Save" /> ';
+									$html .= '<input type="submit" name="Submit" class="button" value="'.__('Save', 'wp-symposium').'" /> ';
 									$html .= '</p> ';
-									$html .= '</form> ';
+								$html .= '</form> ';
 							
 							$html .= "</div>";
 		
@@ -402,43 +379,43 @@ function symposium_profile()
 									
 										// Sharing personal information
 										$html .= '<div style="clear:both;">';
-											$html .= 'Who do you want to share personal information with?';
+											$html .= __('Who do you want to share personal information with?', 'wp-symposium');
 											$html .= '<div style="float:right;">';
 												$html .= '<select name="share">';
 													$html .= "<option value='Nobody'";
 														if ($share == 'Nobody') { $html .= ' SELECTED'; }
-														$html .= '>Nobody</option>';
+														$html .= '>'.__('Nobody', 'wp-symposium').'</option>';
 													$html .= "<option value='Friends only'";
 														if ($share == 'Friends only') { $html .= ' SELECTED'; }
-														$html .= '>Friends only</option>';
+														$html .= '>'.__('Friends Only', 'wp-symposium').'</option>';
 													$html .= "<option value='Everyone'";
 														if ($share == 'Everyone') { $html .= ' SELECTED'; }
-														$html .= '>Everyone</option>';
+														$html .= '>'.__('Everyone', 'wp-symposium').'</option>';
 												$html .= '</select>';
 											$html .= '</div>';
 										$html .= '</div>';
 										
 										// Sharing wall
 										$html .= '<div style="clear:both;">';
-											$html .= 'Who do you want to share your wall with?';
+											$html .= __('Who do you want to share your wall with?', 'wp-symposium');
 											$html .= '<div style="float:right;">';
 												$html .= '<select name="wall_share">';
 													$html .= "<option value='Nobody'";
 														if ($wall_share == 'Nobody') { $html .= ' SELECTED'; }
-														$html .= '>Nobody</option>';
+														$html .= '>'.__('Nobody', 'wp-symposium').'</option>';
 													$html .= "<option value='Friends only'";
 														if ($wall_share == 'Friends only') { $html .= ' SELECTED'; }
-														$html .= '>Friends only</option>';
+														$html .= '>'.__('Friends Only', 'wp-symposium').'</option>';
 													$html .= "<option value='Everyone'";
 														if ($wall_share == 'Everyone') { $html .= ' SELECTED'; }
-														$html .= '>Everyone</option>';
+														$html .= '>'.__('Everyone', 'wp-symposium').'</option>';
 												$html .= '</select>';
 											$html .= '</div>';
 										$html .= '</div>';
 										
 										// Birthday
 										$html .= '<div style="clear:both">';
-											$html .= 'Your date of birth (day/month/year)';
+											$html .= __('Your date of birth (day/month/year)', 'wp-symposium');
 											$html .= '<div style="float:right;">';
 												$html .= "<select name='dob_day'>";
 													for ($i = 1; $i <= 31; $i++) {
@@ -466,7 +443,7 @@ function symposium_profile()
 											
 										// City
 										$html .= '<div style="clear:both">';
-											$html .= 'Which town/city are you in?';
+											$html .= __('Which town/city are you in?', 'wp-symposium');
 											$html .= '<div style="float:right;">';
 												$html .= '<input type="text" name="city" value="'.$city.'">';
 											$html .= '</div>';
@@ -474,7 +451,7 @@ function symposium_profile()
 											
 										// Country
 										$html .= '<div style="clear:both">';
-											$html .= 'Which country are you in?';
+											$html .= __('Which country are you in?', 'wp-symposium');
 											$html .= '<div style="float:right;">';
 												$html .= '<input type="text" name="country" value="'.$country.'">';
 											$html .= '</div>';
@@ -525,7 +502,7 @@ function symposium_profile()
 									$html .= '</div> ';
 									 
 									$html .= '<p style="clear: both" class="submit"> ';
-										$html .= '<input type="submit" name="Submit" class="button" value="Save" /> ';
+										$html .= '<input type="submit" name="Submit" class="button" value="'.__('Save', 'wp-symposium').'" /> ';
 									$html .= '</p> ';
 								$html .= '</form> ';
 							
@@ -543,7 +520,7 @@ function symposium_profile()
 								$requests = $wpdb->get_results($sql);
 								if ($requests) {
 									
-									$html .= '<h2>Requests...</h2>';
+									$html .= '<h2>'.__('Friend Requests', 'wp-symposium').'...</h2>';
 									foreach ($requests as $request) {
 										$html .= "<div style='clear:both; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
 											$html .= "<div style='float: left; width:64px; margin-right: 15px'>";
@@ -551,7 +528,7 @@ function symposium_profile()
 											$html .= "</div>";
 											$html .= "<div style='float: left; width:50%'>";
 												$html .= symposium_profile_link($request->ID)."<br />";
-												$html .= symposium_time_ago($request->friend_timestamp, $language_key)."<br />";
+												$html .= symposium_time_ago($request->friend_timestamp)."<br />";
 												$html .= "<em>".stripslashes($request->friend_message)."</em>";
 											$html .= "</div>";
 											$html .= "<div style='float:right'>";
@@ -559,7 +536,7 @@ function symposium_profile()
 												$html .= '<input type="hidden" name="symposium_update" value="R">';
 												$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
 												$html .= '<input type="hidden" name="friend_from" value="'.$request->friend_from.'">';
-												$html .= '<input type="submit" name="friendreject" class="button" value="Reject" /> ';
+												$html .= '<input type="submit" name="friendreject" class="button" value="'.__('Reject', 'wp-symposium').'" /> ';
 												$html .= '</form>';
 											$html .= "</div>";
 											$html .= "<div style='float:right'>";
@@ -567,7 +544,7 @@ function symposium_profile()
 												$html .= '<input type="hidden" name="symposium_update" value="A">';
 												$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
 												$html .= '<input type="hidden" name="friend_from" value="'.$request->friend_from.'">';
-												$html .= '<input type="submit" name="friendaccept" class="button" value="Accept" /> ';
+												$html .= '<input type="submit" name="friendaccept" class="button" value="'.__('Accept', 'wp-symposium').'" /> ';
 												$html .= '</form>';
 											$html .= "</div>";
 										$html .= "</div>";
@@ -596,12 +573,12 @@ function symposium_profile()
 											$html .= "<div style='float: left; width:50%'>";
 												$html .= symposium_profile_link($friend->friend_to)."<br />";
 												if ($last_active_minutes >= $offline) {
-													$html .= 'Logged out. Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
+													$html .= __('Logged out', 'wp-symposium').'. '.__('Last active', 'wp-symposium').' '.symposium_time_ago($friend->last_activity).".";
 												} else {
 													if ($last_active_minutes >= $inactive) {
-														$html .= 'Offline. Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
+														$html .= __('Offline', 'wp-symposium').'. '.__('Last active', 'wp-symposium').' '.symposium_time_ago($friend->last_activity).".";
 													} else {
-														$html .= 'Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
+														$html .= __('Last active', 'wp-symposium').' '.symposium_time_ago($friend->last_activity).".";
 													}
 												}
 											$html .= "</div>";
@@ -611,12 +588,12 @@ function symposium_profile()
 												$html .= '<input type="hidden" name="symposium_update" value="D">';
 												$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
 												$html .= '<input type="hidden" name="friend" value="'.$friend->friend_to.'">';
-												$html .= '<input type="submit" name="frienddelete" class="button" value="Remove" /> ';
+												$html .= '<input type="submit" name="frienddelete" class="button" value="'.__('Remove', 'wp-symposium').'" /> ';
 												$html .= '</form>';
 											$html .= "</div>";
 		
 											$html .= "<div style='float:right'>";
-												$html .='<input type="button" value="Send Mail" class="button" onclick="document.location = \''.symposium_get_url('mail').'?view=compose&to='.$friend->friend_to.'\';">';
+												$html .='<input type="button" value="'.__('Send Mail', 'wp-symposium').'" class="button" onclick="document.location = \''.symposium_get_url('mail').'?view=compose&to='.$friend->friend_to.'\';">';
 											$html .= "</div>";
 		
 										$html .= "</div>";
@@ -631,7 +608,7 @@ function symposium_profile()
 					
 				} else {
 					$html .= symposium_profile_header($uid, $current_user->ID, $mail_url, $user->display_name);
-					$html .= symposium_profile_body($uid, $current_user->ID, $row_color);
+					$html .= symposium_profile_body($uid, $current_user->ID, $styles);
 				}
 
 			// Visitor
@@ -640,11 +617,11 @@ function symposium_profile()
 			}				
 			
 			// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-			$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>Powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress, ".get_option("symposium_version")."</div>";
+			$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
 		
 			// Notices
-			$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin."/images/busy.gif' /> ".$language->sav."</div>";
-			$html .= "<div class='pleasewait' style='display:none;z-index:999999;'><img src='".$plugin."/images/busy.gif' /> ".$language->pw."</div>";
+			$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin."/images/busy.gif' /> ".__('Saving...', 'wp-symposium')."</div>";
+			$html .= "<div class='pleasewait' style='display:none;z-index:999999;'><img src='".$plugin."/images/busy.gif' /> ".__('Please Wait...', 'wp-symposium')."</div>";
 	
 
 		$html .= "</div>";
@@ -668,9 +645,6 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 		
 		$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
 
-		$get_language = symposium_get_language($uid2);
-		$language_key = $get_language['key'];
-		
 		$html = "<div style='padding:0px;overflow:auto;'>";
 	
 			$html .= "<div style='float: left; width: 100%; overflow:auto; padding:0px;'>";
@@ -737,12 +711,8 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 						if ($uid1 == $uid2) {
 
 							// Status Input
-							$html .= '<form method="post" action="'.$dbpage.'">';
-							$html .= '<input type="hidden" name="symposium_update" value="S">';
-							$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
-							$html .= '<input type="text" name="status" class="input-field" value="What\'s on your mind?" onfocus="this.value = \'\';" style="width:300px" />';
-							$html .= '&nbsp;<input type="submit" style="width:75px" class="button" value="Update" /> ';
-							$html .= '</form>';
+							$html .= '<input type="text" id="symposium_status" name="status" class="input-field" value="'.__("What's on your mind?", "wp-symposium").'" onfocus="this.value = \'\';" style="width:300px" />';
+							$html .= '&nbsp;<input id="symposium_add_update" type="submit" style="width:75px" class="button" value="'.__('Update', 'wp-symposium').'" /> ';
 							
 						} else {
 													
@@ -758,7 +728,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 								
 								if (symposium_pending_friendship($uid1)) {
 									// Pending
-									$html .= 'Friend request sent...<br />';
+									$html .= __('Friend Request Sent', 'wp-symposium').'...<br />';
 									$html .= '<form method="post" action="'.$dbpage.'">';
 									$html .= '<input type="hidden" name="symposium_update" value="C">';
 									$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
@@ -767,13 +737,13 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 									$html .= '</form>';
 								} else {							
 									// Not a friend
-									$html .= '<strong>Add as a Friend...</strong><br />';
+									$html .= '<strong>'.__('Add as a Friend', 'wp-symposium').'...</strong><br />';
 									$html .= '<form method="post" action="'.$dbpage.'">';
 									$html .= '<input type="hidden" name="symposium_update" value="F">';
 									$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
 									$html .= '<input type="hidden" name="friend_to" value="'.$_GET['uid'].'">';
-									$html .= '<input type="text" name="friendmessage" class="input-field" style="width:200px" onclick="this.value=\'\'" value="Add a personal message...">';
-									$html .= '&nbsp;&nbsp;<input type="submit" name="addasfriend" class="button" value="Add as Friend" /> ';
+									$html .= '<input type="text" name="friendmessage" class="input-field" style="width:200px" onclick="this.value=\'\'" value="'.__('Add a personal message...', 'wp-symposium').'">';
+									$html .= '&nbsp;&nbsp;<input type="submit" name="addasfriend" class="button" value="'.__('Add as a Friend', 'wp-symposium').'" /> ';
 									$html .= '</form>';
 								}
 							}
@@ -801,15 +771,12 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 
 }
 
-function symposium_profile_body($uid1, $uid2, $reply_color) {
+function symposium_profile_body($uid1, $uid2, $styles) {
 	
 	global $wpdb;
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
 	$dbpage = $plugin.'/symposium_profile_db.php';
 	$meta = get_symposium_meta_row($uid1);					
-
-	$get_language = symposium_get_language($uid2);
-	$language_key = $get_language['key'];
 
 	if ($uid1 > 0) {
 		
@@ -852,7 +819,7 @@ function symposium_profile_body($uid1, $uid2, $reply_color) {
 							$inactive = $config->online;
 							$offline = $config->offline;
 							
-							$html .= '<strong>Recently Active Friends</strong><br />';
+							$html .= '<strong>'.__('Recently Active Friends', 'wp-symposium').'</strong><br />';
 							foreach ($friends as $friend) {
 								
 								$time_now = time();
@@ -865,7 +832,7 @@ function symposium_profile_body($uid1, $uid2, $reply_color) {
 									$html .= "</div>";
 									$html .= "<div>";
 										$html .= symposium_profile_link($friend->friend_to)."<br />";
-										$html .= 'Last active '.symposium_time_ago($friend->last_activity, $language_key).".";
+										$html .= __('Last active', 'wp-symposium').' '.symposium_time_ago($friend->last_activity).".";
 									$html .= "</div>";
 	
 								$html .= "</div>";
@@ -878,90 +845,86 @@ function symposium_profile_body($uid1, $uid2, $reply_color) {
 				
 				// Wall
 				
-				if ( ($uid1 == $uid2) || (is_user_logged_in() && $is_friend)) {
+				if ( ($uid1 != $uid2) || (is_user_logged_in() && $is_friend)) {
 					// Post Comment Input
-					$html .= '<form method="post" action="'.$dbpage.'">';
-					$html .= '<input type="hidden" name="symposium_update" value="W">';
-					$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
-					$html .= '<input type="text" name="post_comment" class="input-field" value="Write a comment..." onfocus="this.value = \'\';" style="width:300px" />';
-					$html .= '&nbsp;<input type="submit" style="width:75px" class="button" value="Post" /> ';
-					$html .= '</form>';
+					$html .= '<input id="symposium_comment" type="text" name="post_comment" class="input-field" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" style="width:300px" />';
+					$html .= '&nbsp;<input id="symposium_add_comment" type="submit" style="width:75px" class="button" value="'.__('Post', 'wp-symposium').'" /> ';
 				}
 
-				$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,10";
-				
-				$comments = $wpdb->get_results($sql);	
-				if ($comments) {
-					foreach ($comments as $comment) {
+				$html .= "<div id='symposium_wall' style='overflow: auto; padding:0px; margin:0px;'>";
 
-						$html .= "<div style='overflow: auto; padding-top: 10px;margin-right: 15px;margin-bottom:15px;border-top: ".$row_border_size."px ".$row_border_style." ".$text_color_2.";'>";
-							$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
-								$html .= "<div style='margin-left: 74px;overflow:auto;'>";
-									$html .= '<a href="'.symposium_get_url('profile').'?uid='.$comment->author_uid.'">'.stripslashes($comment->display_name).'</a> ';
-									if ($comment->author_uid != $comment->subject_uid) {
-										$html .= ' &rarr; <a href="'.symposium_get_url('profile').'?uid='.$comment->subject_uid.'">'.stripslashes($comment->subject_name).'</a> ';
-									}
-									$html .= symposium_time_ago($comment->comment_timestamp, $language_key).".<br />";
-									$html .= stripslashes($comment->comment);
-
-									// Replies
-									$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c 
-										LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID 
-										LEFT JOIN ".$wpdb->prefix."symposium_comments p ON c.comment_parent = p.cid 
-										WHERE ( 
-												(c.subject_uid = ".$uid1.") 
-										   	OR 	(c.author_uid = ".$uid1.") 
-										   	OR 	(p.subject_uid = ".$uid1.") 
-										   	OR 	(p.author_uid = ".$uid1.") 
-										   	OR 	(p.author_uid = ".$uid2.") 
-										   	OR 	(p.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
-										   	OR 	(p.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
-										   ) 
-										   AND c.comment_parent = ".$comment->cid." ORDER BY c.cid";
-									
-									$replies = $wpdb->get_results($sql);	
-									if ($replies) {
-										foreach ($replies as $reply) {
-											$html .= "<div style='background-color: ".$reply_color."; padding:4px; padding-bottom:0px; clear: both; overflow: auto; margin-top:10px;'>";
-												$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
-													$html .= "<div style='margin-left: 45px;overflow:auto;'>";
-														$html .= '<a href="'.symposium_get_url('profile').'?uid='.$reply->author_uid.'">'.stripslashes($reply->display_name).'</a> ';
-														$html .= symposium_time_ago($reply->comment_timestamp, $language_key).".<br />";
-														$html .= stripslashes($reply->comment);
-													$html .= "</div>";
-												$html .= "</div>";
-												
-												$html .= "<div style='float:left;width:45px;margin-left:-100%;'>";
-													$html .= get_avatar($reply->author_uid, 40);
-												$html .= "</div>";
-																					
-											$html .= "</div>";
+					$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,10";
+					
+					$comments = $wpdb->get_results($sql);	
+					if ($comments) {
+						foreach ($comments as $comment) {
+	
+							$html .= "<div style='overflow: auto; padding-top: 10px;margin-right: 15px;margin-bottom:15px;border-top: ".$styles->row_border_size."px ".$styles->row_border_style." ".$text_color_2.";'>";
+								$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
+									$html .= "<div style='margin-left: 74px;overflow:auto;'>";
+										$html .= '<a href="'.symposium_get_url('profile').'?uid='.$comment->author_uid.'">'.stripslashes($comment->display_name).'</a> ';
+										if ($comment->author_uid != $comment->subject_uid) {
+											$html .= ' &rarr; <a href="'.symposium_get_url('profile').'?uid='.$comment->subject_uid.'">'.stripslashes($comment->subject_name).'</a> ';
 										}
-									}
-
-									// Reply field
-									if ( $uid1 == $uid2 || (is_user_logged_in() && $is_friend)) {
-										$html .= '<form method="post" action="'.$dbpage.'">';
-										$html .= '<input type="hidden" name="symposium_update" value="WC">';
-										$html .= '<input type="hidden" name="uid" value="'.$uid1.'">';
-										$html .= '<input type="hidden" name="subject_uid" value="'.$comment->subject_uid.'">';
-										$html .= '<input type="hidden" name="comment_parent" value="'.$comment->cid.'">';
-										$html .= '<input type="text" name="wall_comment" class="input-field" style="margin-top:10px; width:300px;" value="Write a comment..." onfocus="this.value = \'\';" />';
-										$html .= '&nbsp;<input type="submit" style="width:75px" class="button" value="Add" /> ';
-										$html .= '</form>';
-									}
-									
+										$html .= symposium_time_ago($comment->comment_timestamp).".<br />";
+										$html .= stripslashes($comment->comment);
+	
+										// Replies
+										$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c 
+											LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID 
+											LEFT JOIN ".$wpdb->prefix."symposium_comments p ON c.comment_parent = p.cid 
+											WHERE ( 
+													(c.subject_uid = ".$uid1.") 
+											   	OR 	(c.author_uid = ".$uid1.") 
+											   	OR 	(p.subject_uid = ".$uid1.") 
+											   	OR 	(p.author_uid = ".$uid1.") 
+											   	OR 	(p.author_uid = ".$uid2.") 
+											   	OR 	(p.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
+											   	OR 	(p.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
+											   ) 
+											   AND c.comment_parent = ".$comment->cid." ORDER BY c.cid";
+										
+										$replies = $wpdb->get_results($sql);	
+										if ($replies) {
+											foreach ($replies as $reply) {
+												$html .= "<div style='background-color: ".$styles->bg_color_2."; padding:4px; padding-bottom:0px; clear: both; overflow: auto; margin-top:10px;'>";
+													$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
+														$html .= "<div style='margin-left: 45px;overflow:auto;'>";
+															$html .= '<a href="'.symposium_get_url('profile').'?uid='.$reply->author_uid.'">'.stripslashes($reply->display_name).'</a> ';
+															$html .= symposium_time_ago($reply->comment_timestamp).".<br />";
+															$html .= stripslashes($reply->comment);
+														$html .= "</div>";
+													$html .= "</div>";
+													
+													$html .= "<div style='float:left;width:45px;margin-left:-100%;'>";
+														$html .= get_avatar($reply->author_uid, 40);
+													$html .= "</div>";		
+												$html .= "</div>";
+											}
+										}
+										$html .= "<div id='symposium_comment_".$comment->cid."'></div>";
+	
+										// Reply field
+										if ( $uid1 == $uid2 || (is_user_logged_in() && $is_friend)) {
+											$html .= '<p><input id="symposium_reply_'.$comment->cid.'" type="text" name="wall_comment" class="input-field" style="margin-top:10px; width:300px;" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" />';
+											$html .= '<input id="symposium_author_'.$comment->cid.'" type="hidden" value="'.$comment->author_uid.'" />';
+											$html .= '&nbsp;<input title="'.$comment->cid.'" type="submit" style="width:75px" class="button symposium_add_reply" value="'.__('Add', 'wp-symposium').'" /></p>';
+										}
+										
+									$html .= "</div>";
+								$html .= "</div>";
+								$html .= "<div style='float:left;width:74px;margin-left:-100%;'>";
+									$html .= get_avatar($comment->author_uid, 64);
 								$html .= "</div>";
 							$html .= "</div>";
-							$html .= "<div style='float:left;width:74px;margin-left:-100%;'>";
-								$html .= get_avatar($comment->author_uid, 64);
-							$html .= "</div>";
-						$html .= "</div>";
-						
-
-						
+							
+	
+							
+						}
 					}
-				}
+				
+				$html .= "</div>";
+					
 			$html .= "</div>";
 		}
 		

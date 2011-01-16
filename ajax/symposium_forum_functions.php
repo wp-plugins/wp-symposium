@@ -73,7 +73,9 @@ if ($_POST['action'] == 'updateForum') {
 	$action = $_POST['value'];
 
 	// Store subscription if wanted
-	$wpdb->query("DELETE FROM ".$subs." WHERE uid = ".$current_user->ID." AND tid = ".$tid);
+	if (symposium_safe_param($tid)) {
+		$wpdb->query("DELETE FROM ".$subs." WHERE uid = ".$current_user->ID." AND tid = ".$tid);
+	}
 	
 	if ($action == 1)
 	{		
@@ -148,7 +150,9 @@ if ($_POST['action'] == 'updateForumSubscribe') {
 	$cid = $_POST['cid'];
 
 	// Store subscription if wanted
-	$wpdb->query("DELETE FROM ".$subs." WHERE uid = ".$current_user->ID." AND tid = 0 AND (cid = ".$cid." OR cid = 0)");
+	if (symposium_safe_param($cid)) {
+		$wpdb->query("DELETE FROM ".$subs." WHERE uid = ".$current_user->ID." AND tid = 0 AND (cid = ".$cid." OR cid = 0)");
+	}
 	
 	if ($action == 1)
 	{		

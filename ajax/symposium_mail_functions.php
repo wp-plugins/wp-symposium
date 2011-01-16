@@ -10,12 +10,10 @@ if ($_POST['action'] == 'getMailMessage') {
 	global $wpdb, $current_user;
 	wp_get_current_user();
 	
-	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix . "symposium_config"));
-	
 	$mail_mid = $_POST['mid'];	
 	$tray = $_POST['tray'];	
 	
-	$message = get_message($mail_mid, $tray, $language_key);
+	$message = get_message($mail_mid, $tray);
 	
 	// Fetch new unread count
 	$unread = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail'." WHERE mail_to = ".$current_user->ID." AND mail_".$tray."_deleted != 'on' AND mail_read != 'on'");

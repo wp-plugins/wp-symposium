@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Registration
 Plugin URI: http://www.wpsymposium.com
 Description: Registration component for the Symposium suite of plug-ins. Put [symposium-register] on any WordPress page.
-Version: 0.1.25
+Version: 0.1.26
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -31,8 +31,6 @@ function symposium_register() {
 	wp_get_current_user();
 
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
-	$get_language = symposium_get_language($current_user->ID);
-	$language_key = $get_language['key'];
 
 	$html = '<div id="symposium-wrapper" style="padding-top:10px">';
 
@@ -56,36 +54,36 @@ function symposium_register() {
 			
 		$html .= '<div style="margin-left:0px">';
 
-			$html .= '<div id="new-topic-subject-label" class="new-topic-subject label">A username</div>';
+			$html .= '<div id="new-topic-subject-label" class="new-topic-subject label">'.__('A username', 'wp-symposium').'</div>';
 			$html .= '<input type="text" id="username" name="username" class="new-topic-subject-input" style="width:96%" value="'.$username.'" />';
-			$html .= '<div id="username-warning" class="warning hidden">Please enter a username</div>';
+			$html .= '<div id="username-warning" class="warning hidden">'.__('Please enter a username', 'wp-symposium').'</div>';
 
-			$html .= '<div>Your name as seen by others<br />';
+			$html .= '<div>'.__('Your name as seen by others', 'wp-symposium').'<br />';
 			$html .= '<input type="text" id="display_name" name="display_name" class="new-topic-subject-input" style="width:96%" value="'.$display_name.'"/></div>';
-			$html .= '<div id="display_name-warning" class="warning hidden">Please enter a display name</div>';
+			$html .= '<div id="display_name-warning" class="warning hidden">'.__('Please enter a display name', 'wp-symposium').'</div>';
 	
-			$html .= '<div>Your email address<br />';
+			$html .= '<div>'.__('Your email address', 'wp-symposium').'<br />';
 			$html .= '<input type="text" id="youremail" name="youremail" class="new-topic-subject-input" style="width:96%" value="'.$youremail.'"/></div>';
-			$html .= '<div id="youremail-warning" class="warning hidden">Please enter a valid email address</div>';
+			$html .= '<div id="youremail-warning" class="warning hidden">'.__('Please enter a valid email address', 'wp-symposium').'</div>';
 		
-			$html .= '<div>A password<br />';
+			$html .= '<div>'.__('A password', 'wp-symposium').'<br />';
 			$html .= '<input type="text" id="pwd" name="pwd" class="new-topic-subject-input" style="width:96%" value="" /></div>';
-			$html .= '<div id="password-warning" class="warning hidden">Please enter a password</div>';
+			$html .= '<div id="password-warning" class="warning hidden">'.__('Please enter a password', 'wp-symposium').'</div>';
 	
-			$html .= '<div>Re-enter the password<br />';
+			$html .= '<div>'.__('Re-enter the password', 'wp-symposium').'<br />';
 			$html .= '<input type="text" id="pwd2" name="pwd2" class="new-topic-subject-input" style="width:96%" value="" /></div>';
-			$html .= '<div id="password2-warning" class="warning hidden" style="margin-top:20px">You entered different passwords</div>';
+			$html .= '<div id="password2-warning" class="warning hidden" style="margin-top:20px">'.__('You entered different passwords', 'wp-symposium').'</div>';
 	
 			$sum1 = rand(1,5);
 			$sum2 = rand(1,4);
 			$result = $sum1 + $sum2;
 			$use_sum = $wpdb->get_var($wpdb->prepare("SELECT register_use_sum FROM ".$wpdb->prefix."symposium_config"));
 			if ( $use_sum == "on" ) {
-				$html .= '<div style="float:left; width: 400px;">What is the answer?<br />';
+				$html .= '<div style="float:left; width: 400px;">'.__('What is the answer?', 'wp-symposium').'<br />';
 				$html .= '<input type="text" id="sum1" name="sum1" class="new-topic-subject-input" style="width:30px; text-align:center;" value="'.$sum1.'"/> + ';
 				$html .= '<input type="text" id="sum2" name="sum2" class="new-topic-subject-input" style="width:30px; text-align:center;" value="'.$sum2.'"/> = ';
 				$html .= '<input type="text" id="result" name="result" class="new-topic-subject-input" style="width:30px; text-align:center;" /></div>';
-				$html .= '<div id="sum-warning" class="warning hidden" style="float:left; width: 400px;">Please enter the result of the sum</div>';
+				$html .= '<div id="sum-warning" class="warning hidden" style="float:left; width: 400px;">'.__('Please enter the result of the sum', 'wp-symposium').'</div>';
 			} else {
 				$html .= '<input type="hidden" id="sum1" name="sum1" value="'.$sum1.'"/>';
 				$html .= '<input type="hidden" id="sum2" name="sum2" value="'.$sum2.'"/>';
@@ -98,13 +96,16 @@ function symposium_register() {
 
 		$html .= '<div style="padding:0px;float:right; margin-left:5px;  margin-right:5px">';
 		if ( $use_sum == "on" ) { $html .= "<br />"; }
-		$html .= '<input type="submit" class="button" style="float: left; height:46px;" value="Register" />';
+		$html .= '<input type="submit" class="button" style="float: left; height:46px;" value="'.__('Register', 'wp-symposium').'" />';
 		$html .= '</div>';
 
 		
 		$html .= '</form>';
 
 	}
+
+	// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
+	$html .= "<div style='clear: both; width:100%;font-style:italic; font-size: 10px;text-align:center;'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
 		
 	$html .= '</div>'; // End of Wrapper
 	

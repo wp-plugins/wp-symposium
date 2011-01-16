@@ -1,14 +1,14 @@
 === Plugin Name ===
 Author: WP Symposium
 Contributors: Simon Goodchild
-Donate link: http://www.wpsymposium.com
+Donate link: http://www.wpsymposium.com/contact
 Link: http://www.wpsymposium.com
-Tags: symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, french, spanish, german, italian, turkish, czech, hungarian, portuguese, norwegian, dutch, russian, polish, swedish 
+Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.25
+Stable tag: 0.1.26
 
-A new suite of social networking plugins - forum, wall, mail, member directory, private messaging, notification bar, chat windows, profile page, widgets, and more!
+Social Networking for WordPress - forum, wall, mail, member directory, private messaging, notification bar, chat windows, profile page, widgets, and more! 
 
 == Description ==
 
@@ -42,16 +42,17 @@ NOTICE: We are currently BETA testing this plugin. As such, although we have not
 *Configuration*
 
 * Works with any WordPress theme, and standard WordPress users
+* Supports .POT and .po/.mo language files
 * Set width of WPS plugins in % or pixels
 * Supports all permalink, and default no-permalink settings
 * Supports '.html on PAGES' plugin
 * Supports 'SimpleModal Login' plugin
-* No need to edit a stylesheet
 * Health Check page to help with maintenance
-* Option to not load jQuery and other components if plugins are clashing
+* Option to not load jQuery/jQueryUI and other components if plugins are clashing
 
 *Appearance/Styles*
 
+* No need to edit a stylesheet
 * Optional Search Engine friendly links within the forum
 * Optional Replacement of smiley codes with images, eg. :)
 * Loads of fun smilies/emoticons to insert
@@ -64,23 +65,10 @@ NOTICE: We are currently BETA testing this plugin. As such, although we have not
 
 *Languages*
 
-* English
-* French (thanks to Frederic Lohbrunner)
-* Spanish (thanks to Patricia Blanco)
-* German (thanks to Pascal)
-* Italian (thanks to Massimiliano Mazza)
-* Turkish (thanks to Cahit Cengizhan)
-* Czech (thanks to Vase Jmeno)
-* Hungarian (thanks to Gergo Nagy)
-* Portuguese (thanks to Nuno Coelho)
-* Brazilian Portuguese (thanks to Eduardo Machado)
-* Norwegian (thanks to Celina)
-* Dutch (thanks to Monique Huizen and Monique Huizen)
-* Russian (thanks to Ruslan)
-* Polish (thanks to Dariusz Labuda)
-* Swedish (thanks to Mattias Dahl)
-
-* If your language is not included, or to make corrections, please contact us via info@wpsymposium.com and we will work with you on translating the forum to your language.
+* .POT file included for language translation
+* Included (from v0.1.26): English, French
+* Automatically reflects WP-LANG setting in wp-config.php
+* Learn how to change language at http://http://codex.wordpress.org/WordPress_in_Your_Language
 
 **MEMBER PROFILE PAGE**
 
@@ -321,8 +309,8 @@ A. Check you have `[symposium-forum]` on your page, with a hyphen, not an unders
 Q. I've done that, but the forum (or another plugin) still doesn't appear?
 A. Have you put `[symposium-forum]` on a WordPress page, not an HTML file? 
 
-Q. My language isn't supported, can I add my language?
-A. Go to http://www.wpsymposium.com/forum/add-new-forum-language and we will add the language with your help, thank you.
+Q. Can I use other languages?
+A. Check out www.wpsymposium.com/support/add-new-language to see if yours is support, or how to add a new language
 
 Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page at http://www.wpsymposium.com/forum/forum-smilies
@@ -335,6 +323,15 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.26 = 
+
+* Core: Added support for .POT and .po/.mo files for languages
+* Core: Improved Dashboard widget
+* Core: A number of minor code improvements
+* Admin: Moved email from/footer to Settings
+* Profile: Added new status post and reply with AJAX
+* Login: Added redirect to previous page option
 
 = 0.1.25 =
 

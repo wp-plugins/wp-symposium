@@ -276,7 +276,7 @@
 			
 		} else {
 			
-			$html .= "<p><strong>Failed to get styles</strong></p>";
+			echo "<p><strong>Failed to get styles</strong></p>";
 			
 		}
 ?>

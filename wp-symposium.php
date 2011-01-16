@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.25
+Version: 0.1.26
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -32,6 +32,7 @@ include_once('symposium_functions.php');
 global $wpdb, $symposium_db_version;
 $symposium_db_version = "1";
 
+add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
 add_action('init', 'symposium_notification_setoptions');
 add_action('symposium_notification_hook','symposium_notification_trigger_schedule');
@@ -71,7 +72,7 @@ function symposium_mail_warning() {
 
 	if ($db != $db_ver) {
 		echo "<div class='updated'><p>";
-		echo "You need to update your WP Symposium database - please deactivate, then re-activate the WP Symposium core plugin.";
+		_e("You need to update your WP Symposium database - please deactivate, then re-activate the WP Symposium core plugin.");
 		echo "</p></div>";
 	}
 }
@@ -86,27 +87,72 @@ function symposium_widget() {
 	
 	echo '<img src="'.WP_PLUGIN_URL.'/wp-symposium/images/logo_small.gif" alt="WP Symposium logo" style="float:right; width:100px;height:120px;" />';
 
-	echo '<table>';
-	echo '<tr><td style="padding:4px"><a href="admin.php?page=symposium_categories">Categories</a></td>';
-	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_cats').'</td></tr>';
-	echo '<tr><td style="padding:4px">Topics</td>';
-	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
-	echo '<tr><td style="padding:4px">Replies</td>';
-	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent > 0").'</td></tr>';
-	echo '<tr><td style="padding:4px">Views</td>';
-	echo '<td style="padding:4px">'.$wpdb->get_var("SELECT SUM(topic_views) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
-	echo '<tr><td style="padding:4px">Mail</td>';
-	$mailcount = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail');
-	$unread = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail'." WHERE mail_read != 'on'");
-	echo '<td style="padding:4px">'.$mailcount;
-	echo ' ('.$unread.' unread)';
-	echo '</td></tr>';
-	echo '</table>';
+	echo '<table><tr><td valign="top">';
+	
+		echo '<table>';
+		echo '<tr><td colspan="2" style="padding:4px"><strong>'.__('Forum', 'wp-symposium').'</strong></td></tr>';
+		echo '<tr><td style="padding:4px"><a href="admin.php?page=symposium_categories">'.__('Categories', 'wp-symposium').'</a></td>';
+		echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_cats').'</td></tr>';
+		echo '<tr><td style="padding:4px">'.__('Topics', 'wp-symposium').'</td>';
+		echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
+		echo '<tr><td style="padding:4px">'.__('Replies', 'wp-symposium').'</td>';
+		echo '<td style="padding:4px">'.$wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent > 0").'</td></tr>';
+		echo '<tr><td style="padding:4px">'.__('Views', 'wp-symposium').'</td>';
+		echo '<td style="padding:4px">'.$wpdb->get_var("SELECT SUM(topic_views) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
+		echo '<tr><td style="padding:4px">'.__('Mail', 'wp-symposium').'</td>';
+		$mailcount = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail');
+		$unread = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail'." WHERE mail_read != 'on'");
+		echo '<td style="padding:4px">'.$mailcount.' ';
+		printf (__('(%s unread)', 'wp-symposium'), $unread);
+		echo '</td></tr>';
+		echo '</table>';
+		
+	echo "</td><td valign='top'>";
 
-	echo '<p>';
-	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix . 'symposium_config'));
-	echo '<a href="'.$forum_url.'">View Forum</a>';
-	echo '</p>';
+	
+		echo '<table>';
+			echo '<tr><td colspan="2" style="padding:4px"><strong>'.__('Plugins', 'wp-symposium').'</strong></td></tr>';
+			echo '<tr><td colspan="2" style="padding:4px">';
+			if (function_exists('symposium_forum')) {
+				$url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix . 'symposium_config'));
+				echo '<a href="'.$url.'">'.__('Go to Forum', 'wp-symposium').'</a>';
+			} else {
+				echo 'Forum not activated';
+			}
+			echo "</td></tr>";
+			
+			echo '<tr><td colspan="2" style="padding:4px">';
+			if (function_exists('symposium_profile')) {
+				$url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix . 'symposium_config'));
+				echo '<a href="'.$url.'">'.__('Go to Profile', 'wp-symposium').'</a>';
+			} else {
+				echo 'Profile not activated';
+			}
+			echo "</td></tr>";
+
+			echo '<tr><td colspan="2" style="padding:4px">';
+			if (function_exists('symposium_mail')) {
+				$url = $wpdb->get_var($wpdb->prepare("SELECT mail_url FROM ".$wpdb->prefix . 'symposium_config'));
+				echo '<a href="'.$url.'">'.__('Go to Mail', 'wp-symposium').'</a>';
+			} else {
+				echo 'Profile not activated';
+			}
+			echo "</td></tr>";
+			
+			echo '<tr><td colspan="2" style="padding:4px">';
+			if (function_exists('symposium_members')) {
+				$url = $wpdb->get_var($wpdb->prepare("SELECT members_url FROM ".$wpdb->prefix . 'symposium_config'));
+				echo '<a href="'.$url.'">'.__('Go to Member Directory', 'wp-symposium').'</a>';
+			} else {
+				echo 'Member Directory not activated';
+			}
+			echo "</td></tr>";
+			
+		echo "</table>";
+	
+	
+	echo "</td></tr></table>";
+
 }
 
 function symposium_activate() {
@@ -118,8 +164,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.25";
-	$symposium_db_ver = 25;
+	$symposium_version = "0.1.26";
+	$symposium_db_ver = 26;
 	
 	// Code version *************************************************************************************
 	$ver = get_option("symposium_version");
@@ -144,9 +190,9 @@ function symposium_activate() {
 
 	include('create_tables.php');
 
-  	// Update tables (may already be there, not a problem as will just skip) *************************************************************************************
+  	// Update tables *************************************************************************************
 
-   	// Add option fields
+   	// Add option fields	
 	symposium_alter_table("config", "ADD", "allow_new_topics", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "preview1", "int(11)", "NOT NULL", "'45'");
@@ -173,15 +219,15 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "wp_alignment", "varchar(16)", "NOT NULL", "'Center'");
 	symposium_alter_table("config", "ADD", "enable_password", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "enable_redirects", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "login_redirect", "varchar(256)", "NOT NULL", "'WordPress default'");
-	symposium_alter_table("config", "ADD", "login_redirect_url", "varchar(256)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "logout_redirect", "varchar(256)", "NOT NULL", "'WordPress default'");
-	symposium_alter_table("config", "ADD", "logout_redirect_url", "varchar(256)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "login_redirect", "varchar(128)", "NOT NULL", "'WordPress default'");
+	symposium_alter_table("config", "ADD", "login_redirect_url", "varchar(128)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "logout_redirect", "varchar(128)", "NOT NULL", "'WordPress default'");
+	symposium_alter_table("config", "ADD", "logout_redirect_url", "varchar(128)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_login", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "custom_login_url", "varchar(512)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_register", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "custom_register_url", "varchar(512)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "custom_register_url", "varchar(128)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "register_use_sum", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "register_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "members_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
@@ -202,17 +248,13 @@ function symposium_activate() {
 	// Modify Notification bar table
 	symposium_alter_table("config", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
 	symposium_alter_table("config", "ADD", "bar_position", "varchar(6)", "NOT NULL", "'bottom'");
-	symposium_alter_table("config", "ADD", "bar_label", "varchar(256)", "NOT NULL", "'Powered by WP Symposium'");
+	symposium_alter_table("config", "ADD", "bar_label", "text", "NOT NULL", "''");
 	symposium_alter_table("notifications", "ADD", "notification_old", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_chat", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "bar_polling", "int(11)", "NOT NULL", "'120'");
 	symposium_alter_table("config", "ADD", "chat_polling", "int(11)", "NOT NULL", "'10'");
 	symposium_alter_table("config", "ADD", "visitors", "varchar(2)", "NOT NULL", "'on'");
 
-	// Add/Modify option fields for languages for all versions (if fields already exist, ADD will be skipped)
-	symposium_alter_table("config", "ADD", "language", "varchar(64)", "NOT NULL", "'English'");
-	symposium_alter_table("config", "MODIFY", "language", "varchar(64)", "NOT NULL", "'English'");
-		
 	// Modify user meta table
 	symposium_alter_table("usermeta", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
 	symposium_alter_table("usermeta", "ADD", "soundchat", "varchar(32)", "NOT NULL", "'tap.mp3'");
@@ -220,16 +262,15 @@ function symposium_activate() {
 	symposium_alter_table("usermeta", "ADD", "notify_new_messages", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("usermeta", "ADD", "notify_new_wall", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("usermeta", "ADD", "timezone", "int(11)", "", "0");
-	symposium_alter_table("usermeta", "ADD", "city", "varchar(128)", "", "");
-	symposium_alter_table("usermeta", "ADD", "country", "varchar(128)", "", "");
+	symposium_alter_table("usermeta", "ADD", "city", "varchar(32)", "", "");
+	symposium_alter_table("usermeta", "ADD", "country", "varchar(32)", "", "");
 	symposium_alter_table("usermeta", "ADD", "dob_day", "int(11)", "", "");
 	symposium_alter_table("usermeta", "ADD", "dob_month", "int(11)", "", "");
 	symposium_alter_table("usermeta", "ADD", "dob_year", "int(11)", "", "");
 	symposium_alter_table("usermeta", "ADD", "share", "varchar(32)", "", "'Friends only'");
-	symposium_alter_table("usermeta", "ADD", "language", "varchar(64)", "", "'English'");
 	symposium_alter_table("usermeta", "ADD", "last_activity", "timestamp", "", "");
 	symposium_alter_table("usermeta", "MODIFY", "last_activity", "datetime", "", "");
-	symposium_alter_table("usermeta", "ADD", "status", "varchar(1024)", "NOT NULL", "''");
+	symposium_alter_table("usermeta", "ADD", "status", "varchar(32)", "NOT NULL", "''");
 	symposium_alter_table("usermeta", "ADD", "visible", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("usermeta", "ADD", "wall_share", "varchar(32)", "", "'Friends only'");
 	symposium_alter_table("usermeta", "ADD", "extended", "text", "NOT NULL", "''");
@@ -247,87 +288,7 @@ function symposium_activate() {
 	symposium_alter_table("topics", "ADD", "allow_replies", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("topics", "ADD", "topic_approved", "varchar(2)", "NOT NULL", "'on'");
 
-	// Update default language to English
- 	$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET language = 'English'");
-
-	
-	// ***********************************************************************************************
-	// Recreate languages for latest version *****************************************************
-   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_lang");
-
-   	$table_name = $wpdb->prefix . "symposium_lang";
-   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-      
-      $sql = "CREATE TABLE " . $table_name . " (
-			  lid int(11) NOT NULL AUTO_INCREMENT,
-			  language varchar(64) DEFAULT NULL,
-			  sant text,
-			  ts text,
-			  fpit text,
-			  sac text,
-			  emw text,
-			  p text,
-			  c text,
-			  cat text,
-			  lac text,
-			  top text,
-			  btf text,
-			  rew text,
-			  sbl text,
-			  f text,
-			  r text,
-			  v text,
-			  sb text,
-			  rer text,
-			  tis text,
-			  re text,
-			  e text,
-			  d text,
-			  aar text,
-			  rtt text,
-			  wir text,
-			  rep text,
-			  tt text,
-			  u text,
-			  bt text,
-			  t text,
-			  mc text,
-			  s text,
-			  pw text,
-			  sav text,
-			  hsa text,
-			  i text,
-			  nft text,
-			  nfr text,
-			  prs text,
-			  prm text,
-			  tp text,
-			  tps text,
-			  rdv text,
-			  lrb text,
-			  reb text,
-			  ar text,
-			  too text,
-			  st text,
-			  fdd text,
-			  mr text,
-			  fr text,
-			  nmm text,
-			  ycs text,
-			  nty text,
-			  pen text,
-			  fma text,
-			  fmr text,
-		  PRIMARY KEY lid (lid)
-  		);";
-
-     dbDelta($sql);
-   	} 	
-
-	// Include lanagues
-	include('languages.php');
-
-					      	
+						      	
 	// ***********************************************************************************************
  	// Update Database Version ***********************************************************************
 	update_option("symposium_db_version", $symposium_db_ver);
@@ -394,9 +355,6 @@ function symposium_notification_trigger_schedule() {
 	
 	global $wpdb;
 
-	$language_key = $wpdb->get_var($wpdb->prepare("SELECT language FROM ".$wpdb->prefix."symposium_lang"));
-	$language = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix . 'symposium_lang'." WHERE language = '".$language_key."'");
-	
 	// *************************************** First do daily jobs ***************************************
 	// Wipe Audit
 	$wpdb->query("DELETE FROM ".$wbdb->prefix."symposium_audit");
@@ -437,7 +395,7 @@ function symposium_notification_trigger_schedule() {
 							$shown_category = true;
 							$body .= "<h1>".stripslashes($category->title)."</h1>";
 						}
-						$body .= "<h2>New Topics</h2>";
+						$body .= "<h2>".__('New Topics', 'wp-symposium')."</h2>";
 						$body .= "<ol>";
 						foreach ($topics as $topic) {
 							$body .= "<li><strong><a href='".$forum_url."?cid=".$category->cid."&show=".$topic->tid."'>".stripslashes($topic->topic_subject)."</a></strong>";
@@ -458,7 +416,7 @@ function symposium_notification_trigger_schedule() {
 							$shown_category = true;
 							$body .= "<h1>".$category->title."</h1>";
 						}
-						$body .= "<h2>Replies in ".$category->title."</h2>";
+						$body .= "<h2>".__('Replies in', 'wp-symposium')." ".$category->title."</h2>";
 						$current_parent = '';
 						foreach ($replies as $reply) {
 							$parent = $wpdb->get_var($wpdb->prepare("SELECT topic_subject FROM ".$wpdb->prefix.'symposium_topics'." WHERE tid = ".$reply->topic_parent));
@@ -470,7 +428,7 @@ function symposium_notification_trigger_schedule() {
 							$post = $reply->topic_post;
 							if ( strlen($post) > 100 ) { $post = substr($post, 0, 100)."..."; }
 							$body .= stripslashes($post);
-							$body .= " <a href='".$forum_url."?cid=".$category->cid."&show=".$topic->tid."'>View topic...</a>";
+							$body .= " <a href='".$forum_url."?cid=".$category->cid."&show=".$topic->tid."'>".__('View topic', 'wp-symposium')."...</a>";
 							$body .= "<br />";
 							$body .= "<br />";
 						}						
@@ -478,12 +436,12 @@ function symposium_notification_trigger_schedule() {
 				}
 			}
 			
-			$body .= "<p>".$language->ycs." <a href='".$forum_url."'>".$forum_url."</a>.</p>";
+			$body .= "<p>".__("You can stop receiving these emails at", "wp-symposium")." <a href='".$forum_url."'>".$forum_url."</a>.</p>";
 			
 			$users = $wpdb->get_results("SELECT DISTINCT user_email FROM ".$wpdb->prefix.'users'." u INNER JOIN ".$wpdb->prefix.'symposium_usermeta'." m ON u.ID = m.uid WHERE m.forum_digest = 'on'"); 
 			if ($users) {
 				foreach ($users as $user) {
-					if(symposium_sendmail($user->user_email, 'fdd', $body)) {
+					if(symposium_sendmail($user->user_email, __('Daily Forum Digest', 'wp-symposium'), $body)) {
 						update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
 					}			
 				}
@@ -706,8 +664,23 @@ function symposium_admin_check() {
 	global $wpdb;
 	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, login_url, members_url, register_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
 	if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->login_url == "Important: Please update!") || ($urls->register_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
-		echo "<div class='updated'><p><strong>Important!</strong> Please set <a href='admin.php?page=symposium_options&view=settings'>WP Symposium Options</a> immediately (set to &apos;none&apos; if you are not using a particular plugin).</p></div>";
+		echo "<div class='updated'><p><strong>".__("Important! Please set URLs in WP Symposium Options immediately (set to none if you are not using a particular plugin)", "wp-symposium").".</strong></p></div>";
 	}
+	
+	// Check that user meta matches user table and delete to synchronise
+	$sql = "SELECT uid
+			FROM ".$wpdb->prefix."symposium_usermeta m 
+			LEFT JOIN ".$wpdb->prefix."users u 
+			ON m.uid = u.ID 
+			WHERE u.ID IS NULL;";
+			
+	$missing_users = $wpdb->get_results($sql); 
+	if ($missing_users) {
+		foreach ($missing_users as $missing) {
+			$sql = "DELETE FROM ".$wpdb->prefix."symposium_usermeta WHERE uid = ".$missing->uid;
+			$wpdb->query($sql); 
+		}
+	}	
 }
 
 /* ====================================================== PAGE LOADED FUNCTIONS ====================================================== */
@@ -746,6 +719,11 @@ function add_symposium_stylesheet() {
 	}    
 }
 
+// Language files
+function symposium_languages() {
+		$plugin_path = dirname(plugin_basename(__FILE__)) . '/language';
+		load_plugin_textdomain( 'wp-symposium', false, $plugin_path );		
+}
 
 // Add jQuery and jQuery scripts
 function js_init() {
@@ -759,7 +737,7 @@ function js_init() {
 		}
 		if ($jquery->jqueryui == "on") {
 			$plugin = get_site_url().'/wp-content/plugins/wp-symposium';
-	 		wp_enqueue_script('jquery-ui-custom', $plugin.'/js/jquery-ui-1.8.7.custom.min.js', array('jquery'));
+	 		wp_enqueue_script('jquery-ui-custom', $plugin.'/js/jquery-ui-1.8.8.custom.min.js', array('jquery'));
 		}
 	}		
 	
@@ -785,15 +763,24 @@ function symposium_scriptsAction()
 	global $wpdb, $current_user;
 	wp_get_current_user();
 
-	// Language
-	$get_language = symposium_get_language($current_user->ID);
-
 	// Config
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_config"));
 	
 	// Mail
 	$view = "sent";
 	if ( !isset($_GET['view']) || ($_GET['view'] == "in") ) { $view = "in"; } 
+
+	// Current User Page (eg. a profile page)
+	if (isset($_GET['uid'])) {
+		$page_uid = $_GET['uid']*1;
+	} else {
+		$page_uid = 0;
+		if (isset($_POST['uid'])) { 
+			$page_uid = $_POST['uid']*1; 
+		} else {
+			$page_uid = $current_user->ID;
+		}
+	}
 	
 	// Forum
 	if (isset($_GET['show'])) {
@@ -826,8 +813,8 @@ function symposium_scriptsAction()
 		'view' => $view,
 		'show_tid' => $show_tid,
 		'cat_id' => $cat_id,
-		'language_key' => $get_language['key'],
-		'current_user_id' => $current_user->ID
+		'current_user_id' => $current_user->ID,
+		'current_user_page' => $page_uid
 	));
 	
 }

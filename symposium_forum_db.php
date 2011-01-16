@@ -29,12 +29,7 @@ if (is_user_logged_in()) {
 	$topics = $wpdb->prefix . 'symposium_topics';
 	$subs = $wpdb->prefix . 'symposium_subs';
 	$cats = $wpdb->prefix . 'symposium_cats';
-	$lang = $wpdb->prefix . 'symposium_lang';
 	
-	$get_language = symposium_get_language($current_user->ID);
-	$language_key = $get_language['key'];
-	$language = $get_language['words'];
-
 	// Get forum_url
 	$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix.'symposium_config'));
 	if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
@@ -57,8 +52,8 @@ if (is_user_logged_in()) {
 
 		$store = true;
 		$edit_new_topic = false;
-		if ($new_topic_subject == '') { $msg = $language->prs; $store = false; $edit_new_topic = true; }
-		if ($new_topic_text == '') { $msg = $language->prm; $store = false; $edit_new_topic = true; }
+		if ($new_topic_subject == '') { $msg = __('Please enter a subject', 'wp-symposium'); $store = false; $edit_new_topic = true; }
+		if ($new_topic_text == '') { $msg = __('Please enter a message', 'wp-symposium'); $store = false; $edit_new_topic = true; }
 		
 		if ( ($store) && is_user_logged_in() ) {
 			// Check for duplicates
@@ -121,11 +116,11 @@ if (is_user_logged_in()) {
 								
 				// Get post owner name and prepare email body
 				$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$users." WHERE ID = ".$current_user->ID));
-				$body = "<p>".$owner_name." ".$language->hsa;
+				$body = "<p>".$owner_name." ".__('has started a new topic', 'wp-symposium');
 				$show_categories = $wpdb->get_var($wpdb->prepare("SELECT show_categories FROM ".$config));
 				if ($show_categories == "on") {
 					$category = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = ".$cat_id));
-					$body .= " ".$language->i." ".$category;
+					$body .= " ".__('in', 'wp-symposium')." ".$category;
 				}
 				$body .= "...</p>";
 									
@@ -146,13 +141,13 @@ if (is_user_logged_in()) {
 						
 					if ($query) {					
 						foreach ($query as $user) {
-							symposium_sendmail($user->user_email, "nft", $body);						
+							symposium_sendmail($user->user_email, __('New Forum Topic', 'wp-symposium'), $body);						
 						}						
 					}
 				} else {
 					// Email admin if post needs approval
-					$body = "<span style='font-size:24px font-style:italic;'>$language->mr</span><br /><br />".$body;
-					symposium_sendmail(get_bloginfo('admin_email'), 'mr', $body);
+					$body = "<span style='font-size:24px font-style:italic;'>".__('Moderation Required', 'wp-symposium')."</span><br /><br />".$body;
+					symposium_sendmail(get_bloginfo('admin_email'), __('Moderation Required', 'wp-symposium'), $body);
 				}	
 			}
 		}
@@ -237,7 +232,7 @@ if (is_user_logged_in()) {
 					$parent = $wpdb->get_var($wpdb->prepare("SELECT topic_subject FROM ".$topics." WHERE tid = ".$tid));
 					
 					$body = "<span style='font-size:24px'>".$parent."</span><br /><br />";
-					$body .= "<p>".$owner_name." ".$language->re."...</p>";
+					$body .= "<p>".$owner_name." ".__('replied', 'wp-symposium')."...</p>";
 					$body .= "<p>".$reply_text."</p>";
 					$body .= "<p>".$forum_url."?cid=".$cat_id."&show=".$tid."</p>";
 					$body = str_replace(chr(13), "<br />", $body);
@@ -252,13 +247,13 @@ if (is_user_logged_in()) {
 							
 						if ($query) {						
 							foreach ($query as $user) {		
-								symposium_sendmail($user->user_email, 'nfr', $body);							
+								symposium_sendmail($user->user_email, __('New Forum Reply', 'wp-symposium'), $body);							
 							}
 						}						
 					} else {
 						// Email admin if post needs approval
-						$body = "<span style='font-size:24px; font-style:italic;'>Reply Moderation Required</span><br /><br />".$body;
-						symposium_sendmail(get_bloginfo('admin_email'), 'mr', $body);
+						$body = "<span style='font-size:24px; font-style:italic;'>".__("Moderation required for a reply", "wp-symposium")."</span><br /><br />".$body;
+						symposium_sendmail(get_bloginfo('admin_email'), __('Moderation required for a reply', 'wp-symposium'), $body);
 					}					
 				}
 				

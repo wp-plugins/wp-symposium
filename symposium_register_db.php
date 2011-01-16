@@ -44,10 +44,10 @@ if (!is_user_logged_in()) {
 		} else {
 			$existing_email = $wpdb->get_var($wpdb->prepare("SELECT user_email FROM ".$wpdb->prefix."users WHERE user_email = '".$youremail."'"));
 			if ($existing_email) {
-				$html .= 'That email is already in use by another member, please enter another one.';
+				$html .= __('That email is already in use by another member, please enter another one.', 'wp-symposium');
 			} else {
 				if ($result != $sum1 + $sum2) {
-					$html .= 'Please enter the sum of the two numbers.';
+					$html .= __('Please enter the sum of the two numbers.', 'wp-symposium');
 				} else {
 					
 					// Store wp_user
@@ -85,8 +85,8 @@ if (!is_user_logged_in()) {
 			        wp_set_current_user($new_id, $username);
 			        
 			        // Email admin
-			        $body = $display_name." (".$youremail.") has joined ".get_bloginfo('name');
-					symposium_sendmail(get_bloginfo('admin_email'), 'nm', $body);
+			        $body = $display_name." (".$youremail.") ".__('has joined', 'wp-symposium')." ".get_bloginfo('name');
+					symposium_sendmail(get_bloginfo('admin_email'), __('New Member', 'wp-symposium'), $body);
 	        
 					header("Location: ".symposium_get_url('profile')."?view=personal");
 					exit;

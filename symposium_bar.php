@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.25
+Version: 0.1.26
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -32,9 +32,6 @@ function add_notification_bar()
 {  
 	if (!is_admin()) {
 
-		//$plugin_path = dirname(plugin_basename(__FILE__)) . '/language';
-		//load_plugin_textdomain( 'wp-symposium', false, $plugin_path );
-		
 	   	global $wpdb, $current_user;
 		wp_get_current_user();
 
@@ -68,9 +65,6 @@ function add_notification_bar()
 			$offline = $config->offline;
 	
 			include_once('symposium_functions.php');
-	
-			$get_language = symposium_get_language($current_user->ID);
-			$language = $get_language['words'];
 	
 			// maximum number of chat windows
 			$maxChatWindows = 3;
@@ -298,7 +292,7 @@ function add_notification_bar()
 				<?php if (is_user_logged_in()) {
 					// Pending Friends
 					if (function_exists('symposium_profile')) {
-						echo "<div id='symposium-friends-box' title='Go to Friends' alt='Go to Friends' class='symposium-friends-box symposium-friends-box-none'>";
+						echo "<div id='symposium-friends-box' title='".__("Go to Friends", "wp-symposium")."' class='symposium-friends-box symposium-friends-box-none'>";
 					} else {
 						echo "<div id='symposium-friends-box' style='display:none'>";
 					}
@@ -306,7 +300,7 @@ function add_notification_bar()
 					
 					// Unread Mail
 					if (function_exists('symposium_mail')) {
-						echo "<div id='symposium-email-box' title='Go to Mail' alt='Go to Mail' class='symposium-email-box symposium-email-box-read'>";
+						echo "<div id='symposium-email-box' title='".__("Go to Mail", "wp-symposium")."' class='symposium-email-box symposium-email-box-read'>";
 					} else {
 						echo "<div id='symposium-email-box' style='display:none'>";
 					}
@@ -325,8 +319,8 @@ function add_notification_bar()
 					if (is_user_logged_in()) {
 
 
-						//_e('Logged in as', 'wp-symposium');
-						echo "Logged in as";					    
+						_e('Logged in as', 'wp-symposium');
+					    
 						if ($use_wp_profile == 'on') {
 							echo ' <a href="/wp-admin/profile.php">'.$current_user->user_login.'</a>';
 						} else {
@@ -348,15 +342,15 @@ function add_notification_bar()
 					} else {
 						
 						if ($use_wp_login == "on") {
-							echo "<a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='Login'>Login</a>";
+							echo "<a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='".__("Login", "wp-symposium")."'>".__("Login", "wp-symposium")."</a>";
 						} else {
-							echo '<a href="'.$custom_login_url.'">Login</a>';
+							echo '<a href="'.$custom_login_url.'?redirect_to='.get_permalink().'">'.__("Login", "wp-symposium").'</a>';
 						}
 
 						if ($use_wp_register == "on") {
 							echo wp_register('&nbsp;', '');
 						} else {
-							echo '&nbsp;<a href="'.$custom_register_url.'">Register</a>';
+							echo '&nbsp;<a href="'.$custom_register_url.'">'.__("Register", "wp-symposium").'</a>';
 						}
 
 
@@ -375,8 +369,8 @@ function add_notification_bar()
 					echo "<div id='symposium-who-online'>";
 					
 						echo "<div id='symposium-who-online_header' style='width:176px;height:18px;padding:2px;background-color:#000;color:#fff;'>";
-							echo "<div id='symposium-who-online_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='Close' /></div>";
-						echo "Friends Status";
+							echo "<div id='symposium-who-online_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";
+						_e("Friends Status", "wp-symposium");
 						echo "</div>";
 						echo "<div id='symposium-friends-online-list'>";
 						echo "</div>";

@@ -48,7 +48,6 @@ if ($_GET['term'] != '') {
 if ($_POST['action'] == 'getMembers') {
 
 	$html = '';
-   	$language_key = $_POST['language_key'];
 	$page = $_POST['page'];
 	$page_length = 25;
 	$me = $_POST['me'];
@@ -103,7 +102,7 @@ if ($_POST['action'] == 'getMembers') {
 					$html .= "<div style='float: left; width:75px;'>";
 						$html .= get_avatar($member->uid, 64);
 					$html .= "</div>";
-					$html .= symposium_profile_link($member->uid).', last active '.symposium_time_ago($member->last_activity, $language_key).". ";
+					$html .= symposium_profile_link($member->uid).', last active '.symposium_time_ago($member->last_activity).". ";
 					if ($last_active_minutes >= $offline) {
 						//$html .= '<img src="'.$plugin_dir.'images/loggedout.gif">';
 					} else {

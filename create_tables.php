@@ -85,7 +85,7 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	author_uid int(11) NOT NULL,
 	comment_parent int(11) NOT NULL,
 	comment_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	comment varchar(1024) NOT NULL DEFAULT '',
+	comment text NOT NULL DEFAULT '',
 	PRIMARY KEY cid (cid)
  	);";
 
@@ -271,7 +271,7 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	friend_from int(11) NOT NULL,
 	friend_to int(11) NOT NULL,
 	friend_accepted varchar(2) NOT NULL,
-	friend_message varchar(1024) NOT NULL,
+	friend_message text NOT NULL,
 	friend_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY fid (fid)
  	);";
@@ -288,7 +288,7 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	chid int(11) NOT NULL AUTO_INCREMENT,
 	chat_from int(11) NOT NULL,
 	chat_to int(11) NOT NULL,
-	chat_message varchar(256) NOT NULL,
+	chat_message text NOT NULL,
 	chat_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY chid (chid)
  	);";

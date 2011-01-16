@@ -13,7 +13,20 @@ jQuery(document).ready(function() {
 		this.css("left", ( jQuery(window).width() - this.width() ) / 2+jQuery(window).scrollLeft() + "px");
 		return this;
 	}
-   		
+
+	// Are you sure?
+	jQuery('.areyousure').click(function(){
+		var answer = confirm('Are you sure?\n\nAll topics in the category will become un-categorised.');
+		return answer // answer is a boolean
+	});
+
+    // Check if really want to delete	    
+	jQuery(".delete").click(function(){
+	  var answer = confirm("Are you sure?");
+	  return answer // answer is a boolean
+	});
+
+	   		
    	// Hide Notices	    	
 	jQuery(".notice").hide();
 	jQuery(".pleasewait").hide();
@@ -44,7 +57,8 @@ jQuery(document).ready(function() {
 	   		var username = jQuery("#symposium_login_username").val();
 	   		var pwd = jQuery("#symposium_login_pwd").val();
 	   		var forgot = jQuery("#forgotten_email").val();
-
+	   		var previous_page = jQuery('#previous-page').val();
+	   		
 			if (forgot == '') {
 				if (username != '' && pwd != '') {
 					jQuery(".pleasewait").inmiddle().show();
@@ -54,7 +68,8 @@ jQuery(document).ready(function() {
 						data: ({
 							action:"doLogin",
 							username:username,
-							pwd:pwd
+							pwd:pwd,
+							redirect_to:previous_page
 						}),
 					    dataType: "html",
 						async: false,
@@ -95,6 +110,9 @@ jQuery(document).ready(function() {
 								jQuery(".pleasewait").hide();
 								if (str.substring(0, 2) == 'OK') { 
 									jQuery('#symposium_forgotten_password_msg').show("slow");
+									jQuery("#symposium_login_username").val('');
+									jQuery("#symposium_login_pwd").val('');
+									jQuery("#forgotten_email").val('');
 								} else {
 									alert(str);
 								}
@@ -151,8 +169,7 @@ jQuery(document).ready(function() {
 			data: ({
 				action:"getMembers",
 				page:1,
-				me:symposium.current_user_id,
-				language_key:symposium.language_key
+				me:symposium.current_user_id
 			}),
 		    dataType: "html",
 			async: true,
@@ -253,7 +270,93 @@ jQuery(document).ready(function() {
 	   |                                         PROFILE                                          |
 	   +------------------------------------------------------------------------------------------+
 	*/
+	
+	if (jQuery("#symposium_add_update").length) {
+	   	jQuery("#symposium_add_update").click(function() {   		
+			jQuery(".pleasewait").inmiddle().show();
+	
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+				type: "POST",
+				data: ({
+					action:"addStatus",
+					uid:symposium.current_user_id,
+					text:jQuery("#symposium_status").val()
+				}),
+			    dataType: "html",
+				async: false,
+				success: function(str){
+					jQuery("#symposium_status").val('');
+					jQuery(str).prependTo('#symposium_wall').hide().slideDown();
+				},
+				error: function(err){
+					//alert("P1:"+err);
+				}		
+	   		});
+	
+			jQuery(".pleasewait").hide();
+	   	});		
+	}
 
+	if (jQuery("#symposium_add_comment").length) {
+	   	jQuery("#symposium_add_comment").click(function() {   		
+			jQuery(".pleasewait").inmiddle().show();
+			
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+				type: "POST",
+				data: ({
+					action:"addComment",
+					uid:symposium.current_user_page,
+					parent:0,
+					text:jQuery("#symposium_comment").val()
+				}),
+			    dataType: "html",
+				async: false,
+				success: function(str){
+					jQuery("#symposium_comment").val('');
+					jQuery(str).prependTo('#symposium_wall').hide().slideDown();
+				},
+				error: function(err){
+					//alert("P2:"+err);
+				}		
+	   		});
+	
+			jQuery(".pleasewait").hide();
+	   	});		
+	}
+
+	if (jQuery(".symposium_add_reply").length) {
+	   	jQuery(".symposium_add_reply").click(function() {   		
+			jQuery(".pleasewait").inmiddle().show();
+			
+			var comment_id = jQuery(this).attr("title");
+			var author_id = jQuery('#symposium_author_'+comment_id).val();
+
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+				type: "POST",
+				data: ({
+					action:"addComment",
+					uid:author_id,
+					parent:comment_id,
+					text:jQuery("#symposium_reply_"+comment_id).val()
+				}),
+			    dataType: "html",
+				async: false,
+				success: function(str){
+					jQuery("#symposium_reply_"+comment_id).val('');
+					jQuery(str).appendTo('#symposium_comment_'+comment_id).hide().slideDown();
+				},
+				error: function(err){
+					//alert("P2:"+err);
+				}		
+	   		});
+	   			
+			jQuery(".pleasewait").hide();
+	   	});		
+	}
+	
 	/*
 	   +------------------------------------------------------------------------------------------+
 	   |                                          FORUM                                           |
@@ -404,12 +507,6 @@ jQuery(document).ready(function() {
         jQuery(this).find(".edit").hide();
     });
     
-    // Check if really want to delete	    
-	jQuery(".delete").click(function(){
-	  var answer = confirm("Are you sure?");
-	  return answer // answer is a boolean
-	});
-
 	// Show new topic and reply topic forms
 	jQuery("#new-topic-link").click(function() {
 	  	jQuery("#new-topic").toggle("slow");
@@ -644,17 +741,6 @@ jQuery(document).ready(function() {
  		
 	});
 
-  	// Check if really want to delete	    
-	jQuery(".delete").click(function(){
-		var answer = confirm("Are you sure?");
-		return answer // answer is a boolean
-	});
-	
-	jQuery('.areyousure').click(function(){
-		var answer = confirm('Are you sure?\n\nAll topics in the category will become un-categorised.');
-		return answer // answer is a boolean
-	});
-	
 	/*
 	   +------------------------------------------------------------------------------------------+
 	   |                                     NOTIFICATION BAR                                     |
@@ -672,7 +758,6 @@ jQuery(document).ready(function() {
 				
 	  	// Set up icon actions ******************************************************
 		if (jQuery("#symposium-email-box").css("display") != "none") {
-			
 	    	jQuery("#symposium-email-box").click(function() {
 				window.location.href=symposium.mail_url;
 	    	});
@@ -889,8 +974,7 @@ function do_chat_check() {
 			action:"symposium_getchat", 
 			me:symposium.current_user_id,
 			inactive:symposium.inactive,
-			offline:symposium.offline,
-			language_key:symposium.language_key
+			offline:symposium.offline
 		}),
 	    dataType: "html",
 		async: true,

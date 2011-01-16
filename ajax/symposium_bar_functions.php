@@ -95,7 +95,6 @@ if ($_POST['action'] == 'symposium_getchat') {
 	
    	$inactive = $_POST['inactive'];
    	$offline = $_POST['offline'];
-   	$language_key = $_POST['language_key'];
    	$me = $_POST['me'];
    	$last_post = '';
 	$time_now = time();
@@ -124,7 +123,7 @@ if ($_POST['action'] == 'symposium_getchat') {
 		foreach ($chats as $chat) {
 			
 			$results .= $chat->chat_from.'[|]'.$chat->chat_to.'[|]'.stripslashes($chat->chat_message).'[|]';
-			$last_message = $chat->chat_from.'[|]'.$chat->chat_to.'[|]<span style="color:#aaa">Last message '.symposium_time_ago($chat->chat_timestamp, $language_key).'.</a>[|]';
+			$last_message = $chat->chat_from.'[|]'.$chat->chat_to.'[|]<span style="color:#aaa">Last message '.symposium_time_ago($chat->chat_timestamp).'.</a>[|]';
 
 			if ($chat->chat_from == $me) {
 				$results .= $chat->toname."[|]";
