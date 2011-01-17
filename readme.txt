@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.26
+Stable tag: 0.1.26.1
 
 Social Networking for WordPress - forum, wall, mail, member directory, private messaging, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -324,13 +324,19 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 == Changelog ==
 
+= 0.1.26.1 =
+
+* Profile/Forum/Mail: Added automatic conversion of URLs
+* Profile: Wall: Added delete options to post and reply (AJAX)
+* Created first version of Admin Guide
+
 = 0.1.26 = 
 
 * Core: Added support for .POT and .po/.mo files for languages
 * Core: Improved Dashboard widget
 * Core: A number of minor code improvements
 * Admin: Moved email from/footer to Settings
-* Profile: Added new status post and reply with AJAX
+* Profile: Wall: Added new status post and reply (AJAX)
 * Login: Added redirect to previous page option
 
 = 0.1.25 =

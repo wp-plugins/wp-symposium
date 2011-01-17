@@ -25,7 +25,6 @@ jQuery(document).ready(function() {
 	  var answer = confirm("Are you sure?");
 	  return answer // answer is a boolean
 	});
-
 	   		
    	// Hide Notices	    	
 	jQuery(".notice").hide();
@@ -78,7 +77,11 @@ jQuery(document).ready(function() {
 								jQuery(".pleasewait").hide();
 								alert("Login failed, please try again");
 							} else {
-								window.location.href=str;
+								if (str != "Important: Please update!" && str != "none") {
+									window.location.href=str;
+								} else {
+									alert("Trying to redirect, but target plugin URL (Options->Settings) not set up. ("+str+")");
+								}
 							}
 						},
 						error: function(err){
@@ -270,7 +273,57 @@ jQuery(document).ready(function() {
 	   |                                         PROFILE                                          |
 	   +------------------------------------------------------------------------------------------+
 	*/
+
+	// Show delete link on wall post hover
+    jQuery(".wall_post").hover(function() {
+        jQuery(this).find(".delete_post").show()
+    }, function() {
+        jQuery(this).find(".delete_post").hide();
+    });
+
+	// Show delete link on reply hover
+    jQuery(".wall_reply").hover(function() {
+        jQuery(this).find(".delete_reply").show()
+    }, function() {
+        jQuery(this).find(".delete_reply").hide();
+    });
+
+	// Delete a reply
+	jQuery(".delete_post").click(function(){
+		
+		if (confirm("Are you sure?")) {
+
+			jQuery(".pleasewait").inmiddle().show();
 	
+			var comment_id = jQuery(this).attr("title");
+			
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+				type: "POST",
+				data: ({
+					action:"deletePost",
+					uid:symposium.current_user_id,
+					cid:comment_id
+				}),
+			    dataType: "html",
+				async: false,
+				success: function(str){
+					if (str.substring(0, 4) != 'FAIL') { 
+						jQuery(str).slideUp("slow");
+					} else {
+						//alert("P2:"+str);
+					}
+				},
+				error: function(err){
+					//alert("P1:"+err);
+				}		
+	   		});		
+			
+			jQuery(".pleasewait").hide();
+			
+		}
+	});
+
 	if (jQuery("#symposium_add_update").length) {
 	   	jQuery("#symposium_add_update").click(function() {   		
 			jQuery(".pleasewait").inmiddle().show();

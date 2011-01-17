@@ -304,7 +304,7 @@
 	border-radius: 0;
 }
 
-#symposium-wrapper .delete, #symposium-wrapper .edit {
+#symposium-wrapper .delete, #symposium-wrapper .delete_post, #symposium-wrapper .edit {
 	float: right;
 	display:none;
 	color: red;

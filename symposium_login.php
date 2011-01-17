@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Login
 Plugin URI: http://www.wpsymposium.com
 Description: Login component for the Symposium suite of plug-ins. Put [symposium-login] on any WordPress page.
-Version: 0.1.26
+Version: 0.1.26.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2

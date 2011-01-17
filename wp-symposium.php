@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.26
+Version: 0.1.26.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -164,7 +164,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.26";
+	$symposium_version = "0.1.26.1";
 	$symposium_db_ver = 26;
 	
 	// Code version *************************************************************************************
@@ -225,7 +225,7 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "logout_redirect_url", "varchar(128)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_login", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "custom_login_url", "varchar(512)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "custom_login_url", "varchar(128)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_register", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "custom_register_url", "varchar(128)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "register_use_sum", "varchar(2)", "NOT NULL", "'on'");
@@ -467,32 +467,39 @@ function symposium_notification_trigger_schedule() {
 // Redirect user after log in
 function symposium_redirect_login() {
 	global $wpdb;
-	$redirect = $wpdb->get_row($wpdb->prepare("SELECT enable_redirects, login_redirect, login_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
 
-	if ( ($redirect->enable_redirects == 'on') && ($redirect->login_redirect != "WordPress default") ) {
-		switch($redirect->login_redirect) {			
-			case "Profile Wall":
-				wp_redirect(symposium_get_url('profile'));	
-				exit;
-			case "Profile Settings":
-				wp_redirect(symposium_get_url('profile')."?view=settings");	
-				exit;
-			case "Profile Personal":
-				wp_redirect(symposium_get_url('profile')."?view=personal");	
-				exit;
-			case "Mail":
-				wp_redirect(symposium_get_url('mail'));	
-				exit;
-			case "Forum":
-				wp_redirect(symposium_get_url('forum'));	
-				exit;
-			case "Custom":
-				wp_redirect($redirect->login_redirect_url);	
-				exit;
-			default:
-				wp_redirect(symposium_get_url('profile'));	
-				exit;
+	if (!(function_exists('symposium_login'))) {
+		
+		$redirect = $wpdb->get_row($wpdb->prepare("SELECT enable_redirects, login_redirect, login_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
+	
+		if ( ($redirect->enable_redirects == 'on') && ($redirect->login_redirect != "WordPress default") ) {
+			switch($redirect->login_redirect) {			
+				case "Profile Wall":
+					$url = symposium_get_url('profile');	
+					break;
+				case "Profile Settings":
+					$url = symposium_get_url('profile')."?view=settings";	
+					break;
+				case "Profile Personal":
+					$url = symposium_get_url('profile')."?view=personal";	
+					break;
+				case "Mail":
+					$url = symposium_get_url('mail');	
+					break;
+				case "Forum":
+					$url = symposium_get_url('forum');	
+					break;
+				case "Custom":
+					$url = $redirect->login_redirect_url;	
+					break;
+				default:
+					$url = symposium_get_url('profile');	
+					break;
+			}
 		}
+	
+		wp_redirect($url);	
+		exit;
 	}
 }
 

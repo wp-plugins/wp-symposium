@@ -64,6 +64,7 @@ if ($_POST['action'] == 'doLogin') {
     if(is_wp_error($user)) {
         echo "FAIL";
     } else {
+    	
 		wp_login($username, $password, true);
         wp_setcookie($username, $password, true);
         wp_set_current_user($user->ID, $username);
@@ -97,6 +98,8 @@ if ($_POST['action'] == 'doLogin') {
 					$url = symposium_get_url('profile');	
 					break;
 			}
+		} else {
+			$url = $redirect_to;	
 		}
 
         echo $url;

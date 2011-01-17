@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.26
+Version: 0.1.26.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -582,7 +582,8 @@ function symposium_forum() {
 					$html .= "<div class='started-by'>".__("Started by", "wp-symposium")." ".symposium_profile_link($post->topic_owner)." ".symposium_time_ago($post->topic_started)."</div>";
 					$html .= "</div>";
 	
-					$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", stripslashes($post->topic_post))."</div>";
+					$post_text = symposium_make_url(stripslashes($post->topic_post));
+					$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", $post_text)."</div>";
 					
 					$html .= "</div>";
 		
@@ -648,7 +649,8 @@ function symposium_forum() {
 							$html .= "<div class='started-by'>".symposium_profile_link($child->topic_owner)." ".__("replied", "wp-symposium")." ".symposium_time_ago($child->topic_date)."...";
 							$html .= "</div>";
 							$html .= "<div id='".$child->tid."' class='child-reply-post'>";
-								$html .= "<p>".str_replace(chr(13), "<br />", stripslashes($child->topic_post));
+								$reply_text = symposium_make_url(stripslashes($child->topic_post));
+								$html .= "<p>".str_replace(chr(13), "<br />", $reply_text);
 								if ($child->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 								$html .= "</p>";
 							$html .= "</div>";

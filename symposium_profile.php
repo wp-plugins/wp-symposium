@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile] on any WordPress page to display forum.
-Version: 0.1.26
+Version: 0.1.26.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -859,15 +859,18 @@ function symposium_profile_body($uid1, $uid2, $styles) {
 					if ($comments) {
 						foreach ($comments as $comment) {
 	
-							$html .= "<div style='overflow: auto; padding-top: 10px;margin-right: 15px;margin-bottom:15px;border-top: ".$styles->row_border_size."px ".$styles->row_border_style." ".$text_color_2.";'>";
+							$html .= "<div id='".$comment->cid."' style='overflow: auto; padding-top: 10px;margin-right: 15px;margin-bottom:15px;border-top: ".$styles->row_border_size."px ".$styles->row_border_style." ".$text_color_2.";'>";
 								$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
-									$html .= "<div style='margin-left: 74px;overflow:auto;'>";
+									$html .= "<div class='wall_post' style='margin-left: 74px;overflow:auto;'>";
+										if (symposium_get_current_userlevel($uid2) == 5 || $comment->subject_uid == $uid2 || $comment->author_uid == $uid2) {
+											$html .= "<a title='".$comment->cid."' href='javascript:void(0);' class='delete_post'>".__("Delete Post", "wp-symposium")."</a>";
+										}
 										$html .= '<a href="'.symposium_get_url('profile').'?uid='.$comment->author_uid.'">'.stripslashes($comment->display_name).'</a> ';
 										if ($comment->author_uid != $comment->subject_uid) {
 											$html .= ' &rarr; <a href="'.symposium_get_url('profile').'?uid='.$comment->subject_uid.'">'.stripslashes($comment->subject_name).'</a> ';
 										}
 										$html .= symposium_time_ago($comment->comment_timestamp).".<br />";
-										$html .= stripslashes($comment->comment);
+										$html .= symposium_make_url(stripslashes($comment->comment));
 	
 										// Replies
 										$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c 
@@ -887,12 +890,15 @@ function symposium_profile_body($uid1, $uid2, $styles) {
 										$replies = $wpdb->get_results($sql);	
 										if ($replies) {
 											foreach ($replies as $reply) {
-												$html .= "<div style='background-color: ".$styles->bg_color_2."; padding:4px; padding-bottom:0px; clear: both; overflow: auto; margin-top:10px;'>";
+												$html .= "<div id='".$reply->cid."' style='background-color: ".$styles->bg_color_2."; padding:4px; padding-bottom:0px; clear: both; overflow: auto; margin-top:10px;'>";
 													$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
-														$html .= "<div style='margin-left: 45px;overflow:auto;'>";
+														$html .= "<div class='wall_reply' style='margin-left: 45px;overflow:auto;'>";
+															if (symposium_get_current_userlevel($uid2) == 5 || $reply->subject_uid == $uid2 || $reply->author_uid == $uid2) {
+																$html .= "<a title='".$reply->cid."' href='javascript:void(0);' class='delete_post'>".__("Delete", "wp-symposium")."</a>";
+															}
 															$html .= '<a href="'.symposium_get_url('profile').'?uid='.$reply->author_uid.'">'.stripslashes($reply->display_name).'</a> ';
 															$html .= symposium_time_ago($reply->comment_timestamp).".<br />";
-															$html .= stripslashes($reply->comment);
+															$html .= symposium_make_url(stripslashes($reply->comment));
 														$html .= "</div>";
 													$html .= "</div>";
 													
