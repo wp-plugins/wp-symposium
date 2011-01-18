@@ -1,0 +1,14 @@
+todo.txt
+--------
+   
+CHAT
+
+- please wait not showing when window first opens
+
+CODEX
+
+- data dictionary
+
+- functions
+
+- javascript variables
