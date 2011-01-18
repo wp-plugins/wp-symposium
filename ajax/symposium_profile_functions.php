@@ -140,7 +140,8 @@ if ($_POST['action'] == 'addStatus') {
 	global $wpdb, $current_user;
 	wp_get_current_user();
 
-	$uid = $_POST['uid'];
+	$subject_uid = $_POST['subject_uid'];
+	$author_uid = $_POST['author_uid'];
 	$text = $_POST['text'];
 
 	if (is_user_logged_in()) {
@@ -155,8 +156,8 @@ if ($_POST['action'] == 'addStatus') {
 			)
 			VALUES ( %d, %d, %d, %s, %s )", 
 	        array(
-	        	$current_user->ID, 
-	        	$current_user->ID, 
+	        	$subject_uid, 
+	        	$author_uid, 
 	        	0,
 	        	date("Y-m-d H:i:s"),
 	        	$text
@@ -198,7 +199,7 @@ if ($_POST['action'] == 'addStatus') {
 			$html .= "</div>";
 		$html .= "</div>";
 					
-		echo $html;
+		echo $html."XXXX";
 		exit;
 	} else {
 		echo "FAIL, NOT LOGGED IN";

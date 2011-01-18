@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.1.26.1
+Version: 0.1.27
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -32,6 +32,139 @@ function symposium_load_widgets() {
 	include_once('symposium_functions.php');
 	register_widget( 'Forumrecentposts_Widget' );
 	register_widget( 'Symposium_members_Widget' );
+	register_widget( 'Symposium_vote_Widget' );
+}
+
+/** Symposium: Vote ************************************************************************* **/
+class Symposium_vote_Widget extends WP_Widget {
+
+	function Symposium_vote_Widget() {
+		/* Widget settings. */
+		$widget_ops = array( 'classname' => 'widget_symposium_vote', 'description' => 'Allows members to vote on a YES/NO question.' );
+		
+		/* Widget control settings. */
+		$control_ops = array( 'id_base' => 'symposium_vote-widget' );
+		
+		/* Create the widget. */
+		$this->WP_Widget( 'symposium_vote-widget', 'Symposium: '.__('Vote', 'wp-symposium'), $widget_ops, $control_ops );
+	}
+	
+	// This is shown on the page
+	function widget( $args, $instance ) {
+		
+		global $wpdb, $current_user;
+		wp_get_current_user();
+	
+		extract( $args );
+		
+		// Get options
+		$symposium_vote_question = apply_filters('widget_symposium_vote_question', $instance['symposium_vote_question'] );
+		$symposium_vote_forum = apply_filters('widget_symposium_vote_forum', $instance['symposium_vote_forum'] );
+		
+		// Start widget
+		echo $before_widget;
+		echo $before_title . $symposium_vote_question . $after_title;
+		
+		// Content of widget
+
+		echo '<div id="symposium_chartcontainer">Chart of results</div>';
+			
+		if (is_user_logged_in()) {
+			
+			$voted = $wpdb->get_var($wpdb->prepare("SELECT widget_voted FROM ".$wpdb->prefix."symposium_usermeta WHERE uid = ".$current_user->ID));
+			if ($voted == "on") {
+				
+				echo "<p>";
+				echo __('Thank you for voting').".";
+				if ($symposium_vote_forum != '') {
+					echo "<br /><a href='".$symposium_vote_forum."'>".__('Discuss this on the forum', 'wp-symposium')."...</a>";
+				}
+				echo "</p>";
+
+			} else {
+			
+			
+				echo "<div id='symposium_vote_forum'>";
+					echo "<p>".__('Your vote', 'wp-symposium').": ";
+					echo "<a href='javascript:void(0)' title='yes' class='symposium_answer' value='".__("Yes", "wp-symposium")."'>".__("Yes", "wp-symposium")."</a> ".__('or', 'wp-symposium')." ";
+					echo "<a href='javascript:void(0)' title='no' class='symposium_answer' value='".__("No", "wp-symposium")."'>".__("No", "wp-symposium")."</a>";
+					if ($symposium_vote_forum != '') {
+						echo "<br /><a href='".$symposium_vote_forum."'>".__('Discuss this on the forum', 'wp-symposium')."...</a>";
+					}
+					echo "</p>";
+				echo "</div>";
+				
+				echo "<div id='symposium_vote_thankyou' style='display:none'>";
+					echo "<p style='padding:6px; text-align:center'>".__("Thank you for voting, refresh the page for latest results", "wp-symposium");
+					if ($symposium_vote_forum != '') {
+						echo "<br /><a href='".$symposium_vote_forum."'>".__('Discuss this on the forum', 'wp-symposium')."...</a>";
+					}
+					echo "</p>";
+				echo "</div>";
+		
+			}
+			
+		} else {
+			
+			echo "<p>".__("Log in to vote...", "wp-symposium")."</p>";
+			
+		}
+				
+		// End content
+		
+		echo $after_widget;
+		// End widget
+	}
+	
+	// This updates the stored values
+	function update( $new_instance, $old_instance ) {
+
+		global $wpdb;
+
+		$instance = $old_instance;
+
+		// Reset
+		update_option( "symposium_vote_yes", 0 );
+		update_option( "symposium_vote_no", 0 );
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_usermeta SET widget_voted = ''") );
+		
+		/* Strip tags (if needed) and update the widget settings. */
+		$instance['symposium_vote_question'] = strip_tags( $new_instance['symposium_vote_question'] );
+		$instance['symposium_vote_forum'] = strip_tags( $new_instance['symposium_vote_forum'] );
+		return $instance;
+	}
+	
+	// This is the admin form for the widget
+	function form( $instance ) {
+
+		/* Set up some default widget settings. */
+		$defaults = array( 'symposium_vote_question' => __('A yes/no question...', 'wp-symposium'), 'symposium_vote_forum' => __('', 'wp-symposium') );
+		$instance = wp_parse_args( (array) $instance, $defaults ); 
+
+		$symposium_vote_yes = get_option("symposium_vote_yes");
+		$symposium_vote_no = get_option("symposium_vote_no");
+				
+		echo "<p><span style='font-weight:bold'>".__('Results so far', 'wp-symposium')."</span><br />";
+		echo __("Yes", "wp-symposium").": ".$symposium_vote_yes."<br />";
+		echo __("No", "wp-symposium").": ".$symposium_vote_no."</p>";
+		?>
+				
+		<p>
+			<label 	for="<?php echo $this->get_field_id( 'symposium_vote_question' ); ?>"><?php echo __('Question', 'wp-symposium'); ?>:<br /></label>
+			<input 	id="<?php echo $this->get_field_id( 'symposium_vote_question' ); ?>" 
+					name="<?php echo $this->get_field_name( 'symposium_vote_question' ); ?>" 
+					value="<?php echo $instance['symposium_vote_question']; ?>" />
+		<br /><br />
+			<label 	for="<?php echo $this->get_field_id( 'symposium_vote_forum' ); ?>"><?php echo __('Forum Link', 'wp-symposium'); ?>:<br /></label>
+			<input 	id="<?php echo $this->get_field_id( 'symposium_vote_forum' ); ?>" 
+					name="<?php echo $this->get_field_name( 'symposium_vote_forum' ); ?>" 
+					value="<?php echo $instance['symposium_vote_forum']; ?>" />
+		<br /><br />
+			<?php _e('(saving clears results)', 'wp-symposium'); ?>
+		</p>
+		<?php
+	}
+
 }
 
 /** Symposium: New Members ************************************************************************* **/

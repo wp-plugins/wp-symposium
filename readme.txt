@@ -6,15 +6,13 @@ Link: http://www.wpsymposium.com
 Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.26.1
+Stable tag: 0.1.27
 
-Social Networking for WordPress - forum, wall, mail, member directory, private messaging, notification bar, chat windows, profile page, widgets, and more! 
+Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, wall, mail, private messaging, notification bar, chat windows, profile page, widgets, and more. You simply choose which you want to activate!
-
-NOTICE: We are currently BETA testing this plugin. As such, although we have not found any problems, we do not recommend you use it on any production sites. However, we do welcome all feedback, bug reports and suggestions. Please do so at www.wpsymposium.com - thank you. 
+WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! You simply choose which you want to activate!
 
 ---------------
 
@@ -323,6 +321,11 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.27 =
+
+* New Widget: Yes/No vote
+* Core: Minor code amendments/improvement
 
 = 0.1.26.1 =
 

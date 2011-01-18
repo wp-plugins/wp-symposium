@@ -32,6 +32,58 @@ jQuery(document).ready(function() {
 
 	/*
 	   +------------------------------------------------------------------------------------------+
+	   |                                        WIDGET: VOTE                                      |
+	   +------------------------------------------------------------------------------------------+
+	*/
+
+	if (jQuery(".symposium_answer").length) {
+		jQuery(".symposium_answer").click(function(){
+			
+			var vote_answer = jQuery(this).attr("title");
+			
+			jQuery(".pleasewait").inmiddle().show();
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_widget_functions.php", 
+				type: "POST",
+				data: ({
+					action:"doVote",
+					vote:vote_answer
+				}),
+			    dataType: "html",
+				async: false,
+				success: function(str){
+					jQuery("#symposium_vote_forum").hide();
+					jQuery("#symposium_vote_thankyou").slideDown("fast").effect("highlight", {}, 3000);
+				},
+				error: function(err){
+					alert("V:"+err);
+				}		
+	   		});	
+			jQuery(".pleasewait").hide();
+		});
+	}
+
+	if (jQuery("#symposium_chartcontainer").length) {
+
+		var myData = new Array(['Yes', parseFloat(symposium.widget_vote_yes)], ['No', parseFloat(symposium.widget_vote_no)]);
+		var myChart = new JSChart('symposium_chartcontainer', 'bar');
+		myChart.setDataArray(myData);
+		myChart.setSize(200, 200);
+		myChart.setTitleFontSize(14);
+		myChart.setTitle("");
+		myChart.setAxisNameX("");
+		myChart.setAxisNameY("");
+		myChart.setAxisPaddingTop(15);
+		myChart.setAxisPaddingBottom(15);
+		myChart.setAxisPaddingLeft(0);
+		myChart.setBarValuesSuffix('%');
+		myChart.draw();
+		
+	}
+
+
+	/*
+	   +------------------------------------------------------------------------------------------+
 	   |                                          REGISTER                                        |
 	   +------------------------------------------------------------------------------------------+
 	*/
@@ -324,6 +376,7 @@ jQuery(document).ready(function() {
 		}
 	});
 
+	// new status
 	if (jQuery("#symposium_add_update").length) {
 	   	jQuery("#symposium_add_update").click(function() {   		
 			jQuery(".pleasewait").inmiddle().show();
@@ -333,7 +386,8 @@ jQuery(document).ready(function() {
 				type: "POST",
 				data: ({
 					action:"addStatus",
-					uid:symposium.current_user_id,
+					subject_uid:symposium.current_user_id,
+					author_uid:symposium.current_user_id,
 					text:jQuery("#symposium_status").val()
 				}),
 			    dataType: "html",
@@ -350,17 +404,19 @@ jQuery(document).ready(function() {
 			jQuery(".pleasewait").hide();
 	   	});		
 	}
-
+	
+	// new post
 	if (jQuery("#symposium_add_comment").length) {
 	   	jQuery("#symposium_add_comment").click(function() {   		
 			jQuery(".pleasewait").inmiddle().show();
-			
+
 			jQuery.ajax({
 				url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
 				type: "POST",
 				data: ({
-					action:"addComment",
-					uid:symposium.current_user_page,
+					action:"addStatus",
+					subject_uid:symposium.current_user_page,
+					author_uid:symposium.current_user_id,
 					parent:0,
 					text:jQuery("#symposium_comment").val()
 				}),
@@ -379,6 +435,7 @@ jQuery(document).ready(function() {
 	   	});		
 	}
 
+	// new reply
 	if (jQuery(".symposium_add_reply").length) {
 	   	jQuery(".symposium_add_reply").click(function() {   		
 			jQuery(".pleasewait").inmiddle().show();

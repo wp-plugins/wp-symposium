@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.26.1
+Version: 0.1.27
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -164,8 +164,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.26.1";
-	$symposium_db_ver = 26;
+	$symposium_version = "0.1.27";
+	$symposium_db_ver = 27;
 	
 	// Code version *************************************************************************************
 	$ver = get_option("symposium_version");
@@ -274,6 +274,7 @@ function symposium_activate() {
 	symposium_alter_table("usermeta", "ADD", "visible", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("usermeta", "ADD", "wall_share", "varchar(32)", "", "'Friends only'");
 	symposium_alter_table("usermeta", "ADD", "extended", "text", "NOT NULL", "''");
+	symposium_alter_table("usermeta", "ADD", "widget_voted", "varchar(2)", "", "''");
 
 	// Modify styles table
 	symposium_alter_table("styles", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
@@ -471,6 +472,7 @@ function symposium_redirect_login() {
 	if (!(function_exists('symposium_login'))) {
 		
 		$redirect = $wpdb->get_row($wpdb->prepare("SELECT enable_redirects, login_redirect, login_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
+		$url = '/';
 	
 		if ( ($redirect->enable_redirects == 'on') && ($redirect->login_redirect != "WordPress default") ) {
 			switch($redirect->login_redirect) {			
@@ -756,9 +758,7 @@ function symposium_admin_init() {
 		// Color Picker
 		wp_register_script('symposium_iColorPicker', WP_PLUGIN_URL . '/wp-symposium/js/iColorPicker.js');
 	    wp_enqueue_script('symposium_iColorPicker');
-
 	}
-
 }
 
 // Ann Symposium JS scripts to WordPress for use
@@ -799,7 +799,41 @@ function symposium_scriptsAction()
 	$cat_id = 0;
 	if (isset($_GET['cid'])) { $cat_id = $_GET['cid']; }
 	if (isset($_POST['cid'])) { $cat_id = $_POST['cid']; }
-
+	
+	// Widget (vote)
+	$symposium_vote_yes = get_option("symposium_vote_yes");
+	if ($symposium_vote_yes != false) {
+		$symposium_vote_yes = (int) $symposium_vote_yes;
+	} else {
+	    add_option("symposium_vote_yes", 0);	    	   	
+		$symposium_vote_yes = 0;
+	}
+	$symposium_vote_no = get_option("symposium_vote_no");
+	if ($symposium_vote_no != false) {
+		$symposium_vote_no = (int) $symposium_vote_no;
+	} else {
+	    add_option("symposium_vote_no", 0);	    	   	
+		$symposium_vote_no = 0;
+	}
+	if ($symposium_vote_yes > 0) {
+		if ($symposium_vote_no > 0) {
+			$yes = floor($symposium_vote_yes/($symposium_vote_yes+$symposium_vote_no)*100);
+			$no = 100 - $yes;
+			$yes = $yes."%";
+			$no = $no."%";
+		} else {
+			$yes = "100%";
+			$no = "0%";
+		}
+	} else {
+		$yes = "0%";
+		if ($symposium_vote_no > 0) {
+			$no = "100%";
+		} else {
+			$no = "0%";
+		}
+	}
+		
 	// Load Symposium JS
  	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
 	
@@ -821,8 +855,15 @@ function symposium_scriptsAction()
 		'show_tid' => $show_tid,
 		'cat_id' => $cat_id,
 		'current_user_id' => $current_user->ID,
-		'current_user_page' => $page_uid
+		'current_user_page' => $page_uid,
+		'widget_vote_yes' => $yes, 
+		'widget_vote_no' => $no
 	));
+
+	// JS Chart
+	wp_register_script('symposium_jsChart', WP_PLUGIN_URL . '/wp-symposium/js/jscharts.js');
+    wp_enqueue_script('symposium_jsChart');
+
 	
 }
 

@@ -584,6 +584,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'visible')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'wall_share')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'extended')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'widget_voted')) { $status = "X"; }
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
