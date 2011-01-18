@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile] on any WordPress page to display forum.
-Version: 0.1.27
+Version: 0.1.27.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -686,20 +686,20 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 							if ($year != '' && $month != '' && $day != '') {
 								if ($city != '' || $country != '') { $html .= ".<br />"; }
 								switch($month) {									
-									case 1:$monthname = "January";break;
-									case 2:$monthname = "February";break;
-									case 3:$monthname = "March";break;
-									case 4:$monthname = "April";break;
-									case 5:$monthname = "May";break;
-									case 6:$monthname = "June";break;
-									case 7:$monthname = "July";break;
-									case 8:$monthname = "August";break;
-									case 9:$monthname = "September";break;
-									case 10:$monthname = "October";break;
-									case 11:$monthname = "November";break;
-									case 12:$monthname = "December";break;
+									case 1:$monthname = __("January", "wp_symposim");break;
+									case 2:$monthname = __("February", "wp_symposim");break;
+									case 3:$monthname = __("March", "wp_symposim");break;
+									case 4:$monthname = __("April", "wp_symposim");break;
+									case 5:$monthname = __("May", "wp_symposim");break;
+									case 6:$monthname = __("June", "wp_symposim");break;
+									case 7:$monthname = __("July", "wp_symposim");break;
+									case 8:$monthname = __("August", "wp_symposim");break;
+									case 9:$monthname = __("September", "wp_symposim");break;
+									case 10:$monthname = __("October", "wp_symposim");break;
+									case 11:$monthname = __("November", "wp_symposim");break;
+									case 12:$monthname = __("December", "wp_symposim");break;
 								}
-								$html .= "Born ".$day." ".$monthname." ".$year.".";
+								$html .= __("Born", "wp-symposium")." ".$day." ".$monthname." ".$year.".";
 							}
 						}
 						$html .= "</p>";

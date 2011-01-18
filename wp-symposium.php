@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.27
+Version: 0.1.27.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -164,7 +164,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.27";
+	$symposium_version = "0.1.27.1";
 	$symposium_db_ver = 27;
 	
 	// Code version *************************************************************************************
@@ -472,9 +472,11 @@ function symposium_redirect_login() {
 	if (!(function_exists('symposium_login'))) {
 		
 		$redirect = $wpdb->get_row($wpdb->prepare("SELECT enable_redirects, login_redirect, login_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
-		$url = '/';
 	
-		if ( ($redirect->enable_redirects == 'on') && ($redirect->login_redirect != "WordPress default") ) {
+		if ($redirect->enable_redirects == 'on') {
+			
+			$url = "";	
+
 			switch($redirect->login_redirect) {			
 				case "Profile Wall":
 					$url = symposium_get_url('profile');	
@@ -495,13 +497,21 @@ function symposium_redirect_login() {
 					$url = $redirect->login_redirect_url;	
 					break;
 				default:
-					$url = symposium_get_url('profile');	
+					if (function_exists('symposium_login')) {
+						$url = symposium_get_url('profile');	
+					} else {
+						$url = "/";
+					}
 					break;
 			}
+
+			if ($url != '') {
+				wp_redirect($url);	
+				exit;
+			}
+
 		}
 	
-		wp_redirect($url);	
-		exit;
 	}
 }
 

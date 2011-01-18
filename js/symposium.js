@@ -393,8 +393,10 @@ jQuery(document).ready(function() {
 			    dataType: "html",
 				async: false,
 				success: function(str){
-					jQuery("#symposium_status").val('');
-					jQuery(str).prependTo('#symposium_wall').hide().slideDown();
+					if (str != '') {
+						jQuery("#symposium_status").val('');
+						jQuery(str).prependTo('#symposium_wall').hide().slideDown();
+					}
 				},
 				error: function(err){
 					//alert("P1:"+err);
@@ -423,8 +425,10 @@ jQuery(document).ready(function() {
 			    dataType: "html",
 				async: false,
 				success: function(str){
-					jQuery("#symposium_comment").val('');
-					jQuery(str).prependTo('#symposium_wall').hide().slideDown();
+					if (str != '') {
+						jQuery("#symposium_comment").val('');
+						jQuery(str).prependTo('#symposium_wall').hide().slideDown();
+					}
 				},
 				error: function(err){
 					//alert("P2:"+err);
@@ -455,8 +459,10 @@ jQuery(document).ready(function() {
 			    dataType: "html",
 				async: false,
 				success: function(str){
-					jQuery("#symposium_reply_"+comment_id).val('');
-					jQuery(str).appendTo('#symposium_comment_'+comment_id).hide().slideDown();
+					if (str != '') {
+						jQuery("#symposium_reply_"+comment_id).val('');
+						jQuery(str).appendTo('#symposium_comment_'+comment_id).hide().slideDown();
+					}
 				},
 				error: function(err){
 					//alert("P2:"+err);

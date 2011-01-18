@@ -1,9 +1,14 @@
 todo.txt
 --------
    
-- don't post empty wall
-
 CHAT
 
-- chat time 5 hours behind
 - please wait not showing when window first opens
+
+CODEX
+
+- data dictionary
+
+- functions
+
+- javascript variables

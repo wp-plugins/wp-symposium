@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.27
+Version: 0.1.27.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -251,7 +251,7 @@ function symposium_forum() {
 					
 			} else {
 		
-				$html .= "Until you <a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='Login'>login</a>, you can only view the forum.";
+				$html .= __("Until you login, you can only view the forum.", "wp-symposium");
 				$html .= "<br />";
 		
 			}

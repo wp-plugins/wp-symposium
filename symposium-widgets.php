@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.1.27
+Version: 0.1.27.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -138,7 +138,7 @@ class Symposium_vote_Widget extends WP_Widget {
 	function form( $instance ) {
 
 		/* Set up some default widget settings. */
-		$defaults = array( 'symposium_vote_question' => __('A yes/no question...', 'wp-symposium'), 'symposium_vote_forum' => __('', 'wp-symposium') );
+		$defaults = array( 'symposium_vote_question' => __('A yes/no question...', 'wp-symposium'), 'symposium_vote_forum' => '' );
 		$instance = wp_parse_args( (array) $instance, $defaults ); 
 
 		$symposium_vote_yes = get_option("symposium_vote_yes");

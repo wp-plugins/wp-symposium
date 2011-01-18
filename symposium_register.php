@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Registration
 Plugin URI: http://www.wpsymposium.com
 Description: Registration component for the Symposium suite of plug-ins. Put [symposium-register] on any WordPress page.
-Version: 0.1.27
+Version: 0.1.27.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
