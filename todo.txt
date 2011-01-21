@@ -1,0 +1,44 @@
+todo.txt
+--------
+   
+PROFILE
+
+- profile picture
+
+CHAT
+
+- please wait not showing when window first opens
+
+REGISTER
+
+- optional page to redirect to after registering
+- option email sent to new members
+- check on username availability
+
+WALL
+
+- smilies from AJAX....
+
+CODEX
+
+- data dictionary
+- functions
+- javascript variables
+
+
+LANGUAGES
+
+- add language contacts to wps languages page (and ask Mattius if he wants to be contact)
+
+WISH LIST
+
+- paying/subscriptions
+
+
+
+
+Here are the details to login to the site in question. This is per using the symposium login plugin which results in always redirecting to an outdated user profile page. T's 'gain.
+
+username: testuser
+password: accesstestuser
+admin login page: http://erthaware.info/wp-login.php?login
