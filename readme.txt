@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.27.1
+Stable tag: 0.1.28
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -308,7 +308,7 @@ Q. I've done that, but the forum (or another plugin) still doesn't appear?
 A. Have you put `[symposium-forum]` on a WordPress page, not an HTML file? 
 
 Q. Can I use other languages?
-A. Check out www.wpsymposium.com/support/add-new-language to see if yours is support, or how to add a new language
+A. Check out www.wpsymposium.com/support/add-new-language to see if yours is supported, or how to add a new language
 
 Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page at http://www.wpsymposium.com/forum/forum-smilies
@@ -321,6 +321,17 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.28 =
+
+* New plugin: Member avatars (upload profile photos)
+* Forum: Added: Option to share with Facebook, Twitter, Email, etc
+* Profile: Wall: Limits initial list of replies to 4 with "View all x comments" prompt (AJAX)
+* Profile: Wall: Now delivered via AJAX (preparing for photos, etc all via AJAX)
+* Profile: Wall: Can now view a single post and replies (such as link sent via notification emails)
+* Profile: Preferences, Personal and Friends all delivered via AJAX "within" profile page
+* Profile: Added [symposium-settings], [symposium-personal] and [symposium-friends] shortcodes
+* Registration: Optional message to be sent to new members
 
 = 0.1.27.1 = 
 

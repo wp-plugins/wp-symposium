@@ -362,11 +362,10 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'members_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'login_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_url')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'avatar_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'bar_position')) { $status = "X"; }
-
-			if (!symposium_field_exists($table_name, 'bar_label', 'varchar(256)', 'NOT NULL', "'Powered by WP Symposium'")) { $status = "X"; }
-
+			if (!symposium_field_exists($table_name, 'bar_label')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'online')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'offline')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_chat')) { $status = "X"; }
@@ -386,6 +385,8 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'register_use_sum')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_wp_register')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'custom_register_url')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'sharing')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'register_message')) { $status = "X"; }
 
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -585,6 +586,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'wall_share')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'extended')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'widget_voted')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'profile_photo')) { $status = "X"; }
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -625,7 +627,7 @@ function symposium_plugin_debug() {
 		  		echo $db_ver."<br />";
 		  	}
 	
-			if ( ($config->forum_url == "Important: Please update!") || ($config->login_url == "Important: Please update!") || ($config->members_url == "Important: Please update!") || ($config->register_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
+			if ( ($config->forum_url == "Important: Please update!") || ($config->login_url == "Important: Please update!") || ($config->members_url == "Important: Please update!") || ($config->register_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->avatar_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
 				echo $fail."You must update your plugin URLs on the <a href='admin.php?page=symposium_options&view=settings'>options page</a>.".$fail2;
 			} else {
 			  	echo __('According to the Options page', 'wp-symposium').":<br />";
@@ -637,6 +639,9 @@ function symposium_plugin_debug() {
 			  	}
 			  	if (function_exists('symposium_profile')) { 
 			  		echo "&nbsp;&middot;&nbsp;".__('the profile page is at', 'wp-symposium')." <a href='".$config->profile_url."'>$config->profile_url</a><br />";
+			  	}
+			  	if (function_exists('symposium_avatar')) { 
+			  		echo "&nbsp;&middot;&nbsp;".__('the avatar page is at', 'wp-symposium')." <a href='".$config->avatar_url."'>$config->profile_url</a><br />";
 			  	}
 			  	if (function_exists('symposium_members')) { 
 			  		echo "&nbsp;&middot;&nbsp;".__('the members directory page is at', 'wp-symposium')." <a href='".$config->members_url."'>$config->members_url</a><br />";
@@ -1428,8 +1433,9 @@ function symposium_plugin_options() {
 	    // See if the user has posted registration settings
 	    if( $_POST[ 'symposium_update' ] == 'R' ) {
 	        $register_use_sum = $_POST[ 'register_use_sum' ];
+	        $register_message = $_POST[ 'register_message' ];
 
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_use_sum = '".$register_use_sum."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_use_sum = '".$register_use_sum."'") );						$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_message = '".$register_message."'") );					
 									
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>".__('Registration options saved', 'wp-symposium').".</p></div>";
@@ -1447,6 +1453,7 @@ function symposium_plugin_options() {
 	        $wp_width = str_replace('%', 'pc', ($_POST[ 'wp_width' ]));
 	        $forum_url = $_POST[ 'forum_url' ];
 	        $mail_url = $_POST[ 'mail_url' ];
+	        $avatar_url = $_POST[ 'avatar_url' ];
 	        $register_url = $_POST[ 'register_url' ];
 	        $members_url = $_POST[ 'members_url' ];
 	        $login_url = $_POST[ 'login_url' ];
@@ -1467,6 +1474,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_width = '".$wp_width."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET mail_url = '".$mail_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET avatar_url = '".$avatar_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET register_url = '".$register_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET members_url = '".$members_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_url = '".$login_url."'") );					
@@ -1497,6 +1505,14 @@ function symposium_plugin_options() {
 	        $closed_word = $_POST[ 'closed_word' ];
 	        $fontfamily = $_POST[ 'fontfamily' ];
 	        $moderation = $_POST[ 'moderation' ];
+	        if ($_POST[ 'sharing_facebook' ] == 'on') { $sharing_facebook = "fb;"; } else { $sharing_facebook = ""; }
+	        if ($_POST[ 'sharing_twitter' ] == 'on') { $sharing_twitter = "tw;"; } else { $sharing_twitter = ""; }
+	        if ($_POST[ 'sharing_myspace' ] == 'on') { $sharing_myspace = "ms;"; } else { $sharing_myspace = ""; }
+	        if ($_POST[ 'sharing_bebo' ] == 'on') { $sharing_bebo = "be;"; } else { $sharing_bebo = ""; }
+	        if ($_POST[ 'sharing_linkedin' ] == 'on') { $sharing_linkedin = "li;"; } else { $sharing_linkedin = ""; }
+	        if ($_POST[ 'sharing_email' ] == 'on') { $sharing_email = "em;"; } else { $sharing_email = ""; }
+
+	        $sharing = $sharing_facebook.$sharing_twitter.$sharing_myspace.$sharing_bebo.$sharing_linkedin.$sharing_email;
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET show_categories = '".$show_categories."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET send_summary = '".$send_summary."'") );					
@@ -1507,6 +1523,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET viewer = '".$viewer."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET closed_word = '".$closed_word."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET moderation = '".$moderation."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET sharing = '".$sharing."'") );					
 
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>".__('Forum options saved', 'wp-symposium').".</p></div>";
@@ -1709,10 +1726,11 @@ function symposium_plugin_options() {
 					<li>Forum<?php if (function_exists('symposium_forum')) { echo ' (activated)'; } ?></li>
 					<li>Mail/Private Messaging<?php if (function_exists('symposium_mail')) { echo ' (activated) Note: no options tab used'; } ?></li>
 					<li>Member Profile<?php if (function_exists('symposium_profile')) { echo ' (activated)'; } ?></li>
+					<li>Profile Avatar/Photo<?php if (function_exists('symposium_avatar')) { echo ' (activated)'; } ?> <img src="../wp-content/plugins/wp-symposium/images/new.png" alt="New!" /></li>
 					<li>Notification Bar<?php if (function_exists('add_notification_bar')) { echo ' (activated)'; } ?></li>
 					<li>Members Directory<?php if (function_exists('symposium_members')) { echo ' (activated) Note: no options tab used'; } ?></li>
-					<li>Login<?php if (function_exists('symposium_login')) { echo ' (activated)'; } ?> <img src="../wp-content/plugins/wp-symposium/images/new.png" alt="New!" /></li>
-					<li>Registration<?php if (function_exists('symposium_register')) { echo ' (activated)'; } ?> <img src="../wp-content/plugins/wp-symposium/images/new.png" alt="New!" /></li>
+					<li>Login<?php if (function_exists('symposium_login')) { echo ' (activated)'; } ?></li>
+					<li>Registration<?php if (function_exists('symposium_register')) { echo ' (activated)'; } ?></li>
 					</ol>
 					
 					<p>
@@ -1721,9 +1739,7 @@ function symposium_plugin_options() {
 					
 					<p><strong>Note from the author</strong></p>
 					<p>
-					I pleased to let you know that we are fast approaching a stable release candidate - including the support of .POT and .po/.mo language files. I'd
-					like to thank those who submitted language files for the previous version, and hope they can understand why the decision was taken to go this direction
-					in terms of the language.
+					I pleased to let you know that we are fast approaching a stable release candidate, but you all keep coming with new ideas to sneak in.....!
 					</p>
 					<p>
 					Check out the <a href='http://WordPress.org/extend/plugins/wp-symposium/changelog/'>change log</a> for the list of new additions/changes/fixes...
@@ -1891,6 +1907,7 @@ function symposium_plugin_options() {
 					$emoticons = $config->emoticons;	
 					$forum_url = $config->forum_url;
 					$mail_url = $config->mail_url;
+					$avatar_url = $config->avatar_url;
 					$register_url = $config->register_url;
 					$members_url = $config->members_url;
 					$login_url = $config->login_url;
@@ -1926,6 +1943,12 @@ function symposium_plugin_options() {
 					<th scope="row"><label for="profile_url">Profile URL</label></th> 
 					<td><input name="profile_url" type="text" id="profile_url"  value="<?php echo $profile_url; ?>" class="regular-text" /> 
 					<span class="description"><?php echo __('Full URL of the page that includes [symposium-profile]', 'wp-symposium'); ?></td> 
+					</tr> 					
+
+					<tr valign="top"> 
+					<th scope="row"><label for="avatar_url">Avatar URL</label></th> 
+					<td><input name="avatar_url" type="text" id="avatar_url"  value="<?php echo $avatar_url; ?>" class="regular-text" /> 
+					<span class="description"><?php echo __('Full URL of the page that includes [symposium-avatar]', 'wp-symposium'); ?></td> 
 					</tr> 					
 
 					<tr valign="top"> 
@@ -2074,6 +2097,14 @@ function symposium_plugin_options() {
 					$viewer = $config->viewer;
 					$closed_word = $config->closed_word;
 					$moderation = $config->moderation;
+					$sharing = $config->sharing;
+					if ( strpos($sharing, "fb") === FALSE ) { $sharing_facebook = ''; } else { $sharing_facebook = 'on'; }
+					if ( strpos($sharing, "tw") === FALSE ) { $sharing_twitter = ''; } else { $sharing_twitter = 'on'; }
+					if ( strpos($sharing, "ms") === FALSE ) { $sharing_myspace = ''; } else { $sharing_myspace = 'on'; }
+					if ( strpos($sharing, "li") === FALSE ) { $sharing_linkedin = ''; } else { $sharing_linkedin = 'on'; }
+					if ( strpos($sharing, "be") === FALSE ) { $sharing_bebo = ''; } else { $sharing_bebo = 'on'; }
+					if ( strpos($sharing, "em") === FALSE ) { $sharing_email = ''; } else { $sharing_email = 'on'; }
+					
 					?>
 						
 					<form method="post" action=""> 
@@ -2082,42 +2113,42 @@ function symposium_plugin_options() {
 					<table class="form-table"> 
 					
 					<tr valign="top"> 
-					<th scope="row"><label for="moderation">Moderation</label></th>
+					<th scope="row"><label for="moderation"><?php _e('Moderation', 'wp-symposium'); ?></label></th>
 					<td>
 					<input type="checkbox" name="moderation" id="moderation" <?php if ($moderation == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('New topics and posts require admin approval', 'wp-symposium'); ?></span></td> 
 					</tr> 
 				
 					<tr valign="top"> 
-					<th scope="row"><label for="send_summary">Daily Digest</label></th>
+					<th scope="row"><label for="send_summary"><?php _e('Daily Digest', 'wp-symposium'); ?></label></th>
 					<td>
 					<input type="checkbox" name="send_summary" id="send_summary" <?php if ($send_summary == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Enable daily summaries to all members via email', 'wp-symposium'); ?></span></td> 
 					</tr> 
 				
 					<tr valign="top"> 
-					<th scope="row"><label for="show_categories">Categories</label></th>
+					<th scope="row"><label for="show_categories"><?php _e('Categories', 'wp-symposium'); ?></label></th>
 					<td>
 					<input type="checkbox" name="show_categories" id="show_categories" <?php if ($show_categories == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Organise forum topics by categories', 'wp-symposium'); ?></span></td> 
 					</tr> 
 				
 					<tr valign="top"> 
-					<th scope="row"><label for="include_admin">Admin views</label></th>
+					<th scope="row"><label for="include_admin"><?php _e('Admin views', 'wp-symposium'); ?></label></th>
 					<td>
 					<input type="checkbox" name="include_admin" id="include_admin" <?php if ($include_admin == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Include administrator viewing a topic in the total view count', 'wp-symposium'); ?></span></td> 
 					</tr> 
 				
 					<tr valign="top"> 
-					<th scope="row"><label for="oldest_first">Order of replies</label></th>
+					<th scope="row"><label for="oldest_first"><?php _e('Order of replies', 'wp-symposium'); ?></label></th>
 					<td>
 					<input type="checkbox" name="oldest_first" id="oldest_first" <?php if ($oldest_first == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Show oldest replies first (uncheck to reverse order)', 'wp-symposium'); ?></span></td> 
 					</tr> 
 				
 					<tr valign="top"> 
-					<th scope="row"><label for="preview1">Preview length</label></th>
+					<th scope="row"><label for="preview1"><?php _e('Preview length', 'wp-symposium'); ?></label></th>
 					<td><input name="preview1" type="text" id="preview1"  value="<?php echo $preview1; ?>" /> 
 					<span class="description"><?php echo __('Maximum number of characters to show in topic preview', 'wp-symposium'); ?></span></td> 
 					</tr> 
@@ -2129,22 +2160,64 @@ function symposium_plugin_options() {
 					</tr> 
 				
 					<tr valign="top"> 
-					<th scope="row"><label for="viewer">View forum level</label></th> 
+					<th scope="row"><label for="viewer"><?php _e('View forum level', 'wp-symposium'); ?></label></th> 
 					<td>
 					<select name="viewer">
-						<option value='Guest'<?php if ($viewer == 'Guest') { echo ' SELECTED'; } ?>>Guest</option>
-						<option value='Subscriber'<?php if ($viewer == 'Subscriber') { echo ' SELECTED'; } ?>>Subscriber</option>
-						<option value='Contributor'<?php if ($viewer == 'Contributor') { echo ' SELECTED'; } ?>>Contributor</option>
-						<option value='Editor'<?php if ($viewer == 'Editor') { echo ' SELECTED'; } ?>>Editor</option>
-						<option value='Administrator'<?php if ($viewer == 'Administrator') { echo ' SELECTED'; } ?>>Administrator</option>
+						<option value='Guest'<?php if ($viewer == 'Guest') { echo ' SELECTED'; } ?>><?php _e('Guest', 'wp-symposium'); ?></option>
+						<option value='Subscriber'<?php if ($viewer == 'Subscriber') { echo ' SELECTED'; } ?>><?php _e('Subscriber', 'wp-symposium'); ?></option>
+						<option value='Contributor'<?php if ($viewer == 'Contributor') { echo ' SELECTED'; } ?>><?php _e('Contributor', 'wp-symposium'); ?></option>
+						<option value='Editor'<?php if ($viewer == 'Editor') { echo ' SELECTED'; } ?>><?php _e('Editor', 'wp-symposium'); ?></option>
+						<option value='Administrator'<?php if ($viewer == 'Administrator') { echo ' SELECTED'; } ?>><?php _e('Administrator', 'wp-symposium'); ?></option>
 					</select> 
 					<span class="description"><?php echo __('The minimum level a visitor has to be to view the forum', 'wp-symposium'); ?></span></td> 
 					</tr> 
 				
 					<tr valign="top"> 
-					<th scope="row"><label for="closed_word">Closed word</label></th>
+					<th scope="row"><label for="closed_word"><?php _e('Closed word', 'wp-symposium'); ?></label></th>
 					<td><input name="closed_word" type="text" id="closed_word"  value="<?php echo $closed_word; ?>" /> 
 					<span class="description"><?php echo __('Word used to denote a topic that is closed (see also Styles)', 'wp-symposium'); ?></span></td> 
+					</tr> 
+
+					<tr valign="top"> 
+					<th scope="row"><label for="sharing_email"><?php _e('Sharing icons included', 'wp-symposium'); ?></label></th>
+					<td>
+					<input type="checkbox" name="sharing_email" id="sharing_email" <?php if ($sharing_email == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Email', 'wp-symposium'); ?></span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="sharing_facebook">&nbsp;</label></th>
+					<td>
+					<input type="checkbox" name="sharing_facebook" id="sharing_facebook" <?php if ($sharing_facebook == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Facebook', 'wp-symposium'); ?></span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="sharing_twitter">&nbsp;</label></th>
+					<td>
+					<input type="checkbox" name="sharing_twitter" id="sharing_twitter" <?php if ($sharing_twitter == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Twitter', 'wp-symposium'); ?></span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="sharing_myspace">&nbsp;</label></th>
+					<td>
+					<input type="checkbox" name="sharing_myspace" id="sharing_myspace" <?php if ($sharing_myspace == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('MySpace', 'wp-symposium'); ?></span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="sharing_bebo">&nbsp;</label></th>
+					<td>
+					<input type="checkbox" name="sharing_bebo" id="sharing_bebo" <?php if ($sharing_bebo == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Bebo', 'wp-symposium'); ?></span></td> 
+					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="sharing_linkedin">&nbsp;</label></th>
+					<td>
+					<input type="checkbox" name="sharing_linkedin" id="sharing_linkedin" <?php if ($sharing_linkedin == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('LinkedIn', 'wp-symposium'); ?></span></td> 
 					</tr> 
 				
 					</table> 
@@ -2154,8 +2227,8 @@ function symposium_plugin_options() {
 					<span class="description">
 					<strong>Notes</strong>
 					<ul>
-					<li>&middot;&nbsp;Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time, for the previous day.</li>
-					<li>&middot;&nbsp;Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website.</li>
+					<li>&middot;&nbsp;<?php _e('Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time, for the previous day.', 'wp-symposium'); ?></li>
+					<li>&middot;&nbsp;<?php _e('Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website.', 'wp-symposium'); ?></li>
 					</ul>
 					</p>	
 					 
@@ -2210,6 +2283,7 @@ function symposium_plugin_options() {
 
 				    // Get values from database  
 					$register_use_sum = $config->register_use_sum;
+					$register_message = $config->register_message;
 					?>
 						
 					<form method="post" action=""> 
@@ -2222,6 +2296,13 @@ function symposium_plugin_options() {
 					<td>
 					<input type="checkbox" name="register_use_sum" id="register_use_sum" <?php if ($register_use_sum == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('A simple addition question to combat spam', 'wp-symposium'); ?></span></td> 
+					</tr> 
+
+					<tr valign="top"> 
+					<th scope="row"><label for="register_message"><?php echo __('If not empty, the email to send to new members after registering', 'wp-symposium'); ?></label></th>
+					<td>
+					<textarea name="register_message" style="width: 500px; height:300px" id="register_message"><?php echo $register_message; ?></textarea>
+					</td> 
 					</tr> 
 
 					</table>

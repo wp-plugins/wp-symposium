@@ -262,16 +262,7 @@
 			$html .= "#symposium-wrapper .mail_item:hover {";
 			$html .= "	background-color: ".$table_rollover.";";
 			$html .= "}";
-	
-			$html .= "#symposium-wrapper .notice, #symposium-wrapper .pleasewait";
-			$html .= "{";
-			$html .= "	position: absolute;";
-			$html .= "	padding: 6px;";
-			$html .= "	border: 2px solid ".$primary_color.";";	
-			$html .= "	background-color: ".$main_background.";";
-			$html .= "	display: none;";
-			$html .= "}";
-	
+		
 			$html .= "</style>";
 			
 		} else {

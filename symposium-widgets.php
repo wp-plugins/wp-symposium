@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.1.27.1
+Version: 0.1.28
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -210,7 +210,7 @@ class Symposium_members_Widget extends WP_Widget {
 				{
 					echo "<div class='Forumrecentposts_row' style='clear:both; margin-top:8px;'>";		
 						echo "<div style='float: left; width:32px; margin-right: 5px;'>";
-							echo get_avatar($member->ID, 32);
+							echo get_user_avatar($member->ID, 32);
 						echo "</div>";
 						echo "<div>";
 							echo symposium_profile_link($member->ID)." ".__('joined', 'wp-symposium')." ";
@@ -312,7 +312,7 @@ class Forumrecentposts_Widget extends WP_Widget {
 				{
 					echo "<div class='Forumrecentposts_row' style='clear:both; margin-top:8px;'>";		
 						echo "<div style='float: left; width:32px; margin-right: 5px;'>";
-							echo get_avatar($post->topic_owner, 32);
+							echo get_user_avatar($post->topic_owner, 32);
 						echo "</div>";
 						echo "<div>";
 							if ($post->topic_parent > 0) {
@@ -370,4 +370,8 @@ class Forumrecentposts_Widget extends WP_Widget {
 
 }
 
+
+// JS Chart
+wp_register_script('symposium_jsChart', WP_PLUGIN_URL . '/wp-symposium/js/jscharts.js');
+wp_enqueue_script('symposium_jsChart');
 ?>

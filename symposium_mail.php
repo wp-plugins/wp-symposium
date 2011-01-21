@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.1.27.1
+Version: 0.1.28
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -107,13 +107,18 @@ function symposium_mail() {
 				$message = $message.$previous;
 				
 				// Send mail
-				$rows_affected = $wpdb->prepare( $wpdb->insert( $wpdb->prefix . "symposium_mail", array( 
+				if ( $rows_affected = $wpdb->prepare( $wpdb->insert( $wpdb->prefix . "symposium_mail", array( 
 				'mail_from' => $current_user->ID, 
 				'mail_to' => $recipient->ID, 
 				'mail_sent' => date("Y-m-d H:i:s"), 
 				'mail_subject' => $subject,
 				'mail_message' => $message
-				 ) ) );		
+				 ) ) ) ) {
+					$mail_sent_result = __('Message sent to', 'wp-symposium').' '.$recipient_name.'.';
+				 } else {
+					$mail_sent_result = '<p><strong>'.__('There was a problem sending your mail to', 'wp-symposium').' '.$recipient_name.'.</strong></p>';
+				 }
+		
 				
 				// Add notification
 				$msg = '<a href="'.symposium_get_url('mail').'">You have a new mail message from '.$current_user->display_name.'...</a>';
@@ -135,9 +140,9 @@ function symposium_mail() {
 					$body = str_replace("\\", "", $body);
 					
 					if ( symposium_sendmail($recipient->user_email, __('New Mail Message', 'wp-symposium'), $body) ) {
-						$mail_sent_result = __('Message sent to', 'wp-symposium').' '.$recipient_name.'.';
+						// email sent ok.
 					} else {
-						$mail_sent_result = '<p><strong>'.__('There was a problem sending to', 'wp-symposium').' '.$recipient_name.'.</strong></p>';
+						$mail_sent_result .= '<p><strong>'.__('There was a problem sending an email notification to', 'wp-symposium').' '.$recipient->user_email.'.</strong></p>';
 					}
 				}
 
@@ -339,10 +344,6 @@ function symposium_mail() {
 			// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
 			$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
 			 
-			// Notices
-			$html .= "<div class='notice' style='z-index:999999;'><img src='".$plugin_dir."images/busy.gif' /> ".__('Saving...', 'wp-symposium')."</div>";
-			$html .= "<div class='pleasewait' style='z-index:999999;'><img src='".$plugin_dir."images/busy.gif' /> ".__('Please Wait...', 'wp-symposium')."</div>";
-	
 		$html .= '</div>'; // End of Wrapper
 		
 	} else {

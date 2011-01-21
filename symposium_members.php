@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Members Directory
 Plugin URI: http://www.wpsymposium.com
 Description: Directory component for the Symposium suite of plug-ins. Put [symposium-members] on any WordPress page.
-Version: 0.1.27.1
+Version: 0.1.28
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -34,7 +34,6 @@ function symposium_members() {
 	$dbpage = $plugin.'/symposium_members_db.php';
 
 	include_once('symposium_styles.php');
-
 
 	$html .= '<div id="symposium-wrapper">';
 
@@ -105,7 +104,7 @@ function symposium_members() {
 							}
 		
 							$html .= "<div style='float: left; width:75px;'>";
-								$html .= get_avatar($member->ID, 64);
+								$html .= get_user_avatar($member->ID, 64);
 							$html .= "</div>";
 							$html .= symposium_profile_link($member->ID).', '.__('last active', 'wp-symposium').' '.symposium_time_ago($member->last_activity).". ";
 							if ($last_active_minutes >= $offline) {
@@ -141,7 +140,7 @@ function symposium_members() {
 			
 			$html .= '</form>';
 	
-			$html .= '<div id="symposium_members"><img src="'.$plugin.'/images/busy.gif" /></div>';
+			$html .= '<div id="symposium_members"></div>';
 			
 		}
 	

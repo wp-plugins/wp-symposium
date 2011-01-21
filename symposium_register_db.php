@@ -87,6 +87,12 @@ if (!is_user_logged_in()) {
 			        // Email admin
 			        $body = $display_name." (".$youremail.") ".__('has joined', 'wp-symposium')." ".get_bloginfo('name');
 					symposium_sendmail(get_bloginfo('admin_email'), __('New Member', 'wp-symposium'), $body);
+					
+					// Email new member (if there is a message to send)
+					$message = $wpdb->get_var($wpdb->prepare("SELECT register_message FROM ".$wpdb->prefix.'symposium_config'));
+					if ($message != '') {
+						symposium_sendmail($youremail, __(sprintf('Welcome to %s', get_bloginfo('name')), 'wp-symposium'), str_replace("\n", "<br />", $message));
+					}
 	        
 					header("Location: ".symposium_get_url('profile')."?view=personal");
 					exit;

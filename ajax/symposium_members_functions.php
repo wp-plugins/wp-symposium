@@ -100,7 +100,7 @@ if ($_POST['action'] == 'getMembers') {
 					}
 
 					$html .= "<div style='float: left; width:75px;'>";
-						$html .= get_avatar($member->uid, 64);
+						$html .= get_user_avatar($member->uid, 64);
 					$html .= "</div>";
 					$html .= symposium_profile_link($member->uid).', last active '.symposium_time_ago($member->last_activity).". ";
 					if ($last_active_minutes >= $offline) {

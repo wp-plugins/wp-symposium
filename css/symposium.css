@@ -426,6 +426,35 @@
 	margin-left: 2px;
 }
 
+
+#symposium-wrapper .symposium_profile_menu {
+	cursor:pointer;
+	margin-bottom: 10px;
+}
+
+
+	
+.symposium_notice, .symposium_pleasewait {
+	position: absolute;
+	padding: 6px;
+	border: 2px solid #000;	
+	background-color: #fff;
+	display: none;
+	font-size: 14px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-moz-box-shadow: 3px 3px 4px #999;
+	-webkit-box-shadow: 3px 3px 4px #999;
+	box-shadow: 3px 3px 4px #999;
+	/* For IE 8 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#999999')";
+	/* For IE 5.5 - 7 */
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#999999');
+}
+
+
+
+
 .ui-autocomplete {
 	max-height: 300px;
 	overflow-y: auto;
@@ -440,4 +469,3 @@
 * html .ui-autocomplete {
 	height: 150px;
 }
-	

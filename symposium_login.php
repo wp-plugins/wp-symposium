@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Login
 Plugin URI: http://www.wpsymposium.com
 Description: Login component for the Symposium suite of plug-ins. Put [symposium-login] on any WordPress page.
-Version: 0.1.27.1
+Version: 0.1.28
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -77,7 +77,7 @@ function symposium_login() {
 					$html .= '<div style="clear: both; float:right; text-align:right;">';
 					$html .= '<a id="symposium_forgotten" href="javascript:void(0);">'.__('Forgotten Password', 'wp-symposium').'</a><br />';
 					if ($config->use_wp_register == "on") {
-						$html .= '<a href="/wp-login.php?action=register">'.__('Register', 'wp-symposium').'</a>';
+						$html .= '<a href="'.site_url().'/wp-login.php?action=register">'.__('Register', 'wp-symposium').'</a>';
 					} else {
 						$html .= '<a href="'.$config->register_url.'">'.__('Register', 'wp-symposium').'</a>';
 					}
@@ -107,10 +107,6 @@ function symposium_login() {
 			}
 
 		}
-
-
-		// Notices
-		$html .= "<div class='pleasewait' style='display:none;z-index:999999;'><img src='".$plugin."/images/busy.gif' /> ".__('Please Wait...', 'wp-symposium')."</div>";
 
 	$html .= '</div>'; // End of Wrapper
 	

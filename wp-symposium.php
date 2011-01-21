@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.27.1
+Version: 0.1.28
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -164,8 +164,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.27.1";
-	$symposium_db_ver = 27;
+	$symposium_version = "0.1.28";
+	$symposium_db_ver = 28;
 	
 	// Code version *************************************************************************************
 	$ver = get_option("symposium_version");
@@ -232,6 +232,9 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "register_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "members_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "login_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "avatar_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "sharing", "varchar(32)", "", "''");
+	symposium_alter_table("config", "ADD", "register_message", "text", "", "''");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
@@ -275,6 +278,7 @@ function symposium_activate() {
 	symposium_alter_table("usermeta", "ADD", "wall_share", "varchar(32)", "", "'Friends only'");
 	symposium_alter_table("usermeta", "ADD", "extended", "text", "NOT NULL", "''");
 	symposium_alter_table("usermeta", "ADD", "widget_voted", "varchar(2)", "", "''");
+	symposium_alter_table("usermeta", "ADD", "profile_photo", "varchar(64)", "", "''");
 
 	// Modify styles table
 	symposium_alter_table("styles", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
@@ -585,7 +589,7 @@ function symposium_smilies($buffer){ // $buffer contains entire page
 		} while ($i < 100 && strpos($buffer, "{{")>0);
 		
 	}
-	
+
 	return $buffer;
 }
 
@@ -718,14 +722,22 @@ function add_symposium_stylesheet() {
 	global $wpdb;
 
 	if (!is_admin()) {
-	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/css/symposium.css';
-	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/css/symposium.css';
+	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/css/symposium-min.css';
+	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/css/symposium-min.css';
 	    if ( file_exists($myStyleFile) ) {
 	        wp_register_style('symposium_StyleSheet', $myStyleUrl);
 	        wp_enqueue_style('symposium_StyleSheet');
 	    } else {
 		    wp_die( __('Stylesheet (%s) not found.'), $myStyleFile  );		    
 	    }
+
+		wp_register_style('symposium_jcrop-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery.Jcrop.css');
+		wp_enqueue_style('symposium_jcrop-css');
+		
+		wp_register_style('symposium_uploadify-css', WP_PLUGIN_URL.'/uploadify/uploadify.css');
+		wp_enqueue_style('symposium_uploadify-css');
+	    
+
 	}
 
 	// Only load if chosen
@@ -734,8 +746,13 @@ function add_symposium_stylesheet() {
 
         wp_register_style('symposium_jquery-ui-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery-ui.css');
         wp_enqueue_style('symposium_jquery-ui-css');
-	    
+
 	}    
+
+	// Notices
+	echo "<div class='symposium_notice' style='display:none; z-index:999999;'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /> ".__('Saving...', 'wp-symposium')."</div>";
+	echo "<div class='symposium_pleasewait' style='display:none; z-index:999999;'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /> ".__('Please Wait...', 'wp-symposium')."</div>";
+	
 }
 
 // Language files
@@ -751,13 +768,16 @@ function js_init() {
 
 	// Only load if chosen
 	if (!is_admin()) {
+		
+		$plugin = get_site_url().'/wp-content/plugins/wp-symposium';
+
 		if ($jquery->jquery == "on") {
-			wp_enqueue_script('jquery');
+			wp_enqueue_script('jquery');	 		
 		}
 		if ($jquery->jqueryui == "on") {
-			$plugin = get_site_url().'/wp-content/plugins/wp-symposium';
-	 		wp_enqueue_script('jquery-ui-custom', $plugin.'/js/jquery-ui-1.8.8.custom.min.js', array('jquery'));
-		}
+	 		wp_enqueue_script('jquery-ui-custom', $plugin.'/js/jquery-ui-1.8.8.custom.min.js', array('jquery'));	
+		}	
+
 	}		
 	
 }
@@ -771,11 +791,12 @@ function symposium_admin_init() {
 	}
 }
 
-// Ann Symposium JS scripts to WordPress for use
+// Add Symposium JS scripts to WordPress for use
 function symposium_scriptsAction()
 {
 
 	$symposium_plugin_url = WP_PLUGIN_URL.'/wp-symposium/';
+	$symposium_plugin_path = str_replace("http://".$_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"], "", $symposium_plugin_url);
  
 	global $wpdb, $current_user;
 	wp_get_current_user();
@@ -784,8 +805,8 @@ function symposium_scriptsAction()
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_config"));
 	
 	// Mail
-	$view = "sent";
-	if ( !isset($_GET['view']) || ($_GET['view'] == "in") ) { $view = "in"; } 
+	$view = $_GET['view'];
+	if ( !isset($_GET['view']) ) { $view = "in"; } 
 
 	// Current User Page (eg. a profile page)
 	if (isset($_GET['uid'])) {
@@ -844,17 +865,25 @@ function symposium_scriptsAction()
 		}
 	}
 		
+	// Load Symposium JS supporting scrtipts		
+	
+	wp_enqueue_script('jquery-swfobject', WP_PLUGIN_URL.'/wp-symposium/uploadify/swfobject.js', array('jquery'));
+	wp_enqueue_script('jquery-uploadify', WP_PLUGIN_URL.'/wp-symposium/uploadify/jquery.uploadify.v2.1.4.js', array('jquery'));
+	wp_enqueue_script('jquery-jcrop', WP_PLUGIN_URL.'/wp-symposium/js/jquery.Jcrop.js', array('jquery'));
+	
 	// Load Symposium JS
- 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
+ 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium-min.js', array('jquery'));
 	
 	// Set JS variables
 	wp_localize_script( 'symposium', 'symposium', array(
 		'plugins' => WP_PLUGIN_URL, 
 		'plugin_url' => WP_PLUGIN_URL.'/wp-symposium/', 
+		'plugin_path' => $symposium_plugin_path,
 		'inactive' => $config->online,
 		'forum_url' => $config->forum_url,
 		'mail_url' => $config->mail_url,
 		'profile_url' => $config->profile_url,
+		'avatar_url' => $config->avatar_url,
 		'offline' => $config->offline,
 		'use_chat' => $config->use_chat,
 		'chat_polling' => $config->chat_polling,
@@ -867,14 +896,11 @@ function symposium_scriptsAction()
 		'current_user_id' => $current_user->ID,
 		'current_user_page' => $page_uid,
 		'widget_vote_yes' => $yes, 
-		'widget_vote_no' => $no
+		'widget_vote_no' => $no,
+		'post' => $_GET['post']
 	));
 
-	// JS Chart
-	wp_register_script('symposium_jsChart', WP_PLUGIN_URL . '/wp-symposium/js/jscharts.js');
-    wp_enqueue_script('symposium_jsChart');
 
-	
 }
 
 
