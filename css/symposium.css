@@ -1,32 +1,5 @@
-#symposium-wrapper
-{
-	overflow: auto;
-	width:95%;
-	margin: 0 auto;
-	padding: 6px;
-	overflow-x: hidden;
-	-ms-overflow-x: hidden;
-	font-family: arial;
-	font-size: 14px;
-	line-height: 22px;
-	color: #000;
-}
-#symposium-wrapper * {
-	border-radius: 5px;
-}
 
-#symposium-wrapper img 
-{
-	border: 0;
-	margin: 0;
-	padding: 0;
-}
 
-#symposium-wrapper .label
-{
-	height: 22px;
-	margin-top: 6px;
-}
 
 #symposium-wrapper #topic-links
 {
@@ -68,16 +41,6 @@
 	display: none;
 	width: 700px;
 	height: 325px;
-}
-#symposium-wrapper .new-topic-subject-input
-{
-	width: 95%;
-	height:40px;
-	font-family: arial; 
-	font-size: 24px;
-	padding: 2px;
-	border: 1px solid black;
-	margin-left: 2px;
 }
 #symposium-wrapper .new-topic-subject-text, #symposium-wrapper .reply-topic-subject-text, #symposium-wrapper .reply-topic-text
 {
@@ -165,24 +128,8 @@
 {
 	border: 1px solid red;
 }
-/* Buttons */
 
-#symposium-wrapper .button
-{
-	background-color: #990;
-	border: 0;
-	text-align: center; 
-	margin-right: 10px; 
-	margin-bottom: 20px; 
-	width: 125px; 
-	height: 28px;
-	font-family: arial; 
-	cursor: pointer;
-}
-#symposium-wrapper .button:hover
-{
-	background-color: #aa3;
-}
+
 
 /* Forum */
 
@@ -313,27 +260,6 @@
 	text-decoration: none;
 }
 
-/* Shadow */
-#symposium-wrapper .shadow {
-	-moz-box-shadow: 3px 3px 4px #000;
-	-webkit-box-shadow: 3px 3px 4px #000;
-	box-shadow: 3px 3px 4px #000;
-	/* For IE 8 */
-	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000')";
-	/* For IE 5.5 - 7 */
-	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000');
-}
-
-/* Warning */
-#symposium-wrapper .warning {
-	margin-left: 0px;
-	margin-top: -8px;
-	width: 95%;
-	border: 1px solid #f00;
-	background-color: #f99;
-	padding: 6px;
-	margin-bottom: 10px;
-}
 
 /* +++++++++++++++++++++++++++++++++++++++++++++++ MAIL +++++++++++++++++++++++++++++++++++++++++++++++ */
 
@@ -403,36 +329,6 @@
 	border-radius:0px;
 	-moz-border-radius:0px;
 }
-
-/* Profile Page */
-#symposium-wrapper #profile_left_column {
-	overflow:auto;
-}
-
-#symposium-wrapper #profile_right_column {
-	overflow:auto;
-	float:right;
-	padding: 10px;
-	width: 260px;
-	margin: 0 0 15px 15px;
-}
-
-#symposium-wrapper .input-field {
-	height:22px;
-	font-family: arial; 
-	font-size: 16px;
-	padding: 2px;
-	border: 1px solid #aaa;
-	margin-left: 2px;
-}
-
-
-#symposium-wrapper .symposium_profile_menu {
-	cursor:pointer;
-	margin-bottom: 10px;
-}
-
-
 	
 .symposium_notice, .symposium_pleasewait {
 	position: absolute;
@@ -469,3 +365,413 @@
 * html .ui-autocomplete {
 	height: 150px;
 }
+
+/* ----------------------------------------------------------------------------------- */
+
+/* CORE CSS =============================================================== */
+
+#symposium-wrapper
+{
+	overflow: auto;
+	width:95%;
+	margin: 0 auto;
+	padding: 6px;
+	overflow-x: hidden;
+	-ms-overflow-x: hidden;
+	font-family: arial;
+	font-size: 14px;
+	line-height: 22px;
+	color: #000;
+}
+#symposium-wrapper * {
+	border-radius: 5px;
+}
+
+#symposium-wrapper img 
+{
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+#symposium-wrapper .hidden {
+	display:none
+}
+
+/* Shadow */
+#symposium-wrapper .shadow {
+	-moz-box-shadow: 3px 3px 4px #000;
+	-webkit-box-shadow: 3px 3px 4px #000;
+	box-shadow: 3px 3px 4px #000;
+	/* For IE 8 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000')";
+	/* For IE 5.5 - 7 */
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000');
+}
+
+/* Warning */
+#symposium-wrapper .warning {
+	margin-left: 0px;
+	margin-top: -8px;
+	width: 95%;
+	border: 1px solid #f00;
+	background-color: #f99;
+	padding: 6px;
+	margin-bottom: 10px;
+}
+
+#symposium-wrapper .corners {
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+}
+
+#symposium-wrapper .label
+{
+}
+
+/* text input field */
+#symposium-wrapper .new-topic-subject-input
+{
+	width: 95%;
+	height:40px;
+	font-family: arial; 
+	font-size: 24px;
+	padding: 2px;
+	border: 1px solid black;
+	margin-left: 2px;
+}
+
+/* Buttons */
+
+#symposium-wrapper .button
+{
+	background-color: #aaa;
+	border: 0;
+	text-align: center; 
+	margin-right: 10px; 
+	margin-bottom: 20px; 
+	width: 125px; 
+	height: 28px;
+	font-family: arial; 
+	cursor: pointer;
+}
+#symposium-wrapper .button:hover
+{
+	background-color: #000;
+	color: #fff;
+}
+
+/* Note: if you are using the free version of WP Symposium, you cannot alter this style. Thank you. */
+#symposium-wrapper #powered_by {
+	clear:both;
+	width: 95%;
+	font-style:italic; 
+	font-size: 10px;
+	text-align:center;
+}
+
+/* LOGIN =============================================================== */
+
+#symposium-wrapper #login_form {
+	margin:0px; 
+	width:400px;
+}
+
+#symposium-wrapper #symposium_forgotten {
+}
+
+/* REGISTER =============================================================== */
+
+#symposium-wrapper #hdn {
+	display:none
+}
+
+/* Registration form */
+#symposium-wrapper #symposium_registration {
+}
+
+#symposium-wrapper #symposium_registration_inner {
+	margin-left:0px;
+}
+
+/* WIDGETS - VOTE YES/NO =============================================================== */
+
+#symposium_chartcontainer {
+}
+
+#symposium_vote_forum {
+}
+
+#symposium_vote_thankyou {
+	display:none;
+}
+
+#symposium_vote_thankyou p {
+	padding:6px; 
+	text-align:center;
+}
+
+/* WIDGETS - NEW MEMBERS  ===============================================================*/
+
+#symposium_new_members {
+	overflow: auto; 
+	margin-bottom: 15px
+}
+
+.symposium_new_members_row {
+	clear:both; 
+	margin-top:8px;
+}
+
+.symposium_new_members_row_avatar {
+	float: left; 
+	width:32px; 
+	margin-right: 5px;
+}
+
+.symposium_new_members_row_member {
+}
+
+/* WIDGETS - LATEST FORUM POSTS =============================================================== */
+
+#symposium_latest_forum {
+	overflow: auto; 
+	margin-bottom: 15px;
+}
+
+.symposium_latest_forum_row {
+	clear:both; 
+	margin-top:8px;
+}
+
+.symposium_latest_forum_row_avatar {
+	float: left; 
+	width:32px; 
+	margin-right: 5px;
+}
+
+.symposium_latest_forum_row_post {
+}
+
+/* NOTIFICATION BAR =============================================================== */
+
+#symposium-notification-bar {
+	position:fixed;
+	left:0px;
+	bottom:0px;
+	padding: 4px;
+	width: 100%;
+	height: 20px;
+	font-size: 14px;
+	font-family: arial,helvetica;
+	background-color: #333;
+	color: #fff;
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+	-ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=75)";
+	filter: alpha(opacity=75);
+	-moz-opacity: 0.75;
+	-khtml-opacity: 0.75;
+ 	opacity: 0.75;
+}
+
+#symposium-notification-bar #icons img {
+	margin-right: 8px;		
+	float: left;		
+}
+
+#symposium-notification-bar #alerts, #symposium-notification-bar #info {
+	float: right;
+	margin-right: 8px;
+}
+#symposium-notification-bar #alerts {
+	display: none;
+}
+
+#symposium-notification-bar #alerts a, #symposium-notification-bar #info a {
+	color: #fff;
+	text-decoration:none;
+}
+#symposium-notification-bar #alerts a:hover, #symposium-notification-bar #info a:hover {
+	color: #f00;
+}
+
+#symposium-chatboxes {
+	position:fixed;
+	right:0px;
+}
+
+#symposium-chatboxes .chat_window {
+	float: right;
+	margin-left: 2px;
+	border-radius: 0px;
+	moz-border-radius: 0px;
+	ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	filter: alpha(opacity=90);
+	-moz-opacity: 0.90;
+	-khtml-opacity: 0.90;
+	opacity: 0.90;
+	width:180px;
+	height:240px;
+	padding:0px;
+	border:1px solid #000;
+	background-color: #fff;
+}
+
+#symposium-chatboxes #symposium-who-online {
+	float: right;
+	margin-left: 2px;
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+	-ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	filter: alpha(opacity=90);
+	-moz-opacity: 0.90;
+	-khtml-opacity: 0.90;
+ 	opacity: 0.90;
+	width:180px;
+	height:240px;
+	padding:0px;
+	border:1px solid #000;
+	background-color: #fff;
+}
+#symposium-chatboxes *, #symposium-chatboxes * {
+	font-family: tahoma,arial,helvetica;
+	font-size: 12px;				
+}
+#symposium-chatboxes .display_name_link {
+	text-decoration: none;
+	color: #fff;
+}
+
+#symposium-who-online {
+	display: none;
+	padding: 2px;
+}
+#symposium-friends-online-list {
+	height: 218px;
+	max-height: 218px;
+	overflow: auto;
+}
+
+.symposium_online_name {
+	cursor:pointer;
+}
+.symposium_online_name:hover {
+	text-decoration:underline;
+}
+.symposium_offline_name {
+	text-decoration: none;
+}
+.symposium_offline_name:hover {
+	text-decoration: underline;
+}
+							
+.symposium-online-box {
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+	width: 18px;
+	height:18px;
+	background-color: #0f0;
+	color: #000;
+	text-align:center;
+	float: right;
+	margin-right:10px;
+	cursor: pointer;
+	font-family: tahoma,arial,helvetica;
+	font-size: 10px;				
+	font-weight: bold;
+}
+.symposium-online-box-none {
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+	text-align:center;
+	background-color: #000;
+	color: #fff;
+	border: 1px solid #fff;
+	float: right;
+	margin-right:10px;
+	width: 17px;
+	height: 17px;
+	padding:0px;
+	cursor: pointer;
+	font-family: tahoma,arial,helvetica;
+	font-size: 10px;
+	font-weight: normal;
+}
+
+.symposium-email-box {
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+	float:right;
+	color: #000;
+	text-align:center;
+	padding:0px;
+	cursor: pointer;
+	font-family: tahoma,arial,helvetica;
+	font-size: 10px;
+	font-weight: bold;
+	margin-right:10px;
+	width: 18px;
+	height: 18px;
+}
+.symposium-email-box-read {
+}
+.symposium-email-box-unread {
+}
+
+.symposium-friends-box {
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+	float:right;
+	color: #000;
+	text-align:center;
+	padding:0px;
+	cursor: pointer;
+	font-family: tahoma,arial,helvetica;
+	font-size: 10px;
+	font-weight: bold;
+	margin-right:10px;
+	width: 18px;
+	height: 18px;
+}
+.symposium-friends-box-none {
+}
+.symposium-friends-box-new {
+}
+
+/* PROFILE =============================================================== */
+
+#symposium-wrapper #profile_left_column {
+	overflow:auto;
+	border-left: 1px solid #aaa;
+	border-radius:0px;
+	-moz-border-radius:0px;
+	padding-left: 10px;
+}
+
+#symposium-wrapper #profile_right_column {
+	overflow:auto;
+	float:right;
+	padding: 10px;
+	width: 260px;
+	margin: 0 0 15px 15px;
+	background-color: #fff;
+	border: #999;	
+}
+
+#symposium-wrapper .input-field {
+	height:22px;
+	font-family: arial; 
+	font-size: 16px;
+	padding: 2px;
+	border: 1px solid #aaa;
+	margin-left: 2px;
+}
+
+
+#symposium-wrapper .symposium_profile_menu {
+	cursor:pointer;
+	margin-bottom: 10px;
+}
+
+

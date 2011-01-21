@@ -3,7 +3,8 @@ todo.txt
    
 PROFILE
 
-- profile picture
+- AJAX add/cancel friend request
+- option receive email on activity in wall post if I've replied or started it
 
 CHAT
 
@@ -11,13 +12,30 @@ CHAT
 
 REGISTER
 
-- optional page to redirect to after registering
-- option email sent to new members
 - check on username availability
+- do you get email message???
 
-WALL
+FORUM 
 
-- smilies from AJAX....
+- AJAX new post, etc...
+- search
+
+WIDGETS
+
+- have to check if permalinks not being used
+
+CORE
+
+css:
+- widgets (done)
+- register (done)
+- login (done)
+- bar (done)
+- mail
+- profile
+- avatar
+- members
+- forum
 
 CODEX
 
@@ -37,8 +55,10 @@ WISH LIST
 
 
 
-Here are the details to login to the site in question. This is per using the symposium login plugin which results in always redirecting to an outdated user profile page. T's 'gain.
 
-username: testuser
-password: accesstestuser
-admin login page: http://erthaware.info/wp-login.php?login
+Lady bird has added a new status to their wall: <<< this was a post to someone elses wall....
+
+Loving the way this website is developing! :D
+
+Go to their wall...
+

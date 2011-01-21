@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.1.28
+Version: 0.1.29
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -94,8 +94,8 @@ class Symposium_vote_Widget extends WP_Widget {
 					echo "</p>";
 				echo "</div>";
 				
-				echo "<div id='symposium_vote_thankyou' style='display:none'>";
-					echo "<p style='padding:6px; text-align:center'>".__("Thank you for voting, refresh the page for latest results", "wp-symposium");
+				echo "<div id='symposium_vote_thankyou'>";
+					echo "<p>".__("Thank you for voting, refresh the page for latest results", "wp-symposium");
 					if ($symposium_vote_forum != '') {
 						echo "<br /><a href='".$symposium_vote_forum."'>".__('Discuss this on the forum', 'wp-symposium')."...</a>";
 					}
@@ -204,15 +204,15 @@ class Symposium_members_Widget extends WP_Widget {
 		
 		if ($members) {
 
-			echo "<div style='overflow: auto; margin-bottom: 15px'>";
+			echo "<div id='symposium_new_members'>";
 	
 				foreach ($members as $member)
 				{
-					echo "<div class='Forumrecentposts_row' style='clear:both; margin-top:8px;'>";		
-						echo "<div style='float: left; width:32px; margin-right: 5px;'>";
+					echo "<div class='symposium_new_members_row'>";		
+						echo "<div class='symposium_new_members_row_avatar'>";
 							echo get_user_avatar($member->ID, 32);
 						echo "</div>";
-						echo "<div>";
+						echo "<div class='symposium_new_members_row_member'>";
 							echo symposium_profile_link($member->ID)." ".__('joined', 'wp-symposium')." ";
 							echo symposium_time_ago($member->user_registered).".";
 						echo "</div>";
@@ -298,23 +298,16 @@ class Forumrecentposts_Widget extends WP_Widget {
 			ORDER BY tid DESC LIMIT 0,".$postcount); 
 		
 		if ($posts) {
-			
-			echo '<style>';
-			echo '.Forumrecentposts_row * {';
-			echo "	border-radius: ".$border_radius."px;";
-			echo "  -moz-border-radius:".$border_radius."px;";
-			echo "}";		
-			echo '</style>';
 
-			echo "<div style='overflow: auto; margin-bottom: 15px'>";
+			echo "<div id='symposium_latest_forum'>";
 				
 				foreach ($posts as $post)
 				{
-					echo "<div class='Forumrecentposts_row' style='clear:both; margin-top:8px;'>";		
-						echo "<div style='float: left; width:32px; margin-right: 5px;'>";
+					echo "<div class='symposium_latest_forum_row'>";		
+						echo "<div class='symposium_latest_forum_row_avatar'>";
 							echo get_user_avatar($post->topic_owner, 32);
 						echo "</div>";
-						echo "<div>";
+						echo "<div class='symposium_latest_forum_row_post'>";
 							if ($post->topic_parent > 0) {
 								$text = stripslashes($post->topic_post);
 								if ( strlen($text) > $preview ) { $text = substr($text, 0, $preview)."..."; }

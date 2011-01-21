@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.28
+Version: 0.1.29
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -73,131 +73,16 @@ function add_notification_bar()
 				
 			<style>
 				#symposium-notification-bar {
-					position:fixed;
-					left:0px;
 					<?php echo $bar_position; ?>:0px;
-					padding: 4px;
-					width: 100%;
-					height: 20px;
-					font-size: 14px;
-					font-family: arial,helvetica;
-					background-color: #000;
-					color: #fff;
-					border-radius: 0px;
-					-moz-border-radius: 0px;
-					-ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=75)";
-					filter: alpha(opacity=75);
-					-moz-opacity: 0.75;
-					-khtml-opacity: 0.75;
-				 	opacity: 0.75;
-				}
-				
-				#symposium-notification-bar #icons img {
-					margin-right: 8px;		
-					float: left;		
-				}
-				
-				#symposium-notification-bar #alerts, #symposium-notification-bar #info {
-					float: right;
-					margin-right: 8px;
-				}
-				#symposium-notification-bar #alerts {
-					display: none;
-				}
-				
-				#symposium-notification-bar #alerts a, #symposium-notification-bar #info a {
-					color: #fff;
-					text-decoration:none;
-				}
-				#symposium-notification-bar #alerts a:hover, #symposium-notification-bar #info a:hover {
-					color: #f00;
 				}
 				
 				#symposium-chatboxes {
-					position:fixed;
-					right:0px;
 					<?php echo $bar_position; ?>:28px;
-				}
-	
-				#symposium-chatboxes .chat_window {
-					float: right;
-					margin-left: 2px;
-					border-radius: 0px;
-					moz-border-radius: 0px;
-					ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=90)";
-					filter: alpha(opacity=90);
-					-moz-opacity: 0.90;
-					-khtml-opacity: 0.90;
-					opacity: 0.90;
-					width:180px;
-					height:240px;
-					padding:0px;
-					border:1px solid #000;
-					background-color: #fff;
-				}
-				
-				#symposium-chatboxes #symposium-who-online {
-					float: right;
-					margin-left: 2px;
-					border-radius: 0px;
-					-moz-border-radius: 0px;
-					-ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=90)";
-					filter: alpha(opacity=90);
-					-moz-opacity: 0.90;
-					-khtml-opacity: 0.90;
-				 	opacity: 0.90;
-					width:180px;
-					height:240px;
-					padding:0px;
-					border:1px solid #000;
-					background-color: #fff;
-				}
-				#symposium-chatboxes *, #symposium-chatboxes * {
-					font-family: tahoma,arial,helvetica;
-					font-size: 12px;				
-				}
-				#symposium-chatboxes .display_name_link {
-					text-decoration: none;
-					color: #fff;
-				}
-	
-				#symposium-who-online {
-					display: none;
-					padding: 2px;
-				}
-				#symposium-friends-online-list {
-					height: 218px;
-					max-height: 218px;
-					overflow: auto;
-				}
-	
-				.symposium_online_name {
-					cursor:pointer;
-				}
-				.symposium_online_name:hover {
-					text-decoration:underline;
-				}
-				.symposium_offline_name {
-					text-decoration: none;
-				}
-				.symposium_offline_name:hover {
-					text-decoration: underline;
 				}
 											
 				.symposium-online-box {
 					border-radius: <?php echo $border_radius; ?>px;
 					-moz-border-radius: <?php echo $border_radius; ?>px;
-					width: 18px;
-					height:18px;
-					background-color: #0f0;
-					color: #000;
-					text-align:center;
-					float: right;
-					margin-right:10px;
-					cursor: pointer;
-					font-family: tahoma,arial,helvetica;
-					font-size: 10px;				
-					font-weight: bold;
 					<?php if (!function_exists('symposium_profile')) {
 						echo 'display: none';
 					}?>
@@ -205,19 +90,6 @@ function add_notification_bar()
 				.symposium-online-box-none {
 					border-radius: <?php echo $border_radius; ?>px;
 					-moz-border-radius: <?php echo $border_radius; ?>px;
-					text-align:center;
-					background-color: #000;
-					color: #fff;
-					border: 1px solid #fff;
-					float: right;
-					margin-right:10px;
-					width: 17px;
-					height: 17px;
-					padding:0px;
-					cursor: pointer;
-					font-family: tahoma,arial,helvetica;
-					font-size: 10px;
-					font-weight: normal;
 					<?php if (!function_exists('symposium_profile')) {
 						echo 'display: none';
 					}?>
@@ -226,17 +98,6 @@ function add_notification_bar()
 				.symposium-email-box {
 					border-radius: <?php echo $border_radius; ?>px;
 					-moz-border-radius: <?php echo $border_radius; ?>px;
-					float:right;
-					color: #000;
-					text-align:center;
-					padding:0px;
-					cursor: pointer;
-					font-family: tahoma,arial,helvetica;
-					font-size: 10px;
-					font-weight: bold;
-					margin-right:10px;
-					width: 18px;
-					height: 18px;
 					<?php if (!function_exists('symposium_mail')) {
 						echo 'display: none';
 					}?>
@@ -251,17 +112,6 @@ function add_notification_bar()
 				.symposium-friends-box {
 					border-radius: <?php echo $border_radius; ?>px;
 					-moz-border-radius: <?php echo $border_radius; ?>px;
-					float:right;
-					color: #000;
-					text-align:center;
-					padding:0px;
-					cursor: pointer;
-					font-family: tahoma,arial,helvetica;
-					font-size: 10px;
-					font-weight: bold;
-					margin-right:10px;
-					width: 18px;
-					height: 18px;
 					<?php if (!function_exists('symposium_profile')) {
 						echo 'display: none';
 					}?>

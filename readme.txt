@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.28
+Stable tag: 0.1.29
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -322,6 +322,11 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 == Changelog ==
 
+= 0.1.29 =
+
+* Core: Add full CSS support (copy symposium.css to your theme root directory name the file my-symposium.css)
+* Profile: Added Friends Activity and All Activity, and Wall is now "your" wall (like Facebook for example)
+
 = 0.1.28 =
 
 * New plugin: Member avatars (upload profile photos)
@@ -332,6 +337,7 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 * Profile: Preferences, Personal and Friends all delivered via AJAX "within" profile page
 * Profile: Added [symposium-settings], [symposium-personal] and [symposium-friends] shortcodes
 * Registration: Optional message to be sent to new members
+* Languages: Added Swedish
 
 = 0.1.27.1 = 
 

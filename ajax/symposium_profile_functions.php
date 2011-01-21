@@ -12,7 +12,35 @@ if ($_POST['action'] == 'menu_wall') {
 	$uid2 = $_POST['uid2'];
 	$post = $_POST['post'];
 
-	$html = symposium_profile_body($uid1, $uid2, $post);
+	$html = symposium_smilies(symposium_profile_body($uid1, $uid2, $post, "wall"));
+	
+	echo $html;
+	exit;
+	
+}
+
+// Show Friends Activity
+if ($_POST['action'] == 'menu_activity') {
+
+	$uid1 = $_POST['uid1'];
+	$uid2 = $_POST['uid2'];
+	$post = $_POST['post'];
+
+	$html = symposium_smilies(symposium_profile_body($uid1, $uid2, $post, "friends_activity"));
+	
+	echo $html;
+	exit;
+	
+}
+
+// Show All
+if ($_POST['action'] == 'menu_all') {
+
+	$uid1 = $_POST['uid1'];
+	$uid2 = $_POST['uid2'];
+	$post = $_POST['post'];
+
+	$html = symposium_smilies(symposium_profile_body($uid1, $uid2, $post, "all_activity"));
 	
 	echo $html;
 	exit;

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.28
+Version: 0.1.29
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -164,8 +164,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.28";
-	$symposium_db_ver = 28;
+	$symposium_version = "0.1.29";
+	$symposium_db_ver = 29;
 	
 	// Code version *************************************************************************************
 	$ver = get_option("symposium_version");
@@ -235,6 +235,7 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "avatar_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "sharing", "varchar(32)", "", "''");
 	symposium_alter_table("config", "ADD", "register_message", "text", "", "''");
+	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "", "'on'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
@@ -722,14 +723,19 @@ function add_symposium_stylesheet() {
 	global $wpdb;
 
 	if (!is_admin()) {
-	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/css/symposium-min.css';
-	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/css/symposium-min.css';
-	    if ( file_exists($myStyleFile) ) {
-	        wp_register_style('symposium_StyleSheet', $myStyleUrl);
-	        wp_enqueue_style('symposium_StyleSheet');
-	    } else {
-		    wp_die( __('Stylesheet (%s) not found.'), $myStyleFile  );		    
-	    }
+
+	    // Check to see if there is a theme css instead
+
+	    $template_dir = TEMPLATEPATH."/my-symposium.css";
+	    $template_url = get_bloginfo('stylesheet_directory');
+		if (file_exists($template_dir)) {
+		    $myStyleUrl = $template_url."/my-symposium.css";
+		} else {
+		    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/css/symposium.css';
+		}
+
+        wp_register_style('symposium_StyleSheet', $myStyleUrl);
+        wp_enqueue_style('symposium_StyleSheet');
 
 		wp_register_style('symposium_jcrop-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery.Jcrop.css');
 		wp_enqueue_style('symposium_jcrop-css');

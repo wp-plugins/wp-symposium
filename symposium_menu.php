@@ -400,6 +400,7 @@ function symposium_plugin_debug() {
 	   		$status = $fail.__('Table does not exist', 'wp-symposium').$fail2;
 	   	} else {
 			if (!symposium_field_exists($table_name, 'sid')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'title')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'categories_background')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'categories_color')) { $status = "X"; }
@@ -940,6 +941,7 @@ function symposium_plugin_styles() {
     if( isset($_POST[ 'symposium_apply' ]) && $_POST[ 'symposium_apply' ] == 'Y' ) {
 		$style = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix.'symposium_styles'." WHERE sid = ".$_POST['sid']);
 		if ($style) {
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET use_styles = '".$style->use_styles."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_background = '".$style->categories_background."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_color = '".$style->categories_color."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET border_radius = '".$style->border_radius."'") );					
@@ -977,6 +979,7 @@ function symposium_plugin_styles() {
     // See if the user has posted us some information
     if( isset($_POST[ 'symposium_update' ]) && $_POST[ 'symposium_update' ] == 'Y' ) {
         // Read their posted value
+        $use_styles = $_POST[ 'use_styles' ];
         $categories_background = $_POST[ 'categories_background' ];
         $categories_color = $_POST[ 'categories_color' ];
         $border_radius = $_POST[ 'border_radius' ];
@@ -1006,6 +1009,7 @@ function symposium_plugin_styles() {
         $main_background = $_POST[ 'main_background' ];
 
         // Save the posted value in the database
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET use_styles = '".$use_styles."'") );				
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_background = '".$categories_background."'") );				
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_color = '".$categories_color."'") );					
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET border_radius = '".$border_radius."'") );					
@@ -1039,275 +1043,278 @@ function symposium_plugin_styles() {
 
     }
     
-	$styles = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_config');
+	$style = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix.'symposium_config');
 
-	if ($styles) {
-		foreach ($styles as $style) {
+	if ($style) {
 			
-			?> 
+		?> 
 
-			<form method="post" action=""> 
-			<input type="hidden" name="symposium_update" value="Y">
+		<form method="post" action=""> 
+		<input type="hidden" name="symposium_update" value="Y">
+	
+		<table class="form-table"> 
+
+		<tr valign="top"> 
+		<th scope="row"><label for="use_styles"><?php echo __('Use Styles?', 'wp-symposium'); ?></label></th>
+		<td>
+		<input type="checkbox" name="use_styles" id="use_styles" <?php if ($style->use_styles == "on") { echo "CHECKED"; } ?>/>
+		<span class="description"><?php echo __('[LEAVE THIS ENABLED] Enable to use styles on this page, disable to rely on stylesheet', 'wp-symposium'); ?></span></td> 
+		</tr> 
 		
-			<table class="form-table"> 
+		<tr valign="top"> 
+		<th scope="row"><label for="fontfamily">Body Text</label></th> 
+		<td><input name="fontfamily" type="text" id="fontfamily" value="<?php echo $style->fontfamily; ?>"/> 
+		<span class="description"><?php echo __('Font family for body text', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="fontsize"></label></th> 
+		<td><input name="fontsize" type="text" id="fontsize" value="<?php echo $style->fontsize; ?>"/> 
+		<span class="description"><?php echo __('Font size in pixels for body text', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="headingsfamily">Headings</label></th> 
+		<td><input name="headingsfamily" type="text" id="headingsfamily" value="<?php echo $style->headingsfamily; ?>"/> 
+		<span class="description"><?php echo __('Font family for headings and large text', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="headingssize"></label></th> 
+		<td><input name="headingssize" type="text" id="headingssize" value="<?php echo $style->headingssize; ?>"/> 
+		<span class="description"><?php echo __('Font size in pixels for headings and large text', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="main_background">Main background</label></th> 
+		<td><input name="main_background" type="text" id="main_background" class="iColorPicker" value="<?php echo $style->main_background; ?>"  /> 
+		<span class="description"><?php echo __('Main background colour (for example, new/edit forum topic/post)', 'wp-symposium'); ?></span></td> 
+		</tr> 
 			
-			<tr valign="top"> 
-			<th scope="row"><label for="fontfamily">Body Text</label></th> 
-			<td><input name="fontfamily" type="text" id="fontfamily" value="<?php echo $style->fontfamily; ?>"/> 
-			<span class="description"><?php echo __('Font family for body text', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="fontsize"></label></th> 
-			<td><input name="fontsize" type="text" id="fontsize" value="<?php echo $style->fontsize; ?>"/> 
-			<span class="description"><?php echo __('Font size in pixels for body text', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="headingsfamily">Headings</label></th> 
-			<td><input name="headingsfamily" type="text" id="headingsfamily" value="<?php echo $style->headingsfamily; ?>"/> 
-			<span class="description"><?php echo __('Font family for headings and large text', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="headingssize"></label></th> 
-			<td><input name="headingssize" type="text" id="headingssize" value="<?php echo $style->headingssize; ?>"/> 
-			<span class="description"><?php echo __('Font size in pixels for headings and large text', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="main_background">Main background</label></th> 
-			<td><input name="main_background" type="text" id="main_background" class="iColorPicker" value="<?php echo $style->main_background; ?>"  /> 
-			<span class="description"><?php echo __('Main background colour (for example, new/edit forum topic/post)', 'wp-symposium'); ?></span></td> 
-			</tr> 
-				
-			<tr valign="top"> 
-			<th scope="row"><label for="border_radius">Corners</label></th> 
-			<td>
-			<select name="border_radius" id="border_radius"> 
-				<option <?if ( $style->border_radius=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
-				<option <?if ( $style->border_radius=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
-				<option <?if ( $style->border_radius=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
-				<option <?if ( $style->border_radius=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
-				<option <?if ( $style->border_radius=='4') { echo "selected='selected'"; } ?> value='4'>4 pixels</option> 
-				<option <?if ( $style->border_radius=='5') { echo "selected='selected'"; } ?> value='5'>5 pixels</option> 
-				<option <?if ( $style->border_radius=='6') { echo "selected='selected'"; } ?> value='6'>6 pixels</option> 
-				<option <?if ( $style->border_radius=='7') { echo "selected='selected'"; } ?> value='7'>7 pixels</option> 
-				<option <?if ( $style->border_radius=='8') { echo "selected='selected'"; } ?> value='8'>8 pixels</option> 
-				<option <?if ( $style->border_radius=='9') { echo "selected='selected'"; } ?> value='9'>9 pixels</option> 
-				<option <?if ( $style->border_radius=='10') { echo "selected='selected'"; } ?> value='10'>10 pixels</option> 
-				<option <?if ( $style->border_radius=='11') { echo "selected='selected'"; } ?> value='11'>11 pixels</option> 
-				<option <?if ( $style->border_radius=='12') { echo "selected='selected'"; } ?> value='12'>12 pixels</option> 
-				<option <?if ( $style->border_radius=='13') { echo "selected='selected'"; } ?> value='13'>13 pixels</option> 
-				<option <?if ( $style->border_radius=='14') { echo "selected='selected'"; } ?> value='14'>14 pixels</option> 
-				<option <?if ( $style->border_radius=='15') { echo "selected='selected'"; } ?> value='15'>15 pixels</option> 
-			</select> 
-			<span class="description"><?php echo __('Rounded Corner radius (not supported in all browsers)', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="bigbutton_background">Buttons</label></th> 
-			<td><input name="bigbutton_background" type="text" id="bigbutton_background" class="iColorPicker" value="<?php echo $style->bigbutton_background; ?>"  /> 
-			<span class="description"><?php echo __('Background Colour', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="bigbutton_background_hover"></label></th> 
-			<td><input name="bigbutton_background_hover" type="text" id="bigbutton_background_hover" class="iColorPicker" value="<?php echo $style->bigbutton_background_hover; ?>"  /> 
-			<span class="description"><?php echo __('Background Colour on mouse hover', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="bigbutton_color"></label></th> 
-			<td><input name="bigbutton_color" type="text" id="bigbutton_color" class="iColorPicker" value="<?php echo $style->bigbutton_color; ?>"  /> 
-			<span class="description"><?php echo __('Text Colour', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="bigbutton_color_hover"></label></th> 
-			<td><input name="bigbutton_color_hover" type="text" id="bigbutton_color_hover" class="iColorPicker" value="<?php echo $style->bigbutton_color_hover; ?>"  /> 
-			<span class="description"><?php echo __('Text Colour on mouse hover', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="bg_color_1">Tables</label></th> 
-			<td><input name="bg_color_1" type="text" id="bg_color_1" class="iColorPicker" value="<?php echo $style->bg_color_1; ?>"  /> 
-			<span class="description"><?php echo __('Primary Colour', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="bg_color_2"></label></th> 
-			<td><input name="bg_color_2" type="text" id="bg_color_2" class="iColorPicker" value="<?php echo $style->bg_color_2; ?>"  /> 
-			<span class="description"><?php echo __('Row Colour', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="bg_color_3"></label></th> 
-			<td><input name="bg_color_3" type="text" id="bg_color_3" class="iColorPicker" value="<?php echo $style->bg_color_3; ?>"  /> 
-			<span class="description"><?php echo __('Alternative Row Colour', 'wp-symposium'); ?></span></td> 
-			</tr> 
+		<tr valign="top"> 
+		<th scope="row"><label for="border_radius">Corners</label></th> 
+		<td>
+		<select name="border_radius" id="border_radius"> 
+			<option <?if ( $style->border_radius=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
+			<option <?if ( $style->border_radius=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
+			<option <?if ( $style->border_radius=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
+			<option <?if ( $style->border_radius=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
+			<option <?if ( $style->border_radius=='4') { echo "selected='selected'"; } ?> value='4'>4 pixels</option> 
+			<option <?if ( $style->border_radius=='5') { echo "selected='selected'"; } ?> value='5'>5 pixels</option> 
+			<option <?if ( $style->border_radius=='6') { echo "selected='selected'"; } ?> value='6'>6 pixels</option> 
+			<option <?if ( $style->border_radius=='7') { echo "selected='selected'"; } ?> value='7'>7 pixels</option> 
+			<option <?if ( $style->border_radius=='8') { echo "selected='selected'"; } ?> value='8'>8 pixels</option> 
+			<option <?if ( $style->border_radius=='9') { echo "selected='selected'"; } ?> value='9'>9 pixels</option> 
+			<option <?if ( $style->border_radius=='10') { echo "selected='selected'"; } ?> value='10'>10 pixels</option> 
+			<option <?if ( $style->border_radius=='11') { echo "selected='selected'"; } ?> value='11'>11 pixels</option> 
+			<option <?if ( $style->border_radius=='12') { echo "selected='selected'"; } ?> value='12'>12 pixels</option> 
+			<option <?if ( $style->border_radius=='13') { echo "selected='selected'"; } ?> value='13'>13 pixels</option> 
+			<option <?if ( $style->border_radius=='14') { echo "selected='selected'"; } ?> value='14'>14 pixels</option> 
+			<option <?if ( $style->border_radius=='15') { echo "selected='selected'"; } ?> value='15'>15 pixels</option> 
+		</select> 
+		<span class="description"><?php echo __('Rounded Corner radius (not supported in all browsers)', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="bigbutton_background">Buttons</label></th> 
+		<td><input name="bigbutton_background" type="text" id="bigbutton_background" class="iColorPicker" value="<?php echo $style->bigbutton_background; ?>"  /> 
+		<span class="description"><?php echo __('Background Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="bigbutton_background_hover"></label></th> 
+		<td><input name="bigbutton_background_hover" type="text" id="bigbutton_background_hover" class="iColorPicker" value="<?php echo $style->bigbutton_background_hover; ?>"  /> 
+		<span class="description"><?php echo __('Background Colour on mouse hover', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="bigbutton_color"></label></th> 
+		<td><input name="bigbutton_color" type="text" id="bigbutton_color" class="iColorPicker" value="<?php echo $style->bigbutton_color; ?>"  /> 
+		<span class="description"><?php echo __('Text Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="bigbutton_color_hover"></label></th> 
+		<td><input name="bigbutton_color_hover" type="text" id="bigbutton_color_hover" class="iColorPicker" value="<?php echo $style->bigbutton_color_hover; ?>"  /> 
+		<span class="description"><?php echo __('Text Colour on mouse hover', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="bg_color_1">Tables</label></th> 
+		<td><input name="bg_color_1" type="text" id="bg_color_1" class="iColorPicker" value="<?php echo $style->bg_color_1; ?>"  /> 
+		<span class="description"><?php echo __('Primary Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="bg_color_2"></label></th> 
+		<td><input name="bg_color_2" type="text" id="bg_color_2" class="iColorPicker" value="<?php echo $style->bg_color_2; ?>"  /> 
+		<span class="description"><?php echo __('Row Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="bg_color_3"></label></th> 
+		<td><input name="bg_color_3" type="text" id="bg_color_3" class="iColorPicker" value="<?php echo $style->bg_color_3; ?>"  /> 
+		<span class="description"><?php echo __('Alternative Row Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
 
-			<tr valign="top"> 
-			<th scope="row"><label for="table_rollover"></label></th> 
-			<td><input name="table_rollover" type="text" id="table_rollover" class="iColorPicker" value="<?php echo $style->table_rollover; ?>"  /> 
-			<span class="description"><?php echo __('Row colour on mouse hover', 'wp-symposium'); ?></span></td> 
-			</tr> 
-				
-			<tr valign="top"> 
-			<th scope="row"><label for="table_border"></label></th> 
-			<td>
-			<select name="table_border" id="table_border"> 
-				<option <?if ( $style->table_border=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
-				<option <?if ( $style->table_border=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
-				<option <?if ( $style->table_border=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
-				<option <?if ( $style->table_border=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
-			</select> 
-			<span class="description"><?php echo __('Border Size', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="row_border_style">Table/Rows</label></th> 
-			<td>
-			<select name="row_border_style" id="row_border_styledefault_role"> 
-				<option <?if ( $style->row_border_style=='dotted') { echo "selected='selected'"; } ?> value='dotted'>Dotted</option> 
-				<option <?if ( $style->row_border_style=='dashed') { echo "selected='selected'"; } ?> value='dashed'>Dashed</option> 
-				<option <?if ( $style->row_border_style=='solid') { echo "selected='selected'"; } ?> value='solid'>Solid</option> 
-			</select> 
-			<span class="description"><?php echo __('Border style between rows', 'wp-symposium'); ?></span></td> 
-			</tr> 
-				
-			<tr valign="top"> 
-			<th scope="row"><label for="row_border_size"></label></th> 
-			<td>
-			<select name="row_border_size" id="row_border_size"> 
-				<option <?if ( $style->row_border_size=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
-				<option <?if ( $style->row_border_size=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
-				<option <?if ( $style->row_border_size=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
-				<option <?if ( $style->row_border_size=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
-			</select> 
-			<span class="description"><?php echo __('Border size between rows', 'wp-symposium'); ?></span></td> 
-			</tr> 
-				
-			<tr valign="top"> 
-			<th scope="row"><label for="replies_border_size">Other borders</label></th> 
-			<td>
-			<select name="replies_border_size" id="replies_border_size"> 
-				<option <?if ( $style->replies_border_size=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
-				<option <?if ( $style->replies_border_size=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
-				<option <?if ( $style->replies_border_size=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
-				<option <?if ( $style->replies_border_size=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
-			</select> 
-			<span class="description"><?php echo __('For new topics/replies and topic replies', 'wp-symposium'); ?></span></td> 
-			</tr> 
-				
-			<tr valign="top"> 
-			<th scope="row"><label for="categories_background">In-Table Headings</label></th> 
-			<td><input name="categories_background" type="text" id="categories_background" class="iColorPicker" value="<?php echo $style->categories_background; ?>"  /> 
-			<span class="description"><?php echo __('Background colour of, for example, current category', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="categories_color"></label></th> 
-			<td><input name="categories_color" type="text" id="categories_color" class="iColorPicker" value="<?php echo $style->categories_color; ?>"  /> 
-			<span class="description"><?php echo __('Text Colour', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="text_color">Text Colour</label></th> 
-			<td><input name="text_color" type="text" id="text_color" class="iColorPicker" value="<?php echo $style->text_color; ?>"  /> 
-			<span class="description"><?php echo __('Primary Text Colour', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="text_color_2"></label></th> 
-			<td><input name="text_color_2" type="text" id="text_color_2" class="iColorPicker" value="<?php echo $style->text_color_2; ?>"  /> 
-			<span class="description"><?php echo __('Alternative Text Colour / Border Colour between rows', 'wp-symposium'); ?></span></td> 
-			</tr> 
-
-			<tr valign="top"> 
-			<th scope="row"><label for="link">Topic Links</label></th> 
-			<td><input name="link" type="text" id="link" class="iColorPicker" value="<?php echo $style->link; ?>"  /> 
-			<span class="description"><?php echo __('Link Colour', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="link_hover"</label></th> 
-			<td><input name="link_hover" type="text" id="link_hover" class="iColorPicker" value="<?php echo $style->link_hover; ?>"  /> 
-			<span class="description"><?php echo __('Link Colour on mouse hover', 'wp-symposium'); ?></span></td> 
-			</tr> 
-
-			<tr valign="top"> 
-			<th scope="row"><label for="underline">Underlined?</label></th> 
-			<td>
-			<select name="underline" id="underline"> 
-				<option <?if ( $style->underline=='') { echo "selected='selected'"; } ?> value=''>No</option> 
-				<option <?if ( $style->underline=='on') { echo "selected='selected'"; } ?> value='on'>Yes</option> 
-			</select> 
-			<span class="description"><?php echo __('Whether links are underlined or not', 'wp-symposium'); ?></span></td> 
-			</tr> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="label">Labels</label></th> 
-			<td><input name="label" type="text" id="label" class="iColorPicker" value="<?php echo $style->label; ?>"  /> 
-			<span class="description"><?php echo __('Colour of text labels outside forum areas', 'wp-symposium'); ?></span></td> 
-			</tr> 
+		<tr valign="top"> 
+		<th scope="row"><label for="table_rollover"></label></th> 
+		<td><input name="table_rollover" type="text" id="table_rollover" class="iColorPicker" value="<?php echo $style->table_rollover; ?>"  /> 
+		<span class="description"><?php echo __('Row colour on mouse hover', 'wp-symposium'); ?></span></td> 
+		</tr> 
 			
-			<tr valign="top"> 
-			<td colspan="2"><h3>Forum Styles</h3></td> 
-			</tr> 
+		<tr valign="top"> 
+		<th scope="row"><label for="table_border"></label></th> 
+		<td>
+		<select name="table_border" id="table_border"> 
+			<option <?if ( $style->table_border=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
+			<option <?if ( $style->table_border=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
+			<option <?if ( $style->table_border=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
+			<option <?if ( $style->table_border=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
+		</select> 
+		<span class="description"><?php echo __('Border Size', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="row_border_style">Table/Rows</label></th> 
+		<td>
+		<select name="row_border_style" id="row_border_styledefault_role"> 
+			<option <?if ( $style->row_border_style=='dotted') { echo "selected='selected'"; } ?> value='dotted'>Dotted</option> 
+			<option <?if ( $style->row_border_style=='dashed') { echo "selected='selected'"; } ?> value='dashed'>Dashed</option> 
+			<option <?if ( $style->row_border_style=='solid') { echo "selected='selected'"; } ?> value='solid'>Solid</option> 
+		</select> 
+		<span class="description"><?php echo __('Border style between rows', 'wp-symposium'); ?></span></td> 
+		</tr> 
 			
-			<tr valign="top"> 
-			<th scope="row"><label for="closed_opacity">Closed topics</label></th> 
-			<td><input name="closed_opacity" type="text" id="closed_opacity" class="iColorPicker" value="<?php echo $style->closed_opacity; ?>"  /> 
+		<tr valign="top"> 
+		<th scope="row"><label for="row_border_size"></label></th> 
+		<td>
+		<select name="row_border_size" id="row_border_size"> 
+			<option <?if ( $style->row_border_size=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
+			<option <?if ( $style->row_border_size=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
+			<option <?if ( $style->row_border_size=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
+			<option <?if ( $style->row_border_size=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
+		</select> 
+		<span class="description"><?php echo __('Border size between rows', 'wp-symposium'); ?></span></td> 
+		</tr> 
+			
+		<tr valign="top"> 
+		<th scope="row"><label for="replies_border_size">Other borders</label></th> 
+		<td>
+		<select name="replies_border_size" id="replies_border_size"> 
+			<option <?if ( $style->replies_border_size=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
+			<option <?if ( $style->replies_border_size=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
+			<option <?if ( $style->replies_border_size=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
+			<option <?if ( $style->replies_border_size=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
+		</select> 
+		<span class="description"><?php echo __('For new topics/replies and topic replies', 'wp-symposium'); ?></span></td> 
+		</tr> 
+
+		<tr valign="top"> 
+		<th scope="row"><label for="categories_background">In-Table Headings</label></th> 
+		<td><input name="categories_background" type="text" id="categories_background" class="iColorPicker" value="<?php echo $style->categories_background; ?>"  /> 
+		<span class="description"><?php echo __('Background colour of, for example, current category', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="categories_color"></label></th> 
+		<td><input name="categories_color" type="text" id="categories_color" class="iColorPicker" value="<?php echo $style->categories_color; ?>"  /> 
+		<span class="description"><?php echo __('Text Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="text_color">Text Colour</label></th> 
+		<td><input name="text_color" type="text" id="text_color" class="iColorPicker" value="<?php echo $style->text_color; ?>"  /> 
+		<span class="description"><?php echo __('Primary Text Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="text_color_2"></label></th> 
+		<td><input name="text_color_2" type="text" id="text_color_2" class="iColorPicker" value="<?php echo $style->text_color_2; ?>"  /> 
+		<span class="description"><?php echo __('Alternative Text Colour / Border Colour between rows', 'wp-symposium'); ?></span></td> 
+		</tr> 
+
+		<tr valign="top"> 
+		<th scope="row"><label for="link">Topic Links</label></th> 
+		<td><input name="link" type="text" id="link" class="iColorPicker" value="<?php echo $style->link; ?>"  /> 
+		<span class="description"><?php echo __('Link Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="link_hover"</label></th> 
+		<td><input name="link_hover" type="text" id="link_hover" class="iColorPicker" value="<?php echo $style->link_hover; ?>"  /> 
+		<span class="description"><?php echo __('Link Colour on mouse hover', 'wp-symposium'); ?></span></td> 
+		</tr> 
+
+		<tr valign="top"> 
+		<th scope="row"><label for="underline">Underlined?</label></th> 
+		<td>
+		<select name="underline" id="underline"> 
+			<option <?if ( $style->underline=='') { echo "selected='selected'"; } ?> value=''>No</option> 
+			<option <?if ( $style->underline=='on') { echo "selected='selected'"; } ?> value='on'>Yes</option> 
+		</select> 
+		<span class="description"><?php echo __('Whether links are underlined or not', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="label">Labels</label></th> 
+		<td><input name="label" type="text" id="label" class="iColorPicker" value="<?php echo $style->label; ?>"  /> 
+		<span class="description"><?php echo __('Colour of text labels outside forum areas', 'wp-symposium'); ?></span></td> 
+		</tr> 
+		
+		<tr valign="top"> 
+		<td colspan="2"><h3>Forum Styles</h3></td> 
+		</tr> 
+		
+		<tr valign="top"> 
+		<th scope="row"><label for="closed_opacity">Closed topics</label></th> 
+		<td><input name="closed_opacity" type="text" id="closed_opacity" class="iColorPicker" value="<?php echo $style->closed_opacity; ?>"  /> 
+		<?php
+		$closed_word = $config->closed_word;
+		?>
+		<span class="description"><?php echo __('Opacity of topics', 'wp-symposium'); ?> with [<?php echo $closed_word; ?>] in the subject (between 0.0 and 1.0)</span></td> 
+		</tr> 
+	
+		</table> 
+		 
+		<p class="submit">
+		<p>NB. If changes don't follow the above, you may be overriding them with your own stylesheet.</p>
+		<input type="submit" name="Submit" class="button-primary" value="Apply Changes" /> 
+		</p> 
+		</form> 
+
+		<h2><?php echo __('Style Templates', 'wp-symposium'); ?></h2>
+		
+		<form method="post" action=""> 
+		<input type="hidden" name="symposium_apply" value="Y">
+	
+		<table class="form-table"> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="sid">Select Template</label></th> 
+		<td>
+		<select name="sid" id="sid"> 
 			<?php
-			$closed_word = $config->closed_word;
-			?>
-			<span class="description"><?php echo __('Opacity of topics', 'wp-symposium'); ?> with [<?php echo $closed_word; ?>] in the subject (between 0.0 and 1.0)</span></td> 
-			</tr> 
-		
-		
-			</table> 
-			 
-			<p class="submit">
-			<p>NB. If changes don't follow the above, you may be overriding them with your own stylesheet.</p>
-			<input type="submit" name="Submit" class="button-primary" value="Apply Changes" /> 
-			</p> 
-			</form> 
-
-			<h2><?php echo __('Style Templates', 'wp-symposium'); ?></h2>
-			
-			<form method="post" action=""> 
-			<input type="hidden" name="symposium_apply" value="Y">
-		
-			<table class="form-table"> 
-		
-			<tr valign="top"> 
-			<th scope="row"><label for="sid">Select Template</label></th> 
-			<td>
-			<select name="sid" id="sid"> 
-				<?php
-				$styles_lib = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_styles');
-				if ($styles_lib) {
-					foreach ($styles_lib as $style_lib)
-					{
-						echo "<option value='".$style_lib->sid."'>".$style_lib->title."</option>";
-					}
+			$styles_lib = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_styles');
+			if ($styles_lib) {
+				foreach ($styles_lib as $style_lib)
+				{
+					echo "<option value='".$style_lib->sid."'>".$style_lib->title."</option>";
 				}
-				?>
-			</select> 
-			<span class="description">Changes are applied immediately when applied</span></td> 
-			</tr> 			
+			}
+			?>
+		</select> 
+		<span class="description">Changes are applied immediately when applied</span></td> 
+		</tr> 			
 
-			</table> 
-						
-			<p class="submit"> 
-			<input type="submit" name="Submit" class="button-primary" value="Apply Template" /> 
-			</p> 
-			</form> 
-			
-			<?php
-			
-		}
+		</table> 
+					
+		<p class="submit"> 
+		<input type="submit" name="Submit" class="button-primary" value="Apply Template" /> 
+		</p> 
+		</form> 
+		
+		<?php
 		  	
 	}
 	

@@ -36,6 +36,8 @@ function show_profile_menu($uid1, $uid2) {
 	$html .= "<div style='width:130px; padding-right: 15px; margin-right:0px; float: left;'>";
 	
 		$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
+		$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
+		$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
 		
 		if ($uid1 == $uid2) {
 
@@ -314,7 +316,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 
 }
 
-function symposium_profile_body($uid1, $uid2, $post) {
+function symposium_profile_body($uid1, $uid2, $post, $version) {
 	
 	global $wpdb;
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
@@ -400,11 +402,21 @@ function symposium_profile_body($uid1, $uid2, $post) {
 
 					if ($post != '' && symposium_safe_param($post)) {
 
-						$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.cid = ".$post." AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,10";
+						$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.cid = ".$post." AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";
 						
 					} else {
 
-						$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,10";
+						if ($version == "all_activity") {
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+						}
+
+						if ($version == "friends_activity") {
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) OR ( c.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+						}
+
+						if ($version == "wall") {
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE (c.subject_uid = ".$uid1.") AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+						}
 
 					}
 					
@@ -412,7 +424,7 @@ function symposium_profile_body($uid1, $uid2, $post) {
 					if ($comments) {
 						foreach ($comments as $comment) {
 	
-							$html .= "<div id='".$comment->cid."' style='overflow: auto; padding-top: 10px;padding-left: 5px;margin-right: 15px;margin-bottom:0px;border-top: ".$styles->row_border_size."px ".$styles->row_border_style." ".$text_color_2."; border-radius: 0px; -moz-border-radius: 0px'>";
+							$html .= "<div id='".$comment->cid."' style='overflow: auto; padding-top: 10px;padding-left: 5px;margin-right: 15px;margin-bottom:0px; border-radius: 0px; -moz-border-radius: 0px'>";
 								$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
 									$html .= "<div class='wall_post' style='margin-left: 74px;overflow:auto;'>";
 									
