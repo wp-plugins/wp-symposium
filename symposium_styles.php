@@ -108,6 +108,10 @@
 				$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";	
 				$html .= "}";
 		
+				$html .= "#symposium-wrapper #profile_left_column {";
+				$html .= "	border-left: ".$replies_border_size."px solid ".$primary_color.";";	
+				$html .= "}";
+				
 				$html .= "#symposium-wrapper #profile_right_column {";
 				$html .= "	background-color: ".$main_background.";";
 				$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";	

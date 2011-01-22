@@ -579,7 +579,7 @@ function get_message($mail_mid, $del) {
 
 	$msg = "<div style='padding-bottom:10px; overflow:auto;'>";
 	
-		$msg .= "<div style='width:44px; margin-right: 5px'>";
+		$msg .= "<div style='width:44px; margin-right: 5px; float:left;'>";
 			$msg .= get_user_avatar($mail->mail_from, 44);
 		$msg .= "</div>";
 

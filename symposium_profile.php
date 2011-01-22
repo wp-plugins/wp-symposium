@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile], [symposium-settings], [symposium-personal] or [symposium-friends] on any WordPress page to display.
-Version: 0.1.29
+Version: 0.1.29.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2

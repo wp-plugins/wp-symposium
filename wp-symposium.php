@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.29
+Version: 0.1.29.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -164,7 +164,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.29";
+	$symposium_version = "0.1.29.1";
 	$symposium_db_ver = 29;
 	
 	// Code version *************************************************************************************
@@ -235,7 +235,7 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "avatar_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "sharing", "varchar(32)", "", "''");
 	symposium_alter_table("config", "ADD", "register_message", "text", "", "''");
-	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "", "'on'");
+	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "NOT NULL", "'on'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");

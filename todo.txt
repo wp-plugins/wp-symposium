@@ -1,10 +1,16 @@
 todo.txt
 --------
-   
+ 
+MAIL
+ 
+ - icon float
+  
 PROFILE
 
 - AJAX add/cancel friend request
 - option receive email on activity in wall post if I've replied or started it
+- add "only visible to friends" or "chosen not to share"
+- menu options - hide if not friends or everyone
 
 CHAT
 

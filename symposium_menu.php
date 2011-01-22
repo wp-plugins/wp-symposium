@@ -387,6 +387,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'custom_register_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sharing')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'register_message')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
 
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -400,7 +401,6 @@ function symposium_plugin_debug() {
 	   		$status = $fail.__('Table does not exist', 'wp-symposium').$fail2;
 	   	} else {
 			if (!symposium_field_exists($table_name, 'sid')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'title')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'categories_background')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'categories_color')) { $status = "X"; }
