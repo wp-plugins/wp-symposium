@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.29.1
+Version: 0.1.29.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -164,7 +164,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.29.1";
+	$symposium_version = "0.1.29.2";
 	$symposium_db_ver = 29;
 	
 	// Code version *************************************************************************************
@@ -726,16 +726,17 @@ function add_symposium_stylesheet() {
 
 	    // Check to see if there is a theme css instead
 
+	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/css/symposium.css';
+        wp_register_style('symposium_StyleSheet', $myStyleUrl);
+        wp_enqueue_style('symposium_StyleSheet');
+
 	    $template_dir = TEMPLATEPATH."/my-symposium.css";
 	    $template_url = get_bloginfo('stylesheet_directory');
 		if (file_exists($template_dir)) {
 		    $myStyleUrl = $template_url."/my-symposium.css";
-		} else {
-		    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/css/symposium.css';
+			wp_register_style('symposium_my-css', $myStyleUrl);
+			wp_enqueue_style('symposium_my-css');
 		}
-
-        wp_register_style('symposium_StyleSheet', $myStyleUrl);
-        wp_enqueue_style('symposium_StyleSheet');
 
 		wp_register_style('symposium_jcrop-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery.Jcrop.css');
 		wp_enqueue_style('symposium_jcrop-css');
@@ -878,7 +879,7 @@ function symposium_scriptsAction()
 	wp_enqueue_script('jquery-jcrop', WP_PLUGIN_URL.'/wp-symposium/js/jquery.Jcrop.js', array('jquery'));
 	
 	// Load Symposium JS
- 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium-min.js', array('jquery'));
+ 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
 	
 	// Set JS variables
 	wp_localize_script( 'symposium', 'symposium', array(
