@@ -1,5 +1,38 @@
 jQuery(document).ready(function() { 	
 
+
+	/*
+	   +------------------------------------------------------------------------------------------+
+	   |                                          SHARED                                          |
+	   +------------------------------------------------------------------------------------------+
+	*/
+
+	// Centre in screen
+	jQuery.fn.inmiddle = function () {
+		this.css("position","absolute");
+		this.css("top", ( jQuery(window).height() - this.height() ) / 2+jQuery(window).scrollTop() + "px");
+		this.css("left", ( jQuery(window).width() - this.width() ) / 2+jQuery(window).scrollLeft() + "px");
+		return this;
+	}
+
+	// Are you sure?
+	jQuery('.areyousure').click(function(){
+		var answer = confirm('Are you sure?\n\nAll topics in the category will become un-categorised.');
+		return answer // answer is a boolean
+	});
+
+    // Check if really want to delete	    
+	jQuery(".delete").click(function(){
+	  var answer = confirm("Are you sure?");
+	  return answer // answer is a boolean
+	});
+	   		
+	/*
+	   +------------------------------------------------------------------------------------------+
+	   |                                      PROFILE PHOTO                                       |
+	   +------------------------------------------------------------------------------------------+
+	*/
+
 	if (jQuery("#file_upload").length) {
 		jQuery('#file_upload').uploadify({
 		    'uploader'  : '/wp-content/plugins/wp-symposium/uploadify/uploadify.swf',
@@ -43,39 +76,6 @@ jQuery(document).ready(function() {
 		});
 	};
 		
-	/*
-	   +------------------------------------------------------------------------------------------+
-	   |                                          SHARED                                          |
-	   +------------------------------------------------------------------------------------------+
-	*/
-
-	// Centre in screen
-	jQuery.fn.inmiddle = function () {
-		this.css("position","absolute");
-		this.css("top", ( jQuery(window).height() - this.height() ) / 2+jQuery(window).scrollTop() + "px");
-		this.css("left", ( jQuery(window).width() - this.width() ) / 2+jQuery(window).scrollLeft() + "px");
-		return this;
-	}
-
-	// Are you sure?
-	jQuery('.areyousure').click(function(){
-		var answer = confirm('Are you sure?\n\nAll topics in the category will become un-categorised.');
-		return answer // answer is a boolean
-	});
-
-    // Check if really want to delete	    
-	jQuery(".delete").click(function(){
-	  var answer = confirm("Are you sure?");
-	  return answer // answer is a boolean
-	});
-	   		
-	/*
-	   +------------------------------------------------------------------------------------------+
-	   |                                      PROFILE PHOTO                                       |
-	   +------------------------------------------------------------------------------------------+
-	*/
-
-
 
 
 	/*

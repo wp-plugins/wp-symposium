@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.29.2
+Version: 0.1.29.3
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -75,6 +75,15 @@ function symposium_mail_warning() {
 		_e("You need to update your WP Symposium database - please deactivate, then re-activate the WP Symposium core plugin.");
 		echo "</p></div>";
 	}
+
+	// CSS check
+    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/css/symposium.css';
+    if ( !file_exists($myStyleFile) ) {
+		echo "<div class='error'><p>WPS Symposium: ";
+		_e( sprintf('Stylesheet (%s) not found.', $myStyleFile), 'wp-symposium');
+		echo "</p></div>";
+    }
+
 }
 
 // Dashboard Widget
@@ -164,7 +173,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.29.2";
+	$symposium_version = "0.1.29.3";
 	$symposium_db_ver = 29;
 	
 	// Code version *************************************************************************************
@@ -547,47 +556,52 @@ function symposium_lastactivity() {
 
 // Hook to replace Smilies
 function symposium_smilies($buffer){ // $buffer contains entire page
-	global $wpdb;
-	$emoticons = $wpdb->get_var($wpdb->prepare("SELECT emoticons FROM ".$wpdb->prefix . 'symposium_config'));
-	
-	if ($emoticons == "on") {
+
+	if ( !strpos($buffer, "<rss") ) {
+
+		global $wpdb;
+		$emoticons = $wpdb->get_var($wpdb->prepare("SELECT emoticons FROM ".$wpdb->prefix . 'symposium_config'));
 		
-		$smileys = WP_PLUGIN_URL . '/wp-symposium/images/smilies/';
-		$smileys_dir = WP_PLUGIN_DIR . '/wp-symposium/images/smilies/';
-		// Smilies as classic text
-		$buffer = str_replace(":)", "<img src='".$smileys."smile.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(":(", "<img src='".$smileys."sad.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(":'(", "<img src='".$smileys."crying.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(":x", "<img src='".$smileys."kiss.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(":X", "<img src='".$smileys."shutup.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(":D", "<img src='".$smileys."laugh.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(":|", "<img src='".$smileys."neutral.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(":?", "<img src='".$smileys."question.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(":z", "<img src='".$smileys."sleepy.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(":P", "<img src='".$smileys."tongue.png' alt='emoticon'/>", $buffer);
-		$buffer = str_replace(";)", "<img src='".$smileys."wink.png' alt='emoticon'/>", $buffer);
-		// Other images
-		
-		$i = 0;
-		do {
-			$i++;
-			$start = strpos($buffer, "{{");
-			if ($start === false) {
-			} else {
-				$end = strpos($buffer, "}}");
-				if ($end === false) {
+		if ($emoticons == "on") {
+			
+			$smileys = WP_PLUGIN_URL . '/wp-symposium/images/smilies/';
+			$smileys_dir = WP_PLUGIN_DIR . '/wp-symposium/images/smilies/';
+			// Smilies as classic text
+			$buffer = str_replace(":)", "<img src='".$smileys."smile.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(":(", "<img src='".$smileys."sad.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(":'(", "<img src='".$smileys."crying.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(":x", "<img src='".$smileys."kiss.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(":X", "<img src='".$smileys."shutup.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(":D", "<img src='".$smileys."laugh.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(":|", "<img src='".$smileys."neutral.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(":?", "<img src='".$smileys."question.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(":z", "<img src='".$smileys."sleepy.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(":P", "<img src='".$smileys."tongue.png' alt='emoticon'/>", $buffer);
+			$buffer = str_replace(";)", "<img src='".$smileys."wink.png' alt='emoticon'/>", $buffer);
+			// Other images
+			
+			$i = 0;
+			do {
+				$i++;
+				$start = strpos($buffer, "{{");
+				if ($start === false) {
 				} else {
-					$first_bit = substr($buffer, 0, $start);
-					$last_bit = substr($buffer, $end+2, strlen($buffer)-$end-2);
-					$bit = substr($buffer, $start+2, $end-$start-2);
-					if (file_exists($smileys_dir.$bit.".png")) {
-						$buffer = $first_bit."<img src='".$smileys.$bit.".png' alt='emoticon'/>".$last_bit;
+					$end = strpos($buffer, "}}");
+					if ($end === false) {
 					} else {
-						$buffer = $first_bit."&#123;&#123;".$bit."&#125;&#125;".$last_bit;
+						$first_bit = substr($buffer, 0, $start);
+						$last_bit = substr($buffer, $end+2, strlen($buffer)-$end-2);
+						$bit = substr($buffer, $start+2, $end-$start-2);
+						if (file_exists($smileys_dir.$bit.".png")) {
+							$buffer = $first_bit."<img src='".$smileys.$bit.".png' alt='emoticon'/>".$last_bit;
+						} else {
+							$buffer = $first_bit."&#123;&#123;".$bit."&#125;&#125;".$last_bit;
+						}
 					}
 				}
-			}
-		} while ($i < 100 && strpos($buffer, "{{")>0);
+			} while ($i < 100 && strpos($buffer, "{{")>0);
+			
+		}
 		
 	}
 
@@ -725,19 +739,23 @@ function add_symposium_stylesheet() {
 	if (!is_admin()) {
 
 	    // Check to see if there is a theme css instead
-
 	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/css/symposium.css';
-        wp_register_style('symposium_StyleSheet', $myStyleUrl);
-        wp_enqueue_style('symposium_StyleSheet');
-
-	    $template_dir = TEMPLATEPATH."/my-symposium.css";
-	    $template_url = get_bloginfo('stylesheet_directory');
-		if (file_exists($template_dir)) {
-		    $myStyleUrl = $template_url."/my-symposium.css";
-			wp_register_style('symposium_my-css', $myStyleUrl);
-			wp_enqueue_style('symposium_my-css');
-		}
-
+	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/css/symposium.css';
+	    if ( file_exists($myStyleFile) ) {
+	        wp_register_style('symposium_StyleSheet', $myStyleUrl);
+	        wp_enqueue_style('symposium_StyleSheet');
+	    }
+	    
+		// Load custom CSS if exists
+	    $myStyleUrl = get_bloginfo('stylesheet_directory')."/my-symposium.css";
+	    $myStyleFile = TEMPLATEPATH."/my-symposium.css";
+	    if ( file_exists($myStyleFile) ) {
+	        wp_register_style('symposium_StyleSheet', $myStyleUrl);
+	        wp_enqueue_style('symposium_StyleSheet');
+	    }
+	    
+	    // Load other CSS's
+	    
 		wp_register_style('symposium_jcrop-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery.Jcrop.css');
 		wp_enqueue_style('symposium_jcrop-css');
 		

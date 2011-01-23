@@ -136,13 +136,13 @@ function symposium_plugin_menu() {
 	}
 	
 	add_menu_page(__('Symposium'), __('Symposium'.$count1), 'edit_themes', 'symposium_options', 'symposium_plugin_options', '', 7); 
-	add_submenu_page('symposium_options', __('Options'), __('Options'), 'edit_themes', 'symposium_options', 'symposium_plugin_options');
-	add_submenu_page('symposium_options', __('Styles'), __('Styles'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
+	add_submenu_page('symposium_options', __('Options', 'wp-symposium'), __('Options', 'wp-symposium'), 'edit_themes', 'symposium_options', 'symposium_plugin_options');
+	add_submenu_page('symposium_options', __('Styles', 'wp-symposium'), __('Styles', 'wp-symposium'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
 	if (function_exists('symposium_forum')) {
-		add_submenu_page('symposium_options', __('Forum Categories'), __('Forum Categories'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
-		add_submenu_page('symposium_options', __('Forum Posts'), __('Forum Posts'.$count2), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
+		add_submenu_page('symposium_options', __('Forum Categories', 'wp-symposium'), __('Forum Categories', 'wp-symposium'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
+		add_submenu_page('symposium_options', __('Forum Posts', 'wp-symposium'), __(sprintf('Forum Posts %s', $count2), 'wp-symposium'), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
 	}
-	add_submenu_page('symposium_options', __('Health Check'), __('Health Check'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
+	add_submenu_page('symposium_options', __('Health Check', 'wp-symposium'), __('Health Check', 'wp-symposium'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
 }
 add_action('admin_menu', 'symposium_plugin_menu');
 
@@ -619,8 +619,8 @@ function symposium_plugin_debug() {
 		echo '<h2>'.__('Version Numbers and URLs', 'wp-symposium').'</h2>';
 	
 	  	echo "<p>";
-		  	echo "WP Symposium internal version: ".get_option("symposium_version")."<br />";
-		  	echo "WP Symposium database version: ";
+		  	echo __("WP Symposium internal version:", "wp-symposium")." ".get_option("symposium_version")."<br />";
+		  	echo __("WP Symposium database version:", "wp-symposium")." ";
 		  	$db_ver = get_option("symposium_db_version");
 		  	if (!$db_ver) { 
 		  		echo "<span style='color:red; font-weight:bold;'>Error!</span> ".__('No database version set. You may need to re-apply the upgrades', 'wp-symposium')."</span><br />"; 
@@ -656,7 +656,26 @@ function symposium_plugin_debug() {
 			  	echo __('Click the links above to check', 'wp-symposium');
 			}
 	  	echo "</p>";
-	  	
+
+		// ********** Stylesheets
+
+	   	echo '<h2>Stylesheets</h2>';
+
+		// CSS check
+	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/css/symposium.css';
+	    if ( !file_exists($myStyleFile) ) {
+			echo $fail.__( sprintf('Stylesheet (%s) not found.', $myStyleFile), 'wp-symposium').$fail2;
+	    } else {
+	    	echo "<p style='color:green; font-weight:bold;'>".__( sprintf("Stylesheet (%s) found.", $myStyleFile) )."</p>";
+	    }
+	
+		// Additional CSS check
+	    $myStyleFile = TEMPLATEPATH."/my-symposium.css";
+	    if ( file_exists($myStyleFile) ) {
+			echo "<p style='color:green; font-weight:bold;'>".__( sprintf('Stylesheet (%s) found.', $myStyleFile), 'wp-symposium')."</p>";
+	    }
+    
+    	  	
 		// ********** User Level  	
 	   	echo '<h2>'.__('User Level Test', 'wp-symposium').'</h2>';
 		echo '<table class="widefat">';
@@ -1279,7 +1298,7 @@ function symposium_plugin_styles() {
 		 
 		<p class="submit">
 		<p>NB. If changes don't follow the above, you may be overriding them with your own stylesheet.</p>
-		<input type="submit" name="Submit" class="button-primary" value="Apply Changes" /> 
+		<input type="submit" name="Submit" class="button-primary" value="<?php _e('Apply Changes', 'wp-symposium') ?> /> 
 		</p> 
 		</form> 
 
@@ -1890,12 +1909,12 @@ function symposium_plugin_options() {
 					</p> 
 					</form> 
 					
-					<strong>Notes:</strong>
+					<strong><?php _e('Notes:', 'wp-symposium'); ?></strong>
 					<ol>
-					<li>The polling intervals occur in addition to an initial check on each page load.</li>
-					<li>The more frequent the polling intervals, the greater the load on your server.</li>
-					<li>Disabling chat windows will reduce the load on the server.</li>
-					<li>The default sound and bar position can be changed by members</li>
+					<li><?php _e('The polling intervals occur in addition to an initial check on each page load.', 'wp-symposium'); ?></li>
+					<li><?php _e('The more frequent the polling intervals, the greater the load on your server.', 'wp-symposium'); ?></li>
+					<li><?php _e('Disabling chat windows will reduce the load on the server.', 'wp-symposium'); ?></li>
+					<li><?php _e('The default sound and bar position can be changed by members.', 'wp-symposium'); ?></li>
 					</ol>
 					
 					<?php
@@ -2234,7 +2253,7 @@ function symposium_plugin_options() {
 					<span class="description">
 					<strong>Notes</strong>
 					<ul>
-					<li>&middot;&nbsp;<?php _e('Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time, for the previous day.', 'wp-symposium'); ?></li>
+					<li>&middot;&nbsp;<?php _e('Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time.', 'wp-symposium'); ?></li>
 					<li>&middot;&nbsp;<?php _e('Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website.', 'wp-symposium'); ?></li>
 					</ul>
 					</p>	

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.29.2
+Version: 0.1.29.3
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -31,16 +31,15 @@ function symposium_forum() {
 
 	$plugin_dir = 'wp-symposium';
 	$plugin = get_site_url().'/wp-content/plugins/'.$plugin_dir.'/';
-	$thispage = get_permalink();
-	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
 	
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_config"));
 
 	$forum_url = $config->forum_url;
 	$seo = $config->seo;
-	
-	$dbpage = WP_PLUGIN_URL.'/'.$plugin_dir.'/symposium_forum_db.php';
-	
+
+	// Work out link to this page, dealing with permalinks or not
+	$thispage = get_permalink();
+	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
 	if (isset($_GET[page_id]) && $_GET[page_id] != '') {
 		// No Permalink
 		$thispage = $forum_url;
@@ -48,6 +47,11 @@ function symposium_forum() {
 	} else {
 		$q = "?";
 	}
+	
+		
+	$dbpage = WP_PLUGIN_URL.'/'.$plugin_dir.'/symposium_forum_db.php';
+	
+
 
 	$html = "";
 	

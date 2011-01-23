@@ -72,9 +72,9 @@
 				$html .= "  width: ".str_replace('pc', '%', $wp_width).";";
 				$html .= "}";
 		
-				$html .= ".widget-area * {";
-				$html .= "	border: 1px solid green;";
-				$html .= "}";
+				//$html .= ".widget-area * {";
+				//$html .= "	border: 1px solid green;";
+				//$html .= "}";
 	
 				$html .= "#symposium-wrapper .corners {";
 				$html .= "	border-radius: ".$border_radius."px;";

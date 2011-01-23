@@ -35,11 +35,15 @@ function show_profile_menu($uid1, $uid2) {
 
 	$html .= "<div style='width:130px; padding-right: 15px; margin-right:0px; float: left;'>";
 	
-		$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
-		$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
-		$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
+		$meta = get_symposium_meta_row($uid1);					
+		$privacy = $meta->wall_share;		
+		$is_friend = symposium_friend_of($uid1);
 		
-		if ($uid1 == $uid2) {
+		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
+
+			$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
+			$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
+			$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
 
 			// Check for pending friends
 			$pending_friends = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_friends f WHERE f.friend_to = ".$uid1." AND f.friend_accepted != 'on'");
@@ -56,7 +60,7 @@ function show_profile_menu($uid1, $uid2) {
 			$html .= '<div id="menu_settings" class="symposium_profile_menu">'.__('Preferences', 'wp-symposium').'</div>';
 			$html .= '<div id="menu_personal" class="symposium_profile_menu">'.__('Personal', 'wp-symposium').'</div>';
 			$html .= '<div id="menu_friends" class="symposium_profile_menu">'.__('Friends', 'wp-symposium').' '.$pending_friends.'</div>';
-
+			
 		}
 		
 	$html .= "</div>";
@@ -510,8 +514,18 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 				$html .= "</div>";
 					
 			$html .= "</div>";
-		}
-		
+			
+		} else {
+
+			if ($version == "friends_activity") {
+				$html .= '<p>'.__("Sorry, this member's activity is only available if you are a friend.");
+			}
+
+			if ($version == "wall") {
+				$html .= '<p>'.__("Sorry, this member's activity is only available if you are a friend.");
+			}
+			
+		}		
 		return $html;
 		
 	} else {
@@ -865,11 +879,27 @@ function symposium_profile_link($uid) {
 	$display_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$uid));
 	if (function_exists('symposium_profile')) {
 		$profile_url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix."symposium_config"));
-		$html = '<a href="'.$profile_url.'?uid='.$uid.'">'.$display_name.'</a>';
+		
+		// Work out link to profile page, dealing with permalinks or not
+		$thispage = $profile_url;
+		if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
+		$q = symposium_string_query($thispage);		
+				
+		$html = '<a href="'.$thispage.$q.'uid='.$uid.'">'.$display_name.'</a>';
 	} else {
 		$html = $display_name;
 	}
 	return $html;
+}
+
+// Work out query extension
+function symposium_string_query($p) {
+	if (strpos($p, '?') != FALSE) { 
+		$q = "&"; // No Permalink
+	} else {
+		$q = "?"; // Permalink
+	}
+	return $q;
 }
 
 // Create Permalink for Forum

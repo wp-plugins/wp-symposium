@@ -548,7 +548,7 @@ if ($_POST['action'] == 'addComment') {
 					if ($current_user->ID == $uid) {
 						$body = "<p>".$current_user->display_name." ".__('has added a new status to their wall', 'wp-symposium').":</p>";
 					} else {
-						$body = "<p>".$current_user->display_name." ".sprintf(__("has added a new post to %s's wall", "wp-symposium"), $subject_name).":</p>";
+						$body = "<p>".$current_user->display_name." ".__(sprintf("has added a new post to %s's wall", $subject_name), "wp-symposium").":</p>";
 					}
 				} else {
 					$email_subject = __('New Wall Reply', 'wp-symposium');
@@ -559,7 +559,7 @@ if ($_POST['action'] == 'addComment') {
 					}
 				}
 				$body .= "<p>".stripslashes($text)."</p>";
-				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$current_user->ID."&post=".$parent."'>".__('Go to their wall', 'wp-symposium')."...</a></p>";
+				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$uid."&post=".$parent."'>".__('Go to their wall', 'wp-symposium')."...</a></p>";
 				foreach ($recipients as $recipient) {
 					if ( ($recipient->ID != $current_user->ID) && ($recipient->notify_new_wall == 'on') ) {
 						symposium_sendmail($recipient->user_email, $email_subject, $body);
@@ -634,6 +634,9 @@ if ($_POST['action'] == 'addStatus') {
 
 			// New Post ID
 			$new_id = $wpdb->insert_id;
+
+		    // Subject's name for use below
+			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = %d", $subject_uid));
 		        
 			// Email all friends who want to know about it
 			$sql = "SELECT u.ID, f.friend_to, u.user_email, m.notify_new_wall 
@@ -644,9 +647,13 @@ if ($_POST['action'] == 'addStatus') {
 			$recipients = $wpdb->get_results($sql);	
 					
 			if ($recipients) {
-				$body = "<p>".$current_user->display_name." ".__('has added a new status to their wall', 'wp-symposium').":</p>";
+				if ($subject_uid == $author_uid) {
+					$body = "<p>".$current_user->display_name." ".__('has added a new status to their wall', 'wp-symposium').":</p>";
+				} else {
+					$body = "<p>".$current_user->display_name." ".__( sprintf("has added a new status to %s's wall", $subject_name), 'wp-symposium').":</p>";
+				}
 				$body .= "<p>".stripslashes($text)."</p>";
-				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$current_user->ID."&post=".$new_id."'>".__('Go to their wall', 'wp-symposium')."...</a></p>";
+				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$subject_uid."&post=".$new_id."'>".__('Go to their wall', 'wp-symposium')."...</a></p>";
 				foreach ($recipients as $recipient) {
 					if ( ($recipient->ID != $current_user->ID) && ($recipient->notify_new_wall == 'on') ) {
 						symposium_sendmail($recipient->user_email, __('New Wall Post', 'wp-symposium'), $body);

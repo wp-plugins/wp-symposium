@@ -1,16 +1,15 @@
 todo.txt
 --------
- 
-MAIL
- 
- - icon float
+
   
 PROFILE
 
 - AJAX add/cancel friend request
 - option receive email on activity in wall post if I've replied or started it
-- add "only visible to friends" or "chosen not to share"
-- menu options - hide if not friends or everyone
+- if a member has set his profile to "friends only" or "nobody", even the admin can't see it? 
+- Also, admins can't edit a member's profile.
+- my activity
+
 
 CHAT
 
@@ -19,20 +18,16 @@ CHAT
 REGISTER
 
 - check on username availability
-- do you get email message???
+- do you get email message??? not sure this is working
 
 FORUM 
 
 - AJAX new post, etc...
 - search
+- favourites
 
-WIDGETS
+CSS
 
-- have to check if permalinks not being used
-
-CORE
-
-css:
 - widgets (done)
 - register (done)
 - login (done)
@@ -49,27 +44,21 @@ CODEX
 - functions
 - javascript variables
 
+MAIL
+
+- update number in () when reading a mail item
+- quote feature
 
 LANGUAGES
 
-- add language contacts to wps languages page (and ask Mattius if he wants to be contact)
+- add language contacts to wps languages page with Mattius as contact
 
 WISH LIST
 
 - paying/subscriptions
+- Is there a shortcode for Friends Activity? That's what I'd like my Activity page to default to.
+- Option to get members to confirm registration via email
 
+FIX
 
-mend.xylene.com/wp-admin
-admiin / mendthegap
-
-Jake Bui
-Domain: teslaschool.org
-FTP/cPanel Username: teslasch
-FTP/cPanel Password: opvh028Dt6
-Server IP: 69.175.60.114
-
-
-Lady bird has added a new status to their wall: <<< this was a post to someone elses wall....
-Loving the way this website is developing! :D
-Go to their wall...
 

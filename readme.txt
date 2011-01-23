@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.29.2
+Stable tag: 0.1.29.3
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -321,6 +321,18 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.29.3 = 
+
+* Removal of "green" rogue style on widget area
+* Profile: Hides menu if you can't see wall/activity based on preferences
+* Profile: Shows message if you can't see wall/activity
+* Health Check: Added stylesheets report error or not
+* Profile: Wall: Fixed link to be subject ID not author ID
+* Core: Link to profile page now handles default permalinks
+* Core: Fixed clash with emoticons and RSS feed
+* Minor Code patches
+* Languages: Added correct French translation
 
 = 0.1.29.2 = 
 
