@@ -1,0 +1,64 @@
+todo.txt
+--------
+
+  
+PROFILE
+
+- AJAX add/cancel friend request
+- option receive email on activity in wall post if I've replied or started it
+- if a member has set his profile to "friends only" or "nobody", even the admin can't see it? 
+- Also, admins can't edit a member's profile.
+- my activity
+
+
+CHAT
+
+- please wait not showing when window first opens
+
+REGISTER
+
+- check on username availability
+- do you get email message??? not sure this is working
+
+FORUM 
+
+- AJAX new post, etc...
+- search
+- favourites
+
+CSS
+
+- widgets (done)
+- register (done)
+- login (done)
+- bar (done)
+- mail
+- profile
+- avatar
+- members
+- forum
+
+CODEX
+
+- data dictionary
+- functions
+- javascript variables
+
+MAIL
+
+- update number in () when reading a mail item
+- quote feature
+
+LANGUAGES
+
+- add language contacts to wps languages page with Mattius as contact
+
+WISH LIST
+
+- paying/subscriptions
+- Is there a shortcode for Friends Activity? That's what I'd like my Activity page to default to.
+- Option to get members to confirm registration via email
+
+FIX
+
+
