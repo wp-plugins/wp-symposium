@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.29.4
+Version: 0.1.30
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -173,8 +173,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.29.4";
-	$symposium_db_ver = 29;
+	$symposium_version = "0.1.30";
+	$symposium_db_ver = 30;
 	
 	// Code version *************************************************************************************
 	$ver = get_option("symposium_version");
@@ -245,6 +245,7 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "sharing", "varchar(32)", "", "''");
 	symposium_alter_table("config", "ADD", "register_message", "text", "", "''");
 	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "show_profile_menu", "varchar(2)", "NOT NULL", "'on'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
@@ -777,6 +778,7 @@ function add_symposium_stylesheet() {
 	// Notices
 	echo "<div class='symposium_notice' style='display:none; z-index:999999;'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /> ".__('Saving...', 'wp-symposium')."</div>";
 	echo "<div class='symposium_pleasewait' style='display:none; z-index:999999;'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /> ".__('Please Wait...', 'wp-symposium')."</div>";
+	echo "<div id='symposium_dialog' style='display:none; z-index:999999;' title='WP Symposium'></div>";
 	
 }
 
@@ -922,7 +924,10 @@ function symposium_scriptsAction()
 		'current_user_page' => $page_uid,
 		'widget_vote_yes' => $yes, 
 		'widget_vote_no' => $no,
-		'post' => $_GET['post']
+		'post' => $_GET['post'],
+		'please_wait' => __('Please Wait...', 'wp-symposium'),
+		'saving' => __('Saving...', 'wp-symposium'),
+		'site_title' => get_bloginfo('name')
 	));
 
 

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile], [symposium-settings], [symposium-personal] or [symposium-friends] on any WordPress page to display.
-Version: 0.1.29.4
+Version: 0.1.30
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -26,125 +26,65 @@ License: GPL2
 */
 
 
-// Adds Friends
+
+// [symposium-profile] (wall)
+function symposium_profile()  
+{  
+										
+	return symposium_show_profile("wall");
+	exit;
+		
+}
+
+// [symposium-activity] (friends activity)
+function symposium_profile_activity()  
+{  
+										
+	return symposium_show_profile("activity");
+	exit;
+		
+}
+
+// [symposium-all] (all activity)
+function symposium_profile_all()  
+{  
+										
+	return symposium_show_profile("all");
+	exit;
+		
+}
+
+// [symposium-friends]
 function symposium_profile_friend()  
 {  
 
-   	global $wpdb, $current_user;
-	wp_get_current_user();
-	if (isset($_GET['uid'])) {
-		$uid = $_GET['uid'];
-	} else {
-		$uid = $current_user->ID;
-	}
-	$user = $wpdb->get_row("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$uid);
-	
-	$html = "";
-
-	// Includes
-	include_once('symposium_styles.php');
-	include_once('symposium_functions.php');
-	
-	// Wrapper
-	$html .= "<div id='symposium-wrapper'>";
-
-		$html .= symposium_profile_header($uid, $current_user->ID, symposium_get_url('mail'), $user->display_name);
-		$html .= show_profile_menu($uid, $current_user->ID);
-		$html .= "<div id='force_profile_page' style='display:none'>friends</div>";
-		$html .= "<div id='profile_body'>";
-		$html .= "</div>";	
-		
-		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-		$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
-
-	$html .= "</div>";
-	$html .= "<div style='clear: both'></div>";
-										
-	return $html;
+	return symposium_show_profile("friends");
 	exit;
 		
 }
 
-// Adds Personal
+// [symposium-personal]
 function symposium_profile_personal()  
 {  
-
-   	global $wpdb, $current_user;
-	wp_get_current_user();
-	if (isset($_GET['uid'])) {
-		$uid = $_GET['uid'];
-	} else {
-		$uid = $current_user->ID;
-	}
-	$user = $wpdb->get_row("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$uid);
-	
-	$html = "";
-
-	// Includes
-	include_once('symposium_styles.php');
-	include_once('symposium_functions.php');
-	
-	// Wrapper
-	$html .= "<div id='symposium-wrapper'>";
-
-		$html .= symposium_profile_header($uid, $current_user->ID, symposium_get_url('mail'), $user->display_name);
-		$html .= show_profile_menu($uid, $current_user->ID);
-		$html .= "<div id='force_profile_page' style='display:none'>personal</div>";
-		$html .= "<div id='profile_body'>";
-		$html .= "</div>";
-				
-		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-		$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
-
-	$html .= "</div>";
-	$html .= "<div style='clear: both'></div>";
 										
-	return $html;
+	return symposium_show_profile("personal");
 	exit;
 		
 }
 
-// Adds Settings
+// [symposium-settings]
 function symposium_profile_settings()  
 {  
-
-   	global $wpdb, $current_user;
-	wp_get_current_user();
-	if (isset($_GET['uid'])) {
-		$uid = $_GET['uid'];
-	} else {
-		$uid = $current_user->ID;
-	}
-	$user = $wpdb->get_row("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$uid);
-	
-	$html = "";
-
-	// Includes
-	include_once('symposium_styles.php');
-	include_once('symposium_functions.php');
-	
-	// Wrapper
-	$html .= "<div id='symposium-wrapper'>";
-
-		$html .= symposium_profile_header($uid, $current_user->ID, symposium_get_url('mail'), $user->display_name);
-		$html .= show_profile_menu($uid, $current_user->ID);
-		$html .= "<div id='force_profile_page' style='display:none'>settings</div>";
-		$html .= "<div id='profile_body'>";
-		$html .= "</div>";			
-		
-		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-		$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
-	
-	$html .= "</div>";
-	$html .= "<div style='clear: both'></div>";
 										
-	return $html;
+	return symposium_show_profile("settings");
 	exit;
 		
 }
 
+
+
 // Adds profile page
-function symposium_profile()  
+function symposium_show_profile($page)  
 {  
 
    	global $wpdb, $current_user;
@@ -155,6 +95,7 @@ function symposium_profile()
 		$uid = $current_user->ID;
 	}
 	$user = $wpdb->get_row("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$uid);
+	$show_profile_menu = $wpdb->get_var("SELECT show_profile_menu FROM ".$wpdb->prefix."symposium_config");
 	
 	$html = "";
 
@@ -166,7 +107,10 @@ function symposium_profile()
 	$html .= "<div id='symposium-wrapper'>";
 
 		$html .= symposium_profile_header($uid, $current_user->ID, symposium_get_url('mail'), $user->display_name);
-		$html .= show_profile_menu($uid, $current_user->ID);
+		if ($show_profile_menu == "on") {
+			$html .= show_profile_menu($uid, $current_user->ID);
+		}
+		$html .= "<div id='force_profile_page' style='display:none'>".$page."</div>";
 		$html .= "<div id='profile_body'>";
 		$html .= "</div>";
 				
@@ -183,10 +127,11 @@ function symposium_profile()
 
 }  
 
-
 /* ====================================================== SET SHORTCODE ====================================================== */
 add_shortcode('symposium-profile', 'symposium_profile');  
 add_shortcode('symposium-friends', 'symposium_profile_friend');  
+add_shortcode('symposium-activity', 'symposium_profile_activity');  
+add_shortcode('symposium-all', 'symposium_profile_all');  
 add_shortcode('symposium-personal', 'symposium_profile_personal');  
 add_shortcode('symposium-settings', 'symposium_profile_settings');  
 

@@ -1,6 +1,5 @@
 jQuery(document).ready(function() { 	
 
-
 	/*
 	   +------------------------------------------------------------------------------------------+
 	   |                                          SHARED                                          |
@@ -111,7 +110,7 @@ jQuery(document).ready(function() {
 					alert("V:"+err);
 				}		
 	   		});	
-			jQuery(".symposium_pleasewait").hide();
+			jQuery(".symposium_pleasewait").fadeOut("slow");
 		});
 	}
 
@@ -178,7 +177,7 @@ jQuery(document).ready(function() {
 						async: false,
 						success: function(str){
 							if (str == "FAIL") {
-								jQuery(".symposium_pleasewait").hide();
+								jQuery(".symposium_pleasewait").fadeOut("slow");
 								alert("Login failed, please try again");
 							} else {
 								if (str != "Important: Please update!" && str != "none") {
@@ -214,7 +213,7 @@ jQuery(document).ready(function() {
 						    dataType: "html",
 							async: false,
 							success: function(str){
-								jQuery(".symposium_pleasewait").hide();
+								jQuery(".symposium_pleasewait").fadeOut("slow");
 								if (str.substring(0, 2) == 'OK') { 
 									jQuery('#symposium_forgotten_password_msg').show("slow");
 									jQuery("#symposium_login_username").val('');
@@ -284,7 +283,7 @@ jQuery(document).ready(function() {
 			async: true,
 			success: function(str){
 				jQuery("#symposium_members").html(str);
-				jQuery(".symposium_pleasewait").inmiddle().hide();
+				jQuery(".symposium_pleasewait").fadeOut("slow");
 			},
 			error: function(err){
 				alert("D1:"+err);
@@ -339,7 +338,7 @@ jQuery(document).ready(function() {
 				} else {
 					jQuery("#sent_message").html(details[3]);
 				}
-				jQuery(".symposium_pleasewait").hide();
+				jQuery(".symposium_pleasewait").fadeOut("slow");
 			},
 			error: function(err){
 				//alert("1:"+err);
@@ -382,7 +381,6 @@ jQuery(document).ready(function() {
 	*/
 	
 	// Act on "view" parameter on first page load
-	
 	if (jQuery("#profile_body").length) {
 		
 		var menu_id = 'menu_'+symposium.view;
@@ -391,7 +389,7 @@ jQuery(document).ready(function() {
 		if (jQuery('#force_profile_page').length) {
 			menu_id = 'menu_'+jQuery('#force_profile_page').html();
 		}
-
+		
 		jQuery(".symposium_pleasewait").inmiddle().show();
 		
 		jQuery.ajax({
@@ -406,7 +404,7 @@ jQuery(document).ready(function() {
 		    dataType: "html",
 			success: function(str){
 				jQuery('#profile_body').html(str);
-				jQuery(".symposium_pleasewait").hide();
+				jQuery(".symposium_pleasewait").fadeOut("slow");
 			}
    		});	
    		
@@ -417,6 +415,7 @@ jQuery(document).ready(function() {
 		
 		var menu_id = jQuery(this).attr("id");
 		jQuery(".symposium_pleasewait").inmiddle().show();
+		jQuery('#profile_left_column').fadeTo('slow', 0.0);
 		
 		if (menu_id == 'menu_photo') {
 			window.location.href=symposium.avatar_url;
@@ -434,8 +433,8 @@ jQuery(document).ready(function() {
 			}),
 		    dataType: "html",
 			success: function(str){
-				jQuery('#profile_body').html(str);
-				jQuery(".symposium_pleasewait").hide();
+				jQuery('#profile_body').hide().html(str).fadeIn("slow");
+				jQuery(".symposium_pleasewait").fadeOut("slow");
 			}
    		});	
 
@@ -496,7 +495,7 @@ jQuery(document).ready(function() {
 				}		
 	   		});		
 			
-			jQuery(".symposium_pleasewait").hide();
+			jQuery(".symposium_pleasewait").fadeOut("slow");
 			
 		}
 	});
@@ -586,12 +585,237 @@ jQuery(document).ready(function() {
 				}
 			},
 			error: function(err){
-				//alert("P2:"+err);
+				//alert("P3:"+err);
 			}		
    		});
    			
    	});		
 	
+	// update settings
+	jQuery("#updateSettingsButton").live('click', function() {
+		jQuery(".symposium_notice").inmiddle().show();
+		
+		if (jQuery("#notify_new_messages").is(":checked")) {
+			var notify_new_messages = 'on';
+		} else {
+			var notify_new_messages = '';
+		}
+		
+		if (jQuery("#notify_new_wall").is(":checked")) {
+			var notify_new_wall = 'on';
+		} else {
+			var notify_new_wall = '';
+		}
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+			type: "POST",
+			data: ({
+				action:"updateSettings",
+				timezone:jQuery("#timezone").val(),
+				sound:jQuery("#sound").val(),
+				soundchat:jQuery("#soundchat").val(),
+				bar_position:jQuery("#bar_position").val(),
+				display_name:jQuery("#display_name").val(),
+				user_email:jQuery("#user_email").val(),
+				notify_new_messages:notify_new_messages,
+				notify_new_wall:notify_new_wall,
+				xyz1:jQuery("#xyz1").val(),
+				xyz2:jQuery("#xyz2").val()
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (str == 'PASSWORD CHANGED') {
+					/* when password changes, have to log in again, can't work out why */
+					window.location.href=window.location.href;
+				}
+				if (str != 'OK') {
+					alert(str);
+				}
+				jQuery(".symposium_notice").fadeOut("slow");
+			},
+			error: function(err){
+				alert("P4:"+err);
+			}		
+   		});
+   			
+   	});		
+
+	// update personal
+	jQuery("#updatePersonalButton").live('click', function() {
+		jQuery(".symposium_notice").inmiddle().show();
+
+		var extended = '';
+
+		jQuery('.eid_value').each(function(index) {
+		    extended += jQuery(this).attr("title") + '[]';
+		    extended += jQuery(this).val() + '[|]';
+		});
+		  		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+			type: "POST",
+			data: ({
+				action:"updatePersonal",
+				dob_day:jQuery("#dob_day").val(),
+				dob_month:jQuery("#dob_month").val(),
+				dob_year:jQuery("#dob_year").val(),
+				city:jQuery("#city").val(),
+				country:jQuery("#country").val(),
+				share:jQuery("#share").val(),
+				wall_share:jQuery("#wall_share").val(),
+				extended:extended
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (str != 'OK') {
+					alert(str);
+				}
+				jQuery(".symposium_notice").fadeOut("slow");
+			},
+			error: function(err){
+				alert("P5:"+err);
+			}		
+   		});
+   			
+   	});			
+	
+	// delete a friend
+	jQuery(".frienddelete").live('click', function() {
+		jQuery(".symposium_notice").inmiddle().show();
+
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+			type: "POST",
+			data: ({
+				action:"deleteFriend",
+				friend:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (str != 'NOT LOGGED IN') {
+					jQuery("#friend_"+str).slideUp("slow");			
+				}
+				jQuery(".symposium_notice").fadeOut("slow");
+			},
+			error: function(err){
+				alert("P6:"+err);
+			}		
+   		});
+   			
+   	});			
+
+	// add a friend request
+	jQuery("#addasfriend").live('click', function() {
+		jQuery(".symposium_notice").inmiddle().show();
+
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+			type: "POST",
+			data: ({
+				action:"addFriend",
+				friend_to:jQuery(this).attr("title"),
+				friend_message:jQuery('#addfriend').val()
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (str != 'NOT LOGGED IN') {
+					jQuery("#addasfriend_done1").hide();
+					jQuery("#addasfriend_done2").slideDown("fast").effect("highlight", {}, 3000);
+				}
+				jQuery(".symposium_notice").fadeOut("slow");
+			},
+			error: function(err){
+				alert("P6:"+err);
+			}		
+   		});
+   			
+   	});			
+
+	// cancel a friend request
+	jQuery("#cancelfriendrequest").live('click', function() {
+		jQuery(".symposium_notice").inmiddle().show();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+			type: "POST",
+			data: ({
+				action:"cancelFriend",
+				friend_to:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (str != 'NOT LOGGED IN') {
+					jQuery("#cancelfriendrequest").hide();
+					jQuery("#cancelfriendrequest_done").slideDown("fast").effect("highlight", {}, 3000);
+				}
+				jQuery(".symposium_notice").fadeOut("slow");
+			},
+			error: function(err){
+				alert("P7:"+err);
+			}		
+   		});
+   			
+   	});			
+
+	// reject a friend request
+	jQuery("#rejectfriendrequest").live('click', function() {
+		jQuery(".symposium_notice").inmiddle().show();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+			type: "POST",
+			data: ({
+				action:"rejectFriend",
+				friend_to:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (str != 'NOT LOGGED IN') {
+					jQuery("#request_"+str).slideUp("slow");
+				}
+				jQuery(".symposium_notice").fadeOut("slow");
+			},
+			error: function(err){
+				alert("P7:"+err);
+			}		
+   		});
+   			
+   	});			
+
+	// reject a friend request
+	jQuery("#acceptfriendrequest").live('click', function() {
+		jQuery(".symposium_notice").inmiddle().show();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+			type: "POST",
+			data: ({
+				action:"acceptFriend",
+				friend_to:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (str != 'NOT LOGGED IN') {
+					jQuery("#request_"+str).slideUp("slow");
+				}
+				jQuery(".symposium_notice").fadeOut("slow");
+			},
+			error: function(err){
+				alert("P7:"+err);
+			}		
+   		});
+   			
+   	});			
+
+
 	/*
 	   +------------------------------------------------------------------------------------------+
 	   |                                          FORUM                                           |
@@ -682,7 +906,7 @@ jQuery(document).ready(function() {
 			}		
    		});
    		
-		jQuery(".symposium_pleasewait").hide();
+		jQuery(".symposium_pleasewait").fadeOut("slow");
 		jQuery("#edit-topic-div").inmiddle().fadeIn();
    	});	 
    	

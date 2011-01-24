@@ -388,6 +388,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'sharing')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'register_message')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'show_profile_menu')) { $status = "X"; }
 
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -1410,10 +1411,12 @@ function symposium_plugin_options() {
 	        $online = $_POST[ 'online' ];
 	        $offline = $_POST[ 'offline' ];
 		    $enable_password = $_POST['enable_password'];
+		    $show_profile_menu = $_POST['show_profile_menu'];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET online = '".$online."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET offline = '".$offline."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET enable_password = '".$enable_password."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET enable_password = '".$enable_password."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_profile_menu = '".$show_profile_menu."'") );
 			
 			// Update extended fields
 	   		if ($_POST['eid'] != '') {
@@ -1752,7 +1755,7 @@ function symposium_plugin_options() {
 					<li>Forum<?php if (function_exists('symposium_forum')) { echo ' (activated)'; } ?></li>
 					<li>Mail/Private Messaging<?php if (function_exists('symposium_mail')) { echo ' (activated) Note: no options tab used'; } ?></li>
 					<li>Member Profile<?php if (function_exists('symposium_profile')) { echo ' (activated)'; } ?></li>
-					<li>Profile Avatar/Photo<?php if (function_exists('symposium_avatar')) { echo ' (activated)'; } ?> <img src="../wp-content/plugins/wp-symposium/images/new.png" alt="New!" /></li>
+					<li>Profile Avatar/Photo<?php if (function_exists('symposium_avatar')) { echo ' (activated)'; } ?></li>
 					<li>Notification Bar<?php if (function_exists('add_notification_bar')) { echo ' (activated)'; } ?></li>
 					<li>Members Directory<?php if (function_exists('symposium_members')) { echo ' (activated) Note: no options tab used'; } ?></li>
 					<li>Login<?php if (function_exists('symposium_login')) { echo ' (activated)'; } ?></li>
@@ -2350,6 +2353,7 @@ function symposium_plugin_options() {
 					$online = $config->online;
 					$offline = $config->offline;
 					$enable_password = $config->enable_password;
+					$show_profile_menu = $config->show_profile_menu;
 					?>
 						
 					<form method="post" action=""> 
@@ -2358,14 +2362,21 @@ function symposium_plugin_options() {
 					<table class="form-table"> 
 				
 					<tr valign="top"> 
-					<th scope="row"><label for="enable_password">Enable Password Change</label></th>
+					<th scope="row"><label for="show_profile_menu"><?php _e('Show Profile Menu', 'wp-symposium'); ?></label></th>
+					<td>
+					<input type="checkbox" name="show_profile_menu" id="show_profile_menu" <?php if ($show_profile_menu == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Include the menu on the profile page', 'wp-symposium'); ?></span></td> 
+					</tr> 
+
+					<tr valign="top"> 
+					<th scope="row"><label for="enable_password"><?php _e('Enable Password Change', 'wp-symposium'); ?></label></th>
 					<td>
 					<input type="checkbox" name="enable_password" id="enable_password" <?php if ($enable_password == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Allow members to change their password', 'wp-symposium'); ?></span></td> 
 					</tr> 
 
 					<tr valign="top"> 
-					<th scope="row"><label for="online">Inactivity period</label></th> 
+					<th scope="row"><label for="online"><?php _e('Inactivity period', 'wp-symposium'); ?></label></th> 
 					<td><input name="online" type="text" id="online"  value="<?php echo $online; ?>" /> 
 					<span class="description"><?php echo __('How many minutes before a member is assumed off-line', 'wp-symposium'); ?></td> 
 					</tr> 
@@ -2377,7 +2388,7 @@ function symposium_plugin_options() {
 					</tr> 
 					
 					<tr valign="top"> 
-					<th scope="row"><label for="offline">Extended Fields</label></th><td>
+					<th scope="row"><label for="offline"><?php _e('Extended Fields', 'wp-symposium'); ?></label></th><td>
 					<?php
 					echo '<table class="widefat">';
 					echo '<thead>';
@@ -2435,8 +2446,6 @@ function symposium_plugin_options() {
 					echo '</tr>';
 					echo '<tr><td colspan="4"><span class="description">For lists, enter all the values separated by commas as the default value - the first value is the default choice.';
 					echo '<br />Members extended field values are blank until they save them for the first time.';
-					echo '<br />If you rename a field, all values for that field will be lost (can be retrieved by renaming it back).';
-					echo '<br />Field names must be unique.</span></td></tr>';
 					echo '</tbody>';
 					echo '</thead>';
 					echo '</table>';

@@ -58,7 +58,11 @@ WISH LIST
 - paying/subscriptions
 - Is there a shortcode for Friends Activity? That's what I'd like my Activity page to default to.
 - Option to get members to confirm registration via email
+- Minimum level for categories
 
 FIX
 
+- safari notification bar showing/location???
 - in box tab shows when replying, will sort something
+
+- Hi Simon. I just noticed a small bug in the Extended Fields text boxes. Go to your personal info page and look at the "A few words about me..." text box, only the first word of what was entered is pulled from the DB
