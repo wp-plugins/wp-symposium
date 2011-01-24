@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.29.3
+Version: 0.1.29.4
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -87,7 +87,7 @@ function symposium_forum() {
 	if (isset($_POST['cid'])) { $cat_id = $_POST['cid']; }
 	
 	// Wrapper
-	$html .= "<div id='symposium-wrapper' style='z-index:900000;'>";
+	$html .= "<div id='symposium-wrapper'>";
 
 		// default message
 		$msg = "";
@@ -149,51 +149,51 @@ function symposium_forum() {
 			$pageURL = $thispage."?cid=".$topic."%26show=".$show;
 			$title = get_bloginfo();
 
-			$html .= "<div style='clear:both;height: 22px;' id='share_link' class='floatright'>";
+			$html .= "<div id='share_link' class='floatright'>";
 				// MySpace
 				if (!(strpos($config->sharing, "ms") === FALSE)) {
-					$html .= "<div style='margin-left: 5px;' class='floatright'>";
+					$html .= "<div class='floatright'>";
 					$html .= "<a target='_blank' title='".__('Share on MySpace', 'wp-symposium')."' href='http://www.myspace.com/Modules/PostTo/Pages/?u=".$pageURL."&t=".$title."'>";
 					$html .= "<img src='".$plugin."images/myspace-icon.gif' style='height:22px; width:22px' alt='MySpace icon' /></a>";
 					$html .= "</div>";
 				}
 				// LinkedIn
 				if (!(strpos($config->sharing, "li") === FALSE)) {
-					$html .= "<div style='margin-left: 5px;' class='floatright'>";
+					$html .= "<div class='floatright'>";
 					$html .= "<a target='_blank' title='".__('Share on LinkedIn', 'wp-symposium')."' href='http://www.linkedin.com/shareArticle?mini=true&url=".$pageURL."&title=".$title."'>";
 					$html .= "<img src='".$plugin."images/linkedin-icon.gif' style='height:22px; width:22px' alt='LinkedIn icon' /></a>";
 					$html .= "</div>";
 				}
 				// Bebo
 				if (!(strpos($config->sharing, "be") === FALSE)) {
-					$html .= "<div style='margin-left: 5px;' class='floatright'>";
+					$html .= "<div class='floatright'>";
 					$html .= "<a target='_blank' title='".__('Share on Bebo', 'wp-symposium')."' href='http://www.bebo.com/c/share?Url=".$pageURL."&Title=".$title."'>";
 					$html .= "<img src='".$plugin."images/bebo-icon.gif' style='height:22px; width:22px' alt='Bebo icon' /></a>";
 					$html .= "</div>";
 				}
 				// Twitter
 				if (!(strpos($config->sharing, "tw") === FALSE)) {
-					$html .= "<div style='margin-left: 5px;' class='floatright'>";
+					$html .= "<div class='floatright'>";
 					$html .= "<a target='_blank' title='".__('Share on Twitter', 'wp-symposium')."' href='http://twitter.com/home?status=".$pageURL."'>";
 					$html .= "<img src='".$plugin."images/twitter-icon.gif' style='height:22px; width:22px' alt='Twitter icon' /></a>";
 					$html .= "</div>";
 				}
 				// Facebook
 				if (!(strpos($config->sharing, "fb") === FALSE)) {
-					$html .= "<div style='margin-left: 5px;' class='floatright'>";
+					$html .= "<div class='floatright'>";
 					$html .= "<a target='_blank' title='".__('Share on Facebook', 'wp-symposium')."' href='http://www.facebook.com/share.php?u=".$pageURL."&t=".$title."'>";
 					$html .= "<img src='".$plugin."images/facebook-icon.gif' style='height:22px; width:22px' alt='Facebook icon' /></a>";
 					$html .= "</div>";
 				}
 				// Email
 				if (!(strpos($config->sharing, "em") === FALSE)) {
-					$html .= "<div style='margin-left: 5px;' class='floatright'>";
+					$html .= "<div class='floatright'>";
 					$html .= "<a title='".__('Share via email', 'wp-symposium')."' href='mailto:%20?subject=".str_replace(" ", "%20", $title)."&body=".$pageURL."'>";
 					$html .= "<img src='".$plugin."images/email-icon.gif' style='height:22px; width:22px' alt='Email icon' /></a>";
 					$html .= "</div>";					
 				}
 
-				$html .= "<div id='share_label' style='display:none; margin-left: 5px;' class='floatright'>".__('Share: ', 'wp-symposium')."</div>";
+				$html .= "<div id='share_label' class='floatright'>".__('Share: ', 'wp-symposium')."</div>";
 			$html .= "</div>";
 		}
 	
@@ -224,7 +224,7 @@ function symposium_forum() {
 					if ($wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d", $show_tid)) == "on") {
 						$html .= "<li id='reply-topic-link'>".__("Add a Reply", "wp-symposium")."</li>";
 					} else {
-						$html .= '<p class="label"><img src="'.$plugin.'images/padlock.gif" alt="Replies locked" /> Replies are not allowed for this topic.</p>';
+						$html .= '<p class="label"><img src="'.$plugin.'images/padlock.gif" alt="Replies locked" /> '.__("Replies are not allowed for this topic", "wp-symposium").'.</p>';
 	
 					}
 				}
@@ -258,7 +258,7 @@ function symposium_forum() {
 							$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats WHERE allow_new = "on" ORDER BY listorder');			
 						}
 						if ($categories) {
-							$html .= '<select name="new_topic_category" style="width: 200px">';
+							$html .= '<select name="new_topic_category" id="new_topic_category">';
 							foreach ($categories as $category) {
 								$html .= '<option value='.$category->cid;
 								if ($cat_id > 0) {
@@ -328,7 +328,7 @@ function symposium_forum() {
 						$html .= "<input type='checkbox' id='symposium_digest' name='symposium_digest'";
 						if ($forum_digest == 'on') { $html .= ' checked'; } 
 						$html .= "> ".__("Receive digests via email", "wp-symposium");
-						$html .= "</div><br />";
+						$html .= "</div>";
 					}
 					if ($cat_id > 0) {
 						$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = 0 AND cid = %d AND uid = %d", $cat_id, $current_user->ID));
@@ -381,7 +381,7 @@ function symposium_forum() {
 									WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = %d ORDER BY topic_date DESC", $current_user->ID, $last_topic->tid)); 
 												
 									if ($reply) {
-										$html .= "<div class='avatar' style='margin-right:5px;margin-bottom:0px; padding-bottom: 0px;'>";
+										$html .= "<div class='avatar avatar_last_topic'>";
 											$html .= get_user_avatar($reply->topic_owner, 32);
 										$html .= "</div>";
 										$html .= symposium_profile_link($reply->topic_owner)." ".__("replied to", "wp-symposium")." ";
@@ -389,7 +389,7 @@ function symposium_forum() {
 										$html .= symposium_time_ago($reply->topic_date).".";
 										if ($reply->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 									} else {
-										$html .= "<div class='avatar' style='margin-right:5px;margin-bottom:0px; padding-bottom: 0px;'>";
+										$html .= "<div class='avatar avatar_last_topic'>";
 											$html .= get_user_avatar($last_topic->topic_owner, 32);
 										$html .= "</div>";
 										$html .= symposium_profile_link($last_topic->topic_owner)." ".__("started", "wp-symposium")." ";
@@ -401,12 +401,12 @@ function symposium_forum() {
 							$html .= "</div>";
 							
 							// Posts
-							$html .= "<div class='row_views row_views'>";
+							$html .= "<div class='row_views'>";
 							$post_count = $wpdb->get_var($wpdb->prepare("SELECT count(*) FROM ".$topics." t INNER JOIN ".$topics." u ON u.topic_parent = t.tid WHERE t.topic_parent = 0 AND (t.topic_approved = 'on' OR t.topic_owner = %d) AND t.topic_category = %d", $current_user->ID, $category->cid));
 	
 							if ($post_count) { 
-								$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$post_count."</div>";
-								$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
+								$html .= "<div class='row_link post_count' style='color:".$text_color.";'>".$post_count."</div>";
+								$html .= "<div style='color:".$text_color.";' class='post_count_label'>";
 								if ($post_count > 1) {
 									$html .= __("POSTS", "wp-symposium");
 								} else {
@@ -419,8 +419,8 @@ function symposium_forum() {
 							// Topic Count
 							$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$topics." WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = 0 AND topic_category = %d", $current_user->ID, $category->cid));
 							$html .= "<div class='row_topic row_replies'>";
-							$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$topic_count."</div>";
-							$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
+							$html .= "<div class='row_link post_count' style='color:".$text_color.";'>".$topic_count."</div>";
+							$html .= "<div style='color:".$text_color.";' class='post_count_label'>";
 							if ($topic_count != 1) {
 								$html .= __("TOPICS", "wp-symposium");
 							} else {
@@ -430,10 +430,10 @@ function symposium_forum() {
 							$html .= "</div>";
 	
 							// Category title
-							$html .= '<div style="padding-left:8px;padding-top:13px">';
+							$html .= '<div class="category_title">';
 							$html .= '<a class="backto row_link" href="'.$thispage.symposium_permalink($category->cid, "category").$q.'cid='.$category->cid.'">'.stripslashes($category->title).'</a>';
 							$subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE cid = %d AND uid = %d", $category->cid, $current_user->ID));
-							if ($subscribed > 0) { $html .= ' <img src="'.$plugin.'images/orange-tick.gif" alt="Subscribed" />'; } 
+							if ($subscribed > 0) { $html .= ' <img src="'.$plugin.'images/orange-tick.gif" alt="'.__('Subscribed', 'wp-symposium').'" />'; } 
 							$html .= '</div>';
 	
 													
@@ -453,7 +453,7 @@ function symposium_forum() {
 					$html .= "<div class='table_header'>";
 					if ($use_categories == "on") {
 						$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = %d", $cat_id));
-						$html .= "<div class='table_topic'><a style='color:".$categories_color."; text-decoration:none;' href='".get_permalink()."'>".stripslashes($category_title)."</a></div>";
+						$html .= "<div class='table_topic'><a style='color:".$categories_color.";' href='".get_permalink()."'>".stripslashes($category_title)."</a></div>";
 					} else {
 						$html .= "<div class='table_topic'>".stripslashes(__("TOPIC", "wp-symposium"))."</div>";
 					}
@@ -512,7 +512,7 @@ function symposium_forum() {
 									FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
 									WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = %d ORDER BY tid DESC", $current_user->ID, $topic->tid)); 
 								if ( $last_post ) {
-									$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 5px;'>";
+									$html .= "<div class='avatar avatar_last_topic'>";
 										$html .= get_user_avatar($last_post->topic_owner, 32);
 									$html .= "</div>";
 									$html .= __("Last reply by", "wp-symposium")." ".symposium_profile_link($last_post->topic_owner);
@@ -522,7 +522,7 @@ function symposium_forum() {
 									$html .= "<br /><span class='row_topic_text'>".$post."</span>";
 									if ($last_post->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 								} else {
-									$html .= "<div class='avatar' style='margin-bottom:0px; margin-right: 5px;'>";
+									$html .= "<div class='avatar avatar_last_topic'>";
 										$html .= get_user_avatar($topic->topic_owner, 32);
 									$html .= "</div>";
 									$html .= __("Started by", "wp-symposium")." ".symposium_profile_link($topic->topic_owner);
@@ -533,15 +533,15 @@ function symposium_forum() {
 								// Views
 								$html .= "<div class='row_views'>";
 								if ($reply_views) { 
-									$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$reply_views."</div>";
-									$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>".__("VIEWS", "wp-symposium")."</div>";
+									$html .= "<div class='row_link post_count' style='color:".$text_color.";'>".$reply_views."</div>";
+									$html .= "<div style='color:".$text_color.";' class='post_count_label'>".__("VIEWS", "wp-symposium")."</div>";
 								}
 								$html .= "</div>";
 								
 								// Replies
 								$html .= "<div class='row_replies'>";
-								$html .= "<div class='row_link' style='color:".$text_color."; margin-top:4px;font-weight: bold;'>".$replies."</div>";
-								$html .= "<div style='color:".$text_color."; margin-top:-4px;font-size:8px;'>";
+								$html .= "<div class='row_link post_count' style='color:".$text_color.";'>".$replies."</div>";
+								$html .= "<div style='color:".$text_color.";' class='post_count_label'>";
 								if ($replies != 1) {
 									$html .= __("REPLIES", "wp-symposium");
 								} else {
@@ -551,7 +551,7 @@ function symposium_forum() {
 								$html .= "</div>";
 	
 								// Topic Title		
-								$html .= "<div class='row_topic' style='padding:10px'>";
+								$html .= "<div class='row_topic'>";
 								$html .= '<div class="row_link_div"><a href="'.$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($topic->topic_subject).'</a>';
 								if ($topic->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 								if (is_user_logged_in()) {
@@ -753,11 +753,12 @@ function symposium_forum() {
 			if ($viewer == "Subscriber") {
 				$html .= "<p>".__("Sorry, this forum can only be used by registered members. :(", "wp-symposium")."</p>";
 			} else {
-				$html .= "<p>".__(sprintf("Sorry, the minimum user level for this forum is %s. :(", $viewer), "wp-symposium")."</p>";
+				$html .= "<p>".sprintf(__("Sorry, the minimum user level for this forum is %s. :(", "wp-symposium"), $viewer)."</p>";
 			}
 		}			
-		
-		$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
+
+		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.		
+		$html .= powered_by_wps();
 		
 	// End Wrapper
 	$html .= "</div>";

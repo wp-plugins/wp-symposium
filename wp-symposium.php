@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.29.3
+Version: 0.1.29.4
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -173,7 +173,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.29.3";
+	$symposium_version = "0.1.29.4";
 	$symposium_db_ver = 29;
 	
 	// Code version *************************************************************************************
@@ -750,8 +750,8 @@ function add_symposium_stylesheet() {
 	    $myStyleUrl = get_bloginfo('stylesheet_directory')."/my-symposium.css";
 	    $myStyleFile = TEMPLATEPATH."/my-symposium.css";
 	    if ( file_exists($myStyleFile) ) {
-	        wp_register_style('symposium_StyleSheet', $myStyleUrl);
-	        wp_enqueue_style('symposium_StyleSheet');
+	        wp_register_style('symposium_my-StyleSheet', $myStyleUrl);
+	        wp_enqueue_style('symposium_my-StyleSheet');
 	    }
 	    
 	    // Load other CSS's

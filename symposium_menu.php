@@ -140,7 +140,7 @@ function symposium_plugin_menu() {
 	add_submenu_page('symposium_options', __('Styles', 'wp-symposium'), __('Styles', 'wp-symposium'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
 	if (function_exists('symposium_forum')) {
 		add_submenu_page('symposium_options', __('Forum Categories', 'wp-symposium'), __('Forum Categories', 'wp-symposium'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
-		add_submenu_page('symposium_options', __('Forum Posts', 'wp-symposium'), __(sprintf('Forum Posts %s', $count2), 'wp-symposium'), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
+		add_submenu_page('symposium_options', __('Forum Posts', 'wp-symposium'), sprintf(__('Forum Posts %s', 'wp-symposium'), $count2), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
 	}
 	add_submenu_page('symposium_options', __('Health Check', 'wp-symposium'), __('Health Check', 'wp-symposium'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
 }
@@ -1298,7 +1298,7 @@ function symposium_plugin_styles() {
 		 
 		<p class="submit">
 		<p>NB. If changes don't follow the above, you may be overriding them with your own stylesheet.</p>
-		<input type="submit" name="Submit" class="button-primary" value="<?php _e('Apply Changes', 'wp-symposium') ?> /> 
+		<input type="submit" name="Submit" class="button-primary" value="<?php _e('Apply Changes', 'wp-symposium') ?>" /> 
 		</p> 
 		</form> 
 

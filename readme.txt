@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.29.3
+Stable tag: 0.1.29.4
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -321,6 +321,13 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.29.4 =
+
+* Core: several improvements to use of gettext
+* Core: Further removal of CSS from code to stylesheet
+* Forum: Changed stylesheet to handle narrow template design
+* Profile: Changed stylesheet to handle narrow template design
 
 = 0.1.29.3 = 
 

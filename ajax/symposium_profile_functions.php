@@ -548,7 +548,7 @@ if ($_POST['action'] == 'addComment') {
 					if ($current_user->ID == $uid) {
 						$body = "<p>".$current_user->display_name." ".__('has added a new status to their wall', 'wp-symposium').":</p>";
 					} else {
-						$body = "<p>".$current_user->display_name." ".__(sprintf("has added a new post to %s's wall", $subject_name), "wp-symposium").":</p>";
+						$body = "<p>".$current_user->display_name." ".sprintf(__("has added a new post to %s's wall", "wp-symposium"), $subject_name).":</p>";
 					}
 				} else {
 					$email_subject = __('New Wall Reply', 'wp-symposium');

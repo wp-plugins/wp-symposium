@@ -1,4 +1,18 @@
+/*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
 
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License, version 2, as 
+    published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 
 
 #symposium-wrapper #topic-links
@@ -130,126 +144,6 @@
 }
 
 
-
-/* Forum */
-
-#symposium-wrapper .symposium_subscribe_option
-{
-	float: right;
-	margin-top: -10px;
-}
-
-#symposium-wrapper #symposium_table
-{
-	border: 1px solid #990;
-	width: 100%;
-	margin-top: 10px;
-	overflow: auto;
-}
-#symposium-wrapper .table_topic, #symposium-wrapper .row_topic
-{
-	border-radius: 0px;
-}
-
-#symposium-wrapper .table_topic
-{
-	float: left;
-	font-weight: bold;
-	font-size: 20px;
-}
-
-#symposium-wrapper .table_startedby, #symposium-wrapper .row_startedby
-{
-	float: right;
-	margin-left: 15px;
-	width: 350px;
-	border-radius: 0px;
-}
-
-#symposium-wrapper .table_replies, #symposium-wrapper .row_replies
-{
-	float: right;
-	width: 60px;
-	border-radius: 0px;
-	text-align: center;
-}
-
-#symposium-wrapper .table_views, #symposium-wrapper .row_views
-{
-	border-radius: 0px;
-	float: right;
-	width: 60px;
-	text-align: center;
-}
-
-#symposium-wrapper .table_header
-{
-	clear: both;
-	width: 100%;
-	overflow: auto;
-}
-#symposium-wrapper .table_topic, #symposium-wrapper .table_startedby, #symposium-wrapper .table_replies, #symposium-wrapper .table_views 
-{
-	font-weight: bold;
-	padding: 8px;
-	color: #fff;
-	width: 80%;
-}
-#symposium-wrapper .row
-{
-	clear: both;
-	overflow: auto;
-	border-radius: 0px;
-	background-color: #ffc;
-}
-#symposium-wrapper .row_odd
-{
-	clear: both;
-	overflow: auto;
-	border-radius: 0px;
-	background-color: #ffd;
-}
-#symposium-wrapper .row:hover, #symposium-wrapper .row_odd:hover
-{
-	background-color: #fff;
-}
-
-#symposium-wrapper .row_topic, #symposium-wrapper .row_startedby, #symposium-wrapper .row_replies, #symposium-wrapper .row_views
-{
-	border-top: 0px;
-	font-weight: normal;
-	padding: 6px;
-}
-#symposium-wrapper .row_link_div
-{
-	margin-bottom: 5px;
-}
-#symposium-wrapper .row_link
-{
-	font-weight: bold;
-	font-size: 20px;
-}
-#symposium-wrapper .row_link_topic
-{
-	font-weight: bold;
-}
-#symposium-wrapper .row_link:hover, #symposium-wrapper .row_link_topic:hover
-{
-	text-decoration: underline;
-}
-#symposium-wrapper .row_topic_text
-{
-	font-style: italic;
-}
-
-#symposium-wrapper .categories_color {
-	color: #fff;
-}
-#symposium-wrapper .categories_background {
-	background-color: #fff;
-	padding: 6px;
-	border-radius: 0;
-}
 
 #symposium-wrapper .delete, #symposium-wrapper .delete_post, #symposium-wrapper .edit {
 	float: right;
@@ -439,6 +333,14 @@
 	padding: 2px;
 	border: 1px solid black;
 	margin-left: 2px;
+}
+
+/* Powered by */
+#powered_by_wps {
+	width:100%;
+	font-style:italic; 
+	font-size: 10px;
+	text-align:center;
 }
 
 /* Buttons */
@@ -774,4 +676,163 @@
 	margin-bottom: 10px;
 }
 
+/* FORUM =============================================================== */
 
+#symposium-wrapper #share_link {
+	clear:both;
+	height: 22px;
+}
+
+#symposium-wrapper #share_link div {
+	margin-left: 5px;
+}
+
+#symposium-wrapper #share_label {
+	display:none; 
+	margin-left: 5px;
+}
+
+#symposium-wrapper #new_topic_category {
+	width: 200px;
+}
+
+#symposium-wrapper .table_header
+{
+	clear: both;
+	width: 100%;
+	overflow: auto;
+}
+#symposium-wrapper .table_topic, #symposium-wrapper .table_startedby, #symposium-wrapper .table_replies, #symposium-wrapper .table_views 
+{
+	font-weight: bold;
+	padding: 8px;
+	color: #fff;
+	width: 80%;
+}
+#symposium-wrapper .row
+{
+	clear: both;
+	overflow: auto;
+	border-radius: 0px;
+	background-color: #ffc;
+}
+#symposium-wrapper .row_odd
+{
+	clear: both;
+	overflow: auto;
+	border-radius: 0px;
+	background-color: #ffd;
+}
+#symposium-wrapper .row:hover, #symposium-wrapper .row_odd:hover
+{
+	background-color: #fff;
+}
+
+#symposium-wrapper .row_topic, #symposium-wrapper .row_startedby, #symposium-wrapper .row_replies, #symposium-wrapper .row_views
+{
+	border-top: 0px;
+	font-weight: normal;
+	padding: 6px;
+}
+#symposium-wrapper .row_link_div
+{
+	margin-bottom: 5px;
+}
+#symposium-wrapper .row_link
+{
+	font-weight: bold;
+	font-size: 20px;
+}
+#symposium-wrapper .row_link_topic
+{
+	font-weight: bold;
+}
+#symposium-wrapper .row_link:hover, #symposium-wrapper .row_link_topic:hover
+{
+	text-decoration: underline;
+}
+#symposium-wrapper .row_topic_text
+{
+	font-style: italic;
+}
+
+#symposium-wrapper .categories_color {
+	color: #fff;
+}
+#symposium-wrapper .categories_background {
+	background-color: #fff;
+	padding: 6px;
+	border-radius: 0;
+}
+
+#symposium-wrapper .symposium_subscribe_option
+{
+	clear: both;
+	float: right;
+	margin-top: -10px;
+}
+
+#symposium-wrapper #symposium_table
+{
+	border: 1px solid #990;
+	width: 100%;
+	margin-top: 10px;
+	overflow: auto;
+}
+#symposium-wrapper .table_topic, #symposium-wrapper .row_topic
+{
+	border-radius: 0px;
+}
+
+#symposium-wrapper .table_topic
+{
+ 	text-decoration:none;
+ 	float: left;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+#symposium-wrapper .table_startedby, #symposium-wrapper .row_startedby
+{
+	float: right;
+	margin-left: 15px;
+	width: 40%;
+	border-radius: 0px;
+}
+
+#symposium-wrapper .table_replies, #symposium-wrapper .row_replies
+{
+	float: right;
+	width: 60px;
+	border-radius: 0px;
+	text-align: center;
+}
+
+#symposium-wrapper .table_views, #symposium-wrapper .row_views
+{
+	border-radius: 0px;
+	float: right;
+	width: 60px;
+	text-align: center;
+}
+
+#symposium-wrapper .avatar_last_topic {
+	margin-right:5px;
+	margin-bottom:0px; 
+	padding-bottom: 0px;
+}
+
+#symposium-wrapper .post_count {
+	margin-top:4px;
+	font-weight: bold;
+}
+
+#symposium-wrapper .post_count_label {
+	margin-top:-4px;
+	font-size:8px;
+}
+
+#symposium-wrapper .category_title {
+	padding-left:8px;
+	padding-top:13px;
+}

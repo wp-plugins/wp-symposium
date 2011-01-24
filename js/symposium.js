@@ -42,7 +42,11 @@ jQuery(document).ready(function() {
 		    'folder' 	: '/wp-content/plugins/wp-symposium/uploads',
 		    'auto'      : true,
 			'onComplete': function(event, queueID, fileObj, response, data) { 
-				window.location.href=symposium.avatar_url+"?crop=y&img="+fileObj['name'];
+				if (symposium.avatar_url.indexOf('?') > 0) {
+					window.location.href=symposium.avatar_url+"&crop=y&img="+fileObj['name'];
+				} else {
+					window.location.href=symposium.avatar_url+"?crop=y&img="+fileObj['name'];
+				}
 			}
 	   	});
 		  

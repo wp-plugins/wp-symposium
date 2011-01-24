@@ -32,11 +32,11 @@ CSS
 - register (done)
 - login (done)
 - bar (done)
+- forum (done)
 - mail
 - profile
 - avatar
 - members
-- forum
 
 CODEX
 
@@ -61,4 +61,4 @@ WISH LIST
 
 FIX
 
-
+- in box tab shows when replying, will sort something

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile], [symposium-settings], [symposium-personal] or [symposium-friends] on any WordPress page to display.
-Version: 0.1.29.3
+Version: 0.1.29.4
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -171,8 +171,8 @@ function symposium_profile()
 		$html .= "</div>";
 				
 		
-		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-		$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
+		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.		
+		$html .= powered_by_wps();
 	
 
 	$html .= "</div>";

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Members Directory
 Plugin URI: http://www.wpsymposium.com
 Description: Directory component for the Symposium suite of plug-ins. Put [symposium-members] on any WordPress page.
-Version: 0.1.29.3
+Version: 0.1.29.4
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -145,7 +145,7 @@ function symposium_members() {
 		}
 	
 		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-		$html .= "<div style='width:100%;font-style:italic; font-size: 10px;text-align:center;'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
+		$html .= powered_by_wps();
 		
 	$html .= '</div>'; // End of Wrapper
 	
