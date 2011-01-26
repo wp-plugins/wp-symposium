@@ -1453,18 +1453,40 @@ function symposium_plugin_options() {
 			        	) 
 			        ) );			        
 			}
-						
+			
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>".__('Member Profile options saved', 'wp-symposium').".</p></div>";
 			
 	    }
+
+		// Delete an extended field?
+   		if ($_GET['del_eid'] != '') {
+			$wpdb->query( $wpdb->prepare( "
+				DELETE FROM ".$wpdb->prefix.'symposium_extended'." WHERE eid = %d", 
+		        $_GET['del_eid']  ) );
+		        
+		    // Loop through all users
+			$users = $wpdb->get_results("SELECT uid, extended from ".$wpdb->prefix."symposium_usermeta");
+			foreach ($users as $user) {
+				$tmp = '';
+				$fields = explode('[|]', $user->extended);
+				foreach ($fields as $field) {
+					$split = explode('[]', $field);
+					if ( ($split[0] != $_GET['del_eid']) && ($split[0] != '') ) {
+						$tmp .= $split[0]."[]".$split[1]."[|]";
+					}
+				}
+				update_symposium_meta($user->uid, 'extended', "'".$tmp."'");
+			}
+		}						
 
 	    // See if the user has posted registration settings
 	    if( $_POST[ 'symposium_update' ] == 'R' ) {
 	        $register_use_sum = $_POST[ 'register_use_sum' ];
 	        $register_message = $_POST[ 'register_message' ];
 
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_use_sum = '".$register_use_sum."'") );						$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_message = '".$register_message."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_use_sum = '".$register_use_sum."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_message = '".$register_message."'") );					
 									
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>".__('Registration options saved', 'wp-symposium').".</p></div>";
@@ -2397,6 +2419,7 @@ function symposium_plugin_options() {
 					echo '<th>Name</th>';
 					echo '<th>Type</th>';
 					echo '<th>Default Value</th>';
+					echo '<th style="width:30px">&nbsp;</th>';
 					echo '</tr>';
 					echo '</thead>';
 					echo '<tbody>';
@@ -2424,6 +2447,9 @@ function symposium_plugin_options() {
 								echo '<td>';
 								echo '<input type="text" name="default[]" value="'.$extension->extended_default.'" />';
 								echo '</td>';
+								echo '<td>';
+								echo "<a href='admin.php?page=symposium_options&view=profile&del_eid=".$extension->eid."' class='delete'>".__('Delete', 'wp-symposium')."</a>";
+								echo '</td>';
 							echo '</tr>';
 						}
 					}
@@ -2442,6 +2468,8 @@ function symposium_plugin_options() {
 						echo '</td>';
 						echo '<td><p>&nbsp;</p>';
 						echo '<input type="text" name="new_default" onclick="javascript:this.value = \'\'" value="" />';
+						echo '</td>';
+						echo '<td>&nbsp;';
 						echo '</td>';
 					echo '</tr>';
 					echo '<tr><td colspan="4"><span class="description">For lists, enter all the values separated by commas as the default value - the first value is the default choice.';

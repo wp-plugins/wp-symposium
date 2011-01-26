@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.1.30
+Version: 0.1.30.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -69,7 +69,7 @@ function symposium_mail() {
 			$compose_active = 'inactive';
 			$view = "sent";
 		} 
-		if ( !isset($_GET['view'])  || ($_GET['view'] == "in") ) {
+		if ( !isset($_GET['view']) || ($_GET['view'] == "in") || (isset($_POST['compose_recipient'])) ) {
 			$inbox_active = 'active';
 			$sent_active = 'inactive';
 			$compose_active = 'inactive';
@@ -79,7 +79,7 @@ function symposium_mail() {
 			$inbox_active = 'inactive';
 			$sent_active = 'inactive';
 			$compose_active = 'active';
-			$view = "compose";
+			$view = "in";
 		} 
 			
 		$user_level = symposium_get_current_userlevel();
@@ -153,7 +153,7 @@ function symposium_mail() {
 		// Get mail id worked out with default message before tabs to include correct unread count
 		$show = $_GET['show'];
 		if (!isset($_GET['show'])) {
-			if ($view == "in") {
+			if ($view == "in" || $view == "result") {
 				$show = $wpdb->get_var("SELECT mail_mid FROM ".$wpdb->prefix."symposium_mail WHERE mail_in_deleted != 'on' AND mail_to = ".$current_user->ID." ORDER BY mail_mid DESC LIMIT 0,1");
 			} else {
 				$show = $wpdb->get_var("SELECT mail_mid FROM ".$wpdb->prefix."symposium_mail WHERE mail_sent_deleted != 'on' AND mail_from = ".$current_user->ID." ORDER BY mail_mid DESC LIMIT 0,1");
@@ -179,8 +179,8 @@ function symposium_mail() {
 			// Show result
 			if ($view == "result") {
 				
-				$html .= '<p><br />'.$mail_sent_result.'</p>';
-				$view = "compose";
+				$html .= '<div id="mail_sent" style="padding:10px; width:80%; text-align:center; margin:6px auto;">'.$mail_sent_result.'</div>';
+				$view = "in";
 				
 			}
 			
@@ -261,6 +261,7 @@ function symposium_mail() {
 				// Get list of inbox messages
 				$html .= "<div id='inbox' style='float:left;width:300px;margin-left:-100%;'>";
 				$mail = $wpdb->get_results("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->prefix."users u ON m.mail_from = u.ID WHERE mail_in_deleted != 'on' AND mail_to = ".$current_user->ID." ORDER BY mail_mid DESC");
+
 				if ($mail) {
 					foreach ($mail as $item)
 					{

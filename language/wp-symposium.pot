@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP Symposium v0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-24 09:07+0100\n"
-"PO-Revision-Date: 2011-01-24 09:07+0100\n"
+"POT-Creation-Date: 2011-01-26 22:05+0100\n"
+"PO-Revision-Date: 2011-01-26 22:05+0100\n"
 "Last-Translator: Simon Goodchild <info@wpsymposium.com>\n"
 "Language-Team: WP Symposium <info@wp-symposium.com>\n"
 "MIME-Version: 1.0\n"
@@ -124,7 +124,7 @@ msgid "Max length of preview"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_avatar.php:38
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:58
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:79
 msgid "Profile Photo"
 msgstr ""
 
@@ -149,32 +149,32 @@ msgstr ""
 msgid "Go to Mail"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:173
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:172
 msgid "Logged in as"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:189
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:191
 msgid "Log out"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:196
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:198
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:200
 msgid "Login"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:204
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:206
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_login.php:79
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_login.php:81
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1704
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1726
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_register.php:97
 msgid "Register"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:223
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:225
 msgid "Close"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:224
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_bar.php:226
 msgid "Friends Status"
 msgstr ""
 
@@ -257,7 +257,7 @@ msgid "Email me when I get any replies"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_forum.php:280
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:421
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:382
 msgid "Post"
 msgstr ""
 
@@ -279,7 +279,7 @@ msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_forum.php:303
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_forum.php:744
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:631
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:592
 msgid "Reply"
 msgstr ""
 
@@ -355,10 +355,11 @@ msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_forum.php:566
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_forum.php:703
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:453
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:496
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:621
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:414
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:457
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:582
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:895
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2451
 msgid "Delete"
 msgstr ""
 
@@ -379,7 +380,7 @@ msgid "Select"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_forum.php:623
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:271
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:293
 msgid "Update"
 msgstr ""
 
@@ -435,229 +436,252 @@ msgstr ""
 msgid "Moderation required for a reply"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:44
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:48
+msgid "My Profile"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:50
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1729
+msgid "Profile"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:55
+msgid "My Wall"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:56
+msgid "My Friends Activity"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:58
 msgid "Wall"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:45
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:59
 msgid "Friends Activity"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:46
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:61
 msgid "All Activity"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:60
-msgid "Preferences"
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:72
+msgid "My Friends"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:61
-msgid "Personal"
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:62
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:142
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:74
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:481
 msgid "Friends"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:102
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:81
+msgid "Preferences"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:82
+msgid "Personal"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:133
 msgid "Friend Requests"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:119
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:146
 msgid "Reject"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:127
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:149
 msgid "Accept"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:157
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:183
 msgid "Logged out"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:157
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:160
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:162
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:402
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:183
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:186
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:188
 msgid "Last active"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:160
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:186
 msgid "Offline"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:172
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:194
 msgid "Remove"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:177
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:199
 msgid "Send Mail"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:243
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:265
 msgid "January"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:244
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:266
 msgid "February"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:245
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:267
 msgid "March"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:246
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:268
 msgid "April"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:247
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:269
 msgid "May"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:248
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:270
 msgid "June"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:249
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:271
 msgid "July"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:250
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:272
 msgid "August"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:251
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:273
 msgid "September"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:252
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:274
 msgid "October"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:253
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:275
 msgid "November"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:254
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:276
 msgid "December"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:256
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:278
 #, php-format
 msgid "Born %s %d, %d."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:270
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:292
 msgid "What's on your mind?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:287
-msgid "Friend Request Sent"
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:309
+msgid "Cancel Friend Request"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:296
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:302
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:310
+msgid "Friend Request Cancelled"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:314
 msgid "Add as a Friend"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:301
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:316
 msgid "Add a personal message..."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:389
-msgid "Recently Active Friends"
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:420
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:514
-msgid "Write a comment"
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:516
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:317
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:477
 msgid "Add"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:538
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:542
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:319
+msgid "Friend Request Sent"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:381
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:475
+msgid "Write a comment"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:499
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:503
 msgid "Sorry, this member's activity is only available if you are a friend."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:638
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:599
 msgid "From"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:640
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:601
 msgid "To"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:986
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:947
 msgid "decade"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1001
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:962
 msgid "year"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1002
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:963
 msgid "years"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1003
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:964
 msgid "month"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1004
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:965
 msgid "months"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1005
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:966
 msgid "week"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1006
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:967
 msgid "weeks"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1007
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:968
 msgid "day"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1008
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:969
 msgid "days"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1009
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:970
 msgid "hour"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1010
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:971
 msgid "hours"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1011
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:972
 msgid "minute"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1012
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:973
 msgid "minutes"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1013
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:974
 msgid "second"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1014
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:975
 msgid "seconds"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1021
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:982
 #, php-format
 msgid "%s ago"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1079
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_functions.php:1040
 msgid "Powered by WP Symposium - Social Network for WordPress"
 msgstr ""
 
@@ -755,15 +779,15 @@ msgstr ""
 msgid "Previous Message..."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_mail.php:285
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_mail.php:286
 msgid "You have no mail"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_mail.php:334
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_mail.php:335
 msgid "You have no sent mail"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_mail.php:351
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_mail.php:352
 msgid "You have to login to access your mail."
 msgstr ""
 
@@ -890,7 +914,7 @@ msgid "Test Result"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:294
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2159
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2181
 msgid "Categories"
 msgstr ""
 
@@ -944,7 +968,7 @@ msgid "Subscriptions"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:546
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2076
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2098
 msgid "Mail"
 msgstr ""
 
@@ -1045,22 +1069,22 @@ msgid "Visitor"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:696
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2196
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2218
 msgid "Subscriber"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:700
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2197
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2219
 msgid "Contributor"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:708
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2198
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2220
 msgid "Editor"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:712
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2199
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2221
 msgid "Administrator"
 msgstr ""
 
@@ -1148,11 +1172,11 @@ msgid "Add New Category"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:933
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1911
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2109
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2265
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2340
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2459
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1933
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2131
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2287
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2362
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2485
 msgid "Save Changes"
 msgstr ""
 
@@ -1305,400 +1329,368 @@ msgstr ""
 msgid "Member Profile options saved"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1470
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1492
 msgid "Registration options saved"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1520
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1542
 msgid "Settings saved"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1558
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1580
 msgid "Forum options saved"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1698
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1720
 msgid "Notes"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1699
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1721
 msgid "Settings"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1701
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2077
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1723
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2099
 msgid "Forum"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1707
-msgid "Profile"
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1710
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1732
 msgid "Bar"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1817
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1839
 msgid "Should visitors to the site see the notification bar before logging in?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1823
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1845
 msgid "The text that is shown to the left of the notification bar"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1843
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1865
 msgid "Plays for new mail, chat message, subscribed forum topic post made, etc"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1855
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1877
 msgid "Where on the screen the bar is placed"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1862
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1884
 msgid "Real-time chat windows"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1868
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1890
 msgid "Frequency of checks for new mail, friends online, etc, in seconds"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1874
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1896
 msgid "Frequency of chat window updates in seconds"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1880
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1902
 msgid "Link to WordPress user profile page?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1886
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1908
 msgid "Link to WordPress login and logout page? Or..."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1892
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1914
 msgid "URL of login/logout page, if not using WordPress login page"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1898
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1920
 msgid "Link to WordPress registration page? Or..."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1904
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1926
 msgid "URL of registration page, if not using WordPress login page"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1915
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1937
 msgid "Notes:"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1917
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1939
 msgid "The polling intervals occur in addition to an initial check on each page load."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1918
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1940
 msgid "The more frequent the polling intervals, the greater the load on your server."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1919
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1941
 msgid "Disabling chat windows will reduce the load on the server."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1920
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1942
 msgid "The default sound and bar position can be changed by members."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1957
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1979
 msgid "Very Important! You must set the URL's of the components you are using, eg: http://www.example.com/forum - enter none if not being used"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1962
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1984
 msgid "Full URL of the page that includes [symposium-forum]"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1968
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1990
 msgid "Full URL of the page that includes [symposium-mail]"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1974
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1996
 msgid "Full URL of the page that includes [symposium-profile]"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1980
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2002
 msgid "Full URL of the page that includes [symposium-avatar]"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1986
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2008
 msgid "Full URL of the page that includes [symposium-login]"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1992
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2014
 msgid "Full URL of the page that includes [symposium-register]"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:1998
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2020
 msgid "Full URL of the page that includes [symposium-members]"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2004
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2026
 msgid "Footer appended to notification emails"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2010
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2032
 msgid "Email address used for email notifications"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2016
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2038
 msgid "Width of all WP Symposium plugins, eg: 600px or 85%"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2027
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2049
 msgid "Alignment of all WP Symposium plugins"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2031
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2053
 msgid "The following can be disabled if clashes with other WordPress plugins are occuring"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2038
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2060
 msgid "Load jQuery on non-admin pages, disable if causing problems"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2045
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2067
 msgid "Load jQuery UI on non-admin pages, disable if causing problems"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2052
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2074
 msgid "Some other plugins may clash with this feature (causes 404 errors)"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2059
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2081
 msgid "Automatically replace smilies/emoticons with graphical images"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2065
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2087
 msgid "Must be enabled for following redirects to work, disable if plugin clashes occur"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2072
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2094
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2116
 msgid "WordPress default"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2073
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2095
 msgid "Profile (Wall)"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2074
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2096
 msgid "Profile (Preferences)"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2075
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2097
 msgid "Profile (Personal)"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2078
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2100
 msgid "Previous page before login page"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2079
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2095
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2101
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2117
 msgid "Custom (enter below)"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2081
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2103
 msgid "Where the member is taken after logging in"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2087
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2103
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2109
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2125
 msgid "Custom URL - select Custom from options above"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2097
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2119
 msgid "Where the member is taken after logging out"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2145
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2167
 msgid "Moderation"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2148
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2170
 msgid "New topics and posts require admin approval"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2152
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2174
 msgid "Daily Digest"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2155
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2177
 msgid "Enable daily summaries to all members via email"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2162
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2184
 msgid "Organise forum topics by categories"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2166
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2188
 msgid "Admin views"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2169
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2191
 msgid "Include administrator viewing a topic in the total view count"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2173
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2195
 msgid "Order of replies"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2176
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2198
 msgid "Show oldest replies first (uncheck to reverse order)"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2180
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2202
 msgid "Preview length"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2182
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2204
 msgid "Maximum number of characters to show in topic preview"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2188
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2210
 msgid "Maximum number of characters to show in reply preview"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2192
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2214
 msgid "View forum level"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2195
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2217
 msgid "Guest"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2201
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2223
 msgid "The minimum level a visitor has to be to view the forum"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2205
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2227
 msgid "Closed word"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2207
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2229
 msgid "Word used to denote a topic that is closed (see also Styles)"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2211
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2233
 msgid "Sharing icons included"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2214
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2236
 msgid "Email"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2221
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2243
 msgid "Facebook"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2228
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2250
 msgid "Twitter"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2235
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2257
 msgid "MySpace"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2242
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2264
 msgid "Bebo"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2249
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2271
 msgid "LinkedIn"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2259
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2281
 msgid "Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2260
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2282
 msgid "Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2275
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2297
 msgid "The following topics are un-categorised, if you want them to appear in a category, please select below."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2301
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2323
 msgid "Update Categories"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2324
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2346
 msgid "Use Maths question"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2327
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2349
 msgid "A simple addition question to combat spam"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2331
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2353
 msgid "If not empty, the email to send to new members after registering"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2365
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2387
 msgid "Show Profile Menu"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2368
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2390
 msgid "Include the menu on the profile page"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2372
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2394
 msgid "Enable Password Change"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2375
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2397
 msgid "Allow members to change their password"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2379
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2401
 msgid "Inactivity period"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2381
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2403
 msgid "How many minutes before a member is assumed off-line"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2387
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2409
 msgid "How many minutes before a member is assumed logged out"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2391
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_menu.php:2413
 msgid "Extended Fields"
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_profile_db.php:124
-msgid "Failed to update password, sorry."
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_profile_db.php:127
-msgid "Passwords different, please try again."
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_profile_db.php:133
-msgid "Email already exists, sorry."
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_profile_db.php:138
-msgid "Details Updated."
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_profile_db.php:140
-msgid "Problem updating details, sorry."
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_profile_db.php:234
-msgid "Your friend request has been accepted by"
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_profile_db.php:301
-msgid "You have a friend request from"
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/symposium_register.php:55
@@ -1808,10 +1800,12 @@ msgid "Important! Please set URLs in WP Symposium Options immediately (set to no
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/wp-symposium.php:779
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/wp-symposium.php:940
 msgid "Saving..."
 msgstr ""
 
 #: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/wp-symposium.php:780
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/wp-symposium.php:939
 msgid "Please Wait..."
 msgstr ""
 
@@ -1828,104 +1822,135 @@ msgstr ""
 msgid "Email address not found, please use the email address you registered with."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:93
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:138
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:403
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:530
+msgid "Save"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:155
+msgid "Recently Active Friends"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:225
 #, php-format
 msgid "Your local time zone adjustment in hours (difference from GMT which is %s)."
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:109
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:241
 msgid "Notification bar alert that sounds when you get new mail, relevant forum posts, etc"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:154
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:286
 msgid "Notification bar alert that sounds when a new chat message arrives"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:199
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:331
 msgid "Where do you want the notification bar?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:216
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:348
 msgid "Your name as shown"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:232
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:364
 msgid "Do you want to receive an email when you get new mail messages?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:242
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:374
 msgid "Do you want to receive an email when a friend adds a new wall post or reply?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:254
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:386
 msgid "Change your password"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:260
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:392
 msgid "Re-enter to confirm"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:271
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:444
-msgid "Save"
-msgstr ""
-
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:321
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:448
 msgid "Who do you want to share personal information with?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:326
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:344
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:453
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:471
 msgid "Nobody"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:329
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:347
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:456
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:474
 msgid "Friends Only"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:332
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:350
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:459
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:477
 msgid "Everyone"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:339
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:466
 msgid "Who do you want to share your wall with?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:357
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:484
 msgid "Your date of birth (day/month/year)"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:385
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:512
 msgid "Which town/city are you in?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:393
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:520
 msgid "Which country are you in?"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:555
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:667
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:640
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:752
 msgid "New Wall Post"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:557
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:659
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:642
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:744
 msgid "has added a new status to their wall"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:559
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:644
 #, php-format
 msgid "has added a new post to %s's wall"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:562
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:647
 msgid "New Wall Reply"
 msgstr ""
 
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:570
-#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:664
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:655
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:749
 msgid "Go to their wall"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:820
+msgid "Email already exists, sorry."
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:843
+msgid "Failed to update password, sorry."
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:846
+msgid "Passwords different, please try again."
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:977
+#, php-format
+msgid "You have received a friend request from %s"
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:980
+#, php-format
+msgid "You have a friend request from %s..."
+msgstr ""
+
+#: /Users/simongoodchild/Sites/my-wordpress-plugins/wp-symposium/trunk/ajax/symposium_profile_functions.php:1098
+msgid "Your friend request has been accepted by"
 msgstr ""
 

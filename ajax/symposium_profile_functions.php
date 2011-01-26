@@ -47,6 +47,143 @@ if ($_POST['action'] == 'menu_all') {
 	
 }
 
+// Show Extended
+if ($_POST['action'] == 'menu_extended') {
+
+	global $wpdb, $current_user;
+	wp_get_current_user();
+
+	$uid1 = $_POST['uid1'];
+	$uid2 = $_POST['uid2'];
+
+	$plugin = WP_PLUGIN_URL.'/wp-symposium';
+	$dbpage = $plugin.'/symposium_profile_db.php';
+	$meta = get_symposium_meta_row($uid1);					
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
+
+	$html .= "<div id='profile_left_column'";
+	if ($config->show_profile_menu != 'on') {
+		$html .= " style='border-left:0px;'";
+	}			
+	$html .= ">";
+	
+		if ($uid1 != $uid2) {
+	
+			// Extended Information
+			$extended = $meta->extended;
+			$fields = explode('[|]', $extended);
+			if ($fields) {
+				foreach ($fields as $field) {
+					$split = explode('[]', $field);
+					if ( ($split[0] != '') && ($split[1] != '') ) {
+						$html .= "<div style='clear: both; margin-bottom:15px;overflow: auto;'>";
+						$html .= "<div style='font-weight:bold; float:left;'>".$split[0]."</div>";
+						$html .= "<div style='float:right'>".$split[1]."</div>";
+						$html .= "</div>";
+					}
+				}
+			}
+			
+		} else {
+			
+			// get values
+			$extended = $meta->extended;
+			
+			
+				// Extensions
+				$extensions = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_extended ORDER BY extended_order, extended_name"));
+				if ($extensions) {
+	
+					$fields = explode('[|]', $extended);
+		
+					foreach ($extensions as $extension) {
+						
+						$value = $extension->extended_default;
+						if ($extension->extended_type == "List") {
+							$tmp = explode(',', $extension->extended_default);
+							$value = $tmp[0];
+	
+						}
+						foreach ($fields as $field) {
+							$split = explode('[]', $field);
+							if ($split[0] == $extension->eid) {
+								$value = $split[1];
+							 }
+						}
+						
+						$html .= '<div style="clear:both; margin-bottom:15px;">';
+							$html .= $extension->extended_name;
+							$html .= '<input type="hidden" name="eid[]" value="'.$extension->eid.'">';
+							$html .= '<input type="hidden" name="extended_name[]" value="'.$extension->extended_name.'">';
+							$html .= '<div style="float:right;">';
+								if ($extension->extended_type == 'Text') {
+									$html .= '<input title="'.$extension->eid.'" class="eid_value" type="text" name="extended_value[]" value="'.$value.'">';
+								}
+								if ($extension->extended_type == 'List') {
+									$html .= '<select title="'.$extension->eid.'" class="eid_value" name="extended_value[]">';
+									$items = explode(',', $extension->extended_default);
+									foreach ($items as $item) {
+										$html .= '<option value="'.$item.'"';
+											if ($value == $item) { $html .= " SELECTED"; }
+											$html .= '>'.$item.'</option>';
+									}												
+									$html .= '</select>';
+								}
+							$html .= '</div>';
+						$html .= '</div>';
+					}
+				}
+		
+				$html .= '<p style="clear: both" class="submit"> ';
+					$html .= '<input type="submit" id="updateExtendedButton" name="Submit" class="button" value="'.__('Save', 'wp-symposium').'" /> ';
+				$html .= '</p> ';
+								
+			}
+	
+	if (false) {
+			// Friends
+			$html .= "<div style='width:100%;padding:0px;overflow:auto;'>";
+	
+				$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$uid1." AND friend_accepted = 'on' ORDER BY last_activity DESC LIMIT 0,6";
+				$friends = $wpdb->get_results($sql);
+	
+				if ($friends) {
+					
+					$inactive = $config->online;
+					$offline = $config->offline;
+					
+					$html .= '<strong>'.__('Recently Active Friends', 'wp-symposium').'</strong><br />';
+					foreach ($friends as $friend) {
+						
+						$time_now = time();
+						$last_active_minutes = strtotime($friend->last_activity);
+						$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
+														
+						$html .= "<div style='clear:both; width: 99%; margin-bottom: 10px; overflow: auto;'>";		
+							$html .= "<div style='float: left; width:42px; margin-right: 5px'>";
+								$html .= get_user_avatar($friend->friend_to, 42);
+							$html .= "</div>";
+							$html .= "<div>";
+								$html .= symposium_profile_link($friend->friend_to)."<br />";
+								$html .= __('Last active', 'wp-symposium').' '.symposium_time_ago($friend->last_activity).".";
+							$html .= "</div>";
+	
+						$html .= "</div>";
+					}
+				}
+										
+			$html .= "</div>";
+	}
+				
+		$html .= "</div>";
+
+	$html .= "</div>";
+		
+	echo $html;
+	exit;
+	
+}
+
 // Show Settings
 if ($_POST['action'] == 'menu_settings') {
 
@@ -80,9 +217,6 @@ if ($_POST['action'] == 'menu_settings') {
 		$html .= " style='border-left:0px;'";
 	}			
 	$html .= ">";
-
-		$html .= '<h2>'.__('Preferences', 'wp-symposium').'...</h2>';
-	
 	
 		$html .= '<div id="symposium_settings_table">';
 		
@@ -297,7 +431,6 @@ if ($_POST['action'] == 'menu_personal') {
 	$country = $meta->country;
 	$share = $meta->share;
 	$wall_share = $meta->wall_share;
-	$extended = $meta->extended;
 	
 	$html .= "<div id='profile_left_column'";
 	if ($config->show_profile_menu != 'on') {
@@ -305,8 +438,6 @@ if ($_POST['action'] == 'menu_personal') {
 	}			
 	$html .= ">";
 
-		$html .= '<h2>'.__('Personal', 'wp-symposium').'...</h2>';
-	
 		$html .= '<input type="hidden" name="symposium_update" value="P">';
 		$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
 	
@@ -392,50 +523,6 @@ if ($_POST['action'] == 'menu_personal') {
 				$html .= '</div>';
 			$html .= '</div>';
 			
-			// Extensions
-			$extensions = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_extended ORDER BY extended_order, extended_name"));
-			if ($extensions) {
-
-				$fields = explode('[|]', $extended);
-	
-				foreach ($extensions as $extension) {
-					
-					$value = $extension->extended_default;
-					if ($extension->extended_type == "List") {
-						$tmp = explode(',', $extension->extended_default);
-						$value = $tmp[0];
-
-					}
-					foreach ($fields as $field) {
-						$split = explode('[]', $field);
-						if ($split[0] == $extension->eid) {
-							$value = $split[1];
-						 }
-					}
-					
-					$html .= '<div style="clear:both; margin-bottom:15px;">';
-						$html .= $extension->extended_name;
-						$html .= '<input type="hidden" name="eid[]" value="'.$extension->eid.'">';
-						$html .= '<input type="hidden" name="extended_name[]" value="'.$extension->extended_name.'">';
-						$html .= '<div style="float:right;">';
-							if ($extension->extended_type == 'Text') {
-								$html .= '<input title="'.$extension->eid.'" class="eid_value" type="text" name="extended_value[]" value="'.$value.'">';
-							}
-							if ($extension->extended_type == 'List') {
-								$html .= '<select title="'.$extension->eid.'" class="eid_value" name="extended_value[]">';
-								$items = explode(',', $extension->extended_default);
-								foreach ($items as $item) {
-									$html .= '<option value="'.$item.'"';
-										if ($value == $item) { $html .= " SELECTED"; }
-										$html .= '>'.$item.'</option>';
-								}												
-								$html .= '</select>';
-							}
-						$html .= '</div>';
-					$html .= '</div>';
-				}
-			}
-
 				
 		$html .= '</div> ';
 		 
@@ -788,7 +875,6 @@ if ($_POST['action'] == 'updatePersonal') {
 		$country = $_POST['country'];
 		$share = $_POST['share'];
 		$wall_share = $_POST['wall_share'];
-		$extended = $_POST['extended'];
 		
 		update_symposium_meta($current_user->ID, 'dob_day', $dob_day);
 		update_symposium_meta($current_user->ID, 'dob_month', $dob_month);
@@ -797,6 +883,26 @@ if ($_POST['action'] == 'updatePersonal') {
 		update_symposium_meta($current_user->ID, 'country', "'".$country."'");
 		update_symposium_meta($current_user->ID, 'share', "'".$share."'");
 		update_symposium_meta($current_user->ID, 'wall_share', "'".$wall_share."'");
+			
+		echo "OK";
+	
+	} else {
+		echo "NOT LOGGED IN";
+	}
+	
+	exit;
+}
+
+// extended updates
+if ($_POST['action'] == 'updateExtended') {
+
+	global $wpdb, $current_user;
+	wp_get_current_user();
+
+	if (is_user_logged_in()) {
+
+		$extended = $_POST['extended'];
+		
 		update_symposium_meta($current_user->ID, 'extended', "'".$extended."'");
 			
 		echo "OK";

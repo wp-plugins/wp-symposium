@@ -279,6 +279,7 @@
 }
 #symposium-wrapper * {
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 }
 
 #symposium-wrapper img 

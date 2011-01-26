@@ -43,8 +43,21 @@ function show_profile_menu($uid1, $uid2) {
 
 			if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
 	
-				$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
-				$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
+				if ($meta->extended != '' || $uid1 == $uid2) {
+					if ($uid1 == $uid2) {
+						$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('My Profile', 'wp-symposium').'</div>';
+					} else {
+						$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('Profile', 'wp-symposium').'</div>';
+					}
+				}
+				
+				if ($uid1 == $uid2) {
+					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('My Wall', 'wp-symposium').'</div>';
+					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('My Friends Activity', 'wp-symposium').'</div>';
+				} else {
+					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
+					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
+				}
 				$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
 	
 				// Check for pending friends
@@ -55,6 +68,11 @@ function show_profile_menu($uid1, $uid2) {
 				} else {
 					$pending_friends = "";
 				}
+				if ($uid1 == $uid2) {
+					$html .= '<div id="menu_friends" class="symposium_profile_menu">'.__('My Friends', 'wp-symposium').' '.$pending_friends.'</div>';
+				} else {
+					$html .= '<div id="menu_friends" class="symposium_profile_menu">'.__('Friends', 'wp-symposium').' '.$pending_friends.'</div>';
+				}
 			
 				if ($uid1 == $uid2) {
 					if (function_exists('symposium_avatar')) {
@@ -63,7 +81,6 @@ function show_profile_menu($uid1, $uid2) {
 					$html .= '<div id="menu_settings" class="symposium_profile_menu">'.__('Preferences', 'wp-symposium').'</div>';
 					$html .= '<div id="menu_personal" class="symposium_profile_menu">'.__('Personal', 'wp-symposium').'</div>';
 				}
-				$html .= '<div id="menu_friends" class="symposium_profile_menu">'.__('Friends', 'wp-symposium').' '.$pending_friends.'</div>';
 				
 			}
 		}
@@ -133,6 +150,10 @@ function symposium_profile_friends($uid) {
 						$html .= "</div>";
 					$html .= "</div>";
 				}
+
+				$html .= '<hr />';
+				
+				
 			}
 		}
 		
@@ -145,8 +166,6 @@ function symposium_profile_friends($uid) {
 			
 			$inactive = $config->online;
 			$offline = $config->offline;
-			
-			$html .= '<h2>'.__('Friends', 'wp-symposium').'...</h2>';
 			
 			foreach ($friends as $friend) {
 				
@@ -353,65 +372,6 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 				$html .= " style='border-left:0px;'";
 			}			
 			$html .= ">";
-
-				// hide this until know what to do with it!
-				if (false) {
-					
-					$html .= "<div id='profile_right_column'>";
-		
-						// Extended Information
-						$html .= "<div style='width:100%;padding:0px;overflow:auto;'>";
-			
-							$extended = $meta->extended;
-							$fields = explode('[|]', $extended);
-							if ($fields) {
-								foreach ($fields as $field) {
-									$split = explode('[]', $field);
-									if ( ($split[0] != '') && ($split[1] != '') ) {
-										$html .= "<p><strong>".$split[0]."</strong><br />";
-										$html .= $split[1]."</p>";
-									}
-								}
-							}
-							
-						$html .= "</div>";
-		
-						// Friends
-						$html .= "<div style='width:100%;padding:0px;overflow:auto;'>";
-			
-							$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$uid1." AND friend_accepted = 'on' ORDER BY last_activity DESC LIMIT 0,6";
-							$friends = $wpdb->get_results($sql);
-		
-							if ($friends) {
-								
-								$inactive = $config->online;
-								$offline = $config->offline;
-								
-								$html .= '<strong>'.__('Recently Active Friends', 'wp-symposium').'</strong><br />';
-								foreach ($friends as $friend) {
-									
-									$time_now = time();
-									$last_active_minutes = strtotime($friend->last_activity);
-									$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
-																	
-									$html .= "<div style='clear:both; width: 99%; margin-bottom: 10px; overflow: auto;'>";		
-										$html .= "<div style='float: left; width:42px; margin-right: 5px'>";
-											$html .= get_user_avatar($friend->friend_to, 42);
-										$html .= "</div>";
-										$html .= "<div>";
-											$html .= symposium_profile_link($friend->friend_to)."<br />";
-											$html .= __('Last active', 'wp-symposium').' '.symposium_time_ago($friend->last_activity).".";
-										$html .= "</div>";
-		
-									$html .= "</div>";
-								}
-							}
-													
-						$html .= "</div>";
-							
-					$html .= "</div>";
-				
-				}
 					
 				// Wall
 				$html .= "<div id='symposium_wall' style='overflow: auto; padding:0px; margin:0px;'>";

@@ -19,7 +19,7 @@
 *
 */
  
-class SimpleImage {
+class symposium_SimpleImage {
    
    var $image;
    var $image_type;

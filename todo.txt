@@ -4,12 +4,9 @@ todo.txt
   
 PROFILE
 
-- AJAX add/cancel friend request
 - option receive email on activity in wall post if I've replied or started it
 - if a member has set his profile to "friends only" or "nobody", even the admin can't see it? 
 - Also, admins can't edit a member's profile.
-- my activity
-
 
 CHAT
 
@@ -46,7 +43,6 @@ CODEX
 
 MAIL
 
-- update number in () when reading a mail item
 - quote feature
 
 LANGUAGES
@@ -56,13 +52,19 @@ LANGUAGES
 WISH LIST
 
 - paying/subscriptions
-- Is there a shortcode for Friends Activity? That's what I'd like my Activity page to default to.
 - Option to get members to confirm registration via email
 - Minimum level for categories
+- 'clear' link on vote widget
 
 FIX
 
-- safari notification bar showing/location???
-- in box tab shows when replying, will sort something
+- check please wait on wall replies (and posts?)
 
-- Hi Simon. I just noticed a small bug in the Extended Fields text boxes. Go to your personal info page and look at the "A few words about me..." text box, only the first word of what was entered is pulled from the DB
+
+Gene has replied to their post:
+I get that error on Wall, Friends Activity and All Activity. The other pages load fine.
+Go to their wall...
+http://www.wpsymposium.com/profile?uid=156&post=239
+
+
+http://www.wpsymposium.com/login/?redirect_to=http://www.wpsymposium.com/support/

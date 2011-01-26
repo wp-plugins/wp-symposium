@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.30
+Version: 0.1.30.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -173,7 +173,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.30";
+	$symposium_version = "0.1.30.2";
 	$symposium_db_ver = 30;
 	
 	// Code version *************************************************************************************
@@ -462,17 +462,6 @@ function symposium_notification_trigger_schedule() {
 					}			
 				}
 			}
-
-			// Report back to monitor the service - you can delete the following lines if you do not want this support
-			// but in providing this anonymous information you can help us to help you
-			if ($topics_count > 4) {
-				$mail_to = 'info@wpsymposium.com';
-				$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$config));				
-				if(symposium_sendmail($mail_to, 'Forum Digest Report: '.get_site_url(), get_site_url().'<br />'.$forum_url.'<br /><br />'.$topics_count.' post(s)')) {
-					update_option("symposium_notification_triggercount",get_option("symposium_notification_triggercount")+1);
-				}
-			}
-
 		}
 	}
 
@@ -891,6 +880,17 @@ function symposium_scriptsAction()
 			$no = "0%";
 		}
 	}
+
+	// Permalink in use?
+	$thispage = get_permalink();
+	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
+	if (isset($_GET[page_id]) && $_GET[page_id] != '') {
+		// No Permalink
+		$q = "&";
+	} else {
+		$q = "?";
+	}
+
 		
 	// Load Symposium JS supporting scrtipts		
 	
@@ -927,7 +927,8 @@ function symposium_scriptsAction()
 		'post' => $_GET['post'],
 		'please_wait' => __('Please Wait...', 'wp-symposium'),
 		'saving' => __('Saving...', 'wp-symposium'),
-		'site_title' => get_bloginfo('name')
+		'site_title' => get_bloginfo('name'),
+		'q' => $q
 	));
 
 

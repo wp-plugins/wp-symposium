@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.30
+Version: 0.1.30.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -169,13 +169,15 @@ function add_notification_bar()
 					<?php
 					if (is_user_logged_in()) {
 
-
 						_e('Logged in as', 'wp-symposium');
 					    
 						if ($use_wp_profile == 'on') {
 							echo ' <a href="/wp-admin/profile.php">'.$current_user->user_login.'</a>';
 						} else {
-							echo ' <a href="'.symposium_get_url("profile").'">'.$current_user->user_login.'</a>';
+							$profilepage = $config->profile_url;
+							if ($profilepage[strlen($profilepage)-1] != '/') { $profilepage .= '/'; }
+							$q = symposium_string_query($profilepage);		
+							echo ' <a href="'.$profilepage.$q.'view=wall">'.$current_user->user_login.'</a>';
 						}
 						
 						if (current_user_can('activate_plugins')) {

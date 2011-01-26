@@ -2,8 +2,8 @@
 /*
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
-Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile], [symposium-settings], [symposium-personal] or [symposium-friends] on any WordPress page to display.
-Version: 0.1.30
+Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile], [symposium-settings], [symposium-personal], [symposium-friends] or [symposium-extended] on any WordPress page to display.
+Version: 0.1.30.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -81,6 +81,15 @@ function symposium_profile_settings()
 		
 }
 
+// [symposium-extended]
+function symposium_profile_extended()  
+{  
+										
+	return symposium_show_profile("extended");
+	exit;
+		
+}
+
 
 
 // Adds profile page
@@ -110,7 +119,11 @@ function symposium_show_profile($page)
 		if ($show_profile_menu == "on") {
 			$html .= show_profile_menu($uid, $current_user->ID);
 		}
-		$html .= "<div id='force_profile_page' style='display:none'>".$page."</div>";
+		if ($_GET['view'] != '') {
+			$html .= "<div id='force_profile_page' style='display:none'>".$_GET['view']."</div>";
+		} else {
+			$html .= "<div id='force_profile_page' style='display:none'>".$page."</div>";
+		}
 		$html .= "<div id='profile_body'>";
 		$html .= "</div>";
 				
@@ -134,5 +147,6 @@ add_shortcode('symposium-activity', 'symposium_profile_activity');
 add_shortcode('symposium-all', 'symposium_profile_all');  
 add_shortcode('symposium-personal', 'symposium_profile_personal');  
 add_shortcode('symposium-settings', 'symposium_profile_settings');  
+add_shortcode('symposium-extended', 'symposium_profile_extended');  
 
 ?>
