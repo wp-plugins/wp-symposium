@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.1.30.2
+Version: 0.1.31
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -79,7 +79,7 @@ function symposium_mail() {
 			$inbox_active = 'inactive';
 			$sent_active = 'inactive';
 			$compose_active = 'active';
-			$view = "in";
+			$view = "compose";
 		} 
 			
 		$user_level = symposium_get_current_userlevel();

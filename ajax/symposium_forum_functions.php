@@ -6,6 +6,103 @@ include_once('../symposium_functions.php');
 
 global $wpdb, $current_user;
 wp_get_current_user();
+
+// AJAX to fetch favourites
+if ($_POST['action'] == 'getFavs') {
+
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_config"));
+
+	// Work out link to this page, dealing with permalinks or not
+	$thispage = symposium_get_url('forum');
+	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
+	if (strpos($thispage, "?") === FALSE) { 
+		$q = "?";
+	} else {
+		// No Permalink
+		$q = "&";
+	}
+	
+	$snippet_length_long = $config->preview2;
+	if ($snippet_length_long == '') { $snippet_length_long = '45'; }
+	
+	$html = '';
+	
+	$favs = get_symposium_meta($current_user->ID, 'forum_favs');
+	$favs = explode('[', $favs);
+	if ($favs) {
+		foreach ($favs as $fav) {
+			$fav = str_replace("]", "", $fav);
+			if ($fav != '') {
+				
+				$post = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d", $fav));
+				$html .= '<div id="fav_'.$fav.'" class="fav_row" style="padding:6px; margin-bottom:10px;">';
+
+					$html .= " <a title='".$fav."' class='delete_fav' style='cursor:pointer'>".__("Remove", "wp-symposium")."</a>";
+				
+					$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($post->tid, "topic").$q.'cid='.$post->topic_category.'&show='.$post->tid.'">'.stripslashes($post->topic_subject).'</a>';
+
+					$replies = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = ".$post->tid." ORDER BY topic_date DESC"));
+					if ($replies) {
+						$cnt = 0;
+						$dt = '';
+						foreach ($replies as $reply) {
+							$cnt++;
+							if ($dt == '') { $dt = $reply->topic_date; }
+						}
+						
+						if ($cnt > 0) {
+							$html .= "<br /><em>".$cnt." ";
+							if ($cnt == 1) 
+							{ 
+								$html .= __("reply", "wp-symposium");
+								$html .= ", ".symposium_time_ago($dt).".</em>";
+							} else {
+								$html .= __("replies", "wp-symposium");
+								$html .= ", ".__("last one", "wp-symposium")." ".symposium_time_ago($dt).".</em>";
+							}
+							
+						}
+					}
+
+					$text = stripslashes($post->topic_post);
+					if ( strlen($text) > $snippet_length_long ) { $text = substr($text, 0, $snippet_length_long)."..."; }
+					
+					$html .= "<br />".$text;
+					
+				$html .= '</div>';
+			}
+		}
+	}
+	
+	if ($html == '') {
+		
+		$html .= __("You can add your favourite forum topics by clicking on the star beside any forum topic title.", "wp-symposium");
+	}
+	
+	echo $html;
+	exit;
+}
+
+// AJAX function to toggle post as a favourite
+if ($_POST['action'] == 'toggleFav') {
+
+	$tid = $_POST['tid'];	
+
+	// Update meta record exists for user
+	$favs = get_symposium_meta($current_user->ID, "forum_favs");
+	if (strpos($favs, "[".$tid."]") === FALSE) { 
+		$favs .= "[".$tid."]";
+		$r = "added";
+	} else {
+		$favs = str_replace("[".$tid."]", "", $favs);
+		$r = $tid;
+	}
+	update_symposium_meta($current_user->ID, "forum_favs", "'".$favs."'");
+
+	echo $r;
+	exit;
+
+}
 	
 // AJAX function to get topic details for editing
 if ($_POST['action'] == 'getEditDetails') {

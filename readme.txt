@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.30.2
+Stable tag: 0.1.31
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -196,14 +196,16 @@ Put `[symposium-forum]` on any WP page, and put the page URL in the Symposium op
 
 *Overview*
 
+* Clean, uncluttered and a simple layout
+* "Favourites" to bookmark forum topics
 * Option to moderate topics and replies
-* Set preview text length
+* Set preview text lengths
 * Enable a daily digest (optional for members)
 * Show or hide forum categories
 * Change order from newest of oldest replies first
 * Set a word to make posts slightly transparent (eg. [closed])
 * Limit viewing of forum to particular user levels
-* View all topics on the forum, with delete/approve option
+* View all topics on the forum via admin, with delete/approve option
 
 *Categories*
 
@@ -263,7 +265,9 @@ When upgrading manually, make sure you deactivate and re-activate the core plugi
 
 *Adding WP Symposium plugins to your site*
 
-If you need to, create a new page in WordPress (Pages->Add New). Then put the following in a WordPress page (it's a hyphen, not an underscore):
+If you need to, create a new page in WordPress (Pages->Add New). Then put a short-code in the WordPress page (it's a hyphen, not an underscore). There are many more short-codes which you can use, please refer to the admin guide available on the download page at www.wpsymposium.com. 
+
+However, for example:
 
 For the Forum:
 
@@ -324,9 +328,14 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 == Changelog ==
 
+= 0.1.31 =
+
+* Forum: Favourites can now be saved
+* Fix to wall/profile to reflect personal settings
+
 = 0.1.30.2 =
 
-New version as problem uploading 0.1.30.1 to SVN
+* New version as problem uploading 0.1.30.1 to SVN
 
 = 0.1.30.1 =
 

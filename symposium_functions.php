@@ -36,12 +36,13 @@ function show_profile_menu($uid1, $uid2) {
 	$html .= "<div style='width:130px; padding-right: 15px; margin-right:0px; float: left;'>";
 	
 		$meta = get_symposium_meta_row($uid1);					
+		$share = $meta->share;		
 		$privacy = $meta->wall_share;		
 		$is_friend = symposium_friend_of($uid1);
 		
 		if ($uid1 > 0) {
 
-			if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
+			if ( ($uid1 == $uid2) || (strtolower($share) == 'everyone') || (strtolower($share) == 'friends only' && $is_friend) ) {
 	
 				if ($meta->extended != '' || $uid1 == $uid2) {
 					if ($uid1 == $uid2) {
@@ -50,7 +51,10 @@ function show_profile_menu($uid1, $uid2) {
 						$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('Profile', 'wp-symposium').'</div>';
 					}
 				}
-				
+			}
+
+			if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
+
 				if ($uid1 == $uid2) {
 					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('My Wall', 'wp-symposium').'</div>';
 					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('My Friends Activity', 'wp-symposium').'</div>';
@@ -59,30 +63,34 @@ function show_profile_menu($uid1, $uid2) {
 					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
 				}
 				$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
+			}
+
+			if ( ($uid1 == $uid2) || (strtolower($share) == 'everyone') || (strtolower($share) == 'friends only' && $is_friend) ) {
 	
-				// Check for pending friends
-				$pending_friends = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_friends f WHERE f.friend_to = ".$uid1." AND f.friend_accepted != 'on'");
-			
-				if ( ($pending_friends > 0) && ($uid1 == $uid2) ) {
-					$pending_friends = " (".$pending_friends.")";
-				} else {
-					$pending_friends = "";
-				}
 				if ($uid1 == $uid2) {
+					$pending_friends = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_friends f WHERE f.friend_to = ".$uid1." AND f.friend_accepted != 'on'");
+				
+					if ( ($pending_friends > 0) && ($uid1 == $uid2) ) {
+						$pending_friends = " (".$pending_friends.")";
+					} else {
+						$pending_friends = "";
+					}
 					$html .= '<div id="menu_friends" class="symposium_profile_menu">'.__('My Friends', 'wp-symposium').' '.$pending_friends.'</div>';
 				} else {
-					$html .= '<div id="menu_friends" class="symposium_profile_menu">'.__('Friends', 'wp-symposium').' '.$pending_friends.'</div>';
+					$html .= '<div id="menu_friends" class="symposium_profile_menu">'.__('Friends', 'wp-symposium').'</div>';
 				}
-			
-				if ($uid1 == $uid2) {
-					if (function_exists('symposium_avatar')) {
-						$html .= '<div id="menu_photo" class="symposium_profile_menu">'.__('Profile Photo', 'wp-symposium').'</div>';
-					}
-					$html .= '<div id="menu_settings" class="symposium_profile_menu">'.__('Preferences', 'wp-symposium').'</div>';
-					$html .= '<div id="menu_personal" class="symposium_profile_menu">'.__('Personal', 'wp-symposium').'</div>';
+			}
+		
+			if ($uid1 == $uid2) {
+				if (function_exists('symposium_avatar')) {
+					$html .= '<div id="menu_photo" class="symposium_profile_menu">'.__('Profile Photo', 'wp-symposium').'</div>';
 				}
 				
+				$html .= '<div id="menu_personal" class="symposium_profile_menu">'.__('Personal', 'wp-symposium').'</div>';
+				$html .= '<div id="menu_settings" class="symposium_profile_menu">'.__('Preferences', 'wp-symposium').'</div>';
+
 			}
+				
 		}
 				
 	$html .= "</div>";
@@ -372,6 +380,65 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 				$html .= " style='border-left:0px;'";
 			}			
 			$html .= ">";
+			
+				// Optional panel
+				if ($config->show_wall_extras == "on") {
+						
+						$html .= "<div id='profile_right_column'>";
+	
+						// Extended	
+						$meta = get_symposium_meta_row($uid1);					
+						$extended = $meta->extended;
+						$fields = explode('[|]', $extended);
+						if ($fields) {
+							foreach ($fields as $field) {
+								$split = explode('[]', $field);
+								if ( ($split[0] != '') && ($split[1] != '') ) {
+									$label = $wpdb->get_var($wpdb->prepare("SELECT extended_name FROM ".$wpdb->prefix."symposium_extended WHERE eid = ".$split[0]));
+									$html .= "<div style='clear: both; margin-bottom:15px;overflow: auto;'>";
+									$html .= "<div style='font-weight:bold;'>".$label."</div>";
+									$html .= "<div>".$split[1]."</div>";
+									$html .= "</div>";
+								}
+							}
+						}
+															
+						// Friends
+						$html .= "<div style='width:100%;padding:0px;overflow:auto;'>";
+				
+							$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$uid1." AND friend_accepted = 'on' ORDER BY last_activity DESC LIMIT 0,6";
+							$friends = $wpdb->get_results($sql);
+				
+							if ($friends) {
+								
+								$inactive = $config->online;
+								$offline = $config->offline;
+								
+								$html .= '<strong>'.__('Recently Active Friends', 'wp-symposium').'</strong><br />';
+								foreach ($friends as $friend) {
+									
+									$time_now = time();
+									$last_active_minutes = strtotime($friend->last_activity);
+									$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
+																	
+									$html .= "<div style='clear:both; width: 99%; margin-bottom: 10px; overflow: auto;'>";		
+										$html .= "<div style='float: left; width:42px; margin-right: 5px'>";
+											$html .= get_user_avatar($friend->friend_to, 42);
+										$html .= "</div>";
+										$html .= "<div>";
+											$html .= symposium_profile_link($friend->friend_to)."<br />";
+											$html .= __('Last active', 'wp-symposium').' '.symposium_time_ago($friend->last_activity).".";
+										$html .= "</div>";
+				
+									$html .= "</div>";
+								}
+							}
+													
+						$html .= "</div>";
+	
+					$html .= "</div>";
+				
+				}				
 					
 				// Wall
 				$html .= "<div id='symposium_wall' style='overflow: auto; padding:0px; margin:0px;'>";

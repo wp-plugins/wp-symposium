@@ -98,7 +98,7 @@
 				$html .= "	font-family: ".$fontfamily.";";
 				$html .= "}";
 			
-				$html .= "#symposium-wrapper #new-topic, #symposium-wrapper #reply-topic, #symposium-wrapper #edit-topic-div {";
+				$html .= "#symposium-wrapper #new-topic, #symposium-wrapper #reply-topic, #symposium-wrapper #edit-topic-div, #symposium-wrapper #fav-list {";
 				$html .= "	background-color: ".$main_background.";";
 				$html .= "	border: ".$replies_border_size."px solid ".$primary_color.";";	
 				$html .= "}";

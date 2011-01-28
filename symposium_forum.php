@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.30.2
+Version: 0.1.31
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -126,30 +126,35 @@ function symposium_forum() {
 		}
 		
 		// Get Topic ID if applicable
-	
 		$show = '';
 		if ($_GET['show'] != '') { $show = $_GET['show']; }
 		if ($_POST['show'] != '') { $show = $_POST['show']; }
 		if ($tid != '') { $show = $tid; }
-			
-		$html .= "<div style='clear:both' class='floatright'>";
-		if ($cat_id > 0) {
-			if ($show != '') {
-				$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$wpdb->prefix."symposium_cats WHERE cid = %d", $cat_id));
-				$html .= "<a class='backto label' href='".$thispage.$q."cid=".$cat_id."'>".__("Back to", "wp-symposium")." ".stripslashes($category_title)."...</a>&nbsp;&nbsp;&nbsp;&nbsp;";
-				$html .= "&nbsp;&nbsp;<a class='backto label' href='".get_permalink()."'>".__("Back to Forum", "wp-symposium")."...</a>";
-			} else {
-				$html .= "&nbsp;&nbsp;<a class='backto label' href='".get_permalink()."'>".__("Back to Forum", "wp-symposium")."...</a>";
+									
+		$html .= "<div class='floatright'>";
+
+			$html .= "<a id='show_favs' class='label' href='javascript:void(0)'>".__("Favourites", "wp-symposium")."</a>";
+
+			if ($cat_id > 0) {
+				if ($show != '') {
+					$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$wpdb->prefix."symposium_cats WHERE cid = %d", $cat_id));
+					$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='backto label' href='".$thispage.$q."cid=".$cat_id."'>".__("Back to", "wp-symposium")." ".stripslashes($category_title)."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
+					$html .= "&nbsp;&nbsp;<a class='backto label' href='".get_permalink()."'>".__("Back to Forum", "wp-symposium")."</a>";
+				} else {
+					$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='backto label' href='".get_permalink()."'>".__("Back to Forum", "wp-symposium")."</a>";
+				}
 			}
-		}
+			
 		$html .= "</div>";
 
-		// Sharing icons
 		if ($show != '' && $config->sharing != '' ) {
-			$pageURL = $thispage."?cid=".$topic."%26show=".$show;
-			$title = get_bloginfo();
-
+	
 			$html .= "<div id='share_link' class='floatright'>";
+
+			// Sharing icons
+				$pageURL = $thispage."?cid=".$topic."%26show=".$show;
+				$title = get_bloginfo();
+	
 				// MySpace
 				if (!(strpos($config->sharing, "ms") === FALSE)) {
 					$html .= "<div class='floatright'>";
@@ -194,9 +199,11 @@ function symposium_forum() {
 				}
 
 				$html .= "<div id='share_label' class='floatright'>".__('Share: ', 'wp-symposium')."</div>";
+				
 			$html .= "</div>";
+
 		}
-	
+
 	
 		// SHOW FORUM ***************************************************************************************************
 		$show_forum = false;
@@ -212,23 +219,16 @@ function symposium_forum() {
 			if (is_user_logged_in()) {
 				
 				// Sub Menu for Logged in User
-					$html .= "<ul id='topic-links'>";
 				if ($show == '') {
-					$allow_new = $wpdb->get_var($wpdb->prepare("SELECT allow_new FROM ".$cats." WHERE cid = %d", $cat_id));
-					if ( ($cat_id == '' || $allow_new == "on") || (current_user_can('level_10')) ) {
-						$html .= "<li id='new-topic-link'>".__("Start a New Topic", "wp-symposium")."</li>";
-					} else {
-						$html .= "<div style='height:30px'></div>";
-					}
-				} else {
-					if ($wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d", $show_tid)) == "on") {
-						$html .= "<li id='reply-topic-link'>".__("Add a Reply", "wp-symposium")."</li>";
-					} else {
-						$html .= '<p class="label"><img src="'.$plugin.'images/padlock.gif" alt="Replies locked" /> '.__("Replies are not allowed for this topic", "wp-symposium").'.</p>';
-	
-					}
+					$html .= "<ul id='topic-links'>";
+						$allow_new = $wpdb->get_var($wpdb->prepare("SELECT allow_new FROM ".$cats." WHERE cid = %d", $cat_id));
+						if ( ($cat_id == '' || $allow_new == "on") || (current_user_can('level_10')) ) {
+							$html .= "<li id='new-topic-link'>".__("Start a New Topic", "wp-symposium")."</li>";
+						} else {
+							$html .= "<div style='height:30px'></div>";
+						}
+					$html .= "</ul>";
 				}
-				$html .= "</ul>";
 				
 				// New Topic Form	
 				$html .= '<div name="new-topic" id="new-topic"';
@@ -247,7 +247,7 @@ function symposium_forum() {
 					$html .= '<textarea class="new-topic-subject-text" name="new_topic_text">';
 					$html .= ($new_topic_text);
 					$html .= '</textarea></div>';
-					$html .= '<div class="new_topic_text-warning warning">'.__("Please enter a message", "wp-symposium").'</div>';
+					$html .= '<div class="new_topic_text-warning warning" style="display:none">'.__("Please enter a message", "wp-symposium").'</div>';
 					$show_categories = $config->show_categories;
 					$defaultcat = $wpdb->get_var($wpdb->prepare("SELECT cid FROM ".$cats." WHERE defaultcat = 'on'"));
 					if ($show_categories == "on") {
@@ -281,31 +281,6 @@ function symposium_forum() {
 					$html .= '</form>';
 					$html .= '<input id="cancel_post" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.__("Cancel", "wp-symposium").'" />';
 				$html .= '</div>';
-	
-				if ($show != '') {
-					$allow_replies = $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d", $show));
-					// Reply Form
-					if ($show != '' && $allow_replies=="on") {
-						$html .= '<div id="reply-topic" name="reply-topic" style="display:none;">';
-							$html .= '<form id="start-reply-topic" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
-							$html .= '<input type="hidden" name="action" value="reply">';
-							$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
-							$html .= '<input type="hidden" name="tid" value="'.$show.'">';
-							$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
-							$html .= '<div class="reply-topic-subject label">'.__("Reply to this Topic", "wp-symposium").'...</div>';
-							$html .= '<textarea class="reply-topic-subject-text" name="reply_text"></textarea>';
-							$html .= '<div class="reply_text-warning warning">'.__("Please enter a message", "wp-symposium").'</div>';
-							$html .= '<div class="emailreplies label"><input type="checkbox" name="reply_topic_subscribe"';
-							$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = %d and uid = %d", $show, $current_user->ID));
-							$subscribed = false;	
-							if ($subscribed_count > 0) { $html .= ' checked'; $subscribed = true; } 
-							$html .= '> '.__("When I reply, email me when there are more replies to this topic", "wp-symposium").'</div>';
-							$html .= '<input type="submit" class="button" style="float: left" value="'.__("Reply", "wp-symposium").'" />';
-							$html .= '</form>';
-							$html .= '<input id="cancel_reply" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.__("Cancel", "wp-symposium").'" />';
-						$html .= '</div>';
-					}
-				}
 					
 			} else {
 		
@@ -360,11 +335,11 @@ function symposium_forum() {
 					foreach($categories as $category) {
 						$cnt++;
 						if ($cnt&1) {
-							$html .= '<div class="row ';
+							$html .= '<div style="border-radius:0px;-moz-border-radius:0px" class="row ';
 							if ($cnt == $num_cats) { $html .= ' round_bottom_left round_bottom_right'; }
 							$html .= '">';
 						} else {
-							$html .= '<div class="row_odd ';
+							$html .= '<div style="border-radius:0px;-moz-border-radius:0px" class="row_odd ';
 							if ($cnt == $num_cats) { $html .= ' round_bottom_left round_bottom_right'; }
 							$html .= '">';
 						}
@@ -478,6 +453,9 @@ function symposium_forum() {
 		
 					$num_topics = $wpdb->num_rows;
 					
+					// Favourites
+					$favs = get_symposium_meta($current_user->ID, 'forum_favs');
+										
 					if ($query) {
 					
 						$row_cnt=0;
@@ -491,10 +469,10 @@ function symposium_forum() {
 							$reply_views = $wpdb->get_var($wpdb->prepare("SELECT sum(topic_views) FROM ".$topics." WHERE (topic_approved = 'on' OR topic_owner = %d) AND tid = %d", $current_user->ID, $topic->tid));
 									
 							if ($row_cnt&1) {
-								$html .= '<div class="row ';
+								$html .= '<div style="border-radius:0px;-moz-border-radius:0px" class="row ';
 								if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
 							} else {
-								$html .= '<div class="row_odd ';
+								$html .= '<div style="border-radius:0px;-moz-border-radius:0px" class="row_odd ';
 								if ($row_cnt == $num_topics) { $html .= ' round_bottom_left round_bottom_right'; }
 							}
 							$closed_word = strtolower($config->closed_word);
@@ -552,6 +530,11 @@ function symposium_forum() {
 	
 								// Topic Title		
 								$html .= "<div class='row_topic'>";
+
+								if (strpos($favs, "[".$topic->tid."]") === FALSE) { } else {
+									$html .= "<img src='".$plugin."images/star-on.gif' class='floatleft' style='height:12px; width:12px; margin-right:4px;' />";						
+								}								
+								
 								$html .= '<div class="row_link_div"><a href="'.$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($topic->topic_subject).'</a>';
 								if ($topic->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 								if (is_user_logged_in()) {
@@ -632,18 +615,38 @@ function symposium_forum() {
 					}
 	
 					$html .= "<div id='top_of_first_post' style='height:80px'>";
-					$html .= "<div class='avatar' style='margin-bottom:0px'>";
-						$html .= get_user_avatar($post->topic_owner, 64);
-					$html .= "</div>";
-					
-					$html .= "<div class='topic-post-header'>".stripslashes($post->topic_subject);
-					if ($post->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
-					$html .= "</div>";					
-					$html .= "<div class='started-by'>".__("Started by", "wp-symposium")." ".symposium_profile_link($post->topic_owner)." ".symposium_time_ago($post->topic_started)."</div>";
-					$html .= "</div>";
-	
-					$post_text = symposium_make_url(stripslashes($post->topic_post));
-					$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", $post_text)."</div>";
+						
+						$html .= "<div class='avatar' style='margin-bottom:0px'>";
+							$html .= get_user_avatar($post->topic_owner, 64);
+						$html .= "</div>";
+						
+						$html .= "<div class='topic-post-header-with-fav'>";
+						
+							$html .= "<div class='topic-post-header'>";
+								$html .= stripslashes($post->topic_subject);
+						
+								if ($post->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
+
+								// Favourites
+								if ($show != '') {
+									if (strpos(get_symposium_meta($current_user->ID, 'forum_favs'), "[".$show."]") === FALSE) { 
+										$html .= "<img title='".__("Click to add to favourites", "wp-symposium")."' id='fav_link' src='".$plugin."images/star-off.gif' class='floatleftx' style='height:22px; width:22px; cursor:pointer;' alt='".__("Click to add to favourites", "wp-symposium")."' />";						
+									} else {
+										$html .= "<img title='".__("Click to remove to favourites", "wp-symposium")."' id='fav_link' src='".$plugin."images/star-on.gif' class='floatleftx' style='height:22px; width:22px; cursor:pointer;' alt='".__("Click to remove to favourites", "wp-symposium")."' />";						
+									}
+								}
+														
+							$html .= "</div>";					
+						
+
+
+						$html .= "</div>";
+												
+						$html .= "<div class='started-by'>".__("Started by", "wp-symposium")." ".symposium_profile_link($post->topic_owner)." ".symposium_time_ago($post->topic_started)."</div>";
+						$html .= "</div>";
+		
+						$post_text = symposium_make_url(stripslashes($post->topic_post));
+						$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", $post_text)."</div>";
 					
 					$html .= "</div>";
 		
@@ -737,7 +740,7 @@ function symposium_forum() {
 						$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
 						$html .= '<div class="reply-topic-subject label">'.__("Reply to this Topic", "wp-symposium").'</div>';
 						$html .= '<textarea class="reply-topic-text" name="reply_text"></textarea>';
-						$html .= '<div class="quick-reply-warning warning">'.__("Please enter a message", "wp-symposium").'</div>';
+						$html .= '<div class="quick-reply-warning warning" style="display:none">'.__("Please enter a message", "wp-symposium").'</div>';
 						$html .= '<div class="emailreplies label"><input type="checkbox" id="reply_subscribe" name="reply_topic_subscribe"';
 						if ($subscribed_count > 0) { $html .= 'checked'; } 
 						$html .= '> '.__("When I reply, email me when there are more replies to this topic", "wp-symposium").'</div>';
@@ -759,12 +762,21 @@ function symposium_forum() {
 
 		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.		
 		$html .= powered_by_wps();
+
+		// Favourites DIV
+		$html .= "<div id='fav-list' style='display:none; padding:8px;' class='shadow'>";
+		
+		$html .= "<div id='favs_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
+			$html .= "<div id='fav-list-internal' style='clear:both;height:280px;overflow:auto;padding:10px;'>";
+			$html .= "</div>";
+		$html .= "</div>";
+	
 		
 	// End Wrapper
 	$html .= "</div>";
 	
 	$html .= "<div style='clear: both'></div>";
-
+	
 	// Send HTML
 	return $html;
 

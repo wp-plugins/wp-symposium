@@ -389,6 +389,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'register_message')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'show_profile_menu')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'show_wall_extras')) { $status = "X"; }
 
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -589,6 +590,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'extended')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'widget_voted')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_photo')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'forum_favs')) { $status = "X"; }
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -1412,11 +1414,13 @@ function symposium_plugin_options() {
 	        $offline = $_POST[ 'offline' ];
 		    $enable_password = $_POST['enable_password'];
 		    $show_profile_menu = $_POST['show_profile_menu'];
+		    $show_wall_extras = $_POST['show_wall_extras'];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET online = '".$online."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET offline = '".$offline."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET enable_password = '".$enable_password."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_profile_menu = '".$show_profile_menu."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_wall_extras = '".$show_wall_extras."'") );
 			
 			// Update extended fields
 	   		if ($_POST['eid'] != '') {
@@ -2376,6 +2380,8 @@ function symposium_plugin_options() {
 					$offline = $config->offline;
 					$enable_password = $config->enable_password;
 					$show_profile_menu = $config->show_profile_menu;
+					$show_wall_extras = $config->show_wall_extras;
+
 					?>
 						
 					<form method="post" action=""> 
@@ -2388,6 +2394,13 @@ function symposium_plugin_options() {
 					<td>
 					<input type="checkbox" name="show_profile_menu" id="show_profile_menu" <?php if ($show_profile_menu == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Include the menu on the profile page', 'wp-symposium'); ?></span></td> 
+					</tr> 
+
+					<tr valign="top"> 
+					<th scope="row"><label for="show_wall_extras"><?php _e('Profile Info On Wall', 'wp-symposium'); ?></label></th>
+					<td>
+					<input type="checkbox" name="show_wall_extras" id="show_wall_extras" <?php if ($show_wall_extras == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Show summary of profile information on wall', 'wp-symposium'); ?></span></td> 
 					</tr> 
 
 					<tr valign="top"> 

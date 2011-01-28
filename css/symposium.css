@@ -15,144 +15,7 @@
 */
 
 
-#symposium-wrapper #topic-links
-{
-	list-style-type:none;
-	padding: 0;
-	margin: 0;
-	margin-bottom: 15px;
-	color: #000;
-}
 
-#symposium-wrapper #new-topic-link, #reply-topic-link
-{
-	padding: 6px;
-	width: 220px;
-	text-align: center;
-	background-color: #990;
-	cursor: pointer;
-	margin-left: 0;
-}
-
-#symposium-wrapper #new-topic-link:hover, #reply-topic-link:hover
-{
-	background-color: #aa3;
-	color: white;
-}
-
-#symposium-wrapper #new-topic, #symposium-wrapper #edit-topic-div
-{
-	width: 80%;
-	overflow:auto;
-	margin-top: 10px;
-	margin-bottom: 15px;
-	padding-left: 15px;
-	padding-top: 10px;
-	border: 1px solid #000;
-}
-#symposium-wrapper #edit-topic-div
-{
-	display: none;
-	width: 700px;
-	height: 325px;
-}
-#symposium-wrapper .new-topic-subject-text, #symposium-wrapper .reply-topic-subject-text, #symposium-wrapper .reply-topic-text
-{
-	width: 95%;
-	height: 120px;
-	border: 1px solid black;
-	padding: 4px;
-	margin-bottom: 15px;
-	font-family: arial; 
-}
-#symposium-wrapper #reply-topic, #symposium-wrapper #reply-topic-bottom
-{
-	width: 80%;
-	clear: both;
-	overflow: auto;
-	padding-top: 10px;
-	margin-top: 20px;
-}
-#symposium-wrapper #reply-topic {
-	margin-bottom: 10px;
-	padding-left: 15px;
-	border: 1px solid #000;
-}
-
-#symposium-wrapper .emailreplies 
-{
-	margin-bottom: 15px;
-}
-
-#symposium-wrapper .new-topic-category
-{
-}
-
-/* Post and Thread */
-
-#symposium-wrapper #starting-post, #symposium-wrapper #child-posts
-{
-	border: 1px solid #aaa;
-	padding-right: 5px;
-	background-color: #ddd;
-	padding: 10px;
-	clear: both;
-}
-#symposium-wrapper .topic-post-post
-{
-}
-#symposium-wrapper #child-posts
-{
-	background-color: #eee;
-}
-#symposium-wrapper .topic-post-header
-{
-	font-size: 28px;
-	margin-bottom: 24px;
-	padding-top: 6px;
-}
-#symposium-wrapper .started-by
-{
-	color: #aaa;
-	font-style: italic;
-	margin-bottom: 6px;
-}
-#symposium-wrapper .floatright
-{
-	float: right;
-	margin-bottom: 10px;
-}
-#symposium-wrapper .child-reply 
-{
-	clear: both;
-	padding-top: 6px;
-	overflow:auto;
-}
-#symposium-wrapper .avatar 
-{
-	float: left;
-	margin-right: 10px;
-	margin-bottom: 3px;
-}
-#symposium-wrapper child-posts .child-reply .child-reply-post 
-{
-	margin-bottom: 115px;
-}
-#symposium-wrapper child-posts .child-reply .child-reply-post p
-{
-	border: 1px solid red;
-}
-
-
-
-#symposium-wrapper .delete, #symposium-wrapper .delete_post, #symposium-wrapper .edit {
-	float: right;
-	display:none;
-	color: red;
-	font-size: 12px;
-	font-style: normal;
-	text-decoration: none;
-}
 
 
 /* +++++++++++++++++++++++++++++++++++++++++++++++ MAIL +++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -362,6 +225,15 @@
 {
 	background-color: #000;
 	color: #fff;
+}
+
+#symposium-wrapper .delete, #symposium-wrapper .delete_post, #symposium-wrapper .delete_fav, #symposium-wrapper .edit {
+	float: right;
+	display:none;
+	color: red;
+	font-size: 12px;
+	font-style: normal;
+	text-decoration: none;
 }
 
 /* Note: if you are using the free version of WP Symposium, you cannot alter this style. Thank you. */
@@ -682,10 +554,15 @@
 #symposium-wrapper #share_link {
 	clear:both;
 	height: 22px;
+	margin-bottom:6px;
 }
 
 #symposium-wrapper #share_link div {
 	margin-left: 5px;
+}
+#symposium-wrapper #fav_link {
+	margin-left: 5px;
+	margin-right: 3px;
 }
 
 #symposium-wrapper #share_label {
@@ -837,3 +714,146 @@
 	padding-left:8px;
 	padding-top:13px;
 }
+
+#symposium-wrapper #topic-links
+{
+	list-style-type:none;
+	padding: 0;
+	margin: 0;
+	margin-bottom: 15px;
+	color: #000;
+}
+
+#symposium-wrapper #new-topic-link, #reply-topic-link
+{
+	padding: 6px;
+	width: 220px;
+	text-align: center;
+	background-color: #990;
+	cursor: pointer;
+	margin-left: 0;
+}
+
+#symposium-wrapper #new-topic-link:hover, #reply-topic-link:hover
+{
+	background-color: #aa3;
+	color: white;
+}
+
+#symposium-wrapper #new-topic, #symposium-wrapper #edit-topic-div, #symposium-wrapper #fav-list
+{
+	width: 80%;
+	overflow:auto;
+	margin-top: 10px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	padding-top: 10px;
+	border: 1px solid #000;
+}
+#symposium-wrapper #edit-topic-div, #symposium-wrapper #fav-list
+{
+	display: none;
+	width: 700px;
+	height: 325px;
+}
+#symposium-wrapper .new-topic-subject-text, #symposium-wrapper .reply-topic-subject-text, #symposium-wrapper .reply-topic-text
+{
+	width: 95%;
+	height: 120px;
+	border: 1px solid black;
+	padding: 4px;
+	margin-bottom: 15px;
+	font-family: arial; 
+	z-index: 99999999;
+}
+#symposium-wrapper #reply-topic, #symposium-wrapper #reply-topic-bottom
+{
+	width: 80%;
+	clear: both;
+	overflow: auto;
+	padding-top: 10px;
+	margin-top: 20px;
+}
+#symposium-wrapper #reply-topic {
+	margin-bottom: 10px;
+	padding-left: 15px;
+	border: 1px solid #000;
+}
+
+#symposium-wrapper .emailreplies 
+{
+	margin-bottom: 15px;
+}
+
+#symposium-wrapper .new-topic-category
+{
+}
+
+/* Post and Thread */
+
+#symposium-wrapper #starting-post, #symposium-wrapper #child-posts
+{
+	border: 1px solid #aaa;
+	padding-right: 5px;
+	background-color: #ddd;
+	padding: 10px;
+	clear: both;
+}
+#symposium-wrapper .topic-post-post
+{
+}
+#symposium-wrapper #child-posts
+{
+	background-color: #eee;
+}
+#symposium-wrapper .topic-post-header-with-fav
+{
+	overflow:auto;
+	padding:0px;
+}
+#symposium-wrapper .topic-post-header
+{
+	font-size: 28px;
+	line-height: 32px;
+	margin-bottom: 0px;
+	padding-top: 0px;
+	float: left;
+}
+#symposium-wrapper .started-by
+{
+	color: #aaa;
+	font-style: italic;
+	margin-bottom: 6px;
+}
+#symposium-wrapper .floatright
+{
+	float: right;
+	margin-bottom: 10px;
+}
+#symposium-wrapper .floatleft
+{
+	float: left;
+	margin-bottom: 10px;
+}
+#symposium-wrapper .child-reply 
+{
+	clear: both;
+	padding-top: 6px;
+	overflow:auto;
+}
+#symposium-wrapper .avatar 
+{
+	float: left;
+	margin-right: 10px;
+	margin-bottom: 3px;
+}
+#symposium-wrapper child-posts .child-reply .child-reply-post 
+{
+	margin-bottom: 115px;
+}
+#symposium-wrapper child-posts .child-reply .child-reply-post p
+{
+	border: 1px solid red;
+}
+
+
