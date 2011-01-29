@@ -1367,8 +1367,21 @@ jQuery(document).ready(function() {
 	    	jQuery("#symposium-who-online_close").click(function() {
 				jQuery('#symposium-who-online').hide("fast");
 	    	});
+	    	jQuery("#symposium-chatroom-box").click(function() {
+				jQuery('#symposium-chatroom').show("fast");
+				createCookie('wps_chatroom','show',7);
+	    	});
+	    	jQuery("#symposium-chatroom_close").click(function() {
+				jQuery('#symposium-chatroom').hide("fast");
+				eraseCookie('wps_chatroom');
+	    	});
 			
 		}
+
+		// Make chats draggable
+		jQuery('#symposium-chatroom').draggable();
+		jQuery('#symposium-who-online').draggable();
+		jQuery('.chat_window').draggable();
 	
 		// Scheduled checks for chat/unread mail/etc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if (symposium.current_user_id > 0 ) {
@@ -1381,13 +1394,61 @@ jQuery(document).ready(function() {
 		   	}, symposium.bar_polling*1000); // Delay to check for new mail, etc
 		   	
 			do_chat_check();
+	   		do_chatroom_check();
 			var refreshChatId = setInterval(function()
 		   	{
 		   		do_chat_check();
+		   		do_chatroom_check();
 		   	}, symposium.chat_polling*1000); // Delay to check for new messages
 	
 		}
+
+		// Chatroom Clear ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		jQuery("#symposium-chatroom_clear").live('click', function() {
 	
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+				type: "POST",
+				data: ({
+					action:'symposium_clear_chatroom'
+				}),
+			    dataType: "html",
+				async: false,
+				success: function(str){
+					jQuery("#chatroom_messages").html('');
+				},
+				error: function(err){
+					//alert("25:"+err);
+				}		
+		  	});
+		  	
+	   	});	   	
+	   		
+		// Chatroom Change Size ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		jQuery("#symposium-chatroom_max").live('click', function() {
+			var hm = jQuery('#chatroom_messages').height();
+			var hc = jQuery('#symposium-chatroom').height();
+			if (hm < 400) {
+//				jQuery('#chatroom_messages').animate({ height: hm+400 }, 500 );
+//				jQuery('#symposium-chatroom').animate({ height: hc+400 }, 500 );
+				jQuery('#chatroom_messages').height(hm+400);
+				jQuery('#symposium-chatroom').height(hc+400);
+				jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+				jQuery('#symposium-chatroom_max').hide();
+				jQuery('#symposium-chatroom_min').show();	
+			}
+		});
+		jQuery("#symposium-chatroom_min").live('click', function() {
+			var hm = jQuery('#chatroom_messages').height();
+			var hc = jQuery('#symposium-chatroom').height();
+			if (hm > 400) {
+				jQuery('#chatroom_messages').height(hm-400).attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+				jQuery('#symposium-chatroom').height(hc-400);
+				jQuery('#symposium-chatroom_max').show();
+				jQuery('#symposium-chatroom_min').hide();
+			}
+		});
+	   		
 		// Chat Window Close ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		jQuery(".chat_close").live('click', function() {
 	
@@ -1416,7 +1477,7 @@ jQuery(document).ready(function() {
 		  	});
 		  	
 	   	});
-		
+
 		// Type in Chat Window ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		jQuery('.chat_message').keypress(function(event) {
 			if (event.which == 13) {
@@ -1448,6 +1509,37 @@ jQuery(document).ready(function() {
 					}		
 			  	});
 				
+			}
+		});
+		
+		// Type in ChatRoom Window ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		jQuery('#chatroom_textarea').keypress(function(event) {
+			if (event.which == 13) {
+				var msg = jQuery(this).val();
+				jQuery.trim(msg);
+				jQuery(this).val('');
+				event.preventDefault();
+
+				if (msg != '') {
+					jQuery.ajax({
+						url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+						type: "POST",
+						data: ({
+							action:'symposium_addchatroom',
+							chat_from:symposium.current_user_id,
+							chat_message:msg
+						}),
+					    dataType: "html",
+						async: false,
+						success: function(str) {
+							jQuery('#chatroom_messages').append('<div style="clear:both;font-weight:bold">'+str+'</div>');
+							jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+						},
+						error: function(err){
+							//alert("17:"+err);
+						}		
+				  	});
+				}
 			}
 		});
 		
@@ -1554,7 +1646,7 @@ jQuery(document).ready(function() {
 		
 });
 
-// For Notification Bar
+// For Notification Bar (chat windows)
 function do_chat_check() {
 
   	var numChatWindows = 3; // Should equal number of chat windows set up in symposium_bar.php
@@ -1648,9 +1740,9 @@ function do_chat_check() {
 								if (msg.indexOf('[start]') < 0) { 
 									if (!(msg.indexOf('[closed-'+other+']') >= 0)) {
 										if (from != other) {
-											jQuery('#chat'+w+'_message').append('<span style="color:#003">'+msg+'</span><br />');
+											jQuery('#chat'+w+'_message').append('<span style="color:#006">'+msg+'</span><br />');
 										} else {
-											jQuery('#chat'+w+'_message').append('<span style="color:#633">'+msg+'</span><br />');
+											jQuery('#chat'+w+'_message').append('<span style="color:#600">'+msg+'</span><br />');
 										}
 									}
 								} else {
@@ -1696,6 +1788,37 @@ function do_chat_check() {
 		},
 		error: function(err){
 			//alert("19:"+err);
+		}		
+  	});
+		   	
+}	
+function do_chatroom_check() {
+
+	if(!(jQuery('#symposium-chatroom').is(':visible'))) {	
+		var show_chatroom = readCookie('wps_chatroom');
+		if (show_chatroom == "show") {	
+			jQuery('#symposium-chatroom').show("fast");
+			jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+		}
+	}
+		
+	jQuery.ajax({
+		url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+		type: "POST",
+		data: ({
+			action:"symposium_getchatroom",
+			use_chat:symposium.use_chat,
+			inactive:symposium.inactive,
+			offline:symposium.offline
+		}),
+	    dataType: "html",
+		async: true,
+		success: function(str){
+			jQuery('#chatroom_messages').html(str);
+			jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+		},
+		error: function(err){
+			//alert("24:"+err);
 		}		
   	});
 		   	
@@ -1811,6 +1934,7 @@ function do_bar_check() {
 	
 }		
 
+// Cookies
 function removeHTMLTags(strInputCode){
  	strInputCode = strInputCode.replace(/&(lt|gt);/g, function (strMatch, p1){
 	 	return (p1 == "lt")? "<" : ">";
@@ -1818,6 +1942,32 @@ function removeHTMLTags(strInputCode){
 	var strTagStrippedText = strInputCode.replace(/<\/?[^>]+(>|$)/g, "");
 	return strTagStrippedText;	
 }
+
+function createCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+
+function eraseCookie(name) {
+	createCookie(name,"",-1);
+}
+
 
 // Form validations
 function validate_form(thisform)

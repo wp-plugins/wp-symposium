@@ -7,6 +7,42 @@ include_once('../symposium_functions.php');
 global $wpdb, $current_user;
 wp_get_current_user();
 
+// Clear chatoom
+if ($_POST['action'] == 'symposium_clear_chatroom') {
+
+	global $wpdb;
+	
+   	$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_to = -1";
+	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
+	
+	echo "OK";
+	exit;
+
+}
+
+// Add to chatroom
+if ($_POST['action'] == 'symposium_addchatroom') {
+
+   	global $wpdb;
+   	$chat_from = $_POST['chat_from'];
+   	$chat_message = $_POST['chat_message'];
+   	$r = '';
+
+	if ( $rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_chat", array( 
+		'chat_to' => -1, 
+		'chat_from' => $chat_from, 
+		'chat_message' => $chat_message
+	) ) ) {
+		$r.= stripslashes($chat_message);
+	} else {
+		$r .= $wpdb->last_query;
+	}
+   	
+   	echo $r;
+   	exit;
+
+}
+
 // Get friends online
 if ($_POST['action'] == 'symposium_getfriendsonline') {
 	
@@ -116,6 +152,7 @@ if ($_POST['action'] == 'symposium_getchat') {
 	$sql .= "chat_from = ".$me;
 	$sql .= " OR chat_to = ".$me;
 	$sql .= ")";
+	$sql .= " AND chat_to > 0 ";
 	$sql .= "ORDER BY chid";
 
 	$chats = $wpdb->get_results($sql);
@@ -123,7 +160,7 @@ if ($_POST['action'] == 'symposium_getchat') {
 		foreach ($chats as $chat) {
 			
 			$results .= $chat->chat_from.'[|]'.$chat->chat_to.'[|]'.stripslashes($chat->chat_message).'[|]';
-			$last_message = $chat->chat_from.'[|]'.$chat->chat_to.'[|]<span style="color:#aaa">Last message '.symposium_time_ago($chat->chat_timestamp).'.</a>[|]';
+			$last_message = $chat->chat_from.'[|]'.$chat->chat_to.'[|]<span style="color:#aaa">'.__('Last message', 'wp-symposium').' '.symposium_time_ago($chat->chat_timestamp).'.</a>[|]';
 
 			if ($chat->chat_from == $me) {
 				$results .= $chat->toname."[|]";
@@ -167,6 +204,96 @@ if ($_POST['action'] == 'symposium_getchat') {
    	exit;
 	
 }
+
+// Get chatroom for updates
+if ($_POST['action'] == 'symposium_getchatroom') {
+
+   	global $wpdb;
+
+	$use_chat = $_POST['use_chat'];	
+   	$inactive = $_POST['inactive'];
+   	$offline = $_POST['offline'];
+   	$results = '';
+   	
+   	// clear rogue chats
+   	$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_to = 0 OR chat_from = 0";
+	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
+
+	// get messages
+	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
+	$sql .= "FROM wp_symposium_chat c ";
+	$sql .= "LEFT JOIN ".$wpdb->prefix."users u1 ON c.chat_from = u1.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->prefix."users u2 ON c.chat_to = u2.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
+	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
+	$sql .= "WHERE chat_to = -1 ";
+	$sql .= "ORDER BY chid";
+
+	$c = 0;
+	$time_now = time();
+	$chats = $wpdb->get_results($sql);
+	if ($chats) {
+		foreach ($chats as $chat) {
+			
+			$c++;
+			
+			if ($c > 30) { break; }
+
+			$last_active_minutes = strtotime($chat->fromlast);
+			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
+			if ($last_active_minutes >= $offline) {
+				$status_img = WP_PLUGIN_URL.'/wp-symposium/images/loggedout.gif';
+			} else {
+				if ($last_active_minutes >= $inactive) {
+					$status_img = WP_PLUGIN_URL.'/wp-symposium/images/inactive.gif';
+				} else {
+					$status_img = WP_PLUGIN_URL.'/wp-symposium/images/online.gif';
+				}
+			}
+						
+			if ($c&1) {
+				$results .= "<div style='clear:both;color:#006; font-style:normal;'>";
+			} else {
+				$results .= "<div style='clear:both;color:#600; font-style:normal;'>";
+			}
+			$results .= symposium_make_url(stripslashes($chat->chat_message))."</span>";
+			$results .= "</div>";
+
+			$results .= "<div style='clear:both; float:right; color:#aaa; font-style:italic;'>";
+			
+			$results .= "<img src='".$status_img."' title='".$status_img."' />&nbsp;";
+
+			if ( $use_chat != 'on' ) {
+				if (function_exists('symposium_profile')) {	
+					$results .= "<a class='symposium_offline_name' href='".symposium_get_url('profile')."?uid=".$chat->chat_from."'>";
+					$results .= "<span title='".$friend->friend_to."'>".$chat->fromname."</span>";
+					$results .= "</a>";
+				} else {
+					$results .= $chat->fromname;
+				}
+			} else {
+				$results .= "<span class='symposium_online_name' title='".$chat->chat_from."'>".$chat->fromname."</span>";
+			}
+
+			$results .= ", ".symposium_time_ago($chat->chat_timestamp).'</div>';
+		}
+
+		// Check for banned words
+		$chatroom_banned = $wpdb->get_var($wpdb->prepare("SELECT chatroom_banned FROM ".$wpdb->prefix."symposium_config"));
+
+		$badwords = $pieces = explode(",", $chatroom_banned);
+		
+		 for($i=0;$i < sizeof($badwords);$i++){
+		 	$results=eregi_replace($badwords[$i], "***", $results);
+		 }
+
+	}
+
+   	echo $results;
+   	exit;
+	
+}
+
 
 // Add to chat
 if ($_POST['action'] == 'symposium_addchat') {

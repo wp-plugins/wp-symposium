@@ -77,7 +77,7 @@ if ($_POST['action'] == 'menu_extended') {
 					$label = $wpdb->get_var($wpdb->prepare("SELECT extended_name FROM ".$wpdb->prefix."symposium_extended WHERE eid = ".$split[0]));
 					$html .= "<div style='clear: both; margin-bottom:15px;overflow: auto;'>";
 					$html .= "<div style='font-weight:bold; float:left;'>".$label."</div>";
-					$html .= "<div style='float:right'>".$split[1]."</div>";
+					$html .= "<div style='float:right; text-align:right;'>".symposium_make_url($split[1])."</div>";
 					$html .= "</div>";
 				}
 			}

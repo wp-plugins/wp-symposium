@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.31
+Version: 0.1.32
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -54,6 +54,7 @@ function add_notification_bar()
 			}
 			$border_radius = $config->border_radius;
 			$use_chat = $config->use_chat;
+			$use_chatroom = $config->use_chatroom;
 			$bar_polling = ($config->bar_polling*1000);
 			$chat_polling = ($config->chat_polling*1000);
 			$use_wp_profile = $config->use_wp_profile;
@@ -93,6 +94,12 @@ function add_notification_bar()
 					<?php if (!function_exists('symposium_profile')) {
 						echo 'display: none';
 					}?>
+				}
+				
+				#symposium-chatroom-box {
+					background-image:url('<?php echo $plugin; ?>/images/chatroom.gif');
+					border-radius: <?php echo $border_radius; ?>px;
+					-moz-border-radius: <?php echo $border_radius; ?>px;
 				}
 				
 				.symposium-email-box {
@@ -141,6 +148,11 @@ function add_notification_bar()
 				</div>
 	
 				<?php if (is_user_logged_in()) {
+					// Chat room
+					if ($use_chatroom == 'on') {
+						echo "<div id='symposium-chatroom-box'></div>";
+					}
+
 					// Pending Friends
 					if (function_exists('symposium_profile')) {
 						echo "<div id='symposium-friends-box' title='".__("Go to Friends", "wp-symposium")."' class='symposium-friends-box symposium-friends-box-none'>";
@@ -230,6 +242,29 @@ function add_notification_bar()
 														
 					echo "</div>";
 					
+					// DIV for chat room
+					if ($use_chatroom == 'on') {
+						echo "<div id='symposium-chatroom'>";
+						
+							echo "<div id='symposium-chatroom_header'>";
+								echo "<div id='symposium-chatroom_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";
+								echo "<div id='symposium-chatroom_max' style='margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/max.gif' title='Maximize' /></div>";
+								echo "<div id='symposium-chatroom_min' style='display:none; margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/min.gif' title='Maximize' /></div>";
+								if (symposium_get_current_userlevel() == 5) {
+									echo "<div id='symposium-chatroom_clear' style='margin-right:5px;float:right;cursor:pointer;'>".__("Clear all", "wp-symposium")."</div>";
+								}
+							_e("Chat Room", "wp-symposium");
+							echo "</div>";
+							echo "<div id='chatroom_messages'>";
+							echo __("Retrieving chat...", "wp-symposium");
+							echo "</div>";
+							echo "<div id='chatroom_typing_area'>";
+								echo "<textarea id='chatroom_textarea' class='chatroom_message' onclick='if (this.value == \"".__("Type here...", "wp-symposium")."\") { this.value=\"\"; }'>".__("Type here...", "wp-symposium")."</textarea>";
+							echo "</div>";
+																					
+						echo "</div>";
+					}
+					
 					// set up chat windows (should match numChatWindows in function do_chat_check() in symposium_bar.js)
 					if ($use_chat == 'on') {
 						for ($w = 1; $w <= 3; $w++) {
@@ -238,7 +273,10 @@ function add_notification_bar()
 					}
 					
 				echo "</div>";
-			
+				
+
+	        
+	        			
 			}
 	
 		}
@@ -262,7 +300,7 @@ function addChatWindow($id) {
 		echo "<div id='chat".$id."_message' style='width:176px; height:170px;overflow:auto;padding:2px;padding-bottom:7px;'>";
 		echo "</div>";
 		echo "<div style='width:180px; height:40px;'>";
-			echo "<textarea id='chat".$id."_textarea' class='chat_message' onclick='if (this.value == \"Type here...\") { this.value=\"\"; }' style='background-color:#efefef;border:0px;width:176px;height:34px;'>Type here...</textarea>";
+			echo "<textarea id='chat".$id."_textarea' class='chat_message' onclick='if (this.value == \"".__("Type here...", "wp-symposium")."\") { this.value=\"\"; }' style='background-color:#efefef;border:0px;width:176px;height:34px;'>".__("Type here...", "wp-symposium")."</textarea>";
 		echo "</div>";
 	echo "</div>";
 	

@@ -1106,4 +1106,5 @@ function powered_by_wps() {
 
 	return "<div id='powered_by_wps'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
 }
+
 ?>

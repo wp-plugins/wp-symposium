@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.31
+Version: 0.1.32
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -173,8 +173,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.31";
-	$symposium_db_ver = 31;
+	$symposium_version = "0.1.32";
+	$symposium_db_ver = 32;
 	
 	// Code version *************************************************************************************
 	$ver = get_option("symposium_version");
@@ -247,6 +247,16 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "show_profile_menu", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "show_wall_extras", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
+	symposium_alter_table("config", "ADD", "bar_position", "varchar(6)", "NOT NULL", "'bottom'");
+	symposium_alter_table("config", "ADD", "bar_label", "text", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "use_chat", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "bar_polling", "int(11)", "NOT NULL", "'120'");
+	symposium_alter_table("config", "ADD", "chat_polling", "int(11)", "NOT NULL", "'10'");
+	symposium_alter_table("config", "ADD", "visitors", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "use_chatroom", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "chatroom_banned", "text", "", "''");
+	symposium_alter_table("config", "ADD", "poke", "varchar(32)", "NOT NULL", "'Poke'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
@@ -260,15 +270,11 @@ function symposium_activate() {
 	// Modify Friends table
 	symposium_alter_table("friends", "MODIFY", "friend_timestamp", "datetime", "", "");
 
+	// Modify Friends table
+	symposium_alter_table("chat", "ADD", "chat_room", "int(11)", "NOT NULL", "'x0'");
+
 	// Modify Notification bar table
-	symposium_alter_table("config", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
-	symposium_alter_table("config", "ADD", "bar_position", "varchar(6)", "NOT NULL", "'bottom'");
-	symposium_alter_table("config", "ADD", "bar_label", "text", "NOT NULL", "''");
 	symposium_alter_table("notifications", "ADD", "notification_old", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "use_chat", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "bar_polling", "int(11)", "NOT NULL", "'120'");
-	symposium_alter_table("config", "ADD", "chat_polling", "int(11)", "NOT NULL", "'10'");
-	symposium_alter_table("config", "ADD", "visitors", "varchar(2)", "NOT NULL", "'on'");
 
 	// Modify user meta table
 	symposium_alter_table("usermeta", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
@@ -761,7 +767,7 @@ function add_symposium_stylesheet() {
 	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix . 'symposium_config'));
 	if ($jquery=="on" && !is_admin()) {
 
-        wp_register_style('symposium_jquery-ui-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery-ui.css');
+        wp_register_style('symposium_jquery-ui-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery-ui-1.8.9.custom.css');
         wp_enqueue_style('symposium_jquery-ui-css');
 
 	}    
@@ -793,7 +799,7 @@ function js_init() {
 			wp_enqueue_script('jquery');	 		
 		}
 		if ($jquery->jqueryui == "on") {
-	 		wp_enqueue_script('jquery-ui-custom', $plugin.'/js/jquery-ui-1.8.8.custom.min.js', array('jquery'));	
+	 		wp_enqueue_script('jquery-ui-custom', $plugin.'/js/jquery-ui-1.8.9.custom.min.js', array('jquery'));	
 		}	
 
 	}		

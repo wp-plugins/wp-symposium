@@ -6,13 +6,15 @@ Link: http://www.wpsymposium.com
 Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.31
+Stable tag: 0.1.32
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
 == Description ==
 
 WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! You simply choose which you want to activate!
+
+Before using, please read the legal section at the end of the admin guide, that can be downloaded at http://www.wpsymposium.com/download-install.
 
 ---------------
 
@@ -327,6 +329,13 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.32 =
+
+* Notification Bar: Added Chatroom
+* Notification Bar: Chat windows and chatroom can be dragged around screen
+* Forum: Added login link after prompt to do so if not logged in
+* Other minor bug fixes and changes
 
 = 0.1.31 =
 

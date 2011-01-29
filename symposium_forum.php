@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.31
+Version: 0.1.32
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -133,7 +133,9 @@ function symposium_forum() {
 									
 		$html .= "<div class='floatright'>";
 
-			$html .= "<a id='show_favs' class='label' href='javascript:void(0)'>".__("Favourites", "wp-symposium")."</a>";
+			if (is_user_logged_in()) {
+				$html .= "<a id='show_favs' class='label' href='javascript:void(0)'>".__("Favourites", "wp-symposium")."</a>";
+			}
 
 			if ($cat_id > 0) {
 				if ($show != '') {
@@ -285,6 +287,11 @@ function symposium_forum() {
 			} else {
 		
 				$html .= __("Until you login, you can only view the forum.", "wp-symposium");
+				if ($config->use_wp_login == "on") {
+					$html .= " <a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='".__("Login", "wp-symposium")."'>".__("Login", "wp-symposium").".</a>";
+				} else {
+					$html .= ' <a href="'.$config->custom_login_url.'?redirect_to='.get_permalink().'">'.__("Login", "wp-symposium").'.</a>';
+				}
 				$html .= "<br />";
 		
 			}

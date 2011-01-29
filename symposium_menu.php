@@ -369,6 +369,8 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'online')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'offline')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_chat')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'use_chatroom')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'chatroom_banned')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'bar_polling')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'chat_polling')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_wp_profile')) { $status = "X"; }
@@ -390,6 +392,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'show_profile_menu')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'show_wall_extras')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'poke')) { $status = "X"; }
 
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -1381,6 +1384,8 @@ function symposium_plugin_options() {
 	        $bar_position = $_POST[ 'bar_position' ];
 	        $bar_label = $_POST[ 'bar_label' ];
 	        $use_chat = $_POST[ 'use_chat' ];
+	        $use_chatroom = $_POST[ 'use_chatroom' ];
+	        $chatroom_banned = $_POST[ 'chatroom_banned' ];
 	        $bar_polling = $_POST[ 'bar_polling' ];
 	        $chat_polling = $_POST[ 'chat_polling' ];
 	        $use_wp_profile = $_POST[ 'use_wp_profile' ];
@@ -1394,6 +1399,8 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_position = '".$bar_position."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_label = '".$bar_label."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chat = '".$use_chat."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chatroom = '".$use_chatroom."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chatroom_banned = '".$chatroom_banned."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_polling = '".$bar_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chat_polling = '".$chat_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_profile = '".$use_wp_profile."'") );					
@@ -1415,12 +1422,14 @@ function symposium_plugin_options() {
 		    $enable_password = $_POST['enable_password'];
 		    $show_profile_menu = $_POST['show_profile_menu'];
 		    $show_wall_extras = $_POST['show_wall_extras'];
+		    $poke = $_POST['poke'];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET online = '".$online."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET offline = '".$offline."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET enable_password = '".$enable_password."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_profile_menu = '".$show_profile_menu."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_wall_extras = '".$show_wall_extras."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET poke = '".$poke."'") );
 			
 			// Update extended fields
 	   		if ($_POST['eid'] != '') {
@@ -1821,6 +1830,8 @@ function symposium_plugin_options() {
 					$bar_position = $config->bar_position;
 					$bar_label = $config->bar_label;
 					$use_chat = $config->use_chat;
+					$use_chatroom = $config->use_chatroom;
+					$chatroom_banned = $config->chatroom_banned;
 					$bar_polling = $config->bar_polling;
 					$chat_polling = $config->chat_polling;
 					$use_wp_profile = $config->use_wp_profile;
@@ -1887,6 +1898,20 @@ function symposium_plugin_options() {
 					<input type="checkbox" name="use_chat" id="use_chat" <?php if ($use_chat == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Real-time chat windows', 'wp-symposium'); ?></span></td> 
 					</tr> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="use_chatroom">Enable chatroom</label></th>
+					<td>
+					<input type="checkbox" name="use_chatroom" id="use_chatroom" <?php if ($use_chatroom == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Real-time chatroom (chat seen by all members)', 'wp-symposium'); ?></span></td> 
+					</tr> 
+
+					<tr valign="top"> 
+					<th scope="row"><label for="chatroom_banned">Banned chatroom words</label></th> 
+					<td><input name="chatroom_banned" type="text" id="chatroom_banned"  value="<?php echo $chatroom_banned; ?>" /> 
+					<span class="description"><?php echo __('Comma separated list of words not allowed in the chatroom', 'wp-symposium'); ?></td> 
+					</tr> 
+								
 				
 					<tr valign="top"> 
 					<th scope="row"><label for="bar_polling">Polling Intervals</label></th> 
@@ -2381,6 +2406,7 @@ function symposium_plugin_options() {
 					$enable_password = $config->enable_password;
 					$show_profile_menu = $config->show_profile_menu;
 					$show_wall_extras = $config->show_wall_extras;
+					$poke = $config->poke;
 
 					?>
 						
@@ -2389,6 +2415,12 @@ function symposium_plugin_options() {
 				
 					<table class="form-table"> 
 				
+					<tr valign="top"> 
+					<th scope="row"><label for="poke"><?php _e('Member poke', 'wp-symposium'); ?></label></th> 
+					<td><input name="poke" type="text" id="poke"  value="<?php echo $poke; ?>" /> 
+					<span class="description"><?php echo __('The word used to "Poke" other members, leave blank to deactivate', 'wp-symposium'); ?></td> 
+					</tr> 
+
 					<tr valign="top"> 
 					<th scope="row"><label for="show_profile_menu"><?php _e('Show Profile Menu', 'wp-symposium'); ?></label></th>
 					<td>
