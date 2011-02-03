@@ -614,7 +614,7 @@ jQuery(document).ready(function() {
 		comment = comment + "</div>";
 		comment = comment + "</div>";			
 		comment = comment + "<div class='add_wall_post_avatar'>";
-		comment = comment + jQuery('#profile_photo').html().replace(/200/g, '64');		
+		comment = comment + jQuery('#symposium_current_user_avatar').html().replace(/200/g, '64');		
 		comment = comment + "</div>";	
 
 		jQuery("#symposium_comment").val('');
@@ -654,10 +654,10 @@ jQuery(document).ready(function() {
 		comment = comment + "</div>";
 		comment = comment + "</div>";			
 		comment = comment + "<div class='wall_reply_avatar'>";
-		comment = comment + jQuery('#profile_photo').html().replace(/200/g, '40');		
+		comment = comment + jQuery('#symposium_current_user_avatar').html().replace(/200/g, '40');		
 		comment = comment + "</div>";	
 		comment = comment + "</div>";
-
+		
 		jQuery(comment).appendTo('#symposium_comment_'+comment_id).hide().slideDown("slow");
 		jQuery("#symposium_reply_"+comment_id).val('');
 

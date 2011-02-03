@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.33
+Version: 0.1.33.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -173,7 +173,7 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.33";
+	$symposium_version = "0.1.33.1";
 	$symposium_db_ver = 33;
 	
 	// Code version *************************************************************************************
@@ -554,12 +554,17 @@ function symposium_redirect_logout() {
 function symposium_lastactivity() {
    	global $wpdb, $current_user;
 	wp_get_current_user();
-			
+	
+	// Powered by message		
 	if (is_user_logged_in()) {
 		update_symposium_meta($current_user->ID, 'last_activity', "'".date("Y-m-d H:i:s")."'");
 	}
-
 	echo powered_by_wps();
+
+	// Place hidden div of current user to use when adding to screen
+	echo "<div id='symposium_current_user_avatar' style='display:none;'>";
+	echo get_user_avatar($current_user->ID, 200);
+	echo "</div>";
 	
 }
 
@@ -979,7 +984,6 @@ function symposium_scriptsAction()
 		'row_border_style' => $row_border_style,
 		'text_color_2' => $text_color_2
 	));
-
 
 }
 

@@ -1806,7 +1806,7 @@ function symposium_plugin_options() {
 					
 					<p><strong>Note from the author</strong></p>
 					<p>
-					I pleased to let you know that we are fast approaching a stable release candidate, but you all keep coming with new ideas to sneak in.....!
+					The demo site is now hosted on the Amazon EC2 cloud. If you are interested in the technology, this is for you... the website is hosting on an Ubuntu LAMP EC2 instance, with a separate RDS relational database server and an S3 content delivery network.
 					</p>
 					<p>
 					Check out the <a href='http://WordPress.org/extend/plugins/wp-symposium/changelog/'>change log</a> for the list of new additions/changes/fixes...
@@ -1820,7 +1820,7 @@ function symposium_plugin_options() {
 					</p>
 					<p>
 					<em>Simon</em><br />
-					January 2011
+					February 2011
 					</p>
 					
 					<?php
