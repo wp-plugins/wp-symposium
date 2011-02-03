@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symnposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 0.1.32
+Stable tag: 0.1.33
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -28,7 +28,7 @@ Before using, please read the legal section at the end of the admin guide, that 
 * Forum
 * Mail/Private Messaging
 * Friends
-* Chat Windows
+* Chat Windows and Chat Room
 * Wall/Activity
 * Members Directory
 * Registration
@@ -128,6 +128,7 @@ Simply activate the plugin to use the notification bar and chat windows.
 * Icons will highlighted with the number of unread messages or friend requests.
 * Clicking the friends online icon, will display which friends are online, not active and logged out.
 * Clicking on a friends name will open a chat window (and on the recipients screen) for real time chatting.
+* Site wide Chat Room
 
 *Settings*
 
@@ -321,7 +322,7 @@ A. Check out www.wpsymposium.com/support/add-new-language to see if yours is sup
 Q. Are there images other than smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Forum Smilies page at http://www.wpsymposium.com/forum/forum-smilies
 
-Q. Will WP Symposium work on WPMU?
+Q. Will WP Symposium work on WPMU/WPMS?
 A. Sorry no, not at the moment - but it's planned to get this working at some point.
 
 Q. I don't see friends when they're online, can't edit forum posts or read all mail in my inbox. Not much works...
@@ -329,6 +330,17 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 
 
 == Changelog ==
+
+= 0.1.33 =
+
+* Profile: Wall: Posts and replies now instant
+* Profile: Added shortcodes: `[symposium-menu]` and `[symposium-member-header]` - please refer to admin guide
+* Profile: Moved Google location map to My Profile information
+* Admin Option: How many days old chat messages should be, to be purged
+* Admin Option: Width of Google location map
+* Core: Added function symposium_members('bar') for use in PHP that displays members search - please refer to admin guide
+* Core: Fixed CSS problems and tidied up loads
+* Core: Tons of minor changes
 
 = 0.1.32 =
 
@@ -349,7 +361,7 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 = 0.1.30.1 =
 
 * Profile: Added 'Profile' menu link for extended information
-* Profile: Added shortcode [symposium-extended] - please refer to admin guide
+* Profile: Added shortcode `[symposium-extended]` - please refer to admin guide
 * Profile: Added 'My...' to make it clearer which page your are on
 * Admin: Added delete to Extended Fields
 * Mail: Fixed so that inbox shows after sending a mail with correct tab
@@ -361,7 +373,7 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 * Profile: Friend Request/Cancel and Accept/Reject/Remove now AJAX enabled
 * Profile: Preferences and Personal are now AJAX enabled
 * Profile: Sub-menu on left is now optional (allowing admin's to arrange their pages)
-* Profile: Added shortcodes [symposium-activity] and [symposium-all] - please refer to admin guide
+* Profile: Added shortcodes `[symposium-activity]` and `[symposium-all]` - please refer to admin guide
 * Admin: Profile: Field names are just labels, can be renamed without losing data
 * Core: minor bug fixes
 
@@ -405,7 +417,7 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 * Profile: Wall: Now delivered via AJAX (preparing for photos, etc all via AJAX)
 * Profile: Wall: Can now view a single post and replies (such as link sent via notification emails)
 * Profile: Preferences, Personal and Friends all delivered via AJAX "within" profile page
-* Profile: Added [symposium-settings], [symposium-personal] and [symposium-friends] shortcodes
+* Profile: Added `[symposium-settings]`, `[symposium-personal]` and `[symposium-friends]` shortcodes
 * Registration: Optional message to be sent to new members
 * Languages: Added Swedish
 
@@ -627,13 +639,13 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 * Added: Change font family and size for headings and body text
 * Added: Link in email notifications to stop receiving them
 * Fixed: Some overlooked language sentences
-* Fixed: Microsoft opacity for [closed] tag
+* Fixed: Microsoft opacity for `[closed]` tag
 * Changed: z-index of please wait/saving messages so they appear on top of other div's
 
 = 0.1.9 =
 
 * Added: Style option for main background color
-* Added: Style option for opacity of topics with [closed] in the subject
+* Added: Style option for opacity of topics with `[closed]` in the subject
 * Added: Option to change the "opacity trigger word" from closed
 * Added: Links in email notifications
 * Added: Italian language (thanks to Luca Trovato)
@@ -703,7 +715,7 @@ A. Sounds like AJAX isn't working - check on the admin Health Check page.
 = 0.1.4 =
 
 * Fixed: Bug where all topics were appearing as new in notifications
-* Fixed: Two nobreak spaces prior to Back to [topic]... link for narrow forums
+* Fixed: Two nobreak spaces prior to Back to `[topic]`... link for narrow forums
 
 = 0.1.3 =
 

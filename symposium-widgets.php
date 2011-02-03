@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.1.32
+Version: 0.1.33
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -54,7 +54,7 @@ class Symposium_vote_Widget extends WP_Widget {
 		
 		global $wpdb, $current_user;
 		wp_get_current_user();
-	
+			
 		extract( $args );
 
 		// Include Styles

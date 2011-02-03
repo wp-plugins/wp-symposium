@@ -37,7 +37,7 @@ if ($_POST['action'] == 'getFavs') {
 				$post = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d", $fav));
 				$html .= '<div id="fav_'.$fav.'" class="fav_row" style="padding:6px; margin-bottom:10px;">';
 
-					$html .= " <a title='".$fav."' class='delete_fav' style='cursor:pointer'>".__("Remove", "wp-symposium")."</a>";
+					$html .= " <a title='".$fav."' class='symposium-delete-fav' style='cursor:pointer'>".__("Remove", "wp-symposium")."</a>";
 				
 					$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($post->tid, "topic").$q.'cid='.$post->topic_category.'&show='.$post->tid.'">'.stripslashes($post->topic_subject).'</a>';
 

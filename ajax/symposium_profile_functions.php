@@ -61,12 +61,29 @@ if ($_POST['action'] == 'menu_extended') {
 	$meta = get_symposium_meta_row($uid1);					
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
 
-	$html .= "<div id='profile_left_column'";
+	$html .= "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
-		$html .= " style='border-left:0px;'";
+		$html .= " border-left:0px;";
 	}			
-	$html .= ">";
+	$html .= "'>";
 	
+		// Google map
+		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
+
+			$city = $meta->city;
+			$country = $meta->country;
+
+			if ($city != '' || $country != '') { 	
+									
+				$html .= "<div id='google_profile_map' style='width:".$config->profile_google_map."px; height:".$config->profile_google_map."px'>";
+				$html .= '<a target="_blank" href="http://maps.google.co.uk/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q='.$city.',+'.$country.'&amp;ie=UTF8&amp;hq=&amp;hnear='.$city.',+'.$country.'&amp;output=embed&amp;z=5" alt="Click on map to enlarge" title="Click on map to englarge">';
+				$html .= '<img src="http://maps.google.com/maps/api/staticmap?center='.$city.',.+'.$country.'&zoom=5&size='.$config->profile_google_map.'x'.$config->profile_google_map.'&maptype=roadmap&markers=color:blue|label:&nbsp;|'.$city.',+'.$country.'&sensor=false" />';
+				$html .= "</a></div>";
+				
+			}
+			
+		}
+		
 		// Extended Information
 		$extended = $meta->extended;
 		$fields = explode('[|]', $extended);
@@ -75,9 +92,9 @@ if ($_POST['action'] == 'menu_extended') {
 				$split = explode('[]', $field);
 				if ( ($split[0] != '') && ($split[1] != '') ) {
 					$label = $wpdb->get_var($wpdb->prepare("SELECT extended_name FROM ".$wpdb->prefix."symposium_extended WHERE eid = ".$split[0]));
-					$html .= "<div style='clear: both; margin-bottom:15px;overflow: auto;'>";
-					$html .= "<div style='font-weight:bold; float:left;'>".$label."</div>";
-					$html .= "<div style='float:right; text-align:right;'>".symposium_make_url($split[1])."</div>";
+					$html .= "<div style='margin-bottom:15px;overflow: auto;'>";
+					$html .= "<div style='font-weight:bold;'>".$label."</div>";
+					$html .= "<div>".symposium_make_url($split[1])."</div>";
 					$html .= "</div>";
 				}
 			}
@@ -105,8 +122,6 @@ if ($_POST['action'] == 'menu_settings') {
 	$meta = get_symposium_meta_row($uid);					
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
 
-	$allow_personal_settings = $config->allow_personal_settings;
-	
 	// get values
 	$sound = $config->sound;
 	$soundchat = $config->soundchat;
@@ -120,16 +135,12 @@ if ($_POST['action'] == 'menu_settings') {
 	$notify_new_messages = $meta->notify_new_messages;
 	$notify_new_wall = $meta->notify_new_wall;
 	
-	$html .= "<div id='profile_left_column'";
-	if ($config->show_profile_menu != 'on') {
-		$html .= " style='border-left:0px;'";
-	}			
-	$html .= ">";
+	$html .= "<div id='profile_left_column'>";
 	
 		$html .= '<div id="symposium_settings_table">';
 		
 			// Time zone adjustment
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="margin-bottom:15px;">';
 				$html .= sprintf (__('Your local time zone adjustment in hours (difference from GMT which is %s).', 'wp-symposium'), date('jS \of M h:i:s A'));
 				$html .= '<div style="float:right;">';
 					$html .= '<select id="timezone" name="timezone">';
@@ -145,7 +156,7 @@ if ($_POST['action'] == 'menu_settings') {
 			if ( function_exists('add_notification_bar') ) {
 				
 				// Sound alert
-				$html .= '<div style="clear:both; margin-bottom:15px;">';
+				$html .= '<div style="clear: right; margin-bottom:15px;">';
 					$html .= __('Notification bar alert that sounds when you get new mail, relevant forum posts, etc', 'wp-symposium');
 					$html .= '<div style="float:right;">';
 						$html .= '<select id="sound" name="sound">';
@@ -190,7 +201,7 @@ if ($_POST['action'] == 'menu_settings') {
 				$html .= '</div>';
 				
 				// Sound alert (for chat)
-				$html .= '<div style="clear:both; margin-bottom:15px;">';;
+				$html .= '<div style="clear: right; margin-bottom:15px;">';;
 					$html .= __('Notification bar alert that sounds when a new chat message arrives', 'wp-symposium');
 					$html .= '<div style="float:right;">';
 						$html .= '<select id="soundchat" name="soundchat">';
@@ -235,7 +246,7 @@ if ($_POST['action'] == 'menu_settings') {
 				$html .= '</div>';
 				
 				// Bar position
-				$html .= '<div style="clear:both; margin-bottom:15px;">';
+				$html .= '<div style="clear: right; margin-bottom:15px;">';
 					$html .= __('Where do you want the notification bar?', 'wp-symposium');
 					$html .= '<div style="float: right;">';
 						$html .= '<select id="bar_position" name="bar_position">';
@@ -252,7 +263,7 @@ if ($_POST['action'] == 'menu_settings') {
 			}
 
 			// Display name
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="clear:right; margin-bottom:15px;">';
 				$html .= __('Your name as shown', 'wp-symposium');
 				$html .= '<div style="float:right;">';
 					$html .= '<input type="text" class="input-field" id="display_name" name="display_name" value="'.$current_user->display_name.'">';
@@ -260,7 +271,7 @@ if ($_POST['action'] == 'menu_settings') {
 			$html .= '</div>';
 			
 			// Email address
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="clear: right; margin-bottom:15px;">';
 				$html .= __('Your email address', 'wp-symposium');
 				$html .= '<div style="float:right;">';
 					$html .= '<input type="text" class="input-field" id="user_email" name="user_email" style="width:300px" value="'.$current_user->user_email.'">';
@@ -268,7 +279,7 @@ if ($_POST['action'] == 'menu_settings') {
 			$html .= '</div>';
 			
 			// Email notifications
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="clear: right; margin-bottom:15px;">';
 				$html .= __('Do you want to receive an email when you get new mail messages?', 'wp-symposium');
 				$html .= '<div style="float:right;">';
 					$html .= '<input type="checkbox" name="notify_new_messages" id="notify_new_messages"';
@@ -278,7 +289,7 @@ if ($_POST['action'] == 'menu_settings') {
 			$html .= '</div>';
 
 			// Email wall
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="clear:right; margin-bottom:15px;">';
 				$html .= __('Do you want to receive an email when a friend adds a new wall post or reply?', 'wp-symposium');
 				$html .= '<div style="float:right;">';
 					$html .= '<input type="checkbox" name="notify_new_wall" id="notify_new_wall"';
@@ -290,7 +301,7 @@ if ($_POST['action'] == 'menu_settings') {
 			// Password
 			if ($config->enable_password == "on") {
 				$html .= '<div class="sep"></div>';
-				$html .= '<div style="clear:both; margin-bottom:15px; padding-top:15px;">';
+				$html .= '<div style="clear: right; margin-bottom:15px; padding-top:15px;">';
 					$html .= __('Change your password', 'wp-symposium');
 					$html .= '<div style="float:right;">';
 						$html .= '<input class="input-field" type="text" id="xyz1" name="xyz1" value="">';
@@ -307,7 +318,7 @@ if ($_POST['action'] == 'menu_settings') {
 		
 		$html .= '</div> ';
 		 
-		$html .= '<p style="clear: both;" class="submit"> ';
+		$html .= '<p style="clear:right" class="submit"> ';
 		$html .= '<input type="submit" id="updateSettingsButton" name="Submit" class="button" value="'.__('Save', 'wp-symposium').'" /> ';
 		$html .= '</p> ';
 	
@@ -340,11 +351,11 @@ if ($_POST['action'] == 'menu_personal') {
 	$share = $meta->share;
 	$wall_share = $meta->wall_share;
 	
-	$html .= "<div id='profile_left_column'";
+	$html .= "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
-		$html .= " style='border-left:0px;'";
+		$html .= " border-left:0px;";
 	}			
-	$html .= ">";
+	$html .= "'>";
 
 		$html .= '<input type="hidden" name="symposium_update" value="P">';
 		$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
@@ -352,7 +363,7 @@ if ($_POST['action'] == 'menu_personal') {
 		$html .= '<div id="symposium_settings_table">';
 		
 			// Sharing personal information
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="clear:right; margin-bottom:15px;">';
 				$html .= __('Who do you want to share personal information with?', 'wp-symposium');
 				$html .= '<div style="float:right;">';
 					$html .= '<select id="share" name="share">';
@@ -370,7 +381,7 @@ if ($_POST['action'] == 'menu_personal') {
 			$html .= '</div>';
 			
 			// Sharing wall
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="clear:right; margin-bottom:15px;">';
 				$html .= __('Who do you want to share your wall with?', 'wp-symposium');
 				$html .= '<div style="float:right;">';
 					$html .= '<select id="wall_share" name="wall_share">';
@@ -388,7 +399,7 @@ if ($_POST['action'] == 'menu_personal') {
 			$html .= '</div>';
 			
 			// Birthday
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="clear:right; margin-bottom:15px;">';
 				$html .= __('Your date of birth (day/month/year)', 'wp-symposium');
 				$html .= '<div style="float:right;">';
 					$html .= "<select id='dob_day' name='dob_day'>";
@@ -416,7 +427,7 @@ if ($_POST['action'] == 'menu_personal') {
 			$html .= '</div>';
 				
 			// City
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="clear:right; margin-bottom:15px;">';
 				$html .= __('Which town/city are you in?', 'wp-symposium');
 				$html .= '<div style="float:right;">';
 					$html .= '<input type="text" id="city" name="city" value="'.$city.'">';
@@ -424,7 +435,7 @@ if ($_POST['action'] == 'menu_personal') {
 			$html .= '</div>';
 				
 			// Country
-			$html .= '<div style="clear:both; margin-bottom:15px;">';
+			$html .= '<div style="clear:right; margin-bottom:15px;">';
 				$html .= __('Which country are you in?', 'wp-symposium');
 				$html .= '<div style="float:right;">';
 					$html .= '<input type="text" id="country" name="country" value="'.$country.'">';
@@ -452,7 +463,7 @@ if ($_POST['action'] == 'menu_personal') {
 						 }
 					}
 					
-					$html .= '<div style="clear:both; margin-bottom:15px;">';
+					$html .= '<div style="clear:right; margin-bottom:15px;">';
 						$html .= $extension->extended_name;
 						$html .= '<input type="hidden" name="eid[]" value="'.$extension->eid.'">';
 						$html .= '<input type="hidden" name="extended_name[]" value="'.$extension->extended_name.'">';
@@ -477,7 +488,7 @@ if ($_POST['action'] == 'menu_personal') {
 				
 		$html .= '</div> ';
 		 
-		$html .= '<p style="clear: both" class="submit"> ';
+		$html .= '<p style="clear:right" class="submit"> ';
 			$html .= '<input type="submit" id="updatePersonalButton" name="Submit" class="button" value="'.__('Save', 'wp-symposium').'" /> ';
 		$html .= '</p> ';
 	
@@ -551,6 +562,10 @@ if ($_POST['action'] == 'addComment') {
 	$text = $_POST['text'];
 	$parent = $_POST['parent'];
 
+	$profile_page = $wpdb->get_row($wpdb->prepare("SELECT profile_page FROM ".$wpdb->prefix . 'symposium_config'));
+	if ($profile_page[strlen($profile_page)-1] != '/') { $profile_page .= '/'; }
+	$q = symposium_string_query($profile_page);		
+
 	if (is_user_logged_in()) {
 
 		if ( ($text != __(addslashes("Write a comment..."), "wp-symposium")) && ($text != '') ) {
@@ -610,37 +625,20 @@ if ($_POST['action'] == 'addComment') {
 					}
 				}
 			}
-		
-			// Build HTML to prepend to Comment
-			$styles = $wpdb->get_row($wpdb->prepare("SELECT bg_color_2 FROM ".$wpdb->prefix . 'symposium_config'));
-		
-			$html = "<div style='background-color: ".$styles->bg_color_2."; padding:4px; padding-bottom:0px; clear: both; overflow: auto; margin-top:10px;'>";
-				$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
-					$html .= "<div style='margin-left: 45px;overflow:auto;'>";
-						$html .= '<a href="'.symposium_get_url('profile').'?uid='.$current_user->ID.'">'.stripslashes($current_user->display_name).'</a>.<br />';
-						$html .= symposium_make_url(stripslashes($text));
-					$html .= "</div>";
-				$html .= "</div>";
-				
-				$html .= "<div style='float:left;width:45px;margin-left:-100%;'>";
-					$html .= get_user_avatar($current_user->ID, 40);
-				$html .= "</div>";
-													
-			$html .= "</div>";
-						
-			echo $html;
+								
 			exit;
 
 		} else {
 
-			echo '';
 			exit;
 			
 		}
 			
 			
 	} else {
-		echo "FAIL, NOT LOGGED IN";
+		
+		exit;
+		
 	}
 }
 
@@ -704,35 +702,17 @@ if ($_POST['action'] == 'addStatus') {
 					}
 				}
 			}
-		
-		
-			// Build HTML to prepend to Wall
-			$styles = $wpdb->get_row($wpdb->prepare("SELECT row_border_size, row_border_style, text_color_2 FROM ".$wpdb->prefix . 'symposium_config'));
-		
-			$html = "<div style='overflow: auto; padding-top: 10px;margin-right: 15px;margin-bottom:15px;border-top: ".$styles->row_border_size."px ".$styles->row_border_style." ".$styles->text_color_2.";'>";
-				$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
-					$html .= "<div style='margin-left: 74px;overflow:auto;'>";
-						$html .= '<a href="'.symposium_get_url('profile').'?uid='.$current_user->ID.'">'.stripslashes($current_user->display_name).'</a><br />';
-						$html .= symposium_make_url(stripslashes($text));
-					$html .= "</div>";
-				$html .= "</div>";
-				$html .= "<div style='float:left;width:74px;margin-left:-100%;'>";
-					$html .= get_user_avatar($current_user->ID, 64);
-				$html .= "</div>";
-			$html .= "</div>";
 						
-			echo $html;
 			exit;
 			
 		} else {
 
-			echo '';
 			exit;
 			
 		}
 
 	} else {
-		echo "FAIL, NOT LOGGED IN";
+
 		exit;
 	}
 		

@@ -370,6 +370,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'offline')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_chat')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_chatroom')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'chat_purge')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'chatroom_banned')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'bar_polling')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'chat_polling')) { $status = "X"; }
@@ -392,7 +393,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'show_profile_menu')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'show_wall_extras')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'poke')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'profile_google_map')) { $status = "X"; }			
 
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -1083,7 +1084,7 @@ function symposium_plugin_styles() {
 		<th scope="row"><label for="use_styles"><?php echo __('Use Styles?', 'wp-symposium'); ?></label></th>
 		<td>
 		<input type="checkbox" name="use_styles" id="use_styles" <?php if ($style->use_styles == "on") { echo "CHECKED"; } ?>/>
-		<span class="description"><?php echo __('[LEAVE THIS ENABLED] Enable to use styles on this page, disable to rely on stylesheet', 'wp-symposium'); ?></span></td> 
+		<span class="description"><?php echo __('Enable to use styles on this page, disable to rely on stylesheet', 'wp-symposium'); ?></span></td> 
 		</tr> 
 		
 		<tr valign="top"> 
@@ -1386,6 +1387,7 @@ function symposium_plugin_options() {
 	        $use_chat = $_POST[ 'use_chat' ];
 	        $use_chatroom = $_POST[ 'use_chatroom' ];
 	        $chatroom_banned = $_POST[ 'chatroom_banned' ];
+	        $chat_purge = $_POST[ 'chat_purge' ];
 	        $bar_polling = $_POST[ 'bar_polling' ];
 	        $chat_polling = $_POST[ 'chat_polling' ];
 	        $use_wp_profile = $_POST[ 'use_wp_profile' ];
@@ -1401,6 +1403,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chat = '".$use_chat."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chatroom = '".$use_chatroom."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chatroom_banned = '".$chatroom_banned."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chat_purge = '".$chat_purge."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_polling = '".$bar_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chat_polling = '".$chat_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_profile = '".$use_wp_profile."'") );					
@@ -1422,14 +1425,14 @@ function symposium_plugin_options() {
 		    $enable_password = $_POST['enable_password'];
 		    $show_profile_menu = $_POST['show_profile_menu'];
 		    $show_wall_extras = $_POST['show_wall_extras'];
-		    $poke = $_POST['poke'];
+		    $profile_google_map = $_POST['profile_google_map'];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET online = '".$online."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET offline = '".$offline."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET enable_password = '".$enable_password."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_profile_menu = '".$show_profile_menu."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_wall_extras = '".$show_wall_extras."'") );
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET poke = '".$poke."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET profile_google_map = '".$profile_google_map."'") );
 			
 			// Update extended fields
 	   		if ($_POST['eid'] != '') {
@@ -1598,7 +1601,7 @@ function symposium_plugin_options() {
 		?> 
 		
 		<style>
-			#symposium-wrapper #mail_tabs {
+			.symposium-wrapper #mail_tabs {
 				width: 100%;
 				border-radius:0px;
 				-moz-border-radius:0px;
@@ -1608,7 +1611,7 @@ function symposium_plugin_options() {
 				top: 1px;
 			}
 			
-			#symposium-wrapper .mail_tab {
+			.symposium-wrapper .mail_tab {
 				border: 1px solid #666;
 				padding: 8px;
 				border-radius:0px;
@@ -1623,31 +1626,31 @@ function symposium_plugin_options() {
 				margin-right: 10px;
 			}
 			
-			#symposium-wrapper #mail_tabs .nav-tab-active {
+			.symposium-wrapper #mail_tabs .nav-tab-active {
 				z-index: 3;
 				border-bottom: 1px solid #fff;
 				background-color: #fff;
 			}
 			
-			#symposium-wrapper #mail_tabs .nav-tab-inactive {
+			.symposium-wrapper #mail_tabs .nav-tab-inactive {
 				z-index: 1;
 				border-bottom: 1px solid #666;
 				background-color: #efefef;
 			}
 			
-			#symposium-wrapper #mail_tabs .nav-tab-active-link {
+			.symposium-wrapper #mail_tabs .nav-tab-active-link {
 				text-decoration: none;
 				color: #000;
 				font-size: 18px;
 			}
 			
-			#symposium-wrapper #mail_tabs .nav-tab-inactive-link {
+			.symposium-wrapper #mail_tabs .nav-tab-inactive-link {
 				text-decoration: none;
 				color: #999;
 				font-size: 18px;
 			}
 			
-			#symposium-wrapper #mail-main {
+			.symposium-wrapper #mail-main {
 				z-index: 2;
 				width: 98%;
 				border-radius: 5px;
@@ -1727,7 +1730,7 @@ function symposium_plugin_options() {
 			$view = "settings";
 		} 
 	
-		echo '<div id="symposium-wrapper" style="margin-top:15px">';
+		echo '<div class="symposium-wrapper" style="margin-top:15px">';
 		
 			echo '<div id="mail_tabs">';
 			echo '<div class="mail_tab nav-tab-'.$notes_active.'"><a href="admin.php?page=symposium_options&view=notes" class="nav-tab-'.$notes_active.'-link">'.__('Notes', 'wp-symposium').'</a></div>';
@@ -1832,6 +1835,7 @@ function symposium_plugin_options() {
 					$use_chat = $config->use_chat;
 					$use_chatroom = $config->use_chatroom;
 					$chatroom_banned = $config->chatroom_banned;
+					$chat_purge = $config->chat_purge;
 					$bar_polling = $config->bar_polling;
 					$chat_polling = $config->chat_polling;
 					$use_wp_profile = $config->use_wp_profile;
@@ -1910,6 +1914,12 @@ function symposium_plugin_options() {
 					<th scope="row"><label for="chatroom_banned">Banned chatroom words</label></th> 
 					<td><input name="chatroom_banned" type="text" id="chatroom_banned"  value="<?php echo $chatroom_banned; ?>" /> 
 					<span class="description"><?php echo __('Comma separated list of words not allowed in the chatroom', 'wp-symposium'); ?></td> 
+					</tr> 
+								
+					<tr valign="top"> 
+					<th scope="row"><label for="chat_purge">Chat purge age</label></th> 
+					<td><input name="chat_purge" type="text" id="chat_purge"  value="<?php echo $chat_purge; ?>" /> 
+					<span class="description"><?php echo __('How old in days, messages need to be before removed from database', 'wp-symposium'); ?></td> 
 					</tr> 
 								
 				
@@ -2406,7 +2416,7 @@ function symposium_plugin_options() {
 					$enable_password = $config->enable_password;
 					$show_profile_menu = $config->show_profile_menu;
 					$show_wall_extras = $config->show_wall_extras;
-					$poke = $config->poke;
+					$profile_google_map = $config->profile_google_map;
 
 					?>
 						
@@ -2415,12 +2425,6 @@ function symposium_plugin_options() {
 				
 					<table class="form-table"> 
 				
-					<tr valign="top"> 
-					<th scope="row"><label for="poke"><?php _e('Member poke', 'wp-symposium'); ?></label></th> 
-					<td><input name="poke" type="text" id="poke"  value="<?php echo $poke; ?>" /> 
-					<span class="description"><?php echo __('The word used to "Poke" other members, leave blank to deactivate', 'wp-symposium'); ?></td> 
-					</tr> 
-
 					<tr valign="top"> 
 					<th scope="row"><label for="show_profile_menu"><?php _e('Show Profile Menu', 'wp-symposium'); ?></label></th>
 					<td>
@@ -2435,6 +2439,13 @@ function symposium_plugin_options() {
 					<span class="description"><?php echo __('Show summary of profile information on wall', 'wp-symposium'); ?></span></td> 
 					</tr> 
 
+										
+					<tr valign="top"> 
+					<th scope="row"><label for="profile_google_map"><?php _e('Google Map', 'wp-symposium'); ?></label></th> 
+					<td><input name="profile_google_map" type="text" id="profile_google_map"  value="<?php echo $profile_google_map; ?>" /> 
+					<span class="description"><?php echo __('How big should the location map be, in pixels? eg: 250'); ?></td> 
+					</tr> 
+										
 					<tr valign="top"> 
 					<th scope="row"><label for="enable_password"><?php _e('Enable Password Change', 'wp-symposium'); ?></label></th>
 					<td>

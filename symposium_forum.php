@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.32
+Version: 0.1.33
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -87,7 +87,7 @@ function symposium_forum() {
 	if (isset($_POST['cid'])) { $cat_id = $_POST['cid']; }
 	
 	// Wrapper
-	$html .= "<div id='symposium-wrapper'>";
+	$html .= "<div class='symposium-wrapper'>";
 
 		// default message
 		$msg = "";
@@ -222,14 +222,9 @@ function symposium_forum() {
 				
 				// Sub Menu for Logged in User
 				if ($show == '') {
-					$html .= "<ul id='topic-links'>";
-						$allow_new = $wpdb->get_var($wpdb->prepare("SELECT allow_new FROM ".$cats." WHERE cid = %d", $cat_id));
-						if ( ($cat_id == '' || $allow_new == "on") || (current_user_can('level_10')) ) {
-							$html .= "<li id='new-topic-link'>".__("Start a New Topic", "wp-symposium")."</li>";
-						} else {
-							$html .= "<div style='height:30px'></div>";
-						}
-					$html .= "</ul>";
+					
+					$html .= '<input type="submit" class="button" id="new-topic-button" value="'.__("Start a New Topic", "wp-symposium").'" />';
+
 				}
 				
 				// New Topic Form	
@@ -281,7 +276,8 @@ function symposium_forum() {
 					$html .= '> '.__("Email me when I get any replies", "wp-symposium").'</div>';
 					$html .= '<input type="submit" class="button" style="float: left" value="'.__("Post", "wp-symposium").'" />';
 					$html .= '</form>';
-					$html .= '<input id="cancel_post" type="submit" class="button" onClick="javascript:void(0)" style="float: left" value="'.__("Cancel", "wp-symposium").'" />';
+					$html .= '<input id="cancel_post" type="submit" class="button clear" onClick="javascript:void(0)" value="'.__("Cancel", "wp-symposium").'" />';
+					
 				$html .= '</div>';
 					
 			} else {
@@ -320,6 +316,7 @@ function symposium_forum() {
 						$html .= "> ".__("Receive emails when there are new topics posted", "wp-symposium");
 						$html .= "</div>";
 					}
+
 				}	
 			  
 				// Start of table
@@ -332,8 +329,8 @@ function symposium_forum() {
 				if ( ($use_categories == "on") && ($cat_id == 0) ) {
 		
 					$html .= "<div class='table_header'>";
-					$html .= "<div class='table_topic'>".__("Category", "wp-symposium")."</div>";
-					$html .= "</div>";
+					$html .= "<div class='table_topic'><div style='margin:4px'>".__("Category", "wp-symposium")."</div></div>";
+					$html .= "</div><div style='clear:both;'></div>";
 					
 					$categories = $wpdb->get_results("SELECT * FROM ".$cats." ORDER BY listorder");
 					
@@ -355,7 +352,7 @@ function symposium_forum() {
 								SELECT tid, topic_subject, topic_approved, topic_post, topic_date, topic_owner, topic_sticky, topic_parent, display_name, topic_category 
 								FROM ".$topics." INNER JOIN ".$users." ON ".$topics.".topic_owner = ".$users.".ID 
 								WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = 0 AND topic_category = %d ORDER BY topic_date DESC", $current_user->ID, $category->cid)); 
-							$html .= "<div class='row_topic row_startedby'>";
+							$html .= "<div class='row_startedby' style='float:right;'>";
 							if ($last_topic) {
 								$reply = $wpdb->get_row($wpdb->prepare("
 									SELECT tid, topic_subject, topic_approved, topic_post, topic_owner, topic_date, display_name, topic_category 
@@ -388,39 +385,39 @@ function symposium_forum() {
 	
 							if ($post_count) { 
 								$html .= "<div class='row_link post_count' style='color:".$text_color.";'>".$post_count."</div>";
-								$html .= "<div style='color:".$text_color.";' class='post_count_label'>";
-								if ($post_count > 1) {
-									$html .= __("POSTS", "wp-symposium");
-								} else {
-									$html .= __("POST", "wp-symposium");
-								}
-								$html .= "</div>";
+									$html .= "<div style='color:".$text_color.";' class='post_count_label'>";
+									if ($post_count > 1) {
+										$html .= __("POSTS", "wp-symposium");
+									} else {
+										$html .= __("POST", "wp-symposium");
+									}
+									$html .= "</div>";
 							}
 							$html .= "</div>";
 	
 							// Topic Count
 							$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$topics." WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = 0 AND topic_category = %d", $current_user->ID, $category->cid));
 							$html .= "<div class='row_topic row_replies'>";
-							$html .= "<div class='row_link post_count' style='color:".$text_color.";'>".$topic_count."</div>";
-							$html .= "<div style='color:".$text_color.";' class='post_count_label'>";
-							if ($topic_count != 1) {
-								$html .= __("TOPICS", "wp-symposium");
-							} else {
-								$html .= __("TOPIC", "wp-symposium");
-							}
-							$html .= "</div>";
+								$html .= "<div class='row_link post_count' style='color:".$text_color.";'>".$topic_count."</div>";
+								$html .= "<div style='color:".$text_color.";' class='post_count_label'>";
+								if ($topic_count != 1) {
+									$html .= __("TOPICS", "wp-symposium");
+								} else {
+									$html .= __("TOPIC", "wp-symposium");
+								}
+								$html .= "</div>";
 							$html .= "</div>";
 	
 							// Category title
-							$html .= '<div class="category_title">';
+							$html .= '<div class="row_topic">';
 							$html .= '<a class="backto row_link" href="'.$thispage.symposium_permalink($category->cid, "category").$q.'cid='.$category->cid.'">'.stripslashes($category->title).'</a>';
 							$subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE cid = %d AND uid = %d", $category->cid, $current_user->ID));
 							if ($subscribed > 0) { $html .= ' <img src="'.$plugin.'images/orange-tick.gif" alt="'.__('Subscribed', 'wp-symposium').'" />'; } 
 							$html .= '</div>';
 	
-													
 							// Separator
 							$html .= "<div class='sep'></div>";											
+
 	
 						$html .= "</div>"; // Row in the table
 	
@@ -435,11 +432,11 @@ function symposium_forum() {
 					$html .= "<div class='table_header'>";
 					if ($use_categories == "on") {
 						$category_title = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$cats." WHERE cid = %d", $cat_id));
-						$html .= "<div class='table_topic'><a style='color:".$categories_color.";' href='".get_permalink()."'>".stripslashes($category_title)."</a></div>";
+						$html .= "<div class='table_topic'><div style='margin:4px'><a style='color:".$categories_color.";' href='".get_permalink()."'>".stripslashes($category_title)."</a></div></div>";
 					} else {
 						$html .= "<div class='table_topic'>".stripslashes(__("TOPIC", "wp-symposium"))."</div>";
 					}
-					$html .= "</div>";
+					$html .= "</div><div style='clear:both;'></div>";
 	
 					// Get Forums	
 					if ($use_categories == "on") {
@@ -563,8 +560,8 @@ function symposium_forum() {
 								$html .= "</div>";
 															
 								// Separator
-								$html .= "<div class='sep'></div>";											
-		
+								$html .= "<div class='sep'></div>";		
+								
 							$html .= "</div>"; // End of Table Row
 							
 						}
@@ -623,7 +620,7 @@ function symposium_forum() {
 	
 					$html .= "<div id='top_of_first_post' style='height:80px'>";
 						
-						$html .= "<div class='avatar' style='margin-bottom:0px'>";
+						$html .= "<div class='avatar' style='margin-bottom:0px; margin-top:6px;'>";
 							$html .= get_user_avatar($post->topic_owner, 64);
 						$html .= "</div>";
 						
@@ -643,18 +640,17 @@ function symposium_forum() {
 									}
 								}
 														
+								$html .= "<div class='started-by'>".__("Started by", "wp-symposium")." ".symposium_profile_link($post->topic_owner)." ".symposium_time_ago($post->topic_started)."</div>";
+								$html .= "</div>";
+
 							$html .= "</div>";					
 						
 
+						$html .= "</div><div style='clear:both'></div>";
 
-						$html .= "</div>";
-												
-						$html .= "<div class='started-by'>".__("Started by", "wp-symposium")." ".symposium_profile_link($post->topic_owner)." ".symposium_time_ago($post->topic_started)."</div>";
-						$html .= "</div>";
-		
 						$post_text = symposium_make_url(stripslashes($post->topic_post));
 						$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", $post_text)."</div>";
-					
+																			
 					$html .= "</div>";
 		
 					// Update views
@@ -666,10 +662,10 @@ function symposium_forum() {
 						$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
 					}
 										
-					// Subscribe	
+					// Subscribe, Sticky and Allow Replies
 					if (is_user_logged_in()) {
 		
-						$html .= "<br /><div class='floatright label'>";
+						$html .= "<br /><div class='floatleft label'>";
 						$html .= "<form action='symposium.php'>";
 						$html .= "<input type='checkbox' id='subscribe' name='subscribe'";
 						$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = %d and uid = %d", $show, $current_user->ID));
@@ -766,17 +762,6 @@ function symposium_forum() {
 				$html .= "<p>".sprintf(__("Sorry, the minimum user level for this forum is %s. :(", "wp-symposium"), $viewer)."</p>";
 			}
 		}			
-
-		// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.		
-		$html .= powered_by_wps();
-
-		// Favourites DIV
-		$html .= "<div id='fav-list' style='display:none; padding:8px;' class='shadow'>";
-		
-		$html .= "<div id='favs_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
-			$html .= "<div id='fav-list-internal' style='clear:both;height:280px;overflow:auto;padding:10px;'>";
-			$html .= "</div>";
-		$html .= "</div>";
 	
 		
 	// End Wrapper

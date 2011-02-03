@@ -1,6 +1,9 @@
 todo.txt
 --------
 
+MEMBER SEARCH 
+
+- When 'land' on member's page, default to their 'my wall'
   
 PROFILE
 
@@ -8,6 +11,7 @@ PROFILE
 - if a member has set his profile to "friends only" or "nobody", even the admin can't see it? 
 - Also, admins can't edit a member's profile.
 - please wait when loading image to edit (both screens)
+- Implement poke
 
 CHAT
 
@@ -22,7 +26,6 @@ FORUM
 
 - AJAX new post, etc...
 - search
-- favourites
 
 CSS
 
@@ -31,7 +34,7 @@ CSS
 - login (done)
 - bar (done)
 - forum (done)
-- mail
+- mail (done)
 - profile
 - avatar
 - members
@@ -44,11 +47,7 @@ CODEX
 
 MAIL
 
-- quote feature
-
-LANGUAGES
-
-- add language contacts to wps languages page with Mattius as contact
+- quote feature?
 
 WISH LIST
 
@@ -57,13 +56,15 @@ WISH LIST
 - Minimum level for categories
 - 'clear' link on vote widget
 
-FIX
 
-- check please wait on wall replies (and posts?)
-
+--------------------------------------------------------------------------------------
 
 Gene has replied to their post:
 I get that error on Wall, Friends Activity and All Activity. The other pages load fine.
 Go to their wall...
 http://www.wpsymposium.com/profile?uid=156&post=239
+
+http://wordpress.org/extend/plugins/pierres-wordspew/ clash
+
+string mb_substr ( string $str , int $start [, int $length [, string $encoding ]] )
 

@@ -221,24 +221,24 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 
 	// get messages
 	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
-	$sql .= "FROM wp_symposium_chat c ";
+	$sql .= "FROM ".$wpdb->prefix."symposium_chat c ";
 	$sql .= "LEFT JOIN ".$wpdb->prefix."users u1 ON c.chat_from = u1.ID ";
 	$sql .= "LEFT JOIN ".$wpdb->prefix."users u2 ON c.chat_to = u2.ID ";
 	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
 	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
 	$sql .= "WHERE chat_to = -1 ";
-	$sql .= "ORDER BY chid";
+	$sql .= "ORDER BY chid DESC ";
+	$sql .= "LIMIT 0,30";
 
 	$c = 0;
 	$time_now = time();
-	$chats = $wpdb->get_results($sql);
+	$chatlist = $wpdb->get_results($sql);
+	$chats = array_reverse($chatlist);
 	if ($chats) {
 		foreach ($chats as $chat) {
 			
 			$c++;
 			
-			if ($c > 30) { break; }
-
 			$last_active_minutes = strtotime($chat->fromlast);
 			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
 			if ($last_active_minutes >= $offline) {
@@ -280,12 +280,15 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 
 		// Check for banned words
 		$chatroom_banned = $wpdb->get_var($wpdb->prepare("SELECT chatroom_banned FROM ".$wpdb->prefix."symposium_config"));
-
-		$badwords = $pieces = explode(",", $chatroom_banned);
-		
-		 for($i=0;$i < sizeof($badwords);$i++){
-		 	$results=eregi_replace($badwords[$i], "***", $results);
-		 }
+		if ($chatroom_banned != '') {
+			$badwords = $pieces = explode(",", $chatroom_banned);
+			
+			 for($i=0;$i < sizeof($badwords);$i++){
+			 	if (strpos($results, $badwords[$i])) {
+				 	$results=eregi_replace($badwords[$i], "***", $results);
+			 	}
+			 }
+		}
 
 	}
 

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Login
 Plugin URI: http://www.wpsymposium.com
 Description: Login component for the Symposium suite of plug-ins. Put [symposium-login] on any WordPress page.
-Version: 0.1.32
+Version: 0.1.33
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -34,7 +34,7 @@ function symposium_login() {
 
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_config'));
 		
-	$html = '<div id="symposium-wrapper">';
+	$html = '<div class="symposium-wrapper">';
 
 		include_once('symposium_styles.php');
 	
@@ -108,8 +108,6 @@ function symposium_login() {
 
 	$html .= '</div>'; // End of Wrapper
 	
-	// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.		
-	$html .= powered_by_wps();
 		
 	// Send HTML
 	return $html;

@@ -34,6 +34,7 @@ if ($_GET['term'] != '') {
 			} else {
 				$row_array['country'] = '';
 			}
+			$row_array['avatar'] = get_user_avatar($item->ID, 40);
 			
 	        array_push($return_arr,$row_array);
 		}

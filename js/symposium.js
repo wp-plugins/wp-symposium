@@ -293,13 +293,53 @@ jQuery(document).ready(function() {
 				jQuery(".symposium_pleasewait").fadeOut("slow");
 			},
 			error: function(err){
-				alert("D1:"+err);
+				//alert("D1:"+err);
 			}		
    		});	
 	}	
-   				
+
+	if (jQuery("input#member_small").length) {
 		
-	
+		jQuery("input#member_small").autocomplete({
+				source: symposium.plugin_url+"ajax/symposium_members_functions.php",
+				minLength: 1,
+				focus: function( event, ui ) {
+					jQuery( "input#member_small" ).val( ui.item.label );
+					jQuery( "input#uid" ).val( ui.item.value );
+					return false;
+				},
+				select: function( event, ui ) {
+					jQuery( "input#member_small" ).val( ui.item.label );
+					jQuery( "input#uid" ).val( ui.item.value );
+					jQuery(".symposium_pleasewait").inmiddle().show().delay(3000).fadeOut("slow");
+					window.location.href=symposium.profile_url+symposium.q.substring(0, 1)+'uid='+jQuery("#uid").val();
+					return false;
+				}
+			})
+			.data( "autocomplete" )._renderItem = function( ul, item ) {
+				var member = "<a>";
+					member += "<div style='height:40px; overflow:hidden'>";
+						member += "<div style=\'float:left; background-color:#fff; margin-right: 8px; width:40px; height:40px; \'>";	
+						member += item.avatar;
+						member += "</div>";			
+						member += "<div>" + item.label + "<br />";
+						member += item.city + item.country + "</div>";
+						member += "<br style='clear:both' />";
+					member += "</div>";
+				member += "</a>";
+				return jQuery( "<li></li>" )
+					.data( "item.autocomplete", item )
+					.append( member )
+					.appendTo( ul );
+			};
+			
+		   	jQuery("#small_members_button").click(function() {
+				window.location.href=symposium.profile_url+symposium.q.substring(0, 1)+'uid='+jQuery("#uid").val();
+				return false;
+		   	});
+
+	}		
+   		
 	
 	/*
 	   +------------------------------------------------------------------------------------------+
@@ -398,13 +438,10 @@ jQuery(document).ready(function() {
 		
 		var menu_id = 'menu_'+symposium.view;
 		if (menu_id == 'menu_in') { menu_id = 'menu_wall'; }
-		
 		if (jQuery('#force_profile_page').length) {
 			menu_id = 'menu_'+jQuery('#force_profile_page').html();
 		}
-		
-		jQuery(".symposium_pleasewait").inmiddle().show();
-		
+				
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
 			type: "POST",
@@ -417,7 +454,6 @@ jQuery(document).ready(function() {
 		    dataType: "html",
 			success: function(str){
 				jQuery('#profile_body').html(str);
-				jQuery(".symposium_pleasewait").fadeOut("slow");
 			}
    		});	
    		
@@ -427,14 +463,19 @@ jQuery(document).ready(function() {
 	jQuery(".symposium_profile_menu").click(function(){
 		
 		var menu_id = jQuery(this).attr("id");
-		jQuery(".symposium_pleasewait").inmiddle().show();
-		jQuery('#profile_left_column').fadeTo('slow', 0.0);
+		jQuery('#profile_body').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
 		
 		if (menu_id == 'menu_photo') {
 			window.location.href=symposium.avatar_url;
 			exit;
 		}
-		
+
+		if (!(jQuery("#profile_body").length)) {
+			var view = menu_id.replace(/menu_/g, "");
+			window.location.href=symposium.profile_url+symposium.q.substring(0, 1)+'view='+view;
+			exit;			
+		}
+				
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
 			type: "POST",
@@ -447,7 +488,6 @@ jQuery(document).ready(function() {
 		    dataType: "html",
 			success: function(str){
 				jQuery('#profile_body').hide().html(str).fadeIn("slow");
-				jQuery(".symposium_pleasewait").fadeOut("slow");
 			}
    		});	
 
@@ -515,8 +555,25 @@ jQuery(document).ready(function() {
 
 	// new status
 	jQuery("#symposium_add_update").live('click', function() {
-		jQuery(".symposium_pleasewait").inmiddle().show();
+
+		var comment_text = jQuery("#symposium_status").val();
 		
+		var comment = "<div class='add_wall_post_div'>";
+		comment = comment + "<div class='add_wall_post'>";
+		comment = comment + "<div class='add_wall_post_text'>";
+		comment = comment + '<a href="'+symposium.profile_url+symposium.q.substring(0, 1)+'uid='+symposium.current_user_id+'">';
+		comment = comment + symposium.current_user_display_name+'</a><br />';
+		comment = comment + comment_text;
+		comment = comment + "</div>";
+		comment = comment + "</div>";			
+		comment = comment + "<div class='add_wall_post_avatar'>";
+		comment = comment + jQuery('#profile_photo').html().replace(/200/g, '64');		
+		comment = comment + "</div>";	
+		comment = comment + "</div>";
+
+		jQuery("#symposium_status").val('');
+		jQuery(comment).prependTo('#symposium_wall').hide().slideDown("slow");
+					
 		// Update status
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
@@ -525,48 +582,44 @@ jQuery(document).ready(function() {
 				action:"addStatus",
 				subject_uid:symposium.current_user_id,
 				author_uid:symposium.current_user_id,
-				text:jQuery("#symposium_status").val()
+				text:comment_text
 			}),
 		    dataType: "html",
-			async: false,
-			success: function(str){
-				if (str != '') {
-					jQuery("#symposium_status").val('');
-					jQuery(str).prependTo('#symposium_wall').hide().slideDown();
-					jQuery(".symposium_pleasewait").fadeOut("slow");
-				}
-			},
-			error: function(err){
-				//alert("P1:"+err);
-			}		
+			async: true
    		});
 
-		// Show wall (if not showing wall)
-		if (jQuery(".symposium_add_reply").length == 0) {
+		// If not on the profile page
+		if (!(jQuery("#symposium_wall").length)) {
 			jQuery(".symposium_pleasewait").inmiddle().show();
-			jQuery.ajax({
-				url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
-				type: "POST",
-				data: ({
-					action:'menu_wall',
-					post:'',
-					uid1:symposium.current_user_page,
-					uid2:symposium.current_user_id				
-				}),
-			    dataType: "html",
-				success: function(str){
-					jQuery('#profile_body').hide().html(str).fadeIn("slow");
-					jQuery(".symposium_pleasewait").fadeOut("slow");
-				}
-	   		});	
+			window.location.href=symposium.profile_url+symposium.q.substring(0, 1)+'view=wall';
 		}
 		   		
    	});		
 	
 	// new post
 	jQuery("#symposium_add_comment").live('click', function() {
-		jQuery(".symposium_pleasewait").inmiddle().show();
 
+		var comment_text = jQuery("#symposium_comment").val();
+		
+		var comment = "<div class='add_wall_post_div' style='"
+		if (symposium.row_border_size != '') { 
+			comment = comment + " border-top:"+symposium.row_border_size+"px "+symposium.row_border_style+" "+symposium.text_color_2+";"; 
+		}
+		comment = comment + "'>";
+		comment = comment + "<div class='add_wall_post'>";
+		comment = comment + "<div class='add_wall_post_text'>";
+		comment = comment + '<a href="'+symposium.profile_url+symposium.q.substring(0, 1)+'uid='+symposium.current_user_id+'">';
+		comment = comment + symposium.current_user_display_name+'</a><br />';
+		comment = comment + comment_text;
+		comment = comment + "</div>";
+		comment = comment + "</div>";			
+		comment = comment + "<div class='add_wall_post_avatar'>";
+		comment = comment + jQuery('#profile_photo').html().replace(/200/g, '64');		
+		comment = comment + "</div>";	
+
+		jQuery("#symposium_comment").val('');
+		jQuery(comment).prependTo('#symposium_wall').hide().slideDown();
+		
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
 			type: "POST",
@@ -575,30 +628,38 @@ jQuery(document).ready(function() {
 				subject_uid:symposium.current_user_page,
 				author_uid:symposium.current_user_id,
 				parent:0,
-				text:jQuery("#symposium_comment").val()
+				text:comment_text
 			}),
 		    dataType: "html",
-			async: false,
-			success: function(str){
-				if (str != '') {
-					jQuery("#symposium_comment").val('');
-					jQuery(str).prependTo('#symposium_wall').hide().slideDown();
-					jQuery(".symposium_pleasewait").fadeOut("slow");
-				}
-			},
-			error: function(err){
-				//alert("P2:"+err);
-			}		
+			async: true
    		});
 
    	});		
 
 	// new reply
 	jQuery(".symposium_add_reply").live('click', function() {
-		jQuery(".symposium_pleasewait").inmiddle().show();
 		
 		var comment_id = jQuery(this).attr("title");
 		var author_id = jQuery('#symposium_author_'+comment_id).val();
+		var comment_text = jQuery("#symposium_reply_"+comment_id).val();
+		
+		var comment = "<div class='reply_div'>";
+		comment = comment + "<div class='wall_reply_div'";
+		if (symposium.bg_color_2 != '') { comment = comment + " style='background-color:"+symposium.bg_color_2+"'"; }
+		comment = comment + ">";
+		comment = comment + "<div class='wall_reply'>";
+		comment = comment + '<a href="'+symposium.profile_url+symposium.q.substring(0, 1)+'uid='+symposium.current_user_id+'">';
+		comment = comment + symposium.current_user_display_name+'</a><br />';
+		comment = comment + comment_text;
+		comment = comment + "</div>";
+		comment = comment + "</div>";			
+		comment = comment + "<div class='wall_reply_avatar'>";
+		comment = comment + jQuery('#profile_photo').html().replace(/200/g, '40');		
+		comment = comment + "</div>";	
+		comment = comment + "</div>";
+
+		jQuery(comment).appendTo('#symposium_comment_'+comment_id).hide().slideDown("slow");
+		jQuery("#symposium_reply_"+comment_id).val('');
 
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
@@ -607,20 +668,10 @@ jQuery(document).ready(function() {
 				action:"addComment",
 				uid:author_id,
 				parent:comment_id,
-				text:jQuery("#symposium_reply_"+comment_id).val()
+				text:comment_text
 			}),
 		    dataType: "html",
-			async: false,
-			success: function(str){
-				if (str != '') {
-					jQuery("#symposium_reply_"+comment_id).val('');
-					jQuery(str).appendTo('#symposium_comment_'+comment_id).hide().slideDown();
-					jQuery(".symposium_pleasewait").fadeOut("slow");
-				}
-			},
-			error: function(err){
-				//alert("P3:"+err);
-			}		
+			async: true
    		});
    			
    	});		
@@ -903,7 +954,7 @@ jQuery(document).ready(function() {
    	jQuery("#show_favs").click(function() {
         
 		jQuery("#fav-list-internal").html("Retrieving content...");
-        jQuery("#fav-list").inmiddle().fadeIn();
+        jQuery("#symposium-fav-list").inmiddle().fadeIn();
 		jQuery(".symposium_pleasewait").inmiddle().fadeIn();
 		
 		jQuery.ajax({
@@ -927,7 +978,7 @@ jQuery(document).ready(function() {
 		        
    	});
    	// Delete a favourite
-	jQuery(".delete_fav").live('click', function() {
+	jQuery(".symposium-delete-fav").live('click', function() {
 
 		jQuery(".symposium_notice").inmiddle().fadeIn();
 		
@@ -954,14 +1005,14 @@ jQuery(document).ready(function() {
 	// Delete fav link
 	jQuery('.fav_row').live('mouseover mouseout', function(event) {
 	  if (event.type == 'mouseover') {
-        jQuery(this).find(".delete_fav").show();
+        jQuery(this).find(".symposium-delete-fav").show();
 	  } else {
-        jQuery(this).find(".delete_fav").hide();
+        jQuery(this).find(".symposium-delete-fav").hide();
 	  }
 	});
 	// Close favourites
    	jQuery("#favs_close").click(function() {
-		jQuery('#fav-list').fadeOut("slow");
+		jQuery('#symposium-fav-list').fadeOut("slow");
    	});
    	
 	// Edit topic (AJAX)
@@ -1100,15 +1151,11 @@ jQuery(document).ready(function() {
     });
     
 	// Show new topic and reply topic forms
-	jQuery("#new-topic-link").click(function() {
+	jQuery("#new-topic-button").click(function() {
 	  	jQuery("#new-topic").toggle("slow");
 	});
 	jQuery("#cancel_post").click(function() {
 	  	jQuery("#new-topic").hide("slow");
-	});
-
-	jQuery("#reply-topic-link").click(function() {
-	  	jQuery("#reply-topic").toggle("slow");
 	});
 	jQuery("#cancel_reply").click(function() {
 	  	jQuery("#reply-topic").hide("slow");
@@ -1369,6 +1416,7 @@ jQuery(document).ready(function() {
 	    	});
 	    	jQuery("#symposium-chatroom-box").click(function() {
 				jQuery('#symposium-chatroom').show("fast");
+				jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
 				createCookie('wps_chatroom','show',7);
 	    	});
 	    	jQuery("#symposium-chatroom_close").click(function() {
@@ -1378,11 +1426,20 @@ jQuery(document).ready(function() {
 			
 		}
 
-		// Make chats draggable
-		jQuery('#symposium-chatroom').draggable();
-		jQuery('#symposium-who-online').draggable();
-		jQuery('.chat_window').draggable();
-	
+		// Make DIVS draggable
+		if (jQuery("#symposium-chatroom").length) {
+			jQuery('#symposium-chatroom').draggable();
+		}
+		if (jQuery("#symposium-who-online").length) {
+			jQuery('#symposium-who-online').draggable();
+		}
+		if (jQuery(".chat_window").length) {
+			jQuery('.chat_window').draggable();
+		}
+		if (jQuery("#symposium-fav-list").length) {
+			jQuery('#symposium-fav-list').draggable();
+		}
+		
 		// Scheduled checks for chat/unread mail/etc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if (symposium.current_user_id > 0 ) {
 		
@@ -1429,8 +1486,6 @@ jQuery(document).ready(function() {
 			var hm = jQuery('#chatroom_messages').height();
 			var hc = jQuery('#symposium-chatroom').height();
 			if (hm < 400) {
-//				jQuery('#chatroom_messages').animate({ height: hm+400 }, 500 );
-//				jQuery('#symposium-chatroom').animate({ height: hc+400 }, 500 );
 				jQuery('#chatroom_messages').height(hm+400);
 				jQuery('#symposium-chatroom').height(hc+400);
 				jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });

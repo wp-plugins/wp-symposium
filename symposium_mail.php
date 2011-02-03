@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.1.32
+Version: 0.1.33
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -166,7 +166,7 @@ function symposium_mail() {
 		$unread_sent = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail'." WHERE mail_from = ".$current_user->ID." AND mail_sent_deleted != 'on' AND mail_read != 'on'");
 		if ($unread_in > 0) { $unread_in_show = " (".$unread_in.")"; } else { $unread_in_show = ""; }
 
-		$html .= '<div id="symposium-wrapper">';
+		$html .= '<div class="symposium-wrapper">';
 						
 			$html .= '<div id="mail_tabs">';
 			$html .= '<div class="mail_tab nav-tab-'.$compose_active.'"><a href="'.$thispage.$q.'view=compose" class="nav-tab-'.$compose_active.'-link">'.__('Compose', 'wp-symposium').'</a></div>';
@@ -222,18 +222,24 @@ function symposium_mail() {
 				
   				$html .= '<form method="post" action="">';
 
-					$html .= '<div style="float:right; padding:22px;">';
-					$html .= '<input type="submit" class="button" style="float: left; height:46px;" value="'.__('Send', 'wp-symposium').'" />';
+					$html .= '<div class="button floatright send_button">';
+					$html .= '<input type="submit" class="button" value="'.__('Send', 'wp-symposium').'" />';
 					$html .= '</div>';
 	
+					$html .= '<div id="compose_mail_to">';
 					$html .= '<div class="new-topic-subject label">'.__('Start typing the Display Name of the member you are sending to...', 'wp-symposium').'</div>';
 	  					$html .= "<input type='text' id='compose_recipient' name='compose_recipient' class='new-topic-subject-input' style='width:75%' value='".htmlentities(stripslashes($recipient), ENT_QUOTES)."'/>";
+	  				$html .= '</div>';
 	  					
+					$html .= '<div id="compose_mail_subject">';
 					$html .= '<div class="new-topic-subject label">'.__('Subject', 'wp-symposium').'</div>';
-	  					$html .= "<input type='text' id='compose_subject' name='compose_subject' class='new-topic-subject-input' style='width:95%' value='".htmlentities(stripslashes($subject), ENT_QUOTES)."' />";
+	  					$html .= "<input type='text' name='compose_subject' class='new-topic-subject-input compose_subject' value='".htmlentities(stripslashes($subject), ENT_QUOTES)."' />";
+	  				$html .= '</div>';
 	  					
+					$html .= '<div id="compose_mail_message">';
 					$html .= '<div class="new-topic-subject label">'.__('Message', 'wp-symposium').'</div>';
-					$html .= '<textarea class="reply-topic-subject-text" style="height:300px" id="compose_text" name="compose_text"></textarea>';
+					$html .= '<textarea class="reply-topic-subject-text compose_text" name="compose_text"></textarea>';
+	  				$html .= '</div>';
 
   					if ($message != '') {
 						$html .= '<div class="new-topic-subject label">'.__('Previous Message...', 'wp-symposium').'</div>';
@@ -250,7 +256,7 @@ function symposium_mail() {
 			// IN BOX
 			if ($view == "in") {
 				
-				$html .= "<div class='style='width:100%; padding:0px; border: 0px;'>";
+				$html .= "<div class='style='width:100%; padding:0px; border: 0px; border:1px solid red;'>";
 
 				// Message
 				$html .= "<div style='float: left; width: 100%;'>";
@@ -259,7 +265,7 @@ function symposium_mail() {
 				$html .= "</div></div>";
 				
 				// Get list of inbox messages
-				$html .= "<div id='inbox' style='float:left;width:300px;margin-left:-100%;'>";
+				$html .= "<div id='mailbox'>";
 				$mail = $wpdb->get_results("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->prefix."users u ON m.mail_from = u.ID WHERE mail_in_deleted != 'on' AND mail_to = ".$current_user->ID." ORDER BY mail_mid DESC");
 
 				if ($mail) {
@@ -271,15 +277,15 @@ function symposium_mail() {
 							$row_bg = "row_odd";
 						}
 								
-						$html .= "<div id='".$item->mail_mid."' class='mail_item ".$row_bg."' style='cursor:pointer;border-bottom: 1px solid #aaa;padding-top:4px;padding-bottom:4px;'>";
-						$html .= "<div style='float:right; font-size: 12px; color: #aaa;'>";
+						$html .= "<div id='".$item->mail_mid."' class='mail_item ".$row_bg."'>";
+						$html .= "<div class='mail_item_age'>";
 						$html .= symposium_time_ago($item->mail_sent);
 						$html .= "</div>";
 						$html .= "<strong>".stripslashes(symposium_profile_link($item->mail_from))."</strong><br />";
-						$html .= stripslashes($item->mail_subject)."<br />";
+						$html .= "<span class='mailbox_message_subject'>".stripslashes($item->mail_subject)."</span><br />";
 						$message = stripslashes($item->mail_message);
 						if ( strlen($message) > 75 ) { $message = substr($message, 0, 75)."..."; }
-						$html .= "<span style='font-style:italic;'>".$message."</span>";
+						$html .= "<span class='mailbox_message'>".$message."</span>";
 						$html .= "</div>";
 					}
 				} else {
@@ -308,7 +314,7 @@ function symposium_mail() {
 				$html .= "</div></div>";
 				
 				// Get list of sent messages
-				$html .= "<div id='sentbox' style='float:left;width:300px;margin-left:-100%;'>";
+				$html .= "<div id='mailbox'>";
 				$mail = $wpdb->get_results("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->prefix."users u ON m.mail_to = u.ID WHERE mail_sent_deleted != 'on' AND mail_from = ".$current_user->ID." ORDER BY mail_mid DESC");
 
 				if ($mail) {
@@ -320,15 +326,15 @@ function symposium_mail() {
 							$row_bg = "row_odd";
 						}
 								
-						$html .= "<div id='".$item->mail_mid."' class='mail_item ".$row_bg."' style='cursor:pointer;border-bottom: 1px solid #aaa;padding-top:4px;padding-bottom:4px;'>";
-						$html .= "<div style='float:right; font-size: 12px; color: #aaa;'>";
+						$html .= "<div id='".$item->mail_mid."' class='mail_item ".$row_bg."'>";
+						$html .= "<div class='mail_item_age'>";
 						$html .= symposium_time_ago($item->mail_sent);
 						$html .= "</div>";
 						$html .= "<strong>".stripslashes(symposium_profile_link($item->mail_to))."</strong><br />";
-						$html .= stripslashes($item->mail_subject)."<br />";
+						$html .= "<span class='mailbox_message_subject'>".stripslashes($item->mail_subject)."</span><br />";
 						$message = stripslashes($item->mail_message);
 						if ( strlen($message) > 75 ) { $message = substr($message, 0, 75)."..."; }
-						$html .= "<span style='font-style:italic;'>".$message."</span>";
+						$html .= "<span class='mailbox_message'>".$message."</span>";
 						$html .= "</div>";
 					}
 				} else {
@@ -342,8 +348,6 @@ function symposium_mail() {
 						
 			$html .= '</div>'; 
 
-			// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.		
-			$html .= powered_by_wps();
 			 
 		$html .= '</div>'; // End of Wrapper
 		

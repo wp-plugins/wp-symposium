@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.32
+Version: 0.1.33
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -173,8 +173,8 @@ function symposium_activate() {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Version of WP Symposium
-	$symposium_version = "0.1.32";
-	$symposium_db_ver = 32;
+	$symposium_version = "0.1.33";
+	$symposium_db_ver = 33;
 	
 	// Code version *************************************************************************************
 	$ver = get_option("symposium_version");
@@ -209,12 +209,12 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "viewer", "varchar(32)", "NOT NULL", "'Guest'");
 	symposium_alter_table("config", "ADD", "include_admin", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "oldest_first", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "wp_width", "varchar(6)", "NOT NULL", "'99pc'");
+	symposium_alter_table("config", "ADD", "wp_width", "varchar(6)", "NOT NULL", "'650px'");
 	symposium_alter_table("config", "ADD", "main_background", "varchar(12)", "NOT NULL", "'#fff'");
 	symposium_alter_table("config", "ADD", "closed_opacity", "varchar(6)", "NOT NULL", "'1.0'");
 	symposium_alter_table("config", "ADD", "closed_word", "varchar(32)", "NOT NULL", "'closed'");
 	symposium_alter_table("config", "ADD", "fontfamily", "varchar(64)", "NOT NULL", "'Georgia,Times'");
-	symposium_alter_table("config", "ADD", "fontsize", "varchar(16)", "NOT NULL", "'15'");
+	symposium_alter_table("config", "ADD", "fontsize", "varchar(16)", "NOT NULL", "'13'");
 	symposium_alter_table("config", "ADD", "headingsfamily", "varchar(64)", "NOT NULL", "'Arial,Helvetica'");
 	symposium_alter_table("config", "ADD", "headingssize", "varchar(16)", "NOT NULL", "'20'");
 	symposium_alter_table("config", "ADD", "jquery", "varchar(2)", "NOT NULL", "'on'");
@@ -256,7 +256,8 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "visitors", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "use_chatroom", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "chatroom_banned", "text", "", "''");
-	symposium_alter_table("config", "ADD", "poke", "varchar(32)", "NOT NULL", "'Poke'");
+	symposium_alter_table("config", "ADD", "chat_purge", "int(11)", "NOT NULL", "'7'");
+	symposium_alter_table("config", "ADD", "profile_google_map", "int(11)", "NOT NULL", "'250'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
@@ -304,7 +305,7 @@ function symposium_activate() {
 	symposium_alter_table("styles", "ADD", "main_background", "varchar(12)", "NOT NULL", "'#fff'");
 	symposium_alter_table("styles", "ADD", "closed_opacity", "varchar(6)", "NOT NULL", "'1.0'");
 	symposium_alter_table("styles", "ADD", "fontfamily", "varchar(128)", "NOT NULL", "'Georgia,Times'");
-	symposium_alter_table("styles", "ADD", "fontsize", "varchar(8)", "NOT NULL", "'15'");
+	symposium_alter_table("styles", "ADD", "fontsize", "varchar(8)", "NOT NULL", "'13'");
 	symposium_alter_table("styles", "ADD", "headingsfamily", "varchar(128)", "NOT NULL", "'Georgia,Times'");
 	symposium_alter_table("styles", "ADD", "headingssize", "varchar(8)", "NOT NULL", "'20'");
 	
@@ -334,6 +335,11 @@ function symposium_uninstall() {
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_usermeta");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_mail");
    	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_audit");
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_chat");
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_comments");
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_extended");
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_friends");
+   	$wpdb->query("DROP TABLE IF EXISTS ".$wpdb->prefix."symposium_notifications");
 
 	// Delete Notification options
 	delete_option("symposium_notification_inseconds");
@@ -386,6 +392,9 @@ function symposium_notification_trigger_schedule() {
 	$wpdb->query("DELETE FROM ".$wbdb->prefix."symposium_chat");
 	// Clean irrelevant notifications
 	$wpdb->query("DELETE FROM ".$wbdb->prefix."symposium_notifications WHERE notification_to = 0");
+	// Calculate how old chat has to be, to be deleted
+	$chat_purge = $wpdb->get_var($wpdb->prepare("SELECT chat_purge FROM ".$wpdb->prefix . 'symposium_config'));
+	$wpdb->query( $wpdb->prepare( "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_timestamp < %s", array(date("Y-m-d H:i:s",strtotime('-'.$chat_purge.' days'))) ) );	
 	
 	// ******************************************* Daily Digest ******************************************
 	$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix . 'symposium_config'));
@@ -549,6 +558,8 @@ function symposium_lastactivity() {
 	if (is_user_logged_in()) {
 		update_symposium_meta($current_user->ID, 'last_activity', "'".date("Y-m-d H:i:s")."'");
 	}
+
+	echo powered_by_wps();
 	
 }
 
@@ -757,7 +768,7 @@ function add_symposium_stylesheet() {
 		wp_register_style('symposium_jcrop-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery.Jcrop.css');
 		wp_enqueue_style('symposium_jcrop-css');
 		
-		wp_register_style('symposium_uploadify-css', WP_PLUGIN_URL.'/uploadify/uploadify.css');
+		wp_register_style('symposium_uploadify-css', WP_PLUGIN_URL.'/wp-symposium/uploadify/uploadify.css');
 		wp_enqueue_style('symposium_uploadify-css');
 	    
 
@@ -775,7 +786,13 @@ function add_symposium_stylesheet() {
 	// Notices
 	echo "<div class='symposium_notice' style='display:none; z-index:999999;'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /> ".__('Saving...', 'wp-symposium')."</div>";
 	echo "<div class='symposium_pleasewait' style='display:none; z-index:999999;'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /> ".__('Please Wait...', 'wp-symposium')."</div>";
-	echo "<div id='symposium_dialog' style='display:none; z-index:999999;' title='WP Symposium'></div>";
+
+	// Favourites DIV
+	echo "<div id='symposium-fav-list' style='display:none; padding:8px; z-index:999999; width: 600px; height:400px; background-color: #fff;' class='shadow'>";	
+	echo "<strong>Favourites</strong><div id='favs_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".WP_PLUGIN_URL."/wp-symposium/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
+		echo "<div id='fav-list-internal' style='clear:both;margin-top:12px;height:370px;overflow:auto;padding:0px;'>";
+		echo "</div>";
+	echo "</div>";
 	
 }
 
@@ -843,7 +860,14 @@ function symposium_scriptsAction()
 			$page_uid = $current_user->ID;
 		}
 	}
-	
+	if ($page_uid == 0) {
+		if ($_POST['from'] == 'small_search') {
+			$search = $_POST['member_small'];
+			$get_uid = $wpdb->get_var("SELECT u.ID FROM ".$wpdb->prefix."users u LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$search."%') OR (m.city LIKE '".$search."%') OR (m.country LIKE '".$search."%') OR (u.display_name LIKE '% %".$search."%') ORDER BY u.display_name LIMIT 0,1");
+			if ($get_uid) { $page_uid = $get_uid; }
+		} 
+	}
+			
 	// Forum
 	if (isset($_GET['show'])) {
 		$show_tid = $_GET['show']*1;
@@ -909,6 +933,18 @@ function symposium_scriptsAction()
 	// Load Symposium JS
  	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
 	
+	if ($config->use_styles == "on") {
+		$bg_color_2 = $config->bg_color_2;
+		$row_border_size = $config->row_border_size;
+		$row_border_style = $config->row_border_style;
+		$text_color_2 = $config->text_color_2;
+	} else {
+		$bg_color_2 = '';
+		$row_border_size = '';
+		$row_border_style = '';
+		$text_color_2 = '';
+	}
+
 	// Set JS variables
 	wp_localize_script( 'symposium', 'symposium', array(
 		'plugins' => WP_PLUGIN_URL, 
@@ -929,6 +965,7 @@ function symposium_scriptsAction()
 		'show_tid' => $show_tid,
 		'cat_id' => $cat_id,
 		'current_user_id' => $current_user->ID,
+		'current_user_display_name' => stripslashes($current_user->display_name),
 		'current_user_page' => $page_uid,
 		'widget_vote_yes' => $yes, 
 		'widget_vote_no' => $no,
@@ -936,7 +973,11 @@ function symposium_scriptsAction()
 		'please_wait' => __('Please Wait...', 'wp-symposium'),
 		'saving' => __('Saving...', 'wp-symposium'),
 		'site_title' => get_bloginfo('name'),
-		'q' => $q
+		'q' => $q,
+		'bg_color_2' => $bg_color_2,
+		'row_border_size' => $row_border_size,
+		'row_border_style' => $row_border_style,
+		'text_color_2' => $text_color_2
 	));
 
 

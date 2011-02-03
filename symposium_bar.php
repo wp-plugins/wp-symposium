@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.32
+Version: 0.1.33
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -52,7 +52,6 @@ function add_notification_bar()
 				$soundchat = $meta->soundchat;
 				$bar_position = $meta->bar_position;			
 			}
-			$border_radius = $config->border_radius;
 			$use_chat = $config->use_chat;
 			$use_chatroom = $config->use_chatroom;
 			$bar_polling = ($config->bar_polling*1000);
@@ -64,6 +63,9 @@ function add_notification_bar()
 			$custom_register_url = $config->custom_register_url;
 			$inactive = $config->online;
 			$offline = $config->offline;
+			if ($config->use_styles == "on") {
+				$border_radius = $config->border_radius;
+			}
 	
 			include_once('symposium_functions.php');
 	
@@ -139,11 +141,8 @@ function add_notification_bar()
 			<div id="symposium-notification-bar">
 				<div id="icons" style="float: left">
 					<?php
-			        echo '<a href="http://www.wpsymposium.com" target="_blank"><img src="http://www.wpsymposium.com/wp-content/plugins/wp-symposium/images/icon_logo.gif" alt="'.__('Powered by WP Symposium', 'wp-symposium').'" title="'.__('Powered by WP Symposium', 'wp-symposium').'" /></a> ';
-			        if ($config->bar_label != '') {
-				        echo $config->bar_label." - ";
-			        }
-			        echo __('Powered by WP Symposium', 'wp-symposium');
+			        echo '<a href="http://www.wpsymposium.com" target="_blank"><img src="http://www.wpsymposium.com/icon_logo.gif" alt="'.__('Powered by WP Symposium', 'wp-symposium').'" title="'.__('Powered by WP Symposium', 'wp-symposium').'" /></a> ';
+			        echo $config->bar_label;
 					?>
 				</div>
 	
@@ -253,7 +252,7 @@ function add_notification_bar()
 								if (symposium_get_current_userlevel() == 5) {
 									echo "<div id='symposium-chatroom_clear' style='margin-right:5px;float:right;cursor:pointer;'>".__("Clear all", "wp-symposium")."</div>";
 								}
-							_e("Chat Room", "wp-symposium");
+							_e("Chat Room (visible to all)", "wp-symposium");
 							echo "</div>";
 							echo "<div id='chatroom_messages'>";
 							echo __("Retrieving chat...", "wp-symposium");

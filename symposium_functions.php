@@ -23,7 +23,7 @@ function get_user_avatar($uid, $size) {
 	if ($profile_photo == '' || profile_photo == 'upload_failed') {
 		return get_avatar($uid, $size);
 	} else {
-		return "<img src='/wp-content/wp-symposium-members/".$uid."/media/photos/profile_pictures/".$profile_photo."' style='width:".$size."px; height:".$size."' />";
+		return "<img src='/wp-content/wp-symposium-members/".$uid."/media/photos/profile_pictures/".$profile_photo."' style='width:".$size."px; height:".$size."px' />";
 	}
 	
 	exit;
@@ -33,7 +33,7 @@ function show_profile_menu($uid1, $uid2) {
 	
 	global $wpdb;
 
-	$html .= "<div style='width:130px; padding-right: 15px; margin-right:0px; float: left;'>";
+	$html .= "<div id='profile_menu'>";
 	
 		$meta = get_symposium_meta_row($uid1);					
 		$share = $meta->share;		
@@ -122,12 +122,11 @@ function symposium_profile_friends($uid) {
 	if ($mailpage[strlen($mailpage)-1] != '/') { $mailpage .= '/'; }
 	$q = symposium_string_query($mailpage);		
 
-
-	$html .= "<div id='profile_left_column'";
+	$html .= "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
-		$html .= " style='border-left:0px;'";
+		$html .= " border-left:0px;";
 	}			
-	$html .= ">";
+	$html .= "'>";
 
 		// Friend Requests
 		
@@ -141,7 +140,7 @@ function symposium_profile_friends($uid) {
 				$html .= '<h2>'.__('Friend Requests', 'wp-symposium').'...</h2>';
 				
 				foreach ($requests as $request) {
-					$html .= "<div id='request_".$request->friend_from."' style='clear:both; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
+					$html .= "<div id='request_".$request->friend_from."' style='clear:right; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
 						$html .= "<div style='float: left; width:64px; margin-right: 15px'>";
 							$html .= get_user_avatar($request->ID, 64);
 						$html .= "</div>";
@@ -181,7 +180,7 @@ function symposium_profile_friends($uid) {
 				$last_active_minutes = strtotime($friend->last_activity);
 				$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
 												
-				$html .= "<div id='friend_".$friend->friend_to."' style='clear:both; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
+				$html .= "<div id='friend_".$friend->friend_to."' style='clear:right; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
 					$html .= "<div style='float: left; width:64px; margin-right: 15px'>";
 						$html .= get_user_avatar($friend->friend_to, 64);
 					$html .= "</div>";
@@ -228,40 +227,26 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 		
 		$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
 
-		$html = "<div style='padding:0px;overflow:auto;'>";
+		$html = "<div style='padding:0px;width:99%;overflow:auto;'>";
 	
-			$html .= "<div style='float: left; height: 200px; width: 100%; overflow:auto; padding:0px;'>";
+			$html .= "<div style='float: left; height: 200px; width: 99%; padding:0px;'>";
 	
 				$privacy = $meta->share;
 	
-				$html .= "<div id='profile_details' style='margin-left: 215px;overflow:auto;'>";
-
-				// Google map
-				if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
-		
-					$city = $meta->city;
-					$country = $meta->country;
-		
-					if ($city != '' || $country != '') { 	
-											
-						$html .= "<div style='float: right; height: 130px; width: 130px; margin-bottom:40px; '>";
-						$html .= '<a target="_blank" href="http://maps.google.co.uk/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q='.$city.',+'.$country.'&amp;ie=UTF8&amp;hq=&amp;hnear='.$city.',+'.$country.'&amp;output=embed&amp;z=5" alt="Click on map to enlarge" title="Click on map to englarge">';
-						$html .= '<img src="http://maps.google.com/maps/api/staticmap?center='.$city.',.+'.$country.'&zoom=5&size=130x130&maptype=roadmap&markers=color:blue|label:&nbsp;|'.$city.',+'.$country.'&sensor=false" />';
-						$html .= "</a></div>";
-						
-					}
-					
-				}
+				$html .= "<div id='profile_details' style='margin-left: 215px;'>";
 						
 					$html .= "<h1 style='clear:none'>".$display_name."</h1>";
 
 					if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
 
+						$city = $meta->city;
+						$country = $meta->country;
+
 						$html .= "<p>";
 						if ($city != '') { $html .= $city; }
 						if ($city != '' && $country != '') { $html .= ", "; }
 						if ($country != '') { $html .= $country; }
-						
+
 						$day = (int)$meta->dob_day;
 						$month = $meta->dob_month;
 						$year = (int)$meta->dob_year;
@@ -309,6 +294,12 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 			
 									// Send mail
 									$html .='<input type="button" value="Send Mail" class="button" onclick="document.location = \''.$url.'?view=compose&to='.$uid1.'\';">';
+
+									// Poke
+									$poke = $config->poke;
+									if ($poke != '') {
+										//$html .='<input type="button" value="'.$poke.'" class="button">';
+									}
 									
 								} else {
 									
@@ -336,7 +327,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 			$html .= "</div>";
 		
 			// Photo
-			$html .= "<div id='profile_photo' style='float:left;width:215px;margin-left:-100%; margin-bottom:20px;'>";
+			$html .= "<div id='profile_photo' class='corners' style='float:left;width:215px;margin-left:-100%; margin-bottom:20px;padding-left:10px;'>";
 			$html .= get_user_avatar($uid1, 200);
 			$html .= "</div>";
 
@@ -362,7 +353,6 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 	if ($uid1 > 0) {
 		
 		$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
-		$styles = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_styles'));
 
 		$privacy = $meta->wall_share;		
 		$is_friend = symposium_friend_of($uid1);
@@ -375,11 +365,11 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 
 		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
 		
-			$html .= "<div id='profile_left_column'";
+			$html .= "<div id='profile_left_column' style='";
 			if ($config->show_profile_menu != 'on') {
-				$html .= " style='border-left:0px;'";
+				$html .= " border-left:0px;";
 			}			
-			$html .= ">";
+			$html .= "'>";
 			
 				// Optional panel
 				if ($config->show_wall_extras == "on") {
@@ -397,14 +387,14 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 									$label = $wpdb->get_var($wpdb->prepare("SELECT extended_name FROM ".$wpdb->prefix."symposium_extended WHERE eid = ".$split[0]));
 									$html .= "<div style='clear: both; margin-bottom:15px;overflow: auto;'>";
 									$html .= "<div style='font-weight:bold;'>".$label."</div>";
-									$html .= "<div>".$split[1]."</div>";
+									$html .= "<div>".symposium_make_url($split[1])."</div>";
 									$html .= "</div>";
 								}
 							}
 						}
 															
 						// Friends
-						$html .= "<div style='width:100%;padding:0px;overflow:auto;'>";
+						$html .= "<div style='width:99%;padding:0px;overflow:auto;'>";
 				
 							$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$uid1." AND friend_accepted = 'on' ORDER BY last_activity DESC LIMIT 0,6";
 							$friends = $wpdb->get_results($sql);
@@ -441,7 +431,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 				}				
 					
 				// Wall
-				$html .= "<div id='symposium_wall' style='overflow: auto; padding:0px; margin:0px;'>";
+				$html .= "<div id='symposium_wall' style='overflow: auto; padding:0px; margin:0px; padding-bottom:5px'>";
 				
 					if ( ($uid1 != $uid2) || (is_user_logged_in() && $is_friend)) {
 						// Post Comment Input
@@ -473,12 +463,12 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 					if ($comments) {
 						foreach ($comments as $comment) {
 	
-							$html .= "<div id='".$comment->cid."' style='overflow: auto; padding-top: 10px;padding-left: 5px;margin-right: 15px;margin-bottom:0px; border-radius: 0px; -moz-border-radius: 0px'>";
-								$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
-									$html .= "<div class='wall_post' style='margin-left: 74px;overflow:auto;'>";
+							$html .= "<div id='".$comment->cid."' style='overflow: auto; padding:0px 0px 5px 5px;margin-right: 15px;margin-bottom:0px;'>";
+								$html .= "<div style='float: left; overflow:auto; width:99%;padding:0px;'>";
+									$html .= "<div class='wall_post' style='margin-left: 74px;overflow:visible;'>";
 									
 										if (symposium_get_current_userlevel($uid2) == 5 || $comment->subject_uid == $uid2 || $comment->author_uid == $uid2) {
-											$html .= "<a title='".$comment->cid."' href='javascript:void(0);' class='delete_post delete_post_top'>".__("Delete", "wp-symposium")."</a>";
+											$html .= "<a title='".$comment->cid."' href='javascript:void(0);' class='delete_post delete_post_top' style='margin-right:10px;'>".__("Delete", "wp-symposium")."</a>";
 										}
 										$html .= '<a href="'.$profile_page.$q.'uid='.$comment->author_uid.'">'.stripslashes($comment->display_name).'</a> ';
 										if ($comment->author_uid != $comment->subject_uid) {
@@ -506,7 +496,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 										$count = 0;
 										if ($replies) {
 											if (count($replies) > 4) {
-												$html .= "<div style='padding:4px; padding-bottom:0px; clear: both; overflow: auto; margin-top:10px;'>";
+												$html .= "<div style='padding:4px; padding-bottom:0px; clear: both; overflow: visible; margin-top:10px;'>";
 												$html .= "<a title='".$comment->cid."' class='view_all_comments' href='javascript:void(0);'>".__(sprintf("View all %d comments", count($replies)), "wp-symposium")."</a>";
 												$html .= "</div>";
 											}
@@ -517,9 +507,9 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 												} else {
 													$reply_style = "display:none; ";
 												}
-												$html .= "<div id='".$reply->cid."' class='reply_div' style='background-color: ".$styles->bg_color_2."; padding:4px; padding-bottom:0px; clear: both; overflow: auto; margin-top:10px;".$reply_style."'>";
-													$html .= "<div style='float: left; overflow:auto; width:100%;padding:0px;'>";
-														$html .= "<div class='wall_reply' style='margin-left: 45px;overflow:auto;'>";
+												$html .= "<div id='".$reply->cid."' class='reply_div' style='padding:4px; padding-bottom:0px; clear: both; overflow: visible;margin-top:10px;".$reply_style."'>";
+													$html .= "<div style='float: left; overflow:visible; width:100%;padding:0px;padding-bottom:4px;background-color: ".$config->bg_color_2.";'>";
+														$html .= "<div class='wall_reply' style='margin-left: 49px;overflow:visible;padding-right:6px;'>";
 															if (symposium_get_current_userlevel($uid2) == 5 || $reply->subject_uid == $uid2 || $reply->author_uid == $uid2) {
 																$html .= "<a title='".$reply->cid."' href='javascript:void(0);' class='delete_post delete_reply'>".__("Delete", "wp-symposium")."</a>";
 															}
@@ -529,24 +519,26 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 														$html .= "</div>";
 													$html .= "</div>";
 													
-													$html .= "<div style='float:left;width:45px;margin-left:-100%;'>";
+													$html .= "<div style='padding:4px;float:left;width:45px;margin-left:-100%;'>";
 														$html .= get_user_avatar($reply->author_uid, 40);
 													$html .= "</div>";		
 												$html .= "</div>";
 											}
-										}
-										$html .= "<div id='symposium_comment_".$comment->cid."'></div>";
+										} else {
+											$html .= "<div style='padding:4px; padding-bottom:0px; clear: both; overflow: visible; margin-top:10px;'></div>";
+										}												
+										$html .= "<div style='clear:both;padding:4px;' id='symposium_comment_".$comment->cid."'></div>";
 	
 										// Reply field
 										if ( $uid1 == $uid2 || (is_user_logged_in() && $is_friend)) {
-											$html .= '<p><input id="symposium_reply_'.$comment->cid.'" type="text" name="wall_comment" class="input-field" style="margin-top:10px; width:230px;" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" />';
+											$html .= '<p><input id="symposium_reply_'.$comment->cid.'" type="text" name="wall_comment" class="input-field" style="width:200px;" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" />';
 											$html .= '<input id="symposium_author_'.$comment->cid.'" type="hidden" value="'.$comment->author_uid.'" />';
 											$html .= '&nbsp;<input title="'.$comment->cid.'" type="submit" style="width:75px" class="button symposium_add_reply" value="'.__('Add', 'wp-symposium').'" /></p>';
 										}
 										
 									$html .= "</div>";
 								$html .= "</div>";
-								$html .= "<div style='float:left;width:74px;margin-left:-100%;'>";
+								$html .= "<div style='float:left;width:74px;margin-left:-100%;padding-left:4px;'>";
 									$html .= get_user_avatar($comment->author_uid, 64);
 								$html .= "</div>";
 							$html .= "</div>";
@@ -636,32 +628,36 @@ function get_message($mail_mid, $del) {
 	
 	$mail_url = $wpdb->get_var($wpdb->prepare("SELECT mail_url FROM ".$wpdb->prefix . 'symposium_config'));
 
-	$msg = "<div style='padding-bottom:10px; overflow:auto;'>";
+	$msg = "<div id='message_header'>";
 	
-		$msg .= "<div style='width:44px; margin-right: 5px; float:left;'>";
+		$msg .= "<div id='message_header_avatar'>";
 			$msg .= get_user_avatar($mail->mail_from, 44);
 		$msg .= "</div>";
 
 		// Delete
-		$msg .= "<div style='float:right'>";
+		$msg .= "<div id='message_header_delete'>";
 		$msg .= "<form action='' method='POST'>";
 		$msg .= "<input type='hidden' name='del".$del."' value=".$mail_mid." />";
-		$msg .= '<input type="submit" class="button" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Delete', 'wp-symposium').'" />';
+		$msg .= '<input type="submit" class="button message_delete" style="margin-right:0px" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Delete', 'wp-symposium').'" />';
 		$msg .= "</form>";
 		$msg .= "</div>";
 		
 		// Reply
-		if ($del == "in") {
-			$msg .= "<div style='clear:both;margin-top:-16px;float:right'>";
+		if ($del == "in" || $del == "result") {
+			$msg .= "<div id='message_header_reply'>";
 			$msg .= "<form action='' method='POST'>";
 			$msg .= "<input type='hidden' name='reply_recipient' value=".$mail->mail_from." />";
 			$msg .= "<input type='hidden' name='reply_mid' value=".$mail_mid." />";
-			$msg .= '<input type="submit" class="button" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Reply', 'wp-symposium').'" />';
+			$msg .= '<input type="submit" class="button message_reply" style="margin-right:0px" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Reply', 'wp-symposium').'" />';
 			$msg .= "</form>";
 			$msg .= "</div>";
 		}
 		
-		$msg .= "<span style='font-family:".$styles->headingsfamily."; font-size:".$styles->headingssize."px; font-weight:bold;'>".stripslashes($mail->mail_subject)."</span><br />";
+		$mail_style = "";
+		if ($styles->use_styles == "on") {
+			$mail_style = "style='font-family:".$styles->headingsfamily."; font-size:".$styles->headingssize."px; font-weight:bold;'";
+		}
+		$msg .= "<span ".$mail_style.">".stripslashes($mail->mail_subject)."</span><br />";
 		if ($del == "in") {
 			$msg .= __('From', 'wp-symposium')." ";
 		} else {
@@ -671,7 +667,7 @@ function get_message($mail_mid, $del) {
 		
 	$msg .= "</div>";
 	
-	$msg .= "<div style='padding-top:10px'>";
+	$msg .= "<div id='message_mail_message'>";
 	$msg .= stripslashes(str_replace(chr(13), "<br />", $mail->mail_message));
 	$msg .= "</div>";
 	
@@ -1072,7 +1068,7 @@ function symposium_sendmail($email, $subject, $msg)
 	$body .= "<div style='width:430px;font-size:10px;border:0px solid #eee;text-align:left;float:left;'>".$footer."</div>";
 	
 	// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
-	$body .= "<div style='width:370px;font-size:10px;border:0px solid #eee;text-align:right;float:right;'>Powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress</div>";
+	$body .= "<div>Powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress</div>";
 	$body .= "</div>";
 
 	// To send HTML mail, the Content-type header must be set
@@ -1104,7 +1100,8 @@ function convert_datetime($str) {
 
 function powered_by_wps() {
 
-	return "<div id='powered_by_wps'>".__('Powered by WP Symposium - Social Network for WordPress', 'wp-symposium').", ".get_option("symposium_version")."</div>";
+	return "<div id='powered_by_wps'><a href='http://www.wpsymposium.com' target='_blank'>".__('Powered by WP Symposium - Social Networking for WordPress', 'wp-symposium')." v".get_option("symposium_version")."</a></div>";
+
 }
 
 ?>
