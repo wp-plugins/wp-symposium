@@ -1,6 +1,10 @@
 todo.txt
 --------
 
+BUGS
+
+- Members should NOT be allowed to cancel a friend request
+
 MEMBER SEARCH 
 
 - When 'land' on member's page, default to their 'my wall'

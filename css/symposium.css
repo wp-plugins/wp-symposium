@@ -1070,6 +1070,7 @@ left/*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
 }
 
 .symposium-wrapper #mail-main {
+	clear: both;
 	z-index: 2;
 	overflow: auto;
 	width: 95%;

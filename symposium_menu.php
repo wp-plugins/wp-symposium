@@ -626,11 +626,17 @@ function symposium_plugin_debug() {
 		echo '<h2>'.__('Version Numbers and URLs', 'wp-symposium').'</h2>';
 	
 	  	echo "<p>";
-		  	echo __("WP Symposium internal version:", "wp-symposium")." ".get_option("symposium_version")."<br />";
+		  	echo __("WP Symposium internal version:", "wp-symposium")." ";
+		  	$ver = get_option("symposium_version");
+		  	if (!$ver) { 
+		  		echo "<span style='clear:both;color:red; font-weight:bold;'>Error!</span> ".__('No code version set. You may need to re-activate the core plugin', 'wp-symposium')."</span><br />"; 
+		  	} else {
+		  		echo $ver."<br />";
+		  	}
 		  	echo __("WP Symposium database version:", "wp-symposium")." ";
 		  	$db_ver = get_option("symposium_db_version");
 		  	if (!$db_ver) { 
-		  		echo "<span style='color:red; font-weight:bold;'>Error!</span> ".__('No database version set. You may need to re-apply the upgrades', 'wp-symposium')."</span><br />"; 
+		  		echo "<span style='clear:both;color:red; font-weight:bold;'>Error!</span> ".__('No database version set. You may need to re-activate the core plugin', 'wp-symposium')."</span><br />"; 
 		  	} else {
 		  		echo $db_ver."<br />";
 		  	}

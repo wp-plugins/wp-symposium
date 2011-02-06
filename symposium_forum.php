@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.33.1
+Version: 0.1.33.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -241,7 +241,7 @@ function symposium_forum() {
 					$html .= '"></div>';
 					$html .= '<div class="new-topic-subject-warning warning">'.__("Please enter a subject", "wp-symposium").'.</div>';
 					$html .= '<div><div class="new-topic-subject label">'.__("First Post in Topic", "wp-symposium").'</div>';
-					$html .= '<textarea class="new-topic-subject-text" name="new_topic_text">';
+					$html .= '<textarea class="new-topic-subject-text elastic" name="new_topic_text">';
 					$html .= ($new_topic_text);
 					$html .= '</textarea></div>';
 					$html .= '<div class="new_topic_text-warning warning" style="display:none">'.__("Please enter a message", "wp-symposium").'</div>';
@@ -329,8 +329,8 @@ function symposium_forum() {
 				if ( ($use_categories == "on") && ($cat_id == 0) ) {
 		
 					$html .= "<div class='table_header'>";
-					$html .= "<div class='table_topic'><div style='margin:4px'>".__("Category", "wp-symposium")."</div></div>";
-					$html .= "</div><div style='clear:both;'></div>";
+					$html .= "<div class='table_topic' style='margin-left:3px;'>".__("Category", "wp-symposium")."<div style='clear:both;'></div></div>";
+					$html .= "</div>";
 					
 					$categories = $wpdb->get_results("SELECT * FROM ".$cats." ORDER BY listorder");
 					
@@ -742,7 +742,7 @@ function symposium_forum() {
 						$html .= '<input type="hidden" name="tid" value="'.$show.'">';
 						$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
 						$html .= '<div class="reply-topic-subject label">'.__("Reply to this Topic", "wp-symposium").'</div>';
-						$html .= '<textarea class="reply-topic-text" name="reply_text"></textarea>';
+						$html .= '<textarea class="reply-topic-text elastic" name="reply_text"></textarea>';
 						$html .= '<div class="quick-reply-warning warning" style="display:none">'.__("Please enter a message", "wp-symposium").'</div>';
 						$html .= '<div class="emailreplies label"><input type="checkbox" id="reply_subscribe" name="reply_topic_subscribe"';
 						if ($subscribed_count > 0) { $html .= 'checked'; } 

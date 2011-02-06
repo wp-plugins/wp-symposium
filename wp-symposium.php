@@ -3,9 +3,9 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.33.1
+Version: 0.1.33.2
 Author: WP Symposium
-Author URI: http://www.wpsymposium.com
+AuthorI: http://www.wpsymposium.com
 License: GPL2
 */
 	
@@ -23,14 +23,15 @@ License: GPL2
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
+*/ 
 
 /* ====================================================== SETUP ====================================================== */
 
 include_once('symposium_functions.php');
 
-global $wpdb, $symposium_db_version;
-$symposium_db_version = "1";
+global $wpdb;
+define('WPS_VER', '0.1.33.2');
+define('WPS_DBVER', '33');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -167,33 +168,9 @@ function symposium_widget() {
 function symposium_activate() {
 	
    	global $wpdb, $current_user;
-   	global $symposium_db_version;
 	wp_get_current_user();
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-	// Version of WP Symposium
-	$symposium_version = "0.1.33.1";
-	$symposium_db_ver = 33;
-	
-	// Code version *************************************************************************************
-	$ver = get_option("symposium_version");
-	if ($ver != false) {		 
-	    update_option("symposium_version", $symposium_version);	    	   	
-	} else {
-		// Set Database Version		
-	    add_option("symposium_version", $symposium_version);	    	   	
-	}
-
-	// Database version *************************************************************************************
-	$db_ver = get_option("symposium_db_version");
-	if ($db_ver != false) {
-		$db_ver = (int) $db_ver;
-	} else {
-		// Set Database Version		
-	    add_option("symposium_db_version", 1);	    	   	
-	}
-
 
 	// Create initial versions of tables *************************************************************************************
 
@@ -315,8 +292,9 @@ function symposium_activate() {
 
 						      	
 	// ***********************************************************************************************
- 	// Update Database Version ***********************************************************************
-	update_option("symposium_db_version", $symposium_db_ver);
+ 	// Update Versions *******************************************************************************
+	update_option("symposium_db_version", WPS_DBVER);
+	update_option("symposium_version", WPS_VER);
 	
 }
 /* End of Activation */
@@ -934,9 +912,10 @@ function symposium_scriptsAction()
 	wp_enqueue_script('jquery-swfobject', WP_PLUGIN_URL.'/wp-symposium/uploadify/swfobject.js', array('jquery'));
 	wp_enqueue_script('jquery-uploadify', WP_PLUGIN_URL.'/wp-symposium/uploadify/jquery.uploadify.v2.1.4.js', array('jquery'));
 	wp_enqueue_script('jquery-jcrop', WP_PLUGIN_URL.'/wp-symposium/js/jquery.Jcrop.js', array('jquery'));
+	wp_enqueue_script('jquery-elastic', WP_PLUGIN_URL.'/wp-symposium/js/jquery.elastic.source.js', array('jquery'));
 	
 	// Load Symposium JS
- 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
+ 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium-v'.get_option("symposium_version").'.js', array('jquery'));
 	
 	if ($config->use_styles == "on") {
 		$bg_color_2 = $config->bg_color_2;

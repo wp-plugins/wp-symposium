@@ -1100,7 +1100,7 @@ function convert_datetime($str) {
 
 function powered_by_wps() {
 
-	return "<div id='powered_by_wps'><a href='http://www.wpsymposium.com' target='_blank'>".__('Powered by WP Symposium - Social Networking for WordPress', 'wp-symposium')." v".get_option("symposium_version")."</a></div>";
+	return "<div id='powered_by_wps'><a href='http://www.wpsymposium.com' target='_blank'>".__('Powered by WP Symposium - Social Networking for WordPress', 'wp-symposium')." v".WPS_VER."</a></div>";
 
 }
 

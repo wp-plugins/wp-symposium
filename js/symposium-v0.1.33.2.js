@@ -25,6 +25,9 @@ jQuery(document).ready(function() {
 	  var answer = confirm("Are you sure?");
 	  return answer // answer is a boolean
 	});
+	
+	// Elastic text boxes
+	jQuery('.elastic').elastic();
 	   		
 	/*
 	   +------------------------------------------------------------------------------------------+
