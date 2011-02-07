@@ -1,9 +1,10 @@
 todo.txt
 --------
 
-BUGS
+BUGS/URGENT
 
 - Members should NOT be allowed to cancel a friend request
+- Include a link in "you have mail"
 
 MEMBER SEARCH 
 
@@ -39,7 +40,7 @@ CSS
 - bar (done)
 - forum (done)
 - mail (done)
-- profile
+- profile (done)
 - avatar
 - members
 

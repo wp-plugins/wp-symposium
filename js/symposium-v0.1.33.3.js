@@ -25,9 +25,6 @@ jQuery(document).ready(function() {
 	  var answer = confirm("Are you sure?");
 	  return answer // answer is a boolean
 	});
-	
-	// Elastic text boxes
-	jQuery('.elastic').elastic();
 	   		
 	/*
 	   +------------------------------------------------------------------------------------------+
@@ -655,12 +652,12 @@ jQuery(document).ready(function() {
 		comment = comment + symposium.current_user_display_name+'</a><br />';
 		comment = comment + comment_text;
 		comment = comment + "</div>";
-		comment = comment + "</div>";			
+		comment = comment + "<br class='clear' /></div>";			
 		comment = comment + "<div class='wall_reply_avatar'>";
 		comment = comment + jQuery('#symposium_current_user_avatar').html().replace(/200/g, '40');		
 		comment = comment + "</div>";	
 		comment = comment + "</div>";
-		
+
 		jQuery(comment).appendTo('#symposium_comment_'+comment_id).hide().slideDown("slow");
 		jQuery("#symposium_reply_"+comment_id).val('');
 
@@ -1429,18 +1426,18 @@ jQuery(document).ready(function() {
 			
 		}
 
-		// Make DIVS draggable
+		// Make DIVS draggable (there is a slight problem, but uncomment if you want this feature)
 		if (jQuery("#symposium-chatroom").length) {
-			jQuery('#symposium-chatroom').draggable();
+			//jQuery('#symposium-chatroom').draggable();
 		}
 		if (jQuery("#symposium-who-online").length) {
-			jQuery('#symposium-who-online').draggable();
+			//jQuery('#symposium-who-online').draggable();
 		}
 		if (jQuery(".chat_window").length) {
-			jQuery('.chat_window').draggable();
+			//jQuery('.chat_window').draggable();
 		}
 		if (jQuery("#symposium-fav-list").length) {
-			jQuery('#symposium-fav-list').draggable();
+			//jQuery('#symposium-fav-list').draggable();
 		}
 		
 		// Scheduled checks for chat/unread mail/etc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
