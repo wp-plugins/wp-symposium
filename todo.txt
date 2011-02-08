@@ -32,18 +32,6 @@ FORUM
 - AJAX new post, etc...
 - search
 
-CSS
-
-- widgets (done)
-- register (done)
-- login (done)
-- bar (done)
-- forum (done)
-- mail (done)
-- profile (done)
-- avatar
-- members
-
 CODEX
 
 - data dictionary

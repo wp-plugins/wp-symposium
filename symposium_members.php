@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Members Directory
 Plugin URI: http://www.wpsymposium.com
 Description: Directory component for the Symposium suite of plug-ins. Put [symposium-members] on any WordPress page.
-Version: 0.1.33.3
+Version: 0.1.33.4
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -50,10 +50,10 @@ function symposium_members($ver) {
 				$html .= '<form method="post" action="'.$dbpage.'"> ';
 		
 				$term = $_POST['member'].$_GET['term'];
-				$html .= '<input type="text" id="member" name="member" class="new-topic-subject-input" style="width:55%;" value="'.$term.'" />';
+				$html .= '<input type="text" id="member" name="member" class="members_search_box new-topic-subject-input" value="'.$term.'" />';
 				$html .= '<input type="hidden" id="member_id" name="member_id" />';
 				$html .= '<div style="float:right; padding:0px;">';
-				$html .= '<input type="submit" class="button" style="float: left; height:46px;" value="Go" />';
+				$html .= '<input id="members_go_button" type="submit" class="button" value="'.__("Go", "wp-symposium").'" />';
 				$html .= '</div>';
 		
 				$html .= '</form>';
@@ -83,16 +83,17 @@ function symposium_members($ver) {
 						$last_active_minutes = strtotime($member->last_activity);
 						$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
 														
-						$html .= "<div style='clear:both; margin-top:8px; overflow: auto; width:95%; margin-bottom: 0px;padding:6px;padding-bottom:3px;'";
-						if ($member->is_friend == 1 || $member->ID == $me) {
-							$html .= " class='row corners'>";		
-						} else {
-							$html .= " class='row_odd corners'>";		
-						}
-							$html .= "<div style='width:100%; padding-left: 75px; margin-left:-75px;'>";
+						$html .= "<div class='members_row";
+							if ($member->is_friend == 1 || $member->ID == $me) {
+								$html .= " row corners'>";		
+							} else {
+								$html .= " row_odd corners'>";		
+							}
+
+							$html .= "<div class='members_info'>";
 			
 								if ( ($member->ID == $me) || (strtolower($member->share) == 'everyone') || (strtolower($member->share) == 'friends only' && $member->is_friend) ) {
-									$html .= "<div style='float: right;font-style:italic;'>";
+									$html .= "<div class='members_location'>";
 										if ($member->city != '') {
 											$html .= $member->city;
 										}
@@ -106,7 +107,7 @@ function symposium_members($ver) {
 									$html .= "</div>";
 								}
 			
-								$html .= "<div style='float: left; width:75px;'>";
+								$html .= "<div class='members_avatar'>";
 									$html .= get_user_avatar($member->ID, 64);
 								$html .= "</div>";
 								$html .= symposium_profile_link($member->ID).', '.__('last active', 'wp-symposium').' '.symposium_time_ago($member->last_activity).". ";
@@ -135,10 +136,10 @@ function symposium_members($ver) {
 				$html .= '<form method="post" action="'.$dbpage.'"> ';
 		
 				$html .= '<div style="float:right; padding:0px;">';
-				$html .= '<input type="submit" class="button" style="float: left; height:46px;" value="Go" />';
+				$html .= '<input id="members_go_button" type="submit" class="button" value="'.__("Go", "wp-symposium").'" />';
 				$html .= '</div>';
 		
-				$html .= '<input type="text" id="member" name="member" class="new-topic-subject-input" style="width:55%" onfocus="this.value = \'\';" value="" />';
+				$html .= '<input type="text" id="member" name="member" class="members_search_box new-topic-subject-input" onfocus="this.value = \'\';" value="" />';
 				$html .= '<input type="hidden" id="member_id" name="member_id" />';
 				
 				$html .= '</form>';
@@ -154,12 +155,12 @@ function symposium_members($ver) {
 			$profile_url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix."symposium_config"));
 			$html .= '<form method="post" action="'.$profile_url.'"> ';
 			
-			$html .= '<div id="small_members" style="margin-top:3px; margin-right:15px; width:230px; overflow:hidden;">';
+			$html .= '<div id="symposium_small_members">';
 	
-				$html .= '<div id="small_members_button" style="float:right; margin-top:2px;color:#fff;padding:0px;cursor:pointer;font-family:arial;font-size:8px;height:20px;text-align:center;width:20px;overflow:hidden;">'.__('Go', 'wp-symposium').'</div>';
+				$html .= '<div id="symposium_small_members_button">'.__('Go', 'wp-symposium').'</div>';
 	
-				$html .= '<div style="float:left;overflow:hidden;">';
-				$html .= '<input type="text" name="member_small" id="member_small" style="width:200px; height:14px;" onfocus="this.value = \'\';" value="'.__('Member search...', 'wp-symposium').'" />';
+				$html .= '<div id="symposium_small_members_input">';
+				$html .= '<input type="text" name="member_small" id="symposium_member_small" onfocus="this.value = \'\';" value="'.__('Member search...', 'wp-symposium').'" />';
 				$html .= '<input type="hidden" id="uid" name="uid" />';
 				$html .= '<input type="hidden" name="view" value="wall" />';
 				$html .= '<input type="hidden" name="from" value="small_search" />';

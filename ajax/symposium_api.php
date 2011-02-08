@@ -74,12 +74,18 @@ if ($_GET['action'] == 'wall') {
 	
 	if ($list) {
 		foreach ($list as $item) {
+
+			$avatar = get_user_avatar($item->author_uid, 32);
+			$avatar = str_replace("<img src='", "", $avatar);
+			$end_url = strpos($avatar, "'");
+			$avatar = substr($avatar, 0, $end_url);			
 			
-			$row_array['author_name'] = $item->author_name;
+			$row_array['author_name'] = $item->display_name;
 			$row_array['subject_name'] = $item->subject_name;
 			$row_array['cid'] = $item->cid;
 			$row_array['subject_uid'] = $item->subject_uid;
 			$row_array['author_uid'] = $item->author_uid;
+			$row_array['author_avatar'] = $avatar;
 			$row_array['comment_parent'] = $item->comment_parent;
 			$row_array['comment_timestamp'] = $item->comment_timestamp;
 			$row_array['comment'] = $item->comment;

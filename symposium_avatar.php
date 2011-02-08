@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Avatar
 Plugin URI: http://www.wpsymposium.com
 Description: Allows members of a WP Symposium powered site to upload a profile photo. Put [symposium-avatar] on any WordPress page.
-Version: 0.1.33.3
+Version: 0.1.33.4
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -65,15 +65,15 @@ function symposium_avatar()
 			   	$image->resizeToWidth(600);
 			   	$image->save($img_path);
 			   
-				$html .= '<div style="float:left; margin-bottom:25px">';
+				$html .= '<div id="image_to_crop">';
 				$html .= '<img src="/wp-content/plugins/wp-symposium/uploads/'.$img.'" id="profile_jcrop_target" /> ';
 				$html .= '</div>';
 				
-				$html .= '<div style="clear: both; float:left;width:100px;height:100px;overflow:hidden;"> ';
+				$html .= '<div id="image_preview"> ';
 				$html .= '<img src="/wp-content/plugins/wp-symposium/uploads/'.$img.'" id="profile_preview" /> ';
 				$html .= '</div>';
 			
-				$html .= '<div style="margin-left: 20px; float: left;"> ';
+				$html .= '<div id="image_instructions"> ';
 				$html .= '<p>'.__('Select an area above...', 'wp-symposium').'</p>';
 				$html .= '<form action="'.$db_page.'" method="post">';
 					$html .= '<input type="hidden" name="action" value="crop_photo" />';

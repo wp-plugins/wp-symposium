@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.33.3
+Version: 0.1.33.4
 Author: WP Symposium
 AuthorI: http://www.wpsymposium.com
 License: GPL2
@@ -30,7 +30,7 @@ License: GPL2
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.1.33.3');
+define('WPS_VER', '0.1.33.4');
 define('WPS_DBVER', '33');
 
 add_action('init', 'symposium_languages');
@@ -543,6 +543,9 @@ function symposium_lastactivity() {
 	echo "<div id='symposium_current_user_avatar' style='display:none;'>";
 	echo get_user_avatar($current_user->ID, 200);
 	echo "</div>";
+	
+	// Place hidden div for greying out background under pop-ups
+	echo "<div id='symposium_hide' style='display:none;'></div>";
 	
 }
 

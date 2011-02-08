@@ -77,16 +77,16 @@ if ($_POST['action'] == 'getMembers') {
 			$last_active_minutes = strtotime($member->last_activity);
 			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
 											
-			$html .= "<div style='clear:both; margin-top:8px; overflow: auto; width:95%; margin-bottom: 0px;padding:6px;padding-bottom:3px;'";
+			$html .= "<div class='members_row";
 			if ($member->is_friend == 1 || $member->uid == $me) {
-				$html .= " class='row corners'>";		
+				$html .= " row corners'>";		
 			} else {
-				$html .= " class='row_odd corners'>";		
+				$html .= " row_odd corners'>";		
 			}
-				$html .= "<div style='width:100%; padding-left: 75px; margin-left:-75px;'>";
+				$html .= "<div class='members_info'>";
 
 					if ( ($member->uid == $me) || (strtolower($member->share) == 'everyone') || (strtolower($member->share) == 'friends only' && $member->is_friend) ) {
-						$html .= "<div style='float: right;font-style:italic;'>";
+						$html .= "<div class='members_location'>";
 							if ($member->city != '') {
 								$html .= $member->city;
 							}
@@ -100,7 +100,7 @@ if ($_POST['action'] == 'getMembers') {
 						$html .= "</div>";
 					}
 
-					$html .= "<div style='float: left; width:75px;'>";
+					$html .= "<div class='members_avatar'>";
 						$html .= get_user_avatar($member->uid, 64);
 					$html .= "</div>";
 					$html .= symposium_profile_link($member->uid).', last active '.symposium_time_ago($member->last_activity).". ";

@@ -282,7 +282,8 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 							if ($uid1 == $uid2) {
 	
 								// Status Input
-								$html .= '<input type="text" id="symposium_status" name="status" class="input-field" value="'.__("What's on your mind?", "wp-symposium").'" onfocus="this.value = \'\';" />';
+								//$html .= '<input type="text" id="symposium_status" name="status" class="input-field" value="'.__("What's on your mind?", "wp-symposium").'" onfocus="this.value = \'\';" />';
+								$html .= '<textarea id="symposium_status" name="status" class="input-field" style="height:50px;" onfocus="this.value = \'\';">'.__("What's on your mind?", "wp-symposium").'</textarea>';
 								$html .= '&nbsp;<input id="symposium_add_update" type="submit" class="button" value="'.__('Update', 'wp-symposium').'" /> ';
 								
 							} else {

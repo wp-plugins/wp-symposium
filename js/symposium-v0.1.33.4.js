@@ -25,7 +25,10 @@ jQuery(document).ready(function() {
 	  var answer = confirm("Are you sure?");
 	  return answer // answer is a boolean
 	});
-	   		
+	   
+	// Set up auto-expanding textboxes
+	jQuery('.elastic').elastic();
+		
 	/*
 	   +------------------------------------------------------------------------------------------+
 	   |                                      PROFILE PHOTO                                       |
@@ -33,6 +36,13 @@ jQuery(document).ready(function() {
 	*/
 
 	if (jQuery("#profile_jcrop_target").length) {	
+		jQuery('#symposium_hide').css({
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			width: jQuery(window).width(),
+			height: jQuery(window).height()
+		}).show();
 		jQuery(".symposium_pleasewait").inmiddle().show().delay(3000).fadeOut("slow");
 	}
 	
@@ -249,7 +259,7 @@ jQuery(document).ready(function() {
 
 	/*
 	   +------------------------------------------------------------------------------------------+
-	   |                                         DIRECTORY                                        |
+	   |                                     MEMBER DIRECTORY                                     |
 	   +------------------------------------------------------------------------------------------+
 	*/
 
@@ -270,9 +280,19 @@ jQuery(document).ready(function() {
 				}
 			})
 			.data( "autocomplete" )._renderItem = function( ul, item ) {
+				var member = "<a>";
+					member += "<div style='height:40px; overflow:hidden'>";
+						member += "<div style=\'float:left; background-color:#fff; margin-right: 8px; width:40px; height:40px; \'>";	
+						member += item.avatar;
+						member += "</div>";			
+						member += "<div>" + item.label + "<br />";
+						member += item.city + item.country + "</div>";
+						member += "<br style='clear:both' />";
+					member += "</div>";
+				member += "</a>";
 				return jQuery( "<li></li>" )
 					.data( "item.autocomplete", item )
-					.append( "<a>" + item.label + "<div style=\'float:right\'>" + item.city + item.country + "</div></a>" )
+					.append( member )
 					.appendTo( ul );
 			};
 
@@ -298,18 +318,18 @@ jQuery(document).ready(function() {
    		});	
 	}	
 
-	if (jQuery("input#member_small").length) {
+	if (jQuery("input#symposium_member_small").length) {
 		
-		jQuery("input#member_small").autocomplete({
+		jQuery("input#symposium_member_small").autocomplete({
 				source: symposium.plugin_url+"ajax/symposium_members_functions.php",
 				minLength: 1,
 				focus: function( event, ui ) {
-					jQuery( "input#member_small" ).val( ui.item.label );
+					jQuery( "input#symposium_member_small" ).val( ui.item.label );
 					jQuery( "input#uid" ).val( ui.item.value );
 					return false;
 				},
 				select: function( event, ui ) {
-					jQuery( "input#member_small" ).val( ui.item.label );
+					jQuery( "input#symposium_member_small" ).val( ui.item.label );
 					jQuery( "input#uid" ).val( ui.item.value );
 					jQuery(".symposium_pleasewait").inmiddle().show().delay(3000).fadeOut("slow");
 					window.location.href=symposium.profile_url+symposium.q.substring(0, 1)+'uid='+jQuery("#uid").val();
@@ -333,7 +353,7 @@ jQuery(document).ready(function() {
 					.appendTo( ul );
 			};
 			
-		   	jQuery("#small_members_button").click(function() {
+		   	jQuery("#symposium_small_members_button").click(function() {
 				window.location.href=symposium.profile_url+symposium.q.substring(0, 1)+'uid='+jQuery("#uid").val();
 				return false;
 		   	});
