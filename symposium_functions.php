@@ -1075,7 +1075,7 @@ function symposium_sendmail($email, $subject, $msg)
 	$body .= $msg."<br /><hr />";
 	$body .= "<div style='width:430px;font-size:10px;border:0px solid #eee;text-align:left;float:left;'>".$footer."</div>";
 	
-	// If you are using the free version of Symposium Forum, the following link must be kept in place! Thank you.
+	// Powered by message
 	$body .= "<div>Powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress</div>";
 	$body .= "</div>";
 
