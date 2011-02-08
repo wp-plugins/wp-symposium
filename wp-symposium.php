@@ -533,10 +533,11 @@ function symposium_lastactivity() {
    	global $wpdb, $current_user;
 	wp_get_current_user();
 	
-	// Powered by message		
+	// Update last logged in
 	if (is_user_logged_in()) {
 		update_symposium_meta($current_user->ID, 'last_activity', "'".date("Y-m-d H:i:s")."'");
 	}
+	// Powered by message
 	echo powered_by_wps();
 
 	// Place hidden div of current user to use when adding to screen
