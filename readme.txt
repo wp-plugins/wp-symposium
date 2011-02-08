@@ -5,8 +5,8 @@ Donate link: http://www.wpsymposium.com/contact
 Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
-Tested up to: 3.0.4
-Stable tag: 0.1.33.4
+Tested up to: 3.0.5
+Stable tag: 0.1.33.5
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -133,6 +133,12 @@ A. Sounds like AJAX isn't working, probably due to a Javascript error. Check on 
 
 
 == Changelog ==
+
+= 0.1.33.5 =
+
+* Avatar: Fixed JS so uploadify works if WordPress not installed in site root
+* Mail: Fixed horizontal scroll bar on Compose
+* Health Check: Added Uploadify check
 
 = 0.1.33.4 = 
 

@@ -280,6 +280,12 @@ function symposium_plugin_debug() {
 	  	echo '<h2>WP Symposium Health Check</h2>';
 	
 		echo "<div style='width:45%; float:right'>";
+		
+		echo '<h2>'.__('Uploadify Test', 'wp-symposium').'</h2></p>';
+		
+		echo '<p>The default browser "browse" button, should be replaced with Uploadify&apos;s.</p>';
+		echo '<input id="file_upload_admin" name="file_upload_admin" type="file" />';
+		echo '<div id="file_upload_admin_result"></div>';
 	
 	  	echo '<h2>'.__('Table Structures', 'wp-symposium').'</h2><p>';
 	  	

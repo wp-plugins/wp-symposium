@@ -36,13 +36,6 @@ jQuery(document).ready(function() {
 	*/
 
 	if (jQuery("#profile_jcrop_target").length) {	
-		jQuery('#symposium_hide').css({
-			position: 'absolute',
-			top: 0,
-			left: 0,
-			width: jQuery(window).width(),
-			height: jQuery(window).height()
-		}).show();
 		jQuery(".symposium_pleasewait").inmiddle().show().delay(3000).fadeOut("slow");
 	}
 	
@@ -67,6 +60,23 @@ jQuery(document).ready(function() {
 	   	});
 		  
 	}
+	if (jQuery("#file_upload_admin").length) {
+		
+		jQuery('#file_upload_admin').uploadify({
+		    'uploader'  : symposium.plugin_url+'uploadify/uploadify.swf',
+			'buttonText': 'Browse for file',
+		    'script'    : symposium.plugin_url+'uploadify/uploadify.php',
+		    'cancelImg' : symposium.plugin_url+'uploadify/cancel.png',
+		    'folder' 	: symposium.plugin_url+'uploads',
+		    'auto'      : true,
+			'onComplete': function(event, queueID, fileObj, response, data) { 
+				var uploaded_img = '<img src="'+symposium.plugin_url+'uploads/'+fileObj['name']+'" style="width:150px;" />';
+				jQuery('#file_upload_admin_result').html('Uploaded '+fileObj['name']+'<br />'+uploaded_img);
+			}
+	   	});
+		  
+	}
+	
 
 	if (jQuery("#profile_jcrop_target").length) {
 		jQuery('#profile_jcrop_target').Jcrop({

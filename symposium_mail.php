@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.1.33.4
+Version: 0.1.33.5
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -128,12 +128,14 @@ function symposium_mail() {
 				if ( get_symposium_meta($recipient->ID, 'notify_new_messages') ) {
 
 					$body = "<h1>".$subject."</h1>";
+					$body .= "<p><a href='".symposium_get_url('mail')."'>".__("Go to Mail", "wp-symposium")."...</a></p>";
 					$body .= "<p>";
-					$body .= $message;
+					$body .= $_POST['compose_text'];
 					$body .= "</p>";
 					$body .= "<p><em>";
 					$body .= $current_user->display_name;
 					$body .= "</em></p>";
+					$body .= $previous;
 					
 					$body = str_replace(chr(13), "<br />", $body);
 					$body = str_replace("\\r\\n", "<br />", $body);

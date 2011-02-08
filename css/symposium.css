@@ -1318,7 +1318,7 @@
 .symposium-wrapper #mail-main {
 	clear: both;
 	z-index: 2;
-	overflow: auto;
+	overflow: hidden;
 	width: 95%;
 	border: 1px solid #000;
 	background-color: #fff;

@@ -3,7 +3,6 @@ todo.txt
 
 BUGS/URGENT
 
-- Members should NOT be allowed to cancel a friend request
 - Include a link in "you have mail"
 
 MEMBER SEARCH 
