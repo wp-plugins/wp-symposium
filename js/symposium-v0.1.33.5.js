@@ -44,11 +44,11 @@ jQuery(document).ready(function() {
 		jQuery(".symposium_pleasewait").inmiddle().show().delay(3000).fadeOut("slow");
 		
 		jQuery('#file_upload').uploadify({
-		    'uploader'  : '/wp-content/plugins/wp-symposium/uploadify/uploadify.swf',
+		    'uploader'  : symposium.plugin_url+'uploadify/uploadify.swf',
 			'buttonText': 'Browse for file',
-		    'script'    : '/wp-content/plugins/wp-symposium/uploadify/uploadify.php',
-		    'cancelImg' : '/wp-content/plugins/wp-symposium/uploadify/cancel.png',
-		    'folder' 	: '/wp-content/plugins/wp-symposium/uploads',
+		    'script'    : symposium.plugin_url+'uploadify/uploadify.php',
+		    'cancelImg' : symposium.plugin_url+'uploadify/cancel.png',
+		    'folder' 	: symposium.plugin_url+'uploads',
 		    'auto'      : true,
 			'onComplete': function(event, queueID, fileObj, response, data) { 
 				if (symposium.avatar_url.indexOf('?') > 0) {
