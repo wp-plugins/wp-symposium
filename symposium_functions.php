@@ -15,6 +15,43 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+function symposium_bbcode_remove($text_to_search) {
+ $pattern = '|[[\/\!]*?[^\[\]]*?]|si';
+ $replace = '';
+ return preg_replace($pattern, $replace, $text_to_search);
+}
+
+function symposium_bbcode_replace($txt) {
+	
+	$arr = array( 
+		array("code", "<pre>" , "</pre>"),
+		array("b", "<strong>" , "</strong>"),
+		array("i", "<em>" , "</em>"),
+		array("u", "<u>" , "</u>"),
+		array("s", "<s>" , "</s>"),
+    ); 
+    
+    foreach ($arr as $code) {
+             
+	 	if (strpos($txt, "[".$code[0]."]") >= 0 && strpos($txt, "[/".$code[0]."]") >= 0) {
+			$txt = str_replace("[".$code[0]."]", $code[1], $txt);
+			$txt = str_replace("[/".$code[0]."]", $code[2], $txt);
+	 	}
+	 	
+    }
+
+	$content_processed = preg_replace_callback(
+  		'#\<pre\>(.+?)\<\/pre\>#s',
+  		create_function(
+    		'$matches',
+    		'return "<pre>".str_replace(chr(13), "", htmlentities($matches[1]))."</pre>";'
+  		),
+  		$txt
+		);
+
+	return $content_processed;
+}
+
 function get_user_avatar($uid, $size) {
 	
 	global $wpdb;
@@ -664,7 +701,7 @@ function get_message($mail_mid, $del) {
 		if ($styles->use_styles == "on") {
 			$mail_style = "style='font-family:".$styles->headingsfamily."; font-size:".$styles->headingssize."px; font-weight:bold;'";
 		}
-		$msg .= "<span ".$mail_style.">".stripslashes($mail->mail_subject)."</span><br />";
+		$msg .= "<span ".$mail_style.">".stripslashes(symposium_bbcode_replace($mail->mail_subject))."</span><br />";
 		if ($del == "in") {
 			$msg .= __('From', 'wp-symposium')." ";
 		} else {
@@ -675,7 +712,7 @@ function get_message($mail_mid, $del) {
 	$msg .= "</div>";
 	
 	$msg .= "<div id='message_mail_message'>";
-	$msg .= stripslashes(str_replace(chr(13), "<br />", $mail->mail_message));
+	$msg .= stripslashes(str_replace(chr(13), "<br />", symposium_bbcode_replace($mail->mail_message)));
 	$msg .= "</div>";
 	
 	// Mark as read

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.33.5
+Version: 0.1.34
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -364,7 +364,8 @@ function symposium_forum() {
 											$html .= get_user_avatar($reply->topic_owner, 32);
 										$html .= "</div>";
 										$html .= symposium_profile_link($reply->topic_owner)." ".__("replied to", "wp-symposium")." ";
-										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
+										$subject = symposium_bbcode_remove($last_topic->topic_subject);
+										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($subject).'</a> ';
 										$html .= symposium_time_ago($reply->topic_date).".";
 										if ($reply->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 									} else {
@@ -372,7 +373,8 @@ function symposium_forum() {
 											$html .= get_user_avatar($last_topic->topic_owner, 32);
 										$html .= "</div>";
 										$html .= symposium_profile_link($last_topic->topic_owner)." ".__("started", "wp-symposium")." ";
-										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($last_topic->topic_subject).'</a> ';
+										$subject = symposium_bbcode_remove($last_topic->topic_subject);
+										$html .= '<a class="backto row_link_topic" href="'.$thispage.symposium_permalink($last_topic->tid, "topic").$q.'cid='.$last_topic->topic_category.'&show='.$last_topic->tid.'">'.stripslashes($subject).'</a> ';
 										$html .= symposium_time_ago($last_topic->topic_date).".";
 									}
 		
@@ -501,6 +503,7 @@ function symposium_forum() {
 									$html .= " ".symposium_time_ago($last_post->topic_date).".";
 									$post = stripslashes($last_post->topic_post);
 									if ( strlen($post) > $snippet_length_long ) { $post = substr($post, 0, $snippet_length_long)."..."; }
+									$post = symposium_bbcode_remove($post);
 									$html .= "<br /><span class='row_topic_text'>".$post."</span>";
 									if ($last_post->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 								} else {
@@ -539,7 +542,8 @@ function symposium_forum() {
 									$html .= "<img src='".$plugin."images/star-on.gif' class='floatleft' style='height:12px; width:12px; margin-right:4px;' />";						
 								}								
 								
-								$html .= '<div class="row_link_div"><a href="'.$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($topic->topic_subject).'</a>';
+								$subject = symposium_bbcode_remove($topic->topic_subject);
+								$html .= '<div class="row_link_div"><a href="'.$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$cat_id.'&show='.$topic->tid.'" class="backto row_link">'.stripslashes($subject).'</a>';
 								if ($topic->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 								if (is_user_logged_in()) {
 									$is_subscribed = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$subs." WHERE tid = %d AND uid = %d", ".$topic->tid.", $current_user->ID));
@@ -555,6 +559,7 @@ function symposium_forum() {
 	
 								$html .= "</div>";
 								$post = stripslashes($topic->topic_post);
+								$post = symposium_bbcode_remove($post);
 								if ( strlen($post) > $snippet_length ) { $post = substr($post, 0, $snippet_length)."..."; }
 								$html .= "<span class='row_topic_text'>".$post."</span>";
 								$html .= "</div>";
@@ -649,6 +654,7 @@ function symposium_forum() {
 						$html .= "</div><div style='clear:both'></div>";
 
 						$post_text = symposium_make_url(stripslashes($post->topic_post));
+						$post_text = symposium_bbcode_replace($post_text);
 						$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", $post_text)."</div>";
 																			
 					$html .= "</div>";
@@ -716,6 +722,7 @@ function symposium_forum() {
 							$html .= "</div>";
 							$html .= "<div id='".$child->tid."' class='child-reply-post'>";
 								$reply_text = symposium_make_url(stripslashes($child->topic_post));
+								$reply_text = symposium_bbcode_replace($reply_text);
 								$html .= "<p>".str_replace(chr(13), "<br />", $reply_text);
 								if ($child->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 								$html .= "</p>";

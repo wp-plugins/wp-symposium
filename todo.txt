@@ -1,9 +1,13 @@
 todo.txt
 --------
 
-BUGS/URGENT
+URGENT
 
-- Include a link in "you have mail"
+- Date on chat, not timestamp
+
+NOTIFICATIONS
+
+- template driven
 
 MEMBER SEARCH 
 
@@ -13,8 +17,7 @@ PROFILE
 
 - option receive email on activity in wall post if I've replied or started it
 - if a member has set his profile to "friends only" or "nobody", even the admin can't see it? 
-- Also, admins can't edit a member's profile.
-- please wait when loading image to edit (both screens)
+- Also, admins can't edit a member's profile?
 - Implement poke
 
 CHAT

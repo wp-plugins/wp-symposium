@@ -31,7 +31,8 @@ if ($_POST['action'] == 'symposium_addchatroom') {
 	if ( $rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_chat", array( 
 		'chat_to' => -1, 
 		'chat_from' => $chat_from, 
-		'chat_message' => $chat_message
+		'chat_message' => $chat_message,
+		'chat_timestamp' => date("Y-m-d H:i:s") 
 	) ) ) {
 		$r.= stripslashes($chat_message);
 	} else {
@@ -64,7 +65,7 @@ if ($_POST['action'] == 'symposium_getfriendsonline') {
 	foreach ($friends as $friend) {
 		
 		$time_now = time();
-		$last_active_minutes = strtotime($friend->last_activity);
+		$last_active_minutes = $friend->last_activity;
 		$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
 										
 		$return .= "<div style='clear:both; margin-top:4px; overflow: auto;'>";		
@@ -173,7 +174,7 @@ if ($_POST['action'] == 'symposium_getchat') {
 				$last_post = "notme";
 				$last_activity = $chat->fromlast;
 			}
-			$last_active_minutes = strtotime($last_activity);
+			$last_active_minutes = $last_activity;
 			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
 			if ($last_active_minutes >= $offline) {
 				$results .= "loggedout[split]";
@@ -239,7 +240,7 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 			
 			$c++;
 			
-			$last_active_minutes = strtotime($chat->fromlast);
+			$last_active_minutes = $chat->fromlast;
 			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
 			if ($last_active_minutes >= $offline) {
 				$status_img = WP_PLUGIN_URL.'/wp-symposium/images/loggedout.gif';
@@ -317,7 +318,8 @@ if ($_POST['action'] == 'symposium_addchat') {
 	if ( $rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_chat", array( 
 		'chat_to' => $chat_to, 
 		'chat_from' => $chat_from, 
-		'chat_message' => $chat_message
+		'chat_message' => $chat_message,
+		'chat_timestamp' => date("Y-m-d H:i:s") 
 	) ) ) {
 		$r.= stripslashes($chat_message);
 	} else {
@@ -364,7 +366,8 @@ if ($_POST['action'] == 'symposium_openchat') {
 		if ( $rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_chat", array( 
 			'chat_to' => $chat_to, 
 			'chat_from' => $chat_from, 
-			'chat_message' => '[start]'
+			'chat_message' => '[start]',
+			'chat_timestamp' => date("Y-m-d H:i:s") 
 		) ) ) {
 			
 			$display_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$chat_to));
@@ -403,7 +406,8 @@ if ($_POST['action'] == 'symposium_closechat') {
 		if ( $rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_chat", array( 
 			'chat_to' => $chat_to, 
 			'chat_from' => $chat_from, 
-			'chat_message' => '[closed-'.$chat_from.']'
+			'chat_message' => '[closed-'.$chat_from.']',
+			'chat_timestamp' => date("Y-m-d H:i:s") 
 		) ) ) {
 			$r .= 'Closed chat '.$wpdb->last_query." ".$sql;
 		} else {

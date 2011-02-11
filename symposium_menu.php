@@ -381,8 +381,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'bar_polling')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'chat_polling')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_wp_profile')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'use_wp_login')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'custom_login_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'visitors')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'wp_alignment')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'login_redirect')) { $status = "X"; }
@@ -391,15 +389,12 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'logout_redirect_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'enable_redirects')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'enable_password')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'register_use_sum')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'use_wp_register')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'custom_register_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sharing')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'register_message')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'show_profile_menu')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'show_wall_extras')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_google_map')) { $status = "X"; }			
+			if (!symposium_field_exists($table_name, 'use_poke')) { $status = "X"; }			
 
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -666,12 +661,6 @@ function symposium_plugin_debug() {
 			  	if (function_exists('symposium_members')) { 
 			  		echo "&nbsp;&middot;&nbsp;".__('the members directory page is at', 'wp-symposium')." <a href='".$config->members_url."'>$config->members_url</a><br />";
 			  	}
-			  	if (function_exists('symposium_register')) { 
-			  		echo "&nbsp;&middot;&nbsp;".__('the register page is at', 'wp-symposium')." <a href='".$config->register_url."'>$config->register_url</a><br />";
-			  	}
-			  	if (function_exists('symposium_login')) { 
-			  		echo "&nbsp;&middot;&nbsp;".__('the login page is at', 'wp-symposium')." <a href='".$config->login_url."'>$config->login_url</a><br />";
-			  	}
 			  	echo __('Click the links above to check', 'wp-symposium');
 			}
 	  	echo "</p>";
@@ -694,7 +683,19 @@ function symposium_plugin_debug() {
 			echo "<p style='color:green; font-weight:bold;'>".__( sprintf('Stylesheet (%s) found.', $myStyleFile), 'wp-symposium')."</p>";
 	    }
     
-    	  	
+		// ********** Javascript
+
+	   	echo '<h2>Javascript</h2>';
+
+		// JS check
+	    $myJSfile = WP_PLUGIN_DIR . '/wp-symposium/js/symposium-v'.$ver.'.js';
+	    if ( !file_exists($myJSfile) ) {
+			echo $fail.__( sprintf('Javascript file (%s) not found, try de-activating and re-activating the core WPS plugin.', $myJSfile), 'wp-symposium').$fail2;
+	    } else {
+	    	echo "<p style='color:green; font-weight:bold;'>".__( sprintf("Javascript file (%s) found.", $myJSfile) )."</p>";
+	    }
+	    echo "<div id='jstest'>".$fail.__( "Javascript has not loaded, or there is an error in the JS file. Try re-activating the core WPS plugin.", "wp-symposium").$fail2."</div>";
+	    	  	
 		// ********** User Level  	
 	   	echo '<h2>'.__('User Level Test', 'wp-symposium').'</h2>';
 		echo '<table class="widefat">';
@@ -1403,11 +1404,7 @@ function symposium_plugin_options() {
 	        $bar_polling = $_POST[ 'bar_polling' ];
 	        $chat_polling = $_POST[ 'chat_polling' ];
 	        $use_wp_profile = $_POST[ 'use_wp_profile' ];
-	        $use_wp_login = $_POST[ 'use_wp_login' ];
-	        $custom_login_url = $_POST[ 'custom_login_url' ];
 	        $visitors = $_POST[ 'visitors' ];
-	        $use_wp_register = $_POST[ 'use_wp_register' ];
-	        $custom_register_url = $_POST[ 'custom_register_url' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET sound = '".$sound."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_position = '".$bar_position."'") );					
@@ -1419,11 +1416,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_polling = '".$bar_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chat_polling = '".$chat_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_profile = '".$use_wp_profile."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_login = '".$use_wp_login."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_login_url = '".$custom_login_url."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET visitors = '".$visitors."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_register = '".$use_wp_register."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET custom_register_url = '".$custom_register_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET visitors = '".$visitors."'") );		
 			
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>".__('Notification Bar options saved', 'wp-symposium').".</p></div>";
@@ -1434,6 +1427,7 @@ function symposium_plugin_options() {
 	    if( $_POST[ 'symposium_update' ] == 'U' ) {
 	        $online = $_POST[ 'online' ];
 	        $offline = $_POST[ 'offline' ];
+	        $use_poke = $_POST[ 'use_poke' ];
 		    $enable_password = $_POST['enable_password'];
 		    $show_profile_menu = $_POST['show_profile_menu'];
 		    $show_wall_extras = $_POST['show_wall_extras'];
@@ -1441,6 +1435,7 @@ function symposium_plugin_options() {
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET online = '".$online."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET offline = '".$offline."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_poke = '".$use_poke."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET enable_password = '".$enable_password."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_profile_menu = '".$show_profile_menu."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_wall_extras = '".$show_wall_extras."'") );
@@ -1507,19 +1502,6 @@ function symposium_plugin_options() {
 				update_symposium_meta($user->uid, 'extended', "'".$tmp."'");
 			}
 		}						
-
-	    // See if the user has posted registration settings
-	    if( $_POST[ 'symposium_update' ] == 'R' ) {
-	        $register_use_sum = $_POST[ 'register_use_sum' ];
-	        $register_message = $_POST[ 'register_message' ];
-
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_use_sum = '".$register_use_sum."'") );
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET register_message = '".$register_message."'") );					
-									
-	        // Put an settings updated message on the screen
-			echo "<div class='updated'><p>".__('Registration options saved', 'wp-symposium').".</p></div>";
-			
-	    }
 	    	
 	    // See if the user has posted general settings
 	    if( $_POST[ 'symposium_update' ] == 'S' ) {
@@ -1777,7 +1759,7 @@ function symposium_plugin_options() {
 							<p><strong>W</strong> is a major release.</p>
 							<p><strong>X</strong> is increased when a stable release is announced to one or more of the plugins.</p>
 							<p><strong>Y</strong> is a development release, with changes made to the database tables and the code.</p>
-							<p><strong>Z</strong> is a maintenance release, with changes only to the code or language file.</p>
+							<p><strong>Z</strong> is a patch, with changes only to the code.</p>
 							<p>However, a maintenance release can still include many changes and new features if there are no changes to the underlying database tables.</p>
 							<p>Current version: <?php echo get_option("symposium_version") ?></p>
 						</div>
@@ -1808,8 +1790,6 @@ function symposium_plugin_options() {
 					<li>Profile Avatar/Photo<?php if (function_exists('symposium_avatar')) { echo ' (activated)'; } ?></li>
 					<li>Notification Bar<?php if (function_exists('add_notification_bar')) { echo ' (activated)'; } ?></li>
 					<li>Members Directory<?php if (function_exists('symposium_members')) { echo ' (activated) Note: no options tab used'; } ?></li>
-					<li>Login<?php if (function_exists('symposium_login')) { echo ' (activated)'; } ?></li>
-					<li>Registration<?php if (function_exists('symposium_register')) { echo ' (activated)'; } ?></li>
 					</ol>
 					
 					<p>
@@ -1818,7 +1798,7 @@ function symposium_plugin_options() {
 					
 					<p><strong>Note from the author</strong></p>
 					<p>
-					The demo site is now hosted on the Amazon EC2 cloud. If you are interested in the technology, this is for you... the website is hosting on an Ubuntu LAMP EC2 instance, with a separate RDS relational database server and an S3 content delivery network.
+					Following feedback from users, the login and registration plugin have been dropped - this is now considered core to WordPress, and not something that WPS needs to replace - there are, if you are interested, several plugins available to replace the login and registration pages. For example, Theme-My-Login, s2member and so on.
 					</p>
 					<p>
 					Check out the <a href='http://WordPress.org/extend/plugins/wp-symposium/changelog/'>change log</a> for the list of new additions/changes/fixes...
@@ -1851,11 +1831,7 @@ function symposium_plugin_options() {
 					$bar_polling = $config->bar_polling;
 					$chat_polling = $config->chat_polling;
 					$use_wp_profile = $config->use_wp_profile;
-					$use_wp_login = $config->use_wp_login;
-					$custom_login_url = $config->custom_login_url;
 					$visitors = $config->visitors;
-					$use_wp_register = $config->use_wp_register;
-					$custom_register_url = $config->custom_register_url;
 					?>
 
 					<form method="post" action=""> 
@@ -1953,30 +1929,6 @@ function symposium_plugin_options() {
 					<span class="description"><?php echo __('Link to WordPress user profile page?', 'wp-symposium'); ?></td> 
 					</tr> 
 
-					<tr valign="top"> 
-					<th scope="row"><label for="use_wp_login">Login/Logout Link</label></th> 
-					<td><input type="checkbox" name="use_wp_login" id="use_wp_login" <?php if ($use_wp_login == "on") { echo "CHECKED"; } ?>/>
-					<span class="description"><?php echo __('Link to WordPress login and logout page? Or...', 'wp-symposium'); ?></td> 
-					</tr> 
-								
-					<tr valign="top"> 
-					<th scope="row"><label for="custom_login_url"></label></th> 
-					<td><input name="custom_login_url" type="text" id="custom_login_url"  value="<?php echo $custom_login_url; ?>" style="width:300px" class="regular-text" /> 
-					<span class="description"><?php echo __('URL of login/logout page, if not using WordPress login page', 'wp-symposium'); ?></td> 
-					</tr> 
-								
-					<tr valign="top"> 
-					<th scope="row"><label for="use_wp_register">Registration Link</label></th> 
-					<td><input type="checkbox" name="use_wp_register" id="use_wp_register" <?php if ($use_wp_register == "on") { echo "CHECKED"; } ?>/>
-					<span class="description"><?php echo __('Link to WordPress registration page? Or...', 'wp-symposium'); ?></td> 
-					</tr> 
-								
-					<tr valign="top"> 
-					<th scope="row"><label for="custom_register_url"></label></th> 
-					<td><input name="custom_register_url" type="text" id="custom_register_url"  value="<?php echo $custom_register_url; ?>" style="width:300px" class="regular-text" /> 
-					<span class="description"><?php echo __('URL of registration page, if not using WordPress login page', 'wp-symposium'); ?></td> 
-					</tr> 
-								
 
 					</table> 
 					 
@@ -2051,18 +2003,6 @@ function symposium_plugin_options() {
 					<th scope="row"><label for="avatar_url">Avatar URL</label></th> 
 					<td><input name="avatar_url" type="text" id="avatar_url"  value="<?php echo $avatar_url; ?>" class="regular-text" /> 
 					<span class="description"><?php echo __('Full URL of the page that includes [symposium-avatar]', 'wp-symposium'); ?></td> 
-					</tr> 					
-
-					<tr valign="top"> 
-					<th scope="row"><label for="login_url">Login URL</label></th> 
-					<td><input name="login_url" type="text" id="login_url"  value="<?php echo $login_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Full URL of the page that includes [symposium-login]', 'wp-symposium'); ?></td> 
-					</tr> 					
-
-					<tr valign="top"> 
-					<th scope="row"><label for="register_url">Register URL</label></th> 
-					<td><input name="register_url" type="text" id="register_url"  value="<?php echo $register_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Full URL of the page that includes [symposium-register]', 'wp-symposium'); ?></td> 
 					</tr> 					
 
 					<tr valign="top"> 
@@ -2380,44 +2320,6 @@ function symposium_plugin_options() {
 				  
 				} // End of Forum
 
-				// REGISTER
-				if ($view == "register") {
-
-				    // Get values from database  
-					$register_use_sum = $config->register_use_sum;
-					$register_message = $config->register_message;
-					?>
-						
-					<form method="post" action=""> 
-					<input type="hidden" name="symposium_update" value="R">
-			
-					<table class="form-table"> 
-				
-					<tr valign="top"> 
-					<th scope="row"><label for="register_use_sum"><?php echo __('Use Maths question', 'wp-symposium'); ?></label></th>
-					<td>
-					<input type="checkbox" name="register_use_sum" id="register_use_sum" <?php if ($register_use_sum == "on") { echo "CHECKED"; } ?>/>
-					<span class="description"><?php echo __('A simple addition question to combat spam', 'wp-symposium'); ?></span></td> 
-					</tr> 
-
-					<tr valign="top"> 
-					<th scope="row"><label for="register_message"><?php echo __('If not empty, the email to send to new members after registering', 'wp-symposium'); ?></label></th>
-					<td>
-					<textarea name="register_message" style="width: 500px; height:300px" id="register_message"><?php echo $register_message; ?></textarea>
-					</td> 
-					</tr> 
-
-					</table>
-					 					
-					<p class="submit">
-					<input type="submit" name="Submit" class="button-primary" value="<?php echo __('Save Changes', 'wp-symposium'); ?>" />
-					</p>
-					</form>
-					
-
-					<?php
-									  
-				} // End of Register
 
 				// PROFILE
 				if ($view == "profile") {
@@ -2425,6 +2327,7 @@ function symposium_plugin_options() {
 				    // Get values from database  
 					$online = $config->online;
 					$offline = $config->offline;
+					$use_poke = $config->use_poke;
 					$enable_password = $config->enable_password;
 					$show_profile_menu = $config->show_profile_menu;
 					$show_wall_extras = $config->show_wall_extras;
@@ -2438,6 +2341,13 @@ function symposium_plugin_options() {
 					<table class="form-table"> 
 				
 					<tr valign="top"> 
+					<th scope="row"><label for="use_poke"><?php _e('Poke', 'wp-symposium'); ?></label></th>
+					<td>
+					<input type="checkbox" name="use_poke" id="use_poke" <?php if ($use_poke == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Enable Poke feature (coming soon.....)', 'wp-symposium'); ?></span></td> 
+					</tr> 
+
+					<tr valign="top"> 
 					<th scope="row"><label for="show_profile_menu"><?php _e('Show Profile Menu', 'wp-symposium'); ?></label></th>
 					<td>
 					<input type="checkbox" name="show_profile_menu" id="show_profile_menu" <?php if ($show_profile_menu == "on") { echo "CHECKED"; } ?>/>
@@ -2450,7 +2360,6 @@ function symposium_plugin_options() {
 					<input type="checkbox" name="show_wall_extras" id="show_wall_extras" <?php if ($show_wall_extras == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Show summary of profile information on wall', 'wp-symposium'); ?></span></td> 
 					</tr> 
-
 										
 					<tr valign="top"> 
 					<th scope="row"><label for="profile_google_map"><?php _e('Google Map', 'wp-symposium'); ?></label></th> 
@@ -2476,7 +2385,7 @@ function symposium_plugin_options() {
 					<td><input name="offline" type="text" id="offline"  value="<?php echo $offline; ?>" /> 
 					<span class="description"><?php echo __('How many minutes before a member is assumed logged out', 'wp-symposium'); ?></td> 
 					</tr> 
-					
+
 					<tr valign="top"> 
 					<th scope="row"><label for="offline"><?php _e('Extended Fields', 'wp-symposium'); ?></label></th><td>
 					<?php

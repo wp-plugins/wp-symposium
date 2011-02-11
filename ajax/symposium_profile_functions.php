@@ -4,6 +4,167 @@ include_once('../../../../wp-config.php');
 include_once('../../../../wp-includes/wp-db.php');
 include_once('../symposium_functions.php');
 
+// AJAX function to add status
+if ($_POST['action'] == 'addStatus') {
+
+	global $wpdb, $current_user;
+	wp_get_current_user();
+
+	$subject_uid = $_POST['subject_uid'];
+	$author_uid = $_POST['author_uid'];
+	$text = $_POST['text'];
+
+	if (is_user_logged_in()) {
+		
+		if ( ($text != __(addslashes("What's on your mind?"), "wp-symposium")) && ($text != '') ) {
+	
+			$wpdb->query( $wpdb->prepare( "
+				INSERT INTO ".$wpdb->prefix."symposium_comments
+				( 	subject_uid, 
+					author_uid,
+					comment_parent,
+					comment_timestamp,
+					comment
+				)
+				VALUES ( %d, %d, %d, %s, %s )", 
+		        array(
+		        	$subject_uid, 
+		        	$author_uid, 
+		        	0,
+		        	date("Y-m-d H:i:s"),
+		        	$text
+		        	) 
+		        ) );
+
+			// New Post ID
+			$new_id = $wpdb->insert_id;
+
+		    // Subject's name for use below
+			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = %d", $subject_uid));
+		        
+			// Email all friends who want to know about it
+			$sql = "SELECT u.ID, f.friend_to, u.user_email, m.notify_new_wall 
+			 FROM ".$wpdb->prefix."symposium_friends f 
+			 LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to 
+			 LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID 
+			WHERE f.friend_from = ".$current_user->ID;
+			$recipients = $wpdb->get_results($sql);	
+					
+			if ($recipients) {
+				if ($subject_uid == $author_uid) {
+					$body = "<p>".$current_user->display_name." ".__('has added a new status to their wall', 'wp-symposium').":</p>";
+				} else {
+					$body = "<p>".$current_user->display_name." ".__( sprintf("has added a new status to %s's wall", $subject_name), 'wp-symposium').":</p>";
+				}
+				$body .= "<p>".stripslashes($text)."</p>";
+				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$subject_uid."&post=".$new_id."'>".__('Go to their wall', 'wp-symposium')."...</a></p>";
+				foreach ($recipients as $recipient) {
+					if ( ($recipient->ID != $current_user->ID) && ($recipient->notify_new_wall == 'on') ) {
+						symposium_sendmail($recipient->user_email, __('New Wall Post', 'wp-symposium'), $body);
+					}
+				}
+			}
+						
+			exit;
+			
+		} else {
+
+			exit;
+			
+		}
+
+	} else {
+
+		exit;
+	}
+		
+}
+
+// AJAX function to add comment
+if ($_POST['action'] == 'addComment') {
+
+	global $wpdb, $current_user;
+	wp_get_current_user();
+
+	$uid = $_POST['uid'];
+	$text = $_POST['text'];
+	$parent = $_POST['parent'];
+
+	if (is_user_logged_in()) {
+
+		if ( ($text != __(addslashes("Write a comment..."), "wp-symposium")) && ($text != '') ) {
+	
+			$wpdb->query( $wpdb->prepare( "
+				INSERT INTO ".$wpdb->prefix."symposium_comments
+				( 	subject_uid, 
+					author_uid,
+					comment_parent,
+					comment_timestamp,
+					comment
+				)
+				VALUES ( %d, %d, %d, %s, %s )", 
+		        array(
+		        	$uid, 
+		        	$current_user->ID, 
+		        	$parent,
+		        	date("Y-m-d H:i:s"),
+		        	$text
+		        	) 
+		        ) );
+
+			// New Post ID
+			$new_id = $wpdb->insert_id;
+		        		        
+		    // Subject's name for use below
+			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = %d", $uid));
+		
+			// Email all friends who want to know about it
+			$sql = "SELECT u.ID, f.friend_to, u.user_email, m.notify_new_wall 
+			 FROM ".$wpdb->prefix."symposium_friends f 
+			 LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to 
+			 LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID 
+			WHERE f.friend_from = ".$current_user->ID;
+			$recipients = $wpdb->get_results($sql);			
+			if ($recipients) {
+				if ($parent == 0) {
+					$email_subject = __('New Wall Post', 'wp-symposium');
+					if ($current_user->ID == $uid) {
+						$body = "<p>".$current_user->display_name." ".__('has added a new status to their wall', 'wp-symposium').":</p>";
+					} else {
+						$body = "<p>".$current_user->display_name." ".sprintf(__("has added a new post to %s's wall", "wp-symposium"), $subject_name).":</p>";
+					}
+				} else {
+					$email_subject = __('New Wall Reply', 'wp-symposium');
+					if ($current_user->ID == $uid) {
+						$body = "<p>".$current_user->display_name." has replied to their post:</p>";
+					} else {
+						$body = "<p>".$current_user->display_name." has replied to ".$subject_name."'s post:</p>";
+					}
+				}
+				$body .= "<p>".stripslashes($text)."</p>";
+				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$uid."&post=".$parent."'>".__('Go to their wall', 'wp-symposium')."...</a></p>";
+				foreach ($recipients as $recipient) {
+					if ( ($recipient->ID != $current_user->ID) && ($recipient->notify_new_wall == 'on') ) {
+						symposium_sendmail($recipient->user_email, $email_subject, $body);
+					}
+				}
+			}
+								
+			exit;
+
+		} else {
+
+			exit;
+			
+		}
+			
+			
+	} else {
+		
+		exit;
+		
+	}
+}
 
 // Show Wall
 if ($_POST['action'] == 'menu_wall') {
@@ -552,171 +713,6 @@ if ($_POST['action'] == 'deletePost') {
 	exit;
 }
 
-// AJAX function to add comment
-if ($_POST['action'] == 'addComment') {
-
-	global $wpdb, $current_user;
-	wp_get_current_user();
-
-	$uid = $_POST['uid'];
-	$text = $_POST['text'];
-	$parent = $_POST['parent'];
-
-	$profile_page = $wpdb->get_row($wpdb->prepare("SELECT profile_page FROM ".$wpdb->prefix . 'symposium_config'));
-	if ($profile_page[strlen($profile_page)-1] != '/') { $profile_page .= '/'; }
-	$q = symposium_string_query($profile_page);		
-
-	if (is_user_logged_in()) {
-
-		if ( ($text != __(addslashes("Write a comment..."), "wp-symposium")) && ($text != '') ) {
-	
-			$wpdb->query( $wpdb->prepare( "
-				INSERT INTO ".$wpdb->prefix."symposium_comments
-				( 	subject_uid, 
-					author_uid,
-					comment_parent,
-					comment_timestamp,
-					comment
-				)
-				VALUES ( %d, %d, %d, %s, %s )", 
-		        array(
-		        	$uid, 
-		        	$current_user->ID, 
-		        	$parent,
-		        	date("Y-m-d H:i:s"),
-		        	$text
-		        	) 
-		        ) );
-
-			// New Post ID
-			$new_id = $wpdb->insert_id;
-		        		        
-		    // Subject's name for use below
-			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = %d", $uid));
-		
-			// Email all friends who want to know about it
-			$sql = "SELECT u.ID, f.friend_to, u.user_email, m.notify_new_wall 
-			 FROM ".$wpdb->prefix."symposium_friends f 
-			 LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to 
-			 LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID 
-			WHERE f.friend_from = ".$current_user->ID;
-			$recipients = $wpdb->get_results($sql);			
-			if ($recipients) {
-				if ($parent == 0) {
-					$email_subject = __('New Wall Post', 'wp-symposium');
-					if ($current_user->ID == $uid) {
-						$body = "<p>".$current_user->display_name." ".__('has added a new status to their wall', 'wp-symposium').":</p>";
-					} else {
-						$body = "<p>".$current_user->display_name." ".sprintf(__("has added a new post to %s's wall", "wp-symposium"), $subject_name).":</p>";
-					}
-				} else {
-					$email_subject = __('New Wall Reply', 'wp-symposium');
-					if ($current_user->ID == $uid) {
-						$body = "<p>".$current_user->display_name." has replied to their post:</p>";
-					} else {
-						$body = "<p>".$current_user->display_name." has replied to ".$subject_name."'s post:</p>";
-					}
-				}
-				$body .= "<p>".stripslashes($text)."</p>";
-				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$uid."&post=".$parent."'>".__('Go to their wall', 'wp-symposium')."...</a></p>";
-				foreach ($recipients as $recipient) {
-					if ( ($recipient->ID != $current_user->ID) && ($recipient->notify_new_wall == 'on') ) {
-						symposium_sendmail($recipient->user_email, $email_subject, $body);
-					}
-				}
-			}
-								
-			exit;
-
-		} else {
-
-			exit;
-			
-		}
-			
-			
-	} else {
-		
-		exit;
-		
-	}
-}
-
-// AJAX function to add status
-if ($_POST['action'] == 'addStatus') {
-
-	global $wpdb, $current_user;
-	wp_get_current_user();
-
-	$subject_uid = $_POST['subject_uid'];
-	$author_uid = $_POST['author_uid'];
-	$text = $_POST['text'];
-
-	if (is_user_logged_in()) {
-		
-		if ( ($text != __(addslashes("What's on your mind?"), "wp-symposium")) && ($text != '') ) {
-	
-			$wpdb->query( $wpdb->prepare( "
-				INSERT INTO ".$wpdb->prefix."symposium_comments
-				( 	subject_uid, 
-					author_uid,
-					comment_parent,
-					comment_timestamp,
-					comment
-				)
-				VALUES ( %d, %d, %d, %s, %s )", 
-		        array(
-		        	$subject_uid, 
-		        	$author_uid, 
-		        	0,
-		        	date("Y-m-d H:i:s"),
-		        	$text
-		        	) 
-		        ) );
-
-			// New Post ID
-			$new_id = $wpdb->insert_id;
-
-		    // Subject's name for use below
-			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = %d", $subject_uid));
-		        
-			// Email all friends who want to know about it
-			$sql = "SELECT u.ID, f.friend_to, u.user_email, m.notify_new_wall 
-			 FROM ".$wpdb->prefix."symposium_friends f 
-			 LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to 
-			 LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID 
-			WHERE f.friend_from = ".$current_user->ID;
-			$recipients = $wpdb->get_results($sql);	
-					
-			if ($recipients) {
-				if ($subject_uid == $author_uid) {
-					$body = "<p>".$current_user->display_name." ".__('has added a new status to their wall', 'wp-symposium').":</p>";
-				} else {
-					$body = "<p>".$current_user->display_name." ".__( sprintf("has added a new status to %s's wall", $subject_name), 'wp-symposium').":</p>";
-				}
-				$body .= "<p>".stripslashes($text)."</p>";
-				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$subject_uid."&post=".$new_id."'>".__('Go to their wall', 'wp-symposium')."...</a></p>";
-				foreach ($recipients as $recipient) {
-					if ( ($recipient->ID != $current_user->ID) && ($recipient->notify_new_wall == 'on') ) {
-						symposium_sendmail($recipient->user_email, __('New Wall Post', 'wp-symposium'), $body);
-					}
-				}
-			}
-						
-			exit;
-			
-		} else {
-
-			exit;
-			
-		}
-
-	} else {
-
-		exit;
-	}
-		
-}
 
 // Update Settings
 if ($_POST['action'] == 'updateSettings') {

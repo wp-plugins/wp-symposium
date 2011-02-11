@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.1.33.5
+Version: 0.1.34
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -245,7 +245,7 @@ function symposium_mail() {
 
   					if ($message != '') {
 						$html .= '<div class="new-topic-subject label">'.__('Previous Message...', 'wp-symposium').'</div>';
-  						$html .= str_replace(chr(13), "<br />", $message);
+  						$html .= str_replace(chr(13), "<br />", symposium_bbcode_replace($message));
   					}
   					
 					$html .= '<input type="hidden" name="compose_previous" value="'.str_replace("\"", "&quot;", $message).'" />';
@@ -284,10 +284,10 @@ function symposium_mail() {
 						$html .= symposium_time_ago($item->mail_sent);
 						$html .= "</div>";
 						$html .= "<strong>".stripslashes(symposium_profile_link($item->mail_from))."</strong><br />";
-						$html .= "<span class='mailbox_message_subject'>".stripslashes($item->mail_subject)."</span><br />";
+						$html .= "<span class='mailbox_message_subject'>".stripslashes(symposium_bbcode_remove($item->mail_subject))."</span><br />";
 						$message = stripslashes($item->mail_message);
 						if ( strlen($message) > 75 ) { $message = substr($message, 0, 75)."..."; }
-						$html .= "<span class='mailbox_message'>".$message."</span>";
+						$html .= "<span class='mailbox_message'>".symposium_bbcode_remove($message)."</span>";
 						$html .= "</div>";
 					}
 				} else {
@@ -333,8 +333,9 @@ function symposium_mail() {
 						$html .= symposium_time_ago($item->mail_sent);
 						$html .= "</div>";
 						$html .= "<strong>".stripslashes(symposium_profile_link($item->mail_to))."</strong><br />";
-						$html .= "<span class='mailbox_message_subject'>".stripslashes($item->mail_subject)."</span><br />";
+						$html .= "<span class='mailbox_message_subject'>".stripslashes(symposium_bbcode_remove($item->mail_subject))."</span><br />";
 						$message = stripslashes($item->mail_message);
+						$message = symposium_bbcode_remove($message);
 						if ( strlen($message) > 75 ) { $message = substr($message, 0, 75)."..."; }
 						$html .= "<span class='mailbox_message'>".$message."</span>";
 						$html .= "</div>";

@@ -1,12 +1,12 @@
 === Plugin Name ===
 Author: WP Symposium
 Contributors: Simon Goodchild
-Donate link: http://www.wpsymposium.com/contact
+Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.0.5
-Stable tag: 0.1.33.5
+Stable tag: 0.1.34
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -110,6 +110,12 @@ IMPORTANT: Update settings on the Options page.
 Q. Where can I find more information?
 A. Go to www.wpsymposium.com
 
+Q. Can I try it out?
+A. Yep, go to www.wpsymposium.com
+
+Q. Is WP Symposium covered by the GPL license?
+A. Yes, for sure. Everything listed on the WordPress directory is covered by the GPL licence. There may be other plugins that are compatible with WP Symposium that are sold commercially, but what is listed here will always be covered by the GPL licence.
+
 Q. What's the one thing I probably haven't done?
 A. Set up your page URL's in the admin Options -> Settings page...
 
@@ -129,10 +135,25 @@ Q. Will WP Symposium work on WPMU/WPMS?
 A. Sorry no, not at the moment - but it's planned to get this working at some point.
 
 Q. I don't see friends when they're online, can't edit forum posts or read all mail in my inbox. I see stuff, but not much works...
-A. Sounds like AJAX isn't working, probably due to a Javascript error. Check on the admin Health Check page, and try using Firefox with the Firebug add-in to check for javascript errors.
+A. Sounds like AJAX isn't working, probably due to a Javascript error. Check on the admin Health Check page, and try using Firefox with the Firebug add-in to check for javascript errors. Always try de-activating and re-activating the core WPS plugin.
+
+Q. There used to be a login and registration plugin, where did they go?
+A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login.
+
+Q. How can I get rid of the Powered By message?
+A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade.
+
 
 
 == Changelog ==
+
+= 0.1.34 =
+
+* Removed: Login and Registration Plugins
+* Forum/Mail: Added support for BBcodes [b][/b], [i][/i], [u][/u], [s][/s] and [code][/code]
+* Core: Added release notes (that can be hidden after each activation)
+* Health Check: Improved Javascript file check
+* Notification Bar: Fixed: Dates on chat/chatroom
 
 = 0.1.33.5 =
 

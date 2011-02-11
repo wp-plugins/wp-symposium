@@ -990,6 +990,7 @@
 	padding-left: 15px;
 	padding-top: 10px;
 	border: 1px solid #000;
+	background-color: #fff;
 }
 .symposium-wrapper #edit-topic-div, #symposium-fav-list
 {
@@ -1099,6 +1100,16 @@
 }
 .symposium-wrapper child-posts .child-reply .child-reply-post p
 {
+}
+
+/* BB Codes */
+
+.symposium-wrapper .child-reply-post pre {
+	border:1px solid #000;
+	background-color: #ffffdd;
+	padding: 4px;
+	font-family: courier;
+	font-size: 6px;
 }
 
 /* AVATAR ============================================================== */

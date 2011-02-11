@@ -27,7 +27,9 @@ jQuery(document).ready(function() {
 	});
 	   
 	// Set up auto-expanding textboxes
-	jQuery('.elastic').elastic();
+	if (jQuery(".elastic").length) {	
+		jQuery('.elastic').elastic();
+	}
 		
 	/*
 	   +------------------------------------------------------------------------------------------+
@@ -1417,318 +1419,347 @@ jQuery(document).ready(function() {
 	*/
 
 
-	// Quick check on polling frequency
-	if ( (symposium.bar_polling > 1) && (symposium.chat_polling > 1) ) {
-	
-		// Sound Manager
-		// soundManager.url = symposium.plugin_url+'/js/soundmanager/soundmanager2.swf'; // override default SWF url
-		// soundManager.debugMode = false;
-		// soundManager.consoleOnly = false;
+	if (jQuery("#symposium-notification-bar").length) {
+
+		// Quick check on polling frequency
+		if ( (symposium.bar_polling > 1) && (symposium.chat_polling > 1) ) {
+		
+			// Sound Manager
+			// soundManager.url = symposium.plugin_url+'/js/soundmanager/soundmanager2.swf'; // override default SWF url
+			// soundManager.debugMode = false;
+			// soundManager.consoleOnly = false;
+					
+		  	// Set up icon actions ******************************************************
+			if (jQuery("#symposium-email-box").css("display") != "none") {
+		    	jQuery("#symposium-email-box").click(function() {
+					window.location.href=symposium.mail_url;
+		    	});
+		
+			}
+			
+			if (jQuery("#symposium-friends-box").css("display") != "none") {
 				
-	  	// Set up icon actions ******************************************************
-		if (jQuery("#symposium-email-box").css("display") != "none") {
-	    	jQuery("#symposium-email-box").click(function() {
-				window.location.href=symposium.mail_url;
-	    	});
+		    	jQuery("#symposium-friends-box").click(function() {
+					window.location.href=symposium.profile_url+symposium.q.substring(0, 1)+'view=friends';
+		    	});
+		    	jQuery("#symposium-online-box").click(function() {
+					jQuery('#symposium-who-online').toggle("fast");
+		    	});
+		    	jQuery("#symposium-who-online_close").click(function() {
+					jQuery('#symposium-who-online').hide("fast");
+		    	});
+		    	jQuery("#symposium-chatroom-box").click(function() {
+					jQuery('#symposium-chatroom').show("fast");
+					jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+					createCookie('wps_chatroom','show',7);
+		    	});
+		    	jQuery("#symposium-chatroom_close").click(function() {
+					jQuery('#symposium-chatroom').hide("fast");
+					eraseCookie('wps_chatroom');
+		    	});
+				
+			}
 	
-		}
-		
-		if (jQuery("#symposium-friends-box").css("display") != "none") {
+			// Make DIVS draggable (there is a slight problem, but uncomment if you want this feature)
+			if (jQuery("#symposium-chatroom").length) {
+				//jQuery('#symposium-chatroom').draggable();
+			}
+			if (jQuery("#symposium-who-online").length) {
+				//jQuery('#symposium-who-online').draggable();
+			}
+			if (jQuery(".chat_window").length) {
+				//jQuery('.chat_window').draggable();
+			}
+			if (jQuery("#symposium-fav-list").length) {
+				//jQuery('#symposium-fav-list').draggable();
+			}
 			
-	    	jQuery("#symposium-friends-box").click(function() {
-				window.location.href=symposium.profile_url+symposium.q.substring(0, 1)+'view=friends';
-	    	});
-	    	jQuery("#symposium-online-box").click(function() {
-				jQuery('#symposium-who-online').toggle("fast");
-	    	});
-	    	jQuery("#symposium-who-online_close").click(function() {
-				jQuery('#symposium-who-online').hide("fast");
-	    	});
-	    	jQuery("#symposium-chatroom-box").click(function() {
-				jQuery('#symposium-chatroom').show("fast");
-				jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
-				createCookie('wps_chatroom','show',7);
-	    	});
-	    	jQuery("#symposium-chatroom_close").click(function() {
-				jQuery('#symposium-chatroom').hide("fast");
-				eraseCookie('wps_chatroom');
-	    	});
+			// Scheduled checks for chat/unread mail/etc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			if (symposium.current_user_id > 0 ) {
 			
-		}
-
-		// Make DIVS draggable (there is a slight problem, but uncomment if you want this feature)
-		if (jQuery("#symposium-chatroom").length) {
-			//jQuery('#symposium-chatroom').draggable();
-		}
-		if (jQuery("#symposium-who-online").length) {
-			//jQuery('#symposium-who-online').draggable();
-		}
-		if (jQuery(".chat_window").length) {
-			//jQuery('.chat_window').draggable();
-		}
-		if (jQuery("#symposium-fav-list").length) {
-			//jQuery('#symposium-fav-list').draggable();
-		}
-		
-		// Scheduled checks for chat/unread mail/etc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		if (symposium.current_user_id > 0 ) {
-		
-		   	// Check for notifications, unread mail, friend requests, etc
-			do_bar_check();
-		   	var refreshId = setInterval(function()
-		   	{
+			   	// Check for notifications, unread mail, friend requests, etc
 				do_bar_check();
-		   	}, symposium.bar_polling*1000); // Delay to check for new mail, etc
-		   	
-			do_chat_check();
-	   		do_chatroom_check();
-			var refreshChatId = setInterval(function()
-		   	{
-		   		do_chat_check();
+			   	var refreshId = setInterval(function()
+			   	{
+					do_bar_check();
+			   	}, symposium.bar_polling*1000); // Delay to check for new mail, etc
+			   	
+				do_chat_check();
 		   		do_chatroom_check();
-		   	}, symposium.chat_polling*1000); // Delay to check for new messages
-	
-		}
-
-		// Chatroom Clear ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		jQuery("#symposium-chatroom_clear").live('click', function() {
-	
-			jQuery.ajax({
-				url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
-				type: "POST",
-				data: ({
-					action:'symposium_clear_chatroom'
-				}),
-			    dataType: "html",
-				async: false,
-				success: function(str){
-					jQuery("#chatroom_messages").html('');
-				},
-				error: function(err){
-					//alert("25:"+err);
-				}		
-		  	});
-		  	
-	   	});	   	
-	   		
-		// Chatroom Change Size ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		jQuery("#symposium-chatroom_max").live('click', function() {
-			var hm = jQuery('#chatroom_messages').height();
-			var hc = jQuery('#symposium-chatroom').height();
-			if (hm < 400) {
-				jQuery('#chatroom_messages').height(hm+400);
-				jQuery('#symposium-chatroom').height(hc+400);
-				jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
-				jQuery('#symposium-chatroom_max').hide();
-				jQuery('#symposium-chatroom_min').show();	
+				var refreshChatId = setInterval(function()
+			   	{
+			   		do_chat_check();
+			   		do_chatroom_check();
+			   	}, symposium.chat_polling*1000); // Delay to check for new messages
+		
 			}
-		});
-		jQuery("#symposium-chatroom_min").live('click', function() {
-			var hm = jQuery('#chatroom_messages').height();
-			var hc = jQuery('#symposium-chatroom').height();
-			if (hm > 400) {
-				jQuery('#chatroom_messages').height(hm-400).attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
-				jQuery('#symposium-chatroom').height(hc-400);
-				jQuery('#symposium-chatroom_max').show();
-				jQuery('#symposium-chatroom_min').hide();
-			}
-		});
-	   		
-		// Chat Window Close ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		jQuery(".chat_close").live('click', function() {
 	
-	   		var chat_win = jQuery(this).parent().parent().attr('id');
-	   		var chat_to = jQuery(this).parent().parent().attr('id')+'_to';
-	   		var display_name = jQuery(this).parent().parent().attr('id')+'_display_name';
-	   		jQuery('#'+display_name).html('Closing...');
-			jQuery('#'+chat_win).hide();
-			
-			jQuery.ajax({
-				url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
-				type: "POST",
-				data: ({
-					action:'symposium_closechat', 
-					chat_from:symposium.current_user_id,
-					chat_to:jQuery('#'+chat_to).html()
-				}),
-			    dataType: "html",
-				async: false,
-				success: function(str){
-					jQuery('#'+chat_to).html('');
-				},
-				error: function(err){
-					//alert("15:"+err);
-				}		
-		  	});
-		  	
-	   	});
-
-		// Type in Chat Window ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		jQuery('.chat_message').keypress(function(event) {
-			if (event.which == 13) {
-				var msg = jQuery(this).val();
-				jQuery.trim(msg);
-				jQuery(this).val('');
-				event.preventDefault();
-	
-		   		var chat_message = jQuery(this).parent().parent().attr('id')+'_message';
+			// Chatroom Clear ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			jQuery("#symposium-chatroom_clear").live('click', function() {
+		
+				jQuery.ajax({
+					url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+					type: "POST",
+					data: ({
+						action:'symposium_clear_chatroom'
+					}),
+				    dataType: "html",
+					async: false,
+					success: function(str){
+						jQuery("#chatroom_messages").html('');
+					},
+					error: function(err){
+						//alert("25:"+err);
+					}		
+			  	});
+			  	
+		   	});	   	
+		   		
+			// Chatroom Change Size ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			jQuery("#symposium-chatroom_max").live('click', function() {
+				var hm = jQuery('#chatroom_messages').height();
+				var hc = jQuery('#symposium-chatroom').height();
+				if (hm < 400) {
+					jQuery('#chatroom_messages').height(hm+400);
+					jQuery('#symposium-chatroom').height(hc+400);
+					jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+					jQuery('#symposium-chatroom_max').hide();
+					jQuery('#symposium-chatroom_min').show();	
+				}
+			});
+			jQuery("#symposium-chatroom_min").live('click', function() {
+				var hm = jQuery('#chatroom_messages').height();
+				var hc = jQuery('#symposium-chatroom').height();
+				if (hm > 400) {
+					jQuery('#chatroom_messages').height(hm-400).attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+					jQuery('#symposium-chatroom').height(hc-400);
+					jQuery('#symposium-chatroom_max').show();
+					jQuery('#symposium-chatroom_min').hide();
+				}
+			});
+		   		
+			// Chat Window Close ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			jQuery(".chat_close").live('click', function() {
+		
+		   		var chat_win = jQuery(this).parent().parent().attr('id');
 		   		var chat_to = jQuery(this).parent().parent().attr('id')+'_to';
+		   		var display_name = jQuery(this).parent().parent().attr('id')+'_display_name';
+		   		jQuery('#'+display_name).html('Closing...');
+				jQuery('#'+chat_win).hide();
 				
 				jQuery.ajax({
 					url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
 					type: "POST",
 					data: ({
-						action:'symposium_addchat',
+						action:'symposium_closechat', 
 						chat_from:symposium.current_user_id,
-						chat_to:jQuery('#'+chat_to).html(),
-						chat_message:msg
+						chat_to:jQuery('#'+chat_to).html()
 					}),
 				    dataType: "html",
 					async: false,
-					success: function(str) {
-						jQuery('#'+chat_message).append('<span style="font-weight:bold">'+str+'</span><br />');
-						jQuery('#'+chat_message).attr({ scrollTop: jQuery('#'+chat_message).attr('scrollHeight') });
+					success: function(str){
+						jQuery('#'+chat_to).html('');
 					},
 					error: function(err){
-						//alert("16:"+err);
+						//alert("15:"+err);
 					}		
 			  	});
-				
-			}
-		});
+			  	
+		   	});
+	
+			// Type in Chat Window ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			jQuery('.chat_message').keypress(function(event) {
+				if (event.which == 13) {
+					var msg = jQuery(this).val();
+					jQuery.trim(msg);
+					jQuery(this).val('');
+					event.preventDefault();
 		
-		// Type in ChatRoom Window ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		jQuery('#chatroom_textarea').keypress(function(event) {
-			if (event.which == 13) {
-				var msg = jQuery(this).val();
-				jQuery.trim(msg);
-				jQuery(this).val('');
-				event.preventDefault();
-
-				if (msg != '') {
+			   		var chat_message = jQuery(this).parent().parent().attr('id')+'_message';
+			   		var chat_to = jQuery(this).parent().parent().attr('id')+'_to';
+					
 					jQuery.ajax({
 						url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
 						type: "POST",
 						data: ({
-							action:'symposium_addchatroom',
+							action:'symposium_addchat',
 							chat_from:symposium.current_user_id,
+							chat_to:jQuery('#'+chat_to).html(),
 							chat_message:msg
 						}),
 					    dataType: "html",
 						async: false,
 						success: function(str) {
-							jQuery('#chatroom_messages').append('<div style="clear:both;font-weight:bold">'+str+'</div>');
-							jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+							jQuery('#'+chat_message).append('<span style="font-weight:bold">'+str+'</span><br />');
+							jQuery('#'+chat_message).attr({ scrollTop: jQuery('#'+chat_message).attr('scrollHeight') });
 						},
 						error: function(err){
-							//alert("17:"+err);
+							//alert("16:"+err);
 						}		
 				  	});
+					
 				}
-			}
-		});
-		
-		
-		// CHAT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			});
+			
+			// Type in ChatRoom Window ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			jQuery('#chatroom_textarea').keypress(function(event) {
+				if (event.which == 13) {
+					var msg = jQuery(this).val();
+					jQuery.trim(msg);
+					jQuery(this).val('');
+					event.preventDefault();
 	
-		if (symposium.use_chat == 'on') {
-		
-	   		var numChatWindows = 3;
-	
-	    	// ************** When clicking on a name to chat...
-	    	
-			jQuery(".symposium_online_name").live('click', function() {
-	    		// choose a chat box
-	    		var chatbox = 0;
-	    		var already_chatting = 0;
-	    		// first check to see if already chatting to them
-				for (w=1;w<=numChatWindows;w++) {	
-		    		if ( (already_chatting == 0) && (jQuery('#chat'+w+'_to').html() == jQuery(this).attr("title")) ) { already_chatting = w; }
-				}
-	    		if (already_chatting == 0) {
-		    		// not already chatting, so find a free chat window
-		    		chatbox = 0;
-					for (w=1;w<=numChatWindows;w++) {	
-			    		if (jQuery('#chat'+w).css("display") == "none") { chatbox = w; }
-					}
-		    		if (chatbox > 0) {
-		    			// found a free chat window
-						jQuery('#chat'+chatbox+'_to').html(jQuery(this).attr("title"));
-						jQuery('#chat'+chatbox+'_display_name').html('Please wait...');
-						jQuery("#chat"+chatbox+"_message").html('');
-						jQuery("#chat"+chatbox).show('fast');
-						
+					if (msg != '') {
 						jQuery.ajax({
 							url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
 							type: "POST",
 							data: ({
-								action:"symposium_openchat", 
+								action:'symposium_addchatroom',
+								chat_from:symposium.current_user_id,
+								chat_message:msg
+							}),
+						    dataType: "html",
+							async: false,
+							success: function(str) {
+								jQuery('#chatroom_messages').append('<div style="clear:both;font-weight:bold">'+str+'</div>');
+								jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+							},
+							error: function(err){
+								//alert("17:"+err);
+							}		
+					  	});
+					}
+				}
+			});
+			
+			
+			// CHAT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		
+			if (symposium.use_chat == 'on') {
+			
+		   		var numChatWindows = 3;
+		
+		    	// ************** When clicking on a name to chat...
+		    	
+				jQuery(".symposium_online_name").live('click', function() {
+		    		// choose a chat box
+		    		var chatbox = 0;
+		    		var already_chatting = 0;
+		    		// first check to see if already chatting to them
+					for (w=1;w<=numChatWindows;w++) {	
+			    		if ( (already_chatting == 0) && (jQuery('#chat'+w+'_to').html() == jQuery(this).attr("title")) ) { already_chatting = w; }
+					}
+		    		if (already_chatting == 0) {
+			    		// not already chatting, so find a free chat window
+			    		chatbox = 0;
+						for (w=1;w<=numChatWindows;w++) {	
+				    		if (jQuery('#chat'+w).css("display") == "none") { chatbox = w; }
+						}
+			    		if (chatbox > 0) {
+			    			// found a free chat window
+							jQuery('#chat'+chatbox+'_to').html(jQuery(this).attr("title"));
+							jQuery('#chat'+chatbox+'_display_name').html('Please wait...');
+							jQuery("#chat"+chatbox+"_message").html('');
+							jQuery("#chat"+chatbox).show('fast');
+							
+							jQuery.ajax({
+								url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+								type: "POST",
+								data: ({
+									action:"symposium_openchat", 
+									chat_from:symposium.current_user_id,
+									chat_to:jQuery(this).attr("title")
+								}),
+							    dataType: "html",
+								async: false,
+								success: function(str){
+									if (str.substring(0, 2) == 'OK') { 
+										var details = str.split("[split]");
+										jQuery('#chat'+chatbox+'_to').html(details[1]);
+										jQuery('#chat'+chatbox+'_display_name').html(details[2]);
+										jQuery('#chat'+chatbox+'_message').html('');
+									} else {
+										if (jQuery('#chat'+chatbox+'_to').html() == str) { 
+											jQuery('#chat'+chatbox).show("fast"); 
+										}
+									}
+								},
+								error: function(err){
+									//alert("17:"+err);
+								}		
+						  	});
+												
+			    		} else {
+			    			// no free chat windows
+			    			alert("Sorry - you can't open any more chat windows.");
+			    		}
+			    		
+		    		} else {
+		    			
+		    			// already chatting, so clear closed tag and re-open it
+						jQuery.ajax({
+							url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+							type: "POST",
+							data: ({
+								action:"symposium_reopenchat", 
 								chat_from:symposium.current_user_id,
 								chat_to:jQuery(this).attr("title")
 							}),
 						    dataType: "html",
 							async: false,
 							success: function(str){
-								if (str.substring(0, 2) == 'OK') { 
-									var details = str.split("[split]");
-									jQuery('#chat'+chatbox+'_to').html(details[1]);
-									jQuery('#chat'+chatbox+'_display_name').html(details[2]);
-									jQuery('#chat'+chatbox+'_message').html('');
-								} else {
-									if (jQuery('#chat'+chatbox+'_to').html() == str) { 
-										jQuery('#chat'+chatbox).show("fast"); 
+								if (str != '') {
+									for (w=1;w<=numChatWindows;w++) {	
+										if (jQuery('#chat'+w+'_to').html() == str) { 
+											jQuery('#chat'+w).show(); 
+										}
 									}
 								}
 							},
 							error: function(err){
-								//alert("17:"+err);
+								//alert("18:"+err);
 							}		
 					  	});
-											
-		    		} else {
-		    			// no free chat windows
-		    			alert("Sorry - you can't open any more chat windows.");
+					  	
 		    		}
-		    		
-	    		} else {
-	    			
-	    			// already chatting, so clear closed tag and re-open it
-					jQuery.ajax({
-						url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
-						type: "POST",
-						data: ({
-							action:"symposium_reopenchat", 
-							chat_from:symposium.current_user_id,
-							chat_to:jQuery(this).attr("title")
-						}),
-					    dataType: "html",
-						async: false,
-						success: function(str){
-							if (str != '') {
-								for (w=1;w<=numChatWindows;w++) {	
-									if (jQuery('#chat'+w+'_to').html() == str) { 
-										jQuery('#chat'+w).show(); 
-									}
-								}
-							}
-						},
-						error: function(err){
-							//alert("18:"+err);
-						}		
-				  	});
-				  	
-	    		}
-	    	});
-	    	
+		    	});
+		    	
+			}
+			
+		} else {
+			
+			alert('Polling frequencies needs to be changed');
+			
 		}
-		
-	} else {
-		
-		alert('Polling frequencies needs to be changed');
-		
 	}
 
-		
+
+	/*
+	   +------------------------------------------------------------------------------------------+
+	   |                                          ADMIN                                           |
+	   +------------------------------------------------------------------------------------------+
+	*/
+
+	if (jQuery("#jstest").length) {
+		jQuery("#jstest").hide();
+	}
+
+	if (jQuery("#hide_motd").length) {	
+		jQuery('#hide_motd').click(function(){
+			jQuery("#motd").slideUp("slow");
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_ajax_functions.php", 
+				type: "POST",
+				data: ({
+					action:"symposium_motd",
+					optin:jQuery("#optin").is(":checked")
+					}),
+			    dataType: "html",
+				async: true
+	   		});	
+		});
+	}
+			
 });
 
 // For Notification Bar (chat windows)
@@ -1909,7 +1940,7 @@ function do_chatroom_check() {
 		   	
 }	
 function do_bar_check() {
-
+	
   	// Notifications ************************************************
 	jQuery.ajax({
 		url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
@@ -2014,7 +2045,7 @@ function do_bar_check() {
 				//alert("23:"+err);
 			}		
    		});
-		
+   				
 	}
 	
 }		
@@ -2171,6 +2202,8 @@ function validate_form(thisform)
 			}
 		}
 	}			
+
+
 }
 
 // Password strength

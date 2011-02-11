@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Notification Bar
 Plugin URI: http://www.wpsymposium.com
 Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.1.33.5
+Version: 0.1.34
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -57,10 +57,6 @@ function add_notification_bar()
 			$bar_polling = ($config->bar_polling*1000);
 			$chat_polling = ($config->chat_polling*1000);
 			$use_wp_profile = $config->use_wp_profile;
-			$use_wp_login = $config->use_wp_login;
-			$use_wp_register = $config->use_wp_register;
-			$custom_login_url = $config->custom_login_url;
-			$custom_register_url = $config->custom_register_url;
 			$inactive = $config->online;
 			$offline = $config->offline;
 			if ($config->use_styles == "on") {
@@ -196,26 +192,14 @@ function add_notification_bar()
 						}
 						
 						echo '.&nbsp;';
-						if ($use_wp_login == "on") {
-							wp_loginout( '/index.php' );
-						} else {
-							echo '<a href="'.$custom_login_url.'">'.__('Log out', 'wp-symposium').'</a>';
-						}
+						wp_loginout( '/index.php' );
 						echo '.&nbsp;';
 													
 					} else {
 						
-						if ($use_wp_login == "on") {
-							echo "<a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='".__("Login", "wp-symposium")."'>".__("Login", "wp-symposium")."</a>";
-						} else {
-							echo '<a href="'.$custom_login_url.'?redirect_to='.get_permalink().'">'.__("Login", "wp-symposium").'</a>';
-						}
+						echo "<a href=".wp_login_url()." class='simplemodal-login' title='".__("Login", "wp-symposium")."'>".__("Login", "wp-symposium")."</a>";
 
-						if ($use_wp_register == "on") {
-							echo wp_register('&nbsp;', '');
-						} else {
-							echo '&nbsp;<a href="'.$custom_register_url.'">'.__("Register", "wp-symposium").'</a>';
-						}
+						echo wp_register('&nbsp;', '');
 
 
 					}
