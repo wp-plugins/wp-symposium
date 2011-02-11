@@ -771,7 +771,7 @@ function symposium_get_current_userlevel() {
 
 function symposium_get_url($plugin) {
 	global $wpdb;
-	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, members_url, register_url, mail_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
+	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, members_url, avatar_url, mail_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
 	$return = false;
 	if ($plugin == 'mail') {
 		$return = $urls->mail_url;

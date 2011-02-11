@@ -27,17 +27,17 @@ THE SOFTWARE.
 if (!empty($_FILES)) {
 
 	$tempFile = $_FILES['Filedata']['tmp_name'];
-	//$targetPath = $_SERVER['DOCUMENT_ROOT'] . $_REQUEST['folder'] . '/';
-	//$targetPath = '/home/circleof/public_html/sites/wpsymposium.com/wp-content/plugins/wp-symposium/uploads/';
 	$targetPath = $_SERVER['DOCUMENT_ROOT'].'/wp-content/plugins/wp-symposium/uploads/';
-	$targetFile =  str_replace('//','/',$targetPath) . $_FILES['Filedata']['name'];
+	$filename = $_FILES['Filedata']['name'];
+	$filename = preg_replace('/[^A-Za-z0-9.]/','_',$filename);
+	$targetFile =  str_replace('//','/',$targetPath) . $filename;
 	
 	if (!file_exists($targetPath)) {
 		mkdir(str_replace('//','/',$targetPath), 0755, true);
 	}
 		
 	if (move_uploaded_file($tempFile,$targetFile)) {
-		echo str_replace($_SERVER['DOCUMENT_ROOT'],'',$targetFile);
+		echo $filename;
 	} else {
 		echo "FAILED";
 	};

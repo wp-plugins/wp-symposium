@@ -3,9 +3,9 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.34.2
+Version: 0.35
 Author: WP Symposium
-AuthorI: http://www.wpsymposium.com
+Author URI: http://www.wpsymposium.com
 License: GPL2
 */
 	
@@ -30,8 +30,8 @@ License: GPL2
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.1.34.2');
-define('WPS_DBVER', '34');
+define('WPS_VER', '0.35');
+define('WPS_DBVER', '35');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -66,9 +66,7 @@ function symposium_admin_warnings() {
 
 	$parts = explode('.',get_option("symposium_version"));	
 	$major = $parts[0];
-	$minor = $parts[1];
-	$db = $parts[2];
-	$patch = $parts[3];
+	$db = $parts[1];
 	$db_ver = get_option("symposium_db_version");
 
 	if ($db != $db_ver) {
@@ -86,7 +84,7 @@ function symposium_admin_warnings() {
     }
 
 	// JS check
-    $myJSfile = WP_PLUGIN_DIR . '/wp-symposium/js/symposium-v'.get_option("symposium_version").'.js';
+    $myJSfile = WP_PLUGIN_DIR . '/wp-symposium/js/symposium.js';
     if ( !file_exists($myJSfile) ) {
 		echo "<div class='error'><p>WPS Symposium: ";
 		_e( sprintf('Javascript file (%s) not found, try de-activating and re-activating the core WPS plugin.', $myJSfile), 'wp-symposium');
@@ -106,12 +104,13 @@ function symposium_admin_warnings() {
 	    echo "<p>";
 	    echo __("To opt-out of receiving occasional emails about free and exclusive WPS widgets and plugins, un-tick this box.", "wp-symposium");
 		echo ' <input type="checkbox" id="optin" CHECKED /> ';
-		echo "<input type='submit' id='hide_motd' class='button-primary' style='float:right' value='".__('OK', 'wp-symposium')."' />";
 	    echo "</p>";
 
 	    echo "<p>";
 	    echo __("This message is only displayed after installing or upgrading WP Symposium. For more information please visit <a href='http://www.wpsymposium.com'>the plugin website</a>.", "wp-symposium");
+		echo "<input type='submit' id='hide_motd' class='button-primary' style='float:right' value='".__('OK', 'wp-symposium')."' />";
 	    echo "</p>";
+	    echo "<p><b>".__("Please click on OK.", "wp-symposium")."</b></p>";
 	
 	    echo "</div>";    	
 	    
@@ -959,7 +958,7 @@ function symposium_scriptsAction()
 	wp_enqueue_script('jquery-elastic', WP_PLUGIN_URL.'/wp-symposium/js/jquery.elastic.source.js', array('jquery'));
 
 	// Load Symposium JS
- 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium-v'.get_option("symposium_version").'.js', array('jquery'));
+ 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
 	
 	// Get styles for JS
 	if ($config->use_styles == "on") {

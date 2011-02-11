@@ -686,7 +686,7 @@ function symposium_plugin_debug() {
 	   	echo '<h2>Javascript</h2>';
 
 		// JS check
-	    $myJSfile = WP_PLUGIN_DIR . '/wp-symposium/js/symposium-v'.$ver.'.js';
+	    $myJSfile = WP_PLUGIN_DIR . '/wp-symposium/js/symposium.js';
 	    if ( !file_exists($myJSfile) ) {
 			echo $fail.__( sprintf('Javascript file (%s) not found, try de-activating and re-activating the core WPS plugin.', $myJSfile), 'wp-symposium').$fail2;
 	    } else {
@@ -1749,12 +1749,10 @@ function symposium_plugin_options() {
 							Version Numbers
 						</div>
 						<div style='border-top: 1px solid #aaa;padding: 5px; '>
-							<p>The version number of WP Symposium is in the form w.x.y.z - where sometimes y and/or z are not displayed.</p>
-							<p><strong>W</strong> is a major release.</p>
-							<p><strong>X</strong> is increased when a stable release is announced to one or more of the plugins.</p>
-							<p><strong>Y</strong> is a development release, with changes made to the database tables and the code.</p>
-							<p><strong>Z</strong> is a patch, with changes only to the code.</p>
-							<p>However, a maintenance release can still include many changes and new features if there are no changes to the underlying database tables.</p>
+							<p>The version number of WP Symposium is in the form x.y.z - where sometimes z is not displayed.</p>
+							<p><strong>X</strong> is a major release.</p>
+							<p><strong>Y</strong> is a development release, with changes made to the database tables and/or the code.</p>
+							<p><strong>Z</strong> is a patch, containing only bug fixes.</p>
 							<p>Current version: <?php echo get_option("symposium_version") ?></p>
 						</div>
 	

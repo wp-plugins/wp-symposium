@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.0.5
-Stable tag: 0.1.34.2
+Stable tag: 0.35
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -35,7 +35,7 @@ Oh, and you also get widgets, with more to come, including latest new members an
 
 WP Symposium plugins work with any WordPress theme! No complicated theme, and no complicated styles - you can pick the colour scheme in the admin area!
 
-Via the www.crowdin.net website, an growing number of translations are being maintained by an active user base, so running WP Symposium in a different language is easily set up.
+Via crowdin website at www.crowdin.net/project/symposium, a growing number of translations are being maintained by an active user base, so running WP Symposium in a different language is easily set up.
 
 *What else is there?*
 
@@ -146,6 +146,12 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 
 == Changelog ==
+
+= 0.35 =
+
+* Avatar: fix to get_url function
+* Avatar: uploaded filenames have all characters not A-Z, a-z, 0-9 and . replaced with _
+NB. 0.1.34.3 skipped due to SVN inconsistences
 
 = 0.1.34.2 = 
 

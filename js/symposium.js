@@ -54,9 +54,9 @@ jQuery(document).ready(function() {
 		    'auto'      : true,
 			'onComplete': function(event, queueID, fileObj, response, data) { 
 				if (symposium.avatar_url.indexOf('?') > 0) {
-					window.location.href=symposium.avatar_url+"&crop=y&img="+fileObj['name'];
+					window.location.href=symposium.avatar_url+"&crop=y&img="+response;
 				} else {
-					window.location.href=symposium.avatar_url+"?crop=y&img="+fileObj['name'];
+					window.location.href=symposium.avatar_url+"?crop=y&img="+response;
 				}
 			}
 	   	});
