@@ -985,7 +985,7 @@ jQuery(document).ready(function() {
 	// Show favourites list
    	jQuery("#show_favs").click(function() {
         
-		jQuery("#fav-list-internal").html("Retrieving content...");
+		jQuery("#fav-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
         jQuery("#symposium-fav-list").inmiddle().fadeIn();
 		jQuery(".symposium_pleasewait").inmiddle().fadeIn();
 		
@@ -1006,8 +1006,6 @@ jQuery(document).ready(function() {
 				//alert("13:"+err);
 			}		
    		});
-
-		        
    	});
    	// Delete a favourite
 	jQuery(".symposium-delete-fav").live('click', function() {
@@ -1045,6 +1043,36 @@ jQuery(document).ready(function() {
 	// Close favourites
    	jQuery("#favs_close").click(function() {
 		jQuery('#symposium-fav-list').fadeOut("slow");
+   	});
+   	
+	// Show activity list
+   	jQuery("#show_activity").click(function() {
+        
+		jQuery("#activity-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+        jQuery("#symposium-activity-list").inmiddle().fadeIn();
+		jQuery(".symposium_pleasewait").inmiddle().fadeIn();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getActivity",
+				tid:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				jQuery("#activity-list-internal").hide().html(str).fadeIn("slow");
+				jQuery(".symposium_pleasewait").delay(100).fadeOut("slow");
+			},
+			error: function(err){
+				//alert("13:"+err);
+			}		
+   		});
+   	});
+	// Close activity
+   	jQuery("#activity_close").click(function() {
+		jQuery('#symposium-activity-list').fadeOut("slow");
    	});
    	
 	// Edit topic (AJAX)
@@ -1133,6 +1161,8 @@ jQuery(document).ready(function() {
 		if (parent == 0) {
 			jQuery(".topic-post-header").html(topic_subject);
 			jQuery(".topic-post-post").html(topic_post.replace(/\n/g, "<br />"));
+		} else {
+			jQuery("#child_"+tid).html("<p>"+topic_post.replace(/\n/g, "<br />")+"</p>");
 		}
 
 		jQuery.ajax({
@@ -1146,10 +1176,10 @@ jQuery(document).ready(function() {
 				'topic_category':topic_category
 			}),
 		    dataType: "html",
-			async: false,
+			async: true,
 			success: function(str){
 				jQuery("#edit-topic-div").fadeOut("fast");
-				window.location.href=window.location.href;
+				jQuery(".symposium_notice").fadeOut("fast");
 			},
 			error: function(err){
 				//alert("4:"+err);
@@ -1162,6 +1192,46 @@ jQuery(document).ready(function() {
 		jQuery("#edit-topic-div").fadeOut("fast");
 		jQuery(".symposium_notice").fadeOut("fast");
    	});
+
+	// Add new reply to a topic
+	jQuery("#quick-reply-warning").click(function(){
+
+		var reply_text = jQuery('#symposium_reply_text').val().replace(/[\n\r]$/,"");
+		
+		var html = "<div class='child-reply' style='overflow:hidden'>";
+		html += "<div class='avatar'>";
+		html += jQuery('#symposium_current_user_avatar').html().replace(/200/g, '64');		
+		html += "</div>";
+		html += "<div class='child-reply-post'>";
+		html += reply_text.replace(/\n/g, "<br />").replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		html += "</div>";
+		html += "<br class='clear' />";						
+		html += "</div>";
+		html += "<div class='sep'></div>";						
+		jQuery(html).appendTo('#child-posts').hide().show().animate({ opacity: 0 }, 500, function() {}).animate({ opacity: 1 }, 500, function() {}); 
+		jQuery('#symposium_reply_text').val('');
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"reply",
+				'tid':jQuery('#symposium_reply_tid').val(),
+				'cid':jQuery('#symposium_reply_cid').val(),
+				'reply_text':reply_text
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				//alert(str);
+			},
+			error: function(err){
+				//alert("4:"+err);
+			}
+   		});
+   				
+	});
+
 
 	// Show delete link on row hover
     jQuery(".row").hover(function() {
@@ -2192,16 +2262,6 @@ function validate_form(thisform)
 			}
 		}
 	}
-	if ( (form_id) == "quick-reply") {
-		with (thisform)
-		{
-			if (reply_text.value == '' || reply_text.value == null) {
-				jQuery(".quick-reply-warning").show("slow");
-				reply_text.focus(); 
-				return false;
-			}
-		}
-	}			
 
 
 }

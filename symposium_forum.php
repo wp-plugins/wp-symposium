@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.1.34
+Version: 0.1.34.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -134,7 +134,8 @@ function symposium_forum() {
 		$html .= "<div class='floatright'>";
 
 			if (is_user_logged_in()) {
-				$html .= "<a id='show_favs' class='label' href='javascript:void(0)'>".__("Favourites", "wp-symposium")."</a>";
+				$html .= "<a id='show_activity' class='backto label' href='javascript:void(0)'>".__("My Activity", "wp-symposium")."</a>";
+				$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a id='show_favs' class='backto label' href='javascript:void(0)'>".__("My Favourites", "wp-symposium")."</a>";
 			}
 
 			if ($cat_id > 0) {
@@ -632,7 +633,8 @@ function symposium_forum() {
 						$html .= "<div class='topic-post-header-with-fav'>";
 						
 							$html .= "<div class='topic-post-header'>";
-								$html .= stripslashes($post->topic_subject);
+								$post_text = symposium_bbcode_replace(stripslashes($post->topic_subject));
+								$html .= stripslashes($post_text);
 						
 								if ($post->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 
@@ -704,58 +706,58 @@ function symposium_forum() {
 				
 				$child_query = $wpdb->get_results($wpdb->prepare($sql, $current_user->ID, $show));
 		
-				if ($child_query) {
+				$html .= "<div id='child-posts'>";
+
+					if ($child_query) {
+			
+						foreach ($child_query as $child) {
+			
+							$html .= "<div class='child-reply'>";
+								if ( ($child->topic_owner == $current_user->ID) || (current_user_can('level_10')) ) {
+									$html .= "<div style='float:right;padding-top:6px;'><a class='delete_post' href='".$thispage.$q."show=".$show."&cid=".$cat_id."&action=del&tid=".$child->tid."'>".__("Delete", "wp-symposium")."</a></div>";
+									$html .= "<div id='".$child->tid."' class='edit-child-topic edit_topic edit label' style='cursor:pointer;'>".__("Edit", "wp-symposium")."&nbsp;&nbsp;|&nbsp;&nbsp;</div>";
+								}
+								$html .= "<div class='avatar'>";
+									$html .= get_user_avatar($child->ID, 64);
+								$html .= "</div>";
+								$html .= "<div class='started-by'>".symposium_profile_link($child->topic_owner)." ".__("replied", "wp-symposium")." ".symposium_time_ago($child->topic_date)."...";
+								$html .= "</div>";
+								$html .= "<div id='child_".$child->tid."' class='child-reply-post'>";
+									$reply_text = symposium_make_url(stripslashes($child->topic_post));
+									$reply_text = symposium_bbcode_replace($reply_text);
+									$html .= "<p>".str_replace(chr(10), "<br />", $reply_text);
+									if ($child->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
+									$html .= "</p>";
+								$html .= "</div>";
+							$html .= "</div>";
 		
-					$html .= "<div id='child-posts'>";
+							// Separator
+							$html .= "<div class='sep'></div>";						
+			
+						}
+						
+				} else {
 					
-					foreach ($child_query as $child) {
-		
-						$html .= "<div class='child-reply'>";
-							if ( ($child->topic_owner == $current_user->ID) || (current_user_can('level_10')) ) {
-								$html .= "<div style='float:right;padding-top:6px;'><a class='delete_post' href='".$thispage.$q."show=".$show."&cid=".$cat_id."&action=del&tid=".$child->tid."'>".__("Delete", "wp-symposium")."</a></div>";
-								$html .= "<div id='".$child->tid."' class='edit-child-topic edit_topic edit label' style='cursor:pointer;'>".__("Edit", "wp-symposium")."&nbsp;&nbsp;|&nbsp;&nbsp;</div>";
-							}
-							$html .= "<div class='avatar'>";
-								$html .= get_user_avatar($child->ID, 64);
-							$html .= "</div>";
-							$html .= "<div class='started-by'>".symposium_profile_link($child->topic_owner)." ".__("replied", "wp-symposium")." ".symposium_time_ago($child->topic_date)."...";
-							$html .= "</div>";
-							$html .= "<div id='".$child->tid."' class='child-reply-post'>";
-								$reply_text = symposium_make_url(stripslashes($child->topic_post));
-								$reply_text = symposium_bbcode_replace($reply_text);
-								$html .= "<p>".str_replace(chr(13), "<br />", $reply_text);
-								if ($child->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
-								$html .= "</p>";
-							$html .= "</div>";
-						$html .= "</div>";
-	
-						// Separator
-						$html .= "<div class='sep'></div>";						
-		
-					}
-					
+					$html .= "<div class='child-reply'>";
+					$html .= __("No replies posted yet.", "wp-symposium");
 					$html .= "</div>";
+					$html .= "<div class='sep'></div>";						
 					
-				}				
+				}			
+
+				$html .= "</div>";
 				
 				// Quick Reply
 				if (is_user_logged_in()) {
 					$html .= '<div id="reply-topic-bottom" name="reply-topic-bottom">';
 					if ($wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d", $post->tid)) == "on")
 					{
-						$html .= '<form id="quick-reply" action="'.$dbpage.'" onsubmit="return validate_form(this)" method="post">';
-						$html .= '<input type="hidden" name="action" value="reply">';
-						$html .= '<input type="hidden" name="url" value="'.$thispage.$q.'">';
-						$html .= '<input type="hidden" name="tid" value="'.$show.'">';
-						$html .= '<input type="hidden" name="cid" value="'.$cat_id.'">';
+						$html .= '<input type="hidden" id="symposium_reply_tid" value="'.$show.'">';
+						$html .= '<input type="hidden" id="symposium_reply_cid" value="'.$cat_id.'">';
 						$html .= '<div class="reply-topic-subject label">'.__("Reply to this Topic", "wp-symposium").'</div>';
-						$html .= '<textarea class="reply-topic-text elastic" name="reply_text"></textarea>';
+						$html .= '<textarea class="reply-topic-text elastic" id="symposium_reply_text"></textarea>';
 						$html .= '<div class="quick-reply-warning warning" style="display:none">'.__("Please enter a message", "wp-symposium").'</div>';
-						$html .= '<div class="emailreplies label"><input type="checkbox" id="reply_subscribe" name="reply_topic_subscribe"';
-						if ($subscribed_count > 0) { $html .= 'checked'; } 
-						$html .= '> '.__("When I reply, email me when there are more replies to this topic", "wp-symposium").'</div>';
-						$html .= '<input type="submit" class="button" style="float: left" value="'.__("Reply", "wp-symposium").'" />';
-						$html .= '</form>';
+						$html .= '<input type="submit" id="quick-reply-warning" class="button" style="float: left" value="'.__("Reply", "wp-symposium").'" />';
 					}				
 					$html .= '</div>';
 				}

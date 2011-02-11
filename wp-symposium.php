@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.1.34
+Version: 0.1.34.2
 Author: WP Symposium
 AuthorI: http://www.wpsymposium.com
 License: GPL2
@@ -30,7 +30,7 @@ License: GPL2
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.1.34');
+define('WPS_VER', '0.1.34.2');
 define('WPS_DBVER', '34');
 
 add_action('init', 'symposium_languages');
@@ -96,7 +96,7 @@ function symposium_admin_warnings() {
     // MOTD
     if ($wpdb->get_var("SELECT motd FROM ".$wpdb->prefix.'symposium_config') != 'on') {
 
-	    echo "<div class='updated' id='motd'><strong>".__( sprintf("Important WP Symposium release notes for v%s", get_option("symposium_version")), "wp-symposium")."</strong><br /><div style='padding:4px;'>";
+	    echo "<div class='updated' id='motd'><strong>".__("Important WP Symposium release notes", "wp-symposium")."</strong><br /><div style='padding:4px;'>";
 	    	    
 	    echo "<p style='line-height:15px'>1. Login and Registration plugins removed. This is considered core functionality of WordPress, please use other plugins if you want to customise them, for example <a href='http://wordpress.org/extend/plugins/theme-my-login/' target='_blank'>Theme-My-Login</a> and <a href='http://wordpress.org/extend/plugins/login-logo/' target='_blank'>Login Logo</a>.</p>";
 		
@@ -243,7 +243,6 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "logout_redirect_url", "varchar(128)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "members_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
-	symposium_alter_table("config", "ADD", "login_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "avatar_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "sharing", "varchar(32)", "", "''");
 	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "NOT NULL", "'on'");
@@ -725,8 +724,8 @@ function symposium_unread($buffer){
 
 function symposium_admin_check() {
 	global $wpdb;
-	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, login_url, members_url, register_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
-	if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->login_url == "Important: Please update!") || ($urls->register_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
+	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, members_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
+	if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
 		echo "<div class='updated'><p><strong>".__("Important! Please set URLs in WP Symposium Options immediately (set to none if you are not using a particular plugin)", "wp-symposium").".</strong></p></div>";
 	}
 	
@@ -805,11 +804,19 @@ function add_symposium_stylesheet() {
 
 	// Favourites DIV
 	echo "<div id='symposium-fav-list' style='display:none; padding:8px; z-index:999999; width: 600px; height:400px; background-color: #fff;' class='shadow'>";	
-	echo "<strong>Favourites</strong><div id='favs_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".WP_PLUGIN_URL."/wp-symposium/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
+	echo "<strong>".__("Favourites", "wp-symposium")."</strong><div id='favs_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".WP_PLUGIN_URL."/wp-symposium/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
 		echo "<div id='fav-list-internal' style='clear:both;margin-top:12px;height:370px;overflow:auto;padding:0px;'>";
 		echo "</div>";
 	echo "</div>";
 	
+	// Forum Activity DIV
+	echo "<div id='symposium-activity-list' style='display:none; padding:8px; z-index:999999; width: 850px; height:600px; background-color: #fff;' class='shadow'>";	
+	echo "<strong>".__("Forum Activity", "wp-symposium")."</strong><div id='activity_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".WP_PLUGIN_URL."/wp-symposium/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
+		echo "<div id='activity-list-internal' style='clear:both;margin-top:12px;height:570px;overflow:auto;padding:0px;'>";
+		echo "</div>";
+	echo "</div>";
+	
+
 }
 
 // Language files

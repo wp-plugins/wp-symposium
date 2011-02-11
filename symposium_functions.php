@@ -272,7 +272,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 	
 				$html .= "<div id='profile_details'>";
 						
-					$html .= "<h1 style='clear:none'>".$display_name."</h1>";
+					$html .= "<div id='profile_name'>".$display_name."</div>";
 
 					if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
 
@@ -784,9 +784,6 @@ function symposium_get_url($plugin) {
 	}
 	if ($plugin == 'avatar') {
 		$return = $urls->avatar_url;
-	}
-	if ($plugin == 'register') {
-		$return = $urls->register_url;
 	}
 	if ($plugin == 'members') {
 		$return = $urls->members_url;

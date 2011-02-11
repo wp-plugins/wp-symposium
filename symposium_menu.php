@@ -364,9 +364,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'seo')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'moderation')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'mail_url')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'register_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'members_url')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'login_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'avatar_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
@@ -642,7 +640,7 @@ function symposium_plugin_debug() {
 		  		echo $db_ver."<br />";
 		  	}
 	
-			if ( ($config->forum_url == "Important: Please update!") || ($config->login_url == "Important: Please update!") || ($config->members_url == "Important: Please update!") || ($config->register_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->avatar_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
+			if ( ($config->forum_url == "Important: Please update!") || ($config->members_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->avatar_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
 				echo $fail."You must update your plugin URLs on the <a href='admin.php?page=symposium_options&view=settings'>options page</a>.".$fail2;
 			} else {
 			  	echo __('According to the Options page', 'wp-symposium').":<br />";
@@ -1515,9 +1513,7 @@ function symposium_plugin_options() {
 	        $forum_url = $_POST[ 'forum_url' ];
 	        $mail_url = $_POST[ 'mail_url' ];
 	        $avatar_url = $_POST[ 'avatar_url' ];
-	        $register_url = $_POST[ 'register_url' ];
 	        $members_url = $_POST[ 'members_url' ];
-	        $login_url = $_POST[ 'login_url' ];
 	        $profile_url = $_POST[ 'profile_url' ];
 	        $wp_alignment = $_POST[ 'wp_alignment' ];
 	        $login_redirect = $_POST[ 'login_redirect' ];
@@ -1536,9 +1532,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET mail_url = '".$mail_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET avatar_url = '".$avatar_url."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET register_url = '".$register_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET members_url = '".$members_url."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_url = '".$login_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET profile_url = '".$profile_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_alignment = '".$wp_alignment."'") );				
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_redirect = '".$login_redirect."'") );					
@@ -1962,9 +1956,7 @@ function symposium_plugin_options() {
 					$forum_url = $config->forum_url;
 					$mail_url = $config->mail_url;
 					$avatar_url = $config->avatar_url;
-					$register_url = $config->register_url;
 					$members_url = $config->members_url;
-					$login_url = $config->login_url;
 					$profile_url = $config->profile_url;
 					$wp_alignment = $config->wp_alignment;
 					$login_redirect = $config->login_redirect;

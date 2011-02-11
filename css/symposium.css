@@ -155,7 +155,12 @@
 	text-decoration: none;
 }
 
-#symposium_wrapper .clear { clear: both; }
+.symposium_wrapper .clear { clear: both; }
+
+.symposium-wrapper .sep {
+	clear:both;
+	width:100%;
+}
 
 
 .symposium-wrapper .ui-autocomplete-loading { 
@@ -542,6 +547,15 @@
 
 .symposium-wrapper #profile_details {
 	 margin-left: 215px;
+}
+
+.symposium-wrapper #profile_name {
+	font-family: helvetica,arial;
+	letter-spacing:-1px;
+	font-size: 28px;
+	padding-top:3px;
+	margin-bottom:15px;
+	clear:none;
 }
 
 .symposium-wrapper #symposium_status {
@@ -981,7 +995,7 @@
 	width: 170px;
 }
 
-.symposium-wrapper #new-topic, .symposium-wrapper #edit-topic-div, #symposium-fav-list
+.symposium-wrapper #new-topic, .symposium-wrapper #edit-topic-div, #symposium-fav-list, #symposium-activity-list
 {
 	width: 97%;
 	overflow:visible;
@@ -992,7 +1006,40 @@
 	border: 1px solid #000;
 	background-color: #fff;
 }
-.symposium-wrapper #edit-topic-div, #symposium-fav-list
+
+#forum_activity_all_new_topics {
+	width: 33%;
+	float: left;
+}
+
+#forum_activity_new_topics {
+	width: 33%;
+	float: left;
+}
+
+#forum_activity_replies {
+	width: 33%;
+	float: right;
+}
+
+#symposium-activity-list #forum_activity_title {
+	font-weight:bold;
+	margin-bottom:10px;
+}
+
+#symposium-activity-list .forum_activity_new_topic_subject, #symposium-fav-list .forum_activity_new_topic_subject {
+	margin-top: 10px;
+}
+
+#symposium-activity-list .forum_activity_new_topic_subject a, #symposium-fav-list .forum_activity_new_topic_subject a {
+	font-weight: bold;
+	text-decoration: none;
+}
+#symposium-activity-list .forum_activity_new_topic_subject a:hover, #symposium-fav-list .forum_activity_new_topic_subject a:hover {
+	text-decoration: underline;
+}
+
+.symposium-wrapper #edit-topic-div, #symposium-fav-list, #symposium-activity-list
 {
 	display: none;
 	width: 700px;
