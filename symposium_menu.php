@@ -496,19 +496,18 @@ function symposium_plugin_debug() {
 	   	}   	
 	   	echo $status;
 	   	   	
-	   	// Comments
-	   	$table_name = $wpdb->prefix . "symposium_comments";
+	   	// Notifications
+	   	$table_name = $wpdb->prefix . "symposium_notifications";
 	   	$status = $ok;
-	   	echo '<strong>'.__('Comments', 'wp-symposium').': '.$table_name.'</strong><br />';
+	   	echo '<strong>'.__('Notifications', 'wp-symposium').': '.$table_name.'</strong><br />';
 	   	if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	   		$status = $fail.__('Table does not exist', 'wp-symposium').$fail2;
 	   	} else {
-			if (!symposium_field_exists($table_name, 'cid')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'subject_uid')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'author_uid')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'comment_parent')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'comment_timestamp')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'comment')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'nid')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'notification_to')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'notification_shown')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'notification_message')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'notification_old')) { $status = "X"; }
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -1372,7 +1371,7 @@ function symposium_plugin_options() {
   	echo '<div class="wrap">';
   	
 	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
-	  	echo '<h2>Options</h2>';
+	  	echo '<h2>WP Symposium</h2>';
 	  	
 	    // See if the user has posted updated category information
 	    if( isset($_POST[ 'categories_update' ]) && $_POST[ 'categories_update' ] == 'Y' ) {
@@ -1765,12 +1764,11 @@ function symposium_plugin_options() {
 						.postbox h3 { cursor: default; }
 					</style>
 					
-					<h2>WP Symposium</h2> 
 					<div class="postbox-container" style="width:65%;"> 
 						<div class="metabox-holder">	
 						
 							<div id="debugmode" class="postbox"> 
-								<h3>Release Notes</h3> 
+								<h3>Please visit this page after each upgrade for important information.</h3> 
 								<div class="inside"><p>
 									<div id="symposium_waiting">
 									<?php echo "<img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' />"; ?>

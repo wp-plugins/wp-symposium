@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.36
+Version: 0.36.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -725,7 +725,9 @@ function symposium_forum() {
 								$html .= "<div id='child_".$child->tid."' class='child-reply-post'>";
 									$reply_text = symposium_make_url(stripslashes($child->topic_post));
 									$reply_text = symposium_bbcode_replace($reply_text);
-									$html .= "<p>".str_replace(chr(10), "<br />", $reply_text);
+									$reply_text = str_replace(chr(10), "<br />", $reply_text);
+									$reply_text = str_replace(chr(13), "<br />", $reply_text);
+									$html .= "<p>".$reply_text;
 									if ($child->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 									$html .= "</p>";
 								$html .= "</div>";

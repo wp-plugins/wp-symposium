@@ -1203,7 +1203,7 @@ jQuery(document).ready(function() {
 		html += jQuery('#symposium_current_user_avatar').html().replace(/200/g, '64');		
 		html += "</div>";
 		html += "<div class='child-reply-post'>";
-		html += reply_text.replace(/\n/g, "<br />").replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		html += reply_text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, "<br />");
 		html += "</div>";
 		html += "<br class='clear' />";						
 		html += "</div>";

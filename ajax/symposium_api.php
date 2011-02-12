@@ -178,28 +178,27 @@ if ($_GET['action'] == 'authenticate') {
 
 // Get my profile information
 
-// Get wall
-// eg: WPROOT_URL/wp-content/plugins/wp-symposium/ajax/symposium_api.php?action=wall&uid=2
+// Get wall top level only
+// eg: WPROOT_URL/wp-content/plugins/wp-symposium/ajax/symposium_api.php?action=wall&uid=2&version=all
 if ($_GET['action'] == 'wall') {
 	
 	$version = $_GET['version'];
 	if ($version == '') { $version = 'my'; }
 	
 	$uid1 = $_GET['uid'];
-	if ($uid1 == '') { $uid = 2; }
 
 	$return_arr = array();	
 	
 	if ($version == "all") {
-		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE c.author_uid != 0 AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 	}
 
 	if ($version == "friends") {
-		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) OR ( c.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) OR ( c.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.author_uid != 0 AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 	}
 
 	if ($version == "my") {
-		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE (c.subject_uid = ".$uid1.") AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE (c.subject_uid = ".$uid1.") AND c.author_uid != 0 AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 	}
 
 	$list = $wpdb->get_results($sql);	
@@ -224,34 +223,6 @@ if ($_GET['action'] == 'wall') {
 			$row_array['reply_count'] = $reply_count;
 			
 	        array_push($return_arr,$row_array);
-
-			// Get replies
-			$sql2 = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = ".$item->cid;
-
-			$replies = $wpdb->get_results($sql2);	
-
-			if ($replies) {
-				foreach ($replies as $reply) {
-								
-					$avatar = get_user_avatar($reply->author_uid, 32);
-					preg_match('/<img\s.*src=["\'](.*?)["\']/i', $avatar, $matches); 
-					$avatar = $matches[1];  
-					
-					$row_array['author_name'] = $reply->display_name;
-					$row_array['subject_name'] = $reply->subject_name;
-					$row_array['cid'] = $reply->cid;
-					$row_array['subject_uid'] = $reply->subject_uid;
-					$row_array['author_uid'] = $reply->author_uid;
-					$row_array['author_avatar'] = $avatar;
-					$row_array['comment_parent'] = $reply->comment_parent;
-					$row_array['comment_timestamp'] = $reply->comment_timestamp;
-					$row_array['comment'] = $reply->comment;
-					$row_array['reply_count'] = "0";
-					
-			        array_push($return_arr,$row_array);
-		
-				}
-			}
 					
 		}
 	}
@@ -260,7 +231,46 @@ if ($_GET['action'] == 'wall') {
 	echo json_encode($return_arr);
 
 }
+
+// Get replies
+// eg: WPROOT_URL/wp-content/plugins/wp-symposium/ajax/symposium_api.php?action=replies&parent=474
+if ($_GET['action'] == 'replies') {
+	
+	$return_arr = array();	
+	
+	$parent = $_GET['parent'];
+	
+	// Get replies
+	$sql2 = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = ".$parent;
+
+	$replies = $wpdb->get_results($sql2);	
+
+	if ($replies) {
+		foreach ($replies as $reply) {
 						
+			$avatar = get_user_avatar($reply->author_uid, 32);
+			preg_match('/<img\s.*src=["\'](.*?)["\']/i', $avatar, $matches); 
+			$avatar = $matches[1];  
+			
+			$row_array['author_name'] = $reply->display_name;
+			$row_array['subject_name'] = $reply->subject_name;
+			$row_array['cid'] = $reply->cid;
+			$row_array['subject_uid'] = $reply->subject_uid;
+			$row_array['author_uid'] = $reply->author_uid;
+			$row_array['author_avatar'] = $avatar;
+			$row_array['comment_parent'] = $reply->comment_parent;
+			$row_array['comment_timestamp'] = $reply->comment_timestamp;
+			$row_array['comment'] = $reply->comment;
+			$row_array['reply_count'] = "0";
+			
+	        array_push($return_arr,$row_array);
+
+		}
+	}
+					
+	echo json_encode($return_arr);
+
+}						
 
 
 ?>
