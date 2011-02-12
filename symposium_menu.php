@@ -1802,8 +1802,17 @@ function symposium_plugin_options() {
 							</div> 
 							
 						</div>
+						
 					</div>
-								
+
+				<script type="text/javascript">
+					// Options release notes load
+					function symposium_releasenotes()
+					{
+						document.getElementById('symposium_waiting').style.display='none';
+						document.getElementById('symposium_rn').style.display='block';
+					} 								
+				</script>
 				<?php
 				}
 
