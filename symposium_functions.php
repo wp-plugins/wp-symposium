@@ -309,6 +309,10 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 							}
 						}
 						$html .= "</p>";
+
+						$html .= "<p>";
+						$html .= echo get_symposium_meta($uid1, 'last_activity');
+						$html .= "</p>";
 						
 					}
 					
