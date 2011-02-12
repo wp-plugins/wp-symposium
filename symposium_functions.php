@@ -79,28 +79,20 @@ function show_profile_menu($uid1, $uid2) {
 		
 		if ($uid1 > 0) {
 
-			if ( ($uid1 == $uid2) || (strtolower($share) == 'everyone') || (strtolower($share) == 'friends only' && $is_friend) ) {
-	
-				if ($meta->extended != '' || $uid1 == $uid2) {
-					if ($uid1 == $uid2) {
-						$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('My Profile', 'wp-symposium').'</div>';
-					} else {
-						$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('Profile', 'wp-symposium').'</div>';
-					}
-				}
+			if ($uid1 == $uid2) {
+				$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('My Profile', 'wp-symposium').'</div>';
+			} else {
+				$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('Profile', 'wp-symposium').'</div>';
 			}
 
-			if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
-
-				if ($uid1 == $uid2) {
-					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('My Wall', 'wp-symposium').'</div>';
-					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('My Friends Activity', 'wp-symposium').'</div>';
-				} else {
-					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
-					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
-				}
-				$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
+			if ($uid1 == $uid2) {
+				$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('My Wall', 'wp-symposium').'</div>';
+				$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('My Friends Activity', 'wp-symposium').'</div>';
+			} else {
+				$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
+				$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
 			}
+			$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
 
 			if ( ($uid1 == $uid2) || (strtolower($share) == 'everyone') || (strtolower($share) == 'friends only' && $is_friend) ) {
 	
@@ -405,7 +397,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 		if ($profile_page[strlen($profile_page)-1] != '/') { $profile_page .= '/'; }
 		$q = symposium_string_query($profile_page);		
 
-		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
+		if ( ($version == "all_activity") || ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
 		
 			$html .= "<div id='profile_left_column' style='";
 			if ($config->show_profile_menu != 'on') {
@@ -474,7 +466,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 					
 				// Wall
 				$html .= "<div id='symposium_wall'>";
-				
+
 					if ( ($uid1 != $uid2) || (is_user_logged_in() && $is_friend)) {
 						// Post Comment Input
 						$html .= '<input id="symposium_comment" type="text" name="post_comment" class="input-field" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" />';
@@ -559,7 +551,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 															$html .= symposium_time_ago($reply->comment_timestamp).".<br />";
 															$html .= symposium_make_url(stripslashes($reply->comment));
 														$html .= "</div>";
-													$html .= "<br class='clear' /></div>";
+													$html .= "</div>";
 													
 													$html .= "<div class='wall_reply_avatar'>";
 														$html .= get_user_avatar($reply->author_uid, 40);
@@ -599,11 +591,11 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 		} else {
 
 			if ($version == "friends_activity") {
-				$html .= '<p>'.__("Sorry, this member's activity is only available if you are a friend.");
+				$html .= '<p>'.__("Sorry, this member has chosen not to share their friends activity.").'</p>';
 			}
 
 			if ($version == "wall") {
-				$html .= '<p>'.__("Sorry, this member's activity is only available if you are a friend.");
+				$html .= '<p>'.__("Sorry, this member has chosen not to share their wall.").'</p>';
 			}
 			
 		}		

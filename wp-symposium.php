@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.35
+Version: 0.36
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -30,8 +30,8 @@ License: GPL2
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.35');
-define('WPS_DBVER', '35');
+define('WPS_VER', '0.36');
+define('WPS_DBVER', '36');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -89,31 +89,6 @@ function symposium_admin_warnings() {
 		echo "<div class='error'><p>WPS Symposium: ";
 		_e( sprintf('Javascript file (%s) not found, try de-activating and re-activating the core WPS plugin.', $myJSfile), 'wp-symposium');
 		echo "</p></div>";
-    }
-    
-    // MOTD
-    if ($wpdb->get_var("SELECT motd FROM ".$wpdb->prefix.'symposium_config') != 'on') {
-
-	    echo "<div class='updated' id='motd'><strong>".__("Important WP Symposium release notes", "wp-symposium")."</strong><br /><div style='padding:4px;'>";
-	    	    
-	    echo "<p style='line-height:15px'>1. Login and Registration plugins removed. This is considered core functionality of WordPress, please use other plugins if you want to customise them, for example <a href='http://wordpress.org/extend/plugins/theme-my-login/' target='_blank'>Theme-My-Login</a> and <a href='http://wordpress.org/extend/plugins/login-logo/' target='_blank'>Login Logo</a>.</p>";
-		
-	    echo "</div><p>";
-	    echo __("If you have any problems, please <strong>try de-activating and re-activating the core WPS plugin</strong>, and then look at the Health Check page, thank you.", "wp-symposium");
-	    echo "</p>";
-	    echo "<p>";
-	    echo __("To opt-out of receiving occasional emails about free and exclusive WPS widgets and plugins, un-tick this box.", "wp-symposium");
-		echo ' <input type="checkbox" id="optin" CHECKED /> ';
-	    echo "</p>";
-
-	    echo "<p>";
-	    echo __("This message is only displayed after installing or upgrading WP Symposium. For more information please visit <a href='http://www.wpsymposium.com'>the plugin website</a>.", "wp-symposium");
-		echo "<input type='submit' id='hide_motd' class='button-primary' style='float:right' value='".__('OK', 'wp-symposium')."' />";
-	    echo "</p>";
-	    echo "<p><b>".__("Please click on OK.", "wp-symposium")."</b></p>";
-	
-	    echo "</div>";    	
-	    
     }
 
 }
@@ -259,7 +234,6 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "chat_purge", "int(11)", "NOT NULL", "'7'");
 	symposium_alter_table("config", "ADD", "profile_google_map", "int(11)", "NOT NULL", "'250'");
 	symposium_alter_table("config", "ADD", "use_poke", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "motd", "varchar(2)", "NOT NULL", "''");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");

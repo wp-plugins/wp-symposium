@@ -1,10 +1,6 @@
 todo.txt
 --------
 
-URGENT
-
-- Date on chat, not timestamp
-
 NOTIFICATIONS
 
 - template driven
@@ -16,22 +12,14 @@ MEMBER SEARCH
 PROFILE
 
 - option receive email on activity in wall post if I've replied or started it
-- if a member has set his profile to "friends only" or "nobody", even the admin can't see it? 
-- Also, admins can't edit a member's profile?
 - Implement poke
 
 CHAT
 
 - please wait not showing when window first opens
 
-REGISTER
-
-- check on username availability
-- do you get email message??? not sure this is working
-
 FORUM 
 
-- AJAX new post, etc...
 - search
 
 CODEX
@@ -42,6 +30,7 @@ CODEX
 
 MAIL
 
+- strip images from subject text
 - quote feature?
 
 WISH LIST

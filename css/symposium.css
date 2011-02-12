@@ -694,6 +694,7 @@
 	overflow:visible; 
 	width:100%;
 	padding:0px;
+	padding-bottom:4px;
 }
 
 .symposium-wrapper .wall_reply {
@@ -1313,7 +1314,7 @@
 }
 
 .symposium-wrapper .compose_subject {
-	width: 98%;
+	width: 97%;
 }
 
 .symposium-wrapper #compose_mail_message {
@@ -1321,7 +1322,7 @@
 
 .symposium-wrapper .compose_text {
 	height:300px;
-	width: 98%;
+	width: 97%;
 }
 
 .symposium-wrapper #message_mail_message {
@@ -1408,8 +1409,7 @@
 	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#999999');
 }
 
-
-
+/* OTHER ============================================================== */
 
 .ui-autocomplete {
 	max-height: 300px;

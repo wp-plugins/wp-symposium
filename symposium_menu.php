@@ -1585,7 +1585,6 @@ function symposium_plugin_options() {
 
 	    }
 		
-		// Following in line style is bad form and should be removed
 		?> 
 		
 		<style>
@@ -1739,75 +1738,73 @@ function symposium_plugin_options() {
 			
 			echo '<div id="mail-main">';
 			
-				// NOTES / INTRODUCTION
+				// NOTES
 				if ($view == "notes") {
-					?>
 					
-					<div style='float: right; border-radius: 5px; width: 200px; margin-bottom:15px; float:right; margin-left: 15px; border: 1px solid #999;'>
+				// Send installation information to WP Symposium for support (you can remove these lines if you do not want to opt-in)
+				$url = get_bloginfo('url');
+			
+				$localhost = false;
+				if (strpos($url, '127.0.0.1') != FALSE) { $localhost = true; }
+				if (strpos($url, 'localhost') != FALSE) { $localhost = true; }
+			
+				$goto = "-";
+				if (!$localhost || 1==1) {
+				
+					$admin_email = get_bloginfo('admin_email');
+					$version = get_option("symposium_version");
 					
-						<div style='padding: 5px; background-color: #aaa; border-bottom:1px solid #666; text-align:center;'>
-							Version Numbers
+					$goto = "http://www.wpsymposium.com/wp-content/symposium_activation.php?action=symposium_activationlog&url=".$url."&admin_email=".$admin_email."&version=".$version;
+					
+				}
+				// End
+				?>
+							
+					<style>
+						.postbox .inside { padding:0px 5px 5px 10px; }
+						.postbox h3 { cursor: default; }
+					</style>
+					
+					<h2>WP Symposium</h2> 
+					<div class="postbox-container" style="width:65%;"> 
+						<div class="metabox-holder">	
+						
+							<div id="debugmode" class="postbox"> 
+								<h3>Release Notes</h3> 
+								<div class="inside"><p>
+									<div id="symposium_waiting">
+									<?php echo "<img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' />"; ?>
+									</div>
+									<iframe id="symposium_rn" onload="symposium_releasenotes()" style="display: none; width:100%;" src="<?php echo $goto; ?>"></iframe>
+									<br class="clear"/>
+								</p></div> 
+							</div> 
+			
+						</div> 
+					</div> 
+					
+					<div class="postbox-container side" style="width:34%; float:right"> 
+						<div class="metabox-holder">	
+				
+							<div id="toc" class="postbox"> 
+								<h3>Version Information</h3> 
+								<div class="inside"> 
+									<p>The version number of WP Symposium is in the form x.y.z - where sometimes z is not displayed.</p>
+									
+									<p>X is a major release.</p>
+									
+									<p>Y is a development release, with changes made to the database tables and/or the code.</p>
+									
+									<p>Z is a patch, containing only bug fixes.</p>
+									
+									<p>Current version: <?php echo get_option("symposium_version"); ?></p>
+								</div> 
+							</div> 
+							
 						</div>
-						<div style='border-top: 1px solid #aaa;padding: 5px; '>
-							<p>The version number of WP Symposium is in the form x.y.z - where sometimes z is not displayed.</p>
-							<p><strong>X</strong> is a major release.</p>
-							<p><strong>Y</strong> is a development release, with changes made to the database tables and/or the code.</p>
-							<p><strong>Z</strong> is a patch, containing only bug fixes.</p>
-							<p>Current version: <?php echo get_option("symposium_version") ?></p>
-						</div>
-	
 					</div>
-										
-					<img style='float:left; margin: 10px 10px 10px 0px;' src='<?php echo get_site_url().'/wp-content/plugins/wp-symposium/'; ?>images/logo.png' />
-					
-					<h1>WP Symposium</h1>
-					<p><em>Symposium:</em> sym&middot;po&middot;si&middot;um;
-					<ul>
-					<li>&middot; A meeting or conference for discussion of a topic</li>
-					<li>&middot; A collection of writings on a particular topic</li>
-					<li>&middot; A convivial meeting</li>
-					</ul>
-					</p>
-					<p><em>Sym:</em> as in simple</p>
-					
-					<p style='margin-top:20px'><strong>Thank you for using Symposium.<br />
-					For support, suggestions and feedback please visit <a href='http://www.wpsymposium.com'>www.wpsymposium.com</a></strong></p>
-					
-					<p>Currently included in the WP Symposium suite of plugins:
-					<ol>
-					<li>Core (activated)</li>
-					<li>Forum<?php if (function_exists('symposium_forum')) { echo ' (activated)'; } ?></li>
-					<li>Mail/Private Messaging<?php if (function_exists('symposium_mail')) { echo ' (activated) Note: no options tab used'; } ?></li>
-					<li>Member Profile<?php if (function_exists('symposium_profile')) { echo ' (activated)'; } ?></li>
-					<li>Profile Avatar/Photo<?php if (function_exists('symposium_avatar')) { echo ' (activated)'; } ?></li>
-					<li>Notification Bar<?php if (function_exists('add_notification_bar')) { echo ' (activated)'; } ?></li>
-					<li>Members Directory<?php if (function_exists('symposium_members')) { echo ' (activated) Note: no options tab used'; } ?></li>
-					</ol>
-					
-					<p>
-					Your feedback would be welcomed at <a href="http://www.wpsymposium.com">www.wpsymposium.com</a>.
-					</p>
-					
-					<p><strong>Note from the author</strong></p>
-					<p>
-					Following feedback from users, the login and registration plugin have been dropped - this is now considered core to WordPress, and not something that WPS needs to replace - there are, if you are interested, several plugins available to replace the login and registration pages. For example, Theme-My-Login, s2member and so on.
-					</p>
-					<p>
-					Check out the <a href='http://WordPress.org/extend/plugins/wp-symposium/changelog/'>change log</a> for the list of new additions/changes/fixes...
-					</p>
-					<p>
-					As ever, I appreciate you trying WP Symposium, and pass on the usual recommendations that you back up your database and website 
-					prior to upgrading/installing WP Symposium so that if necessary you can roll back to a previous version.
-					</p>
-					<p>
-					Again thank you for your support, and I look forward to hearing from you on <a href='http://www.wpsymposium.com'>www.wpsymposium.com</a>...
-					</p>
-					<p>
-					<em>Simon</em><br />
-					February 2011
-					</p>
-					
-					<?php
+								
+				<?php
 				}
 
 				// NOTIFICATION BAR

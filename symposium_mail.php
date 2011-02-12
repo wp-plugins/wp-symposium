@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.35
+Version: 0.36
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -100,7 +100,7 @@ function symposium_mail() {
 			if (!$recipient) {
 				$mail_sent_result = $recipient_name.' could not be found.';
 			} else {
-				$subject = $_POST['compose_subject'];
+				$subject = strip_tags($_POST['compose_subject']);
 				$message = $_POST['compose_text'];
 				$previous = $_POST['compose_previous'];
 				

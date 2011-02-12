@@ -228,11 +228,13 @@ if ($_POST['action'] == 'menu_extended') {
 	}			
 	$html .= "'>";
 	
-		// Google map
-		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
-
+		if ( ($uid1 == $uid2) || (strtolower($meta->share) == 'everyone') || (strtolower($meta->share) == 'friends only' && symposium_friend_of($uid1)) ) {
+	
+			// Google map
+	
 			$city = $meta->city;
 			$country = $meta->country;
+			$has_map = false;
 
 			if ($city != '' || $country != '') { 	
 									
@@ -241,30 +243,44 @@ if ($_POST['action'] == 'menu_extended') {
 				$html .= '<img src="http://maps.google.com/maps/api/staticmap?center='.$city.',.+'.$country.'&zoom=5&size='.$config->profile_google_map.'x'.$config->profile_google_map.'&maptype=roadmap&markers=color:blue|label:&nbsp;|'.$city.',+'.$country.'&sensor=false" />';
 				$html .= "</a></div>";
 				
+				$has_map = true;
+				
 			}
 			
-		}
-		
-		// Extended Information
-		$extended = $meta->extended;
-		$fields = explode('[|]', $extended);
-		if ($fields) {
-			foreach ($fields as $field) {
-				$split = explode('[]', $field);
-				if ( ($split[0] != '') && ($split[1] != '') ) {
-					$label = $wpdb->get_var($wpdb->prepare("SELECT extended_name FROM ".$wpdb->prefix."symposium_extended WHERE eid = ".$split[0]));
-					$html .= "<div style='margin-bottom:15px;overflow: auto;'>";
-					$html .= "<div style='font-weight:bold;'>".$label."</div>";
-					$html .= "<div>".symposium_make_url($split[1])."</div>";
-					$html .= "</div>";
+			// Extended Information
+			$has_info = false;
+			$extended = $meta->extended;
+			$fields = explode('[|]', $extended);
+			if ($fields) {
+				foreach ($fields as $field) {
+					$split = explode('[]', $field);
+					if ( ($split[0] != '') && ($split[1] != '') ) {
+						$label = $wpdb->get_var($wpdb->prepare("SELECT extended_name FROM ".$wpdb->prefix."symposium_extended WHERE eid = ".$split[0]));
+						$html .= "<div style='margin-bottom:15px;overflow: auto;'>";
+						$html .= "<div style='font-weight:bold;'>".$label."</div>";
+						$html .= "<div>".symposium_make_url($split[1])."</div>";
+						$html .= "</div>";
+						$has_info = true;
+					}
 				}
+				
+			} 
+				
+			
+			if (!$has_map && !$has_info) {
+	
+				$html .= '<p>'.__("This member has no personal information to show.").'</p>';
+	
 			}
+						
+		} else {
+			
+			$html .= '<p>'.__("Sorry, this member has chosen not to share their personal information.").'</p>';
+			
 		}
-					
-		$html .= "</div>";
 
 	$html .= "</div>";
-		
+
 	echo $html;
 	exit;
 	
