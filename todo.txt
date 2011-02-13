@@ -1,0 +1,55 @@
+todo.txt
+--------
+
+NOTIFICATIONS
+
+- template driven
+
+MEMBER SEARCH 
+
+- When 'land' on member's page, default to their 'my wall'
+  
+PROFILE
+
+- option receive email on activity in wall post if I've replied or started it
+- Implement poke
+
+CHAT
+
+- please wait not showing when window first opens
+
+FORUM 
+
+- search
+Steven Tryon: linking blog to forum and vice versa
+
+CODEX
+
+- data dictionary
+- functions
+- javascript variables
+
+MAIL
+
+- strip images from subject text
+- quote feature?
+
+WISH LIST
+
+- paying/subscriptions
+- Option to get members to confirm registration via email
+- Minimum level for categories
+- 'clear' link on vote widget
+
+
+--------------------------------------------------------------------------------------
+
+Gene has replied to their post:
+I get that error on Wall, Friends Activity and All Activity. The other pages load fine.
+Go to their wall...
+http://www.wpsymposium.com/profile?uid=156&post=239
+
+http://wordpress.org/extend/plugins/pierres-wordspew/ clash
+
+string mb_substr ( string $str , int $start [, int $length [, string $encoding ]] )
+
