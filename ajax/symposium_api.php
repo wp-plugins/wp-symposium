@@ -37,7 +37,7 @@ if ($_GET['action'] == 'post') {
 		$author_uid = $_GET['author_uid'];
 
 		$wpdb->query( $wpdb->prepare( "
-			INSERT INTO ".$wpdb->prefix."symposium_comments
+			INSERT INTO ".$wpdb->base_prefix."symposium_comments
 			( 	subject_uid, 
 				author_uid,
 				comment_parent,
@@ -58,13 +58,13 @@ if ($_GET['action'] == 'post') {
 		$new_id = $wpdb->insert_id;
 
 	    // Subject's name for use below
-		$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = %d", $subject_uid));
+		$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = %d", $subject_uid));
 	        
 		// Email all friends who want to know about it
 		$sql = "SELECT u.ID, f.friend_to, u.user_email, m.notify_new_wall 
-		 FROM ".$wpdb->prefix."symposium_friends f 
-		 LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to 
-		 LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID 
+		 FROM ".$wpdb->base_prefix."symposium_friends f 
+		 LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON m.uid = f.friend_to 
+		 LEFT JOIN ".$wpdb->base_prefix."users u ON f.friend_to = u.ID 
 		WHERE f.friend_from = ".$current_user->ID;
 		$recipients = $wpdb->get_results($sql);	
 				
@@ -99,7 +99,7 @@ if ($_GET['action'] == 'reply') {
 	if ( $text != '') {
 
 		$wpdb->query( $wpdb->prepare( "
-			INSERT INTO ".$wpdb->prefix."symposium_comments
+			INSERT INTO ".$wpdb->base_prefix."symposium_comments
 			( 	subject_uid, 
 				author_uid,
 				comment_parent,
@@ -120,13 +120,13 @@ if ($_GET['action'] == 'reply') {
 		$new_id = $wpdb->insert_id;
 	        		        
 	    // Subject's name for use below
-		$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = %d", $uid));
+		$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = %d", $uid));
 	
 		// Email all friends who want to know about it
 		$sql = "SELECT u.ID, f.friend_to, u.user_email, m.notify_new_wall 
-		 FROM ".$wpdb->prefix."symposium_friends f 
+		 FROM ".$wpdb->base_prefix."symposium_friends f 
 		 LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to 
-		 LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID 
+		 LEFT JOIN ".$wpdb->base_prefix."users u ON f.friend_to = u.ID 
 		WHERE f.friend_from = ".$current_user->ID;
 		$recipients = $wpdb->get_results($sql);			
 		if ($recipients) {
@@ -190,15 +190,15 @@ if ($_GET['action'] == 'wall') {
 	$return_arr = array();	
 	
 	if ($version == "all") {
-		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE c.author_uid != 0 AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE c.author_uid != 0 AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 	}
 
 	if ($version == "friends") {
-		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) OR ( c.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.author_uid != 0 AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) OR ( c.subject_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.author_uid != 0 AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 	}
 
 	if ($version == "my") {
-		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE (c.subject_uid = ".$uid1.") AND c.author_uid != 0 AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+		$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE (c.subject_uid = ".$uid1.") AND c.author_uid != 0 AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 	}
 
 	$list = $wpdb->get_results($sql);	
@@ -206,7 +206,7 @@ if ($_GET['action'] == 'wall') {
 	if ($list) {
 		foreach ($list as $item) {
 						
-			$reply_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_comments WHERE comment_parent = ".$item->cid);	
+			$reply_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_comments WHERE comment_parent = ".$item->cid);	
 			$avatar = get_user_avatar($item->author_uid, 32);
 			preg_match('/<img\s.*src=["\'](.*?)["\']/i', $avatar, $matches); 
 			$avatar = $matches[1];  
@@ -241,7 +241,7 @@ if ($_GET['action'] == 'replies') {
 	$parent = $_GET['parent'];
 	
 	// Get replies
-	$sql2 = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = ".$parent;
+	$sql2 = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = ".$parent;
 
 	$replies = $wpdb->get_results($sql2);	
 

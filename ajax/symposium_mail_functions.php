@@ -28,7 +28,7 @@ if ($_GET['term'] != '') {
 	global $wpdb;	
 	$return_arr = array();
 
-	$list = $wpdb->get_results("SELECT u.ID, u.display_name, m.city, m.country FROM ".$wpdb->prefix."users u LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$_GET['term']."%') OR (m.city LIKE '".$_GET['term']."%') OR (m.country LIKE '".$_GET['term']."%') OR (u.display_name LIKE '% %".$_GET['term']."%') ORDER BY u.display_name");
+	$list = $wpdb->get_results("SELECT u.ID, u.display_name, m.city, m.country FROM ".$wpdb->base_prefix."users u LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$_GET['term']."%') OR (m.city LIKE '".$_GET['term']."%') OR (m.country LIKE '".$_GET['term']."%') OR (u.display_name LIKE '% %".$_GET['term']."%') ORDER BY u.display_name");
 
 	if ($list) {
 		foreach ($list as $item) {

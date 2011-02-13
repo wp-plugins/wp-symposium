@@ -38,7 +38,7 @@ function symposium_plugin_menu() {
 						$wpdb->query( $wpdb->prepare( "DELETE FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d", $_GET['tid'] ) );
 
 						// Get details
-						$post = $wpdb->get_row( $wpdb->prepare("SELECT t.*, u.user_email FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."users u ON t.topic_owner = u.ID WHERE tid = ".$_GET['tid']) );
+						$post = $wpdb->get_row( $wpdb->prepare("SELECT t.*, u.user_email FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->base_prefix."users u ON t.topic_owner = u.ID WHERE tid = ".$_GET['tid']) );
 	
 						$body .= "<span style='font-size:24px'>".__('Your forum post has been rejected by the moderator', 'wp-symposium').".</span>";
 						if ($topic_parent == 0) { $body .= "<p><strong>".stripslashes($post->topic_subject)."</strong></p>"; }
@@ -69,7 +69,7 @@ function symposium_plugin_menu() {
 						$wpdb->query( $wpdb->prepare( "UPDATE ".$wpdb->prefix."symposium_topics SET topic_approved = 'on' WHERE tid = %d", $_GET['tid'] ) );
 						
 						// Get details
-						$post = $wpdb->get_row( $wpdb->prepare("SELECT t.*, u.user_email, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."users u ON t.topic_owner = u.ID WHERE tid = ".$_GET['tid']) );
+						$post = $wpdb->get_row( $wpdb->prepare("SELECT t.*, u.user_email, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."base_users u ON t.topic_owner = u.ID WHERE tid = ".$_GET['tid']) );
 	
 						$body .= "<span style='font-size:24px'>".__('Your forum post has been approved by the moderator', 'wp-symposium').".</span>";
 						if ($topic_parent == 0) { $body .= "<p><strong>".stripslashes($post->topic_subject)."</strong></p>"; }
@@ -100,12 +100,12 @@ function symposium_plugin_menu() {
 						if ($post->topic_parent > 0) {
 							$query = $wpdb->get_results("
 								SELECT u.user_email
-								FROM ".$wpdb->prefix."users u RIGHT JOIN ".$wpdb->prefix."symposium_subs s ON s.uid = u.ID 
+								FROM ".$wpdb->base_prefix."users u RIGHT JOIN ".$wpdb->prefix."symposium_subs s ON s.uid = u.ID 
 								WHERE tid = ".$parent->tid);
 						} else {
 							$query = $wpdb->get_results("
 								SELECT u.user_email
-								FROM ".$wpdb->prefix."users u RIGHT JOIN ".$wpdb->prefix."symposium_subs s ON s.uid = u.ID 
+								FROM ".$wpdb->base_prefix."users u RIGHT JOIN ".$wpdb->prefix."symposium_subs s ON s.uid = u.ID 
 								WHERE tid = ".$_GET['tid']);
 						}
 												
@@ -183,7 +183,7 @@ function symposium_plugin_moderation() {
 		$start = ($showpage * $pagesize);
 		  		
 		// Query
-		$sql = "SELECT t.*, display_name FROM ".$wpdb->prefix.'symposium_topics'." t LEFT JOIN ".$wpdb->prefix.'users'." u ON t.topic_owner = u.ID ";
+		$sql = "SELECT t.*, display_name FROM ".$wpdb->prefix.'symposium_topics'." t LEFT JOIN ".$wpdb->base_prefix.'users'." u ON t.topic_owner = u.ID ";
 		if ($mod == "approved") { $sql .= "WHERE t.topic_approved = 'on' "; }
 		if ($mod == "unapproved") { $sql .= "WHERE t.topic_approved != 'on' "; }
 		$sql .= "ORDER BY tid DESC "; 
@@ -381,11 +381,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'use_wp_profile')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'visitors')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'wp_alignment')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'login_redirect')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'login_redirect_url')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'logout_redirect')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'logout_redirect_url')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'enable_redirects')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'enable_password')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sharing')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
@@ -1486,7 +1481,7 @@ function symposium_plugin_options() {
 		        $_GET['del_eid']  ) );
 		        
 		    // Loop through all users
-			$users = $wpdb->get_results("SELECT uid, extended from ".$wpdb->prefix."symposium_usermeta");
+			$users = $wpdb->get_results("SELECT uid, extended from ".$wpdb->base_prefix."symposium_usermeta");
 			foreach ($users as $user) {
 				$tmp = '';
 				$fields = explode('[|]', $user->extended);
@@ -1515,11 +1510,6 @@ function symposium_plugin_options() {
 	        $members_url = $_POST[ 'members_url' ];
 	        $profile_url = $_POST[ 'profile_url' ];
 	        $wp_alignment = $_POST[ 'wp_alignment' ];
-	        $login_redirect = $_POST[ 'login_redirect' ];
-	        $login_redirect_url = $_POST[ 'login_redirect_url' ];
-	        $logout_redirect = $_POST[ 'logout_redirect' ];
-	        $logout_redirect_url = $_POST[ 'logout_redirect_url' ];
-	        $enable_redirects = $_POST[ 'enable_redirects' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET footer = '".$footer."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET from_email = '".$from_email."'") );					
@@ -1534,12 +1524,6 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET members_url = '".$members_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET profile_url = '".$profile_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_alignment = '".$wp_alignment."'") );				
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_redirect = '".$login_redirect."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET login_redirect_url = '".$login_redirect_url."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET logout_redirect = '".$logout_redirect."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET logout_redirect_url = '".$logout_redirect_url."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET enable_redirects = '".$enable_redirects."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET enable_redirects = '".$enable_redirects."'") );					
 			
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>".__('Settings saved', 'wp-symposium').".</p></div>";
@@ -1768,12 +1752,12 @@ function symposium_plugin_options() {
 						<div class="metabox-holder">	
 						
 							<div id="debugmode" class="postbox"> 
-								<h3>Please visit this page after each upgrade for important information.</h3> 
+								<h3>Please view this page after each upgrade for a complete list of new features.</h3> 
 								<div class="inside"><p>
 									<div id="symposium_waiting">
 									<?php echo "<img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' />"; ?>
 									</div>
-									<iframe id="symposium_rn" onload="symposium_releasenotes()" style="display: none; width:100%;" src="<?php echo $goto; ?>"></iframe>
+									<iframe id="symposium_rn" onload="symposium_releasenotes()" style="display: none; height: 400px; width:100%;" src="<?php echo $goto; ?>"></iframe>
 									<br class="clear"/>
 								</p></div> 
 							</div> 
@@ -1795,7 +1779,10 @@ function symposium_plugin_options() {
 									
 									<p>Z is a patch, containing only bug fixes.</p>
 									
-									<p>Current version: <?php echo get_option("symposium_version"); ?></p>
+									<p>Installed version: <?php echo get_option("symposium_version"); ?></p>
+									
+									<p>If the installed version is different to the version listed on the plugins page, try de-activating and re-activating the core WPS plugin.</p>
+									
 								</div> 
 							</div> 
 							
@@ -1961,11 +1948,6 @@ function symposium_plugin_options() {
 					$members_url = $config->members_url;
 					$profile_url = $config->profile_url;
 					$wp_alignment = $config->wp_alignment;
-					$login_redirect = $config->login_redirect;
-					$login_redirect_url = $config->login_redirect_url;
-					$logout_redirect = $config->logout_redirect;
-					$logout_redirect_url = $config->logout_redirect_url;
-					$enable_redirects = $config->enable_redirects;
 					?>
 									
 					<form method="post" action=""> 
@@ -2064,51 +2046,7 @@ function symposium_plugin_options() {
 					<td>
 					<input type="checkbox" name="emoticons" id="emoticons" <?php if ($emoticons == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Automatically replace smilies/emoticons with graphical images', 'wp-symposium'); ?></span></td> 
-					</tr> 
-					<tr valign="top"> 
-					<th scope="row"><label for="enable_redirects">Enable redirects</label></th>
-					<td>
-					<input type="checkbox" name="enable_redirects" id="enable_redirects" <?php if ($enable_redirects == "on") { echo "CHECKED"; } ?>/>
-					<span class="description"><?php echo __('Must be enabled for following redirects to work, disable if plugin clashes occur', 'wp-symposium'); ?></span></td> 
-					</tr> 
-				
-					<tr valign="top">
-					<th scope="row"><label style="margin-left:25px;font-style:italic;" for="login_redirect">Page after logging in</label></th> 
-					<td>
-					<select name="login_redirect">
-						<option value='WordPress default'<?php if ($login_redirect == 'WordPress default') { echo ' SELECTED'; } ?>><?php _e('WordPress default', 'wp_symposium'); ?></option>
-						<option value='Profile Wall'<?php if ($login_redirect == 'Profile Wall') { echo ' SELECTED'; } ?>><?php _e('Profile (Wall)', 'wp_symposium'); ?></option>
-						<option value='Profile Settings'<?php if ($login_redirect == 'Profile Settings') { echo ' SELECTED'; } ?>><?php _e('Profile (Preferences)', 'wp_symposium'); ?></option>
-						<option value='Profile Personal'<?php if ($login_redirect == 'Profile Personal') { echo ' SELECTED'; } ?>><?php _e('Profile (Personal)', 'wp_symposium'); ?></option>
-						<option value='Mail'<?php if ($login_redirect == 'Mail') { echo ' SELECTED'; } ?>><?php _e('Mail', 'wp_symposium'); ?></option>
-						<option value='Forum'<?php if ($login_redirect == 'Forum') { echo ' SELECTED'; } ?>><?php _e('Forum', 'wp_symposium'); ?></option>
-						<option value='Previous'<?php if ($login_redirect == 'Previous') { echo ' SELECTED'; } ?>><?php _e('Previous page before login page', 'wp_symposium'); ?></option>
-						<option value='Custom'<?php if ($login_redirect == 'Custom') { echo ' SELECTED'; } ?>><?php _e('Custom (enter below)', 'wp_symposium'); ?></option>
-					</select> 
-					<span class="description"><?php echo __('Where the member is taken after logging in', 'wp-symposium'); ?></span></td> 
-					</tr> 					
-
-					<tr valign="top"> 
-					<th scope="row"><label for="login_redirect_url">&nbsp;</label></th> 
-					<td><input name="login_redirect_url" type="text" id="login_redirect_url"  value="<?php echo $login_redirect_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Custom URL - select Custom from options above', 'wp-symposium'); ?></td> 
-					</tr> 					
-
-					<tr valign="top">
-					<th scope="row"><label style="margin-left:25px;font-style:italic;" for="logout_redirect">Page after logging out</label></th> 
-					<td>
-					<select name="logout_redirect">
-						<option value='WordPress default'<?php if ($logout_redirect == 'WordPress default') { echo ' SELECTED'; } ?>><?php _e('WordPress default', 'wp_symposium'); ?></option>
-						<option value='Custom'<?php if ($logout_redirect == 'Custom') { echo ' SELECTED'; } ?>><?php _e('Custom (enter below)', 'wp_symposium'); ?></option>
-					</select> 
-					<span class="description"><?php echo __('Where the member is taken after logging out', 'wp-symposium'); ?></span></td> 
-					</tr> 					
-
-					<tr valign="top"> 
-					<th scope="row"><label for="logout_redirect_url">&nbsp;</label></th> 
-					<td><input name="logout_redirect_url" type="text" id="logout_redirect_url"  value="<?php echo $logout_redirect_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Custom URL - select Custom from options above', 'wp-symposium'); ?></td> 
-					</tr> 					
+					</tr> 		
 															
 					</table>
 					 

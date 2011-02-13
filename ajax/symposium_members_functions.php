@@ -13,7 +13,7 @@ if ($_GET['term'] != '') {
 	global $wpdb;	
 	$return_arr = array();
 
-	$list = $wpdb->get_results("SELECT u.ID, u.display_name, m.city, m.country FROM ".$wpdb->prefix."users u LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$_GET['term']."%') OR (m.city LIKE '".$_GET['term']."%') OR (m.country LIKE '".$_GET['term']."%') OR (u.display_name LIKE '% %".$_GET['term']."%') ORDER BY u.display_name");
+	$list = $wpdb->get_results("SELECT u.ID, u.display_name, m.city, m.country FROM ".$wpdb->base_prefix."users u LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$_GET['term']."%') OR (m.city LIKE '".$_GET['term']."%') OR (m.country LIKE '".$_GET['term']."%') OR (u.display_name LIKE '% %".$_GET['term']."%') ORDER BY u.display_name");
 	
 	if ($list) {
 		foreach ($list as $item) {
@@ -57,9 +57,9 @@ if ($_POST['action'] == 'getMembers') {
 	$config = $wpdb->get_row($wpdb->prepare("SELECT online,offline FROM ".$wpdb->prefix . 'symposium_config'));
 	
 	$sql = "SELECT m.uid, m.last_activity, m.city, m.country, m.share, m.wall_share,
-	(SELECT comment FROM ".$wpdb->prefix."symposium_comments WHERE author_uid = m.uid AND subject_uid = author_uid and comment_parent = 0 ORDER BY cid DESC LIMIT 0,1) AS latest_comment, 
-	(SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$me." AND friend_to = m.uid) AS is_friend 
-	FROM ".$wpdb->prefix."symposium_usermeta m 
+	(SELECT comment FROM ".$wpdb->base_prefix."symposium_comments WHERE author_uid = m.uid AND subject_uid = author_uid and comment_parent = 0 ORDER BY cid DESC LIMIT 0,1) AS latest_comment, 
+	(SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$me." AND friend_to = m.uid) AS is_friend 
+	FROM ".$wpdb->base_prefix."symposium_usermeta m 
 	WHERE m.uid > 0 
 	ORDER BY m.last_activity DESC LIMIT ".($page*$page_length-$page_length).",".$page_length;
 	

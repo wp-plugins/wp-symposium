@@ -14,7 +14,7 @@ if ($_POST['action'] == 'doVote') {
 	
 		$vote = $_POST['vote'];
 		
-		$sql = "UPDATE ".$wpdb->prefix."symposium_usermeta SET widget_voted = 'on' WHERE uid = ".$current_user->ID;
+		$sql = "UPDATE ".$wpdb->base_prefix."symposium_usermeta SET widget_voted = 'on' WHERE uid = ".$current_user->ID;
 		$wpdb->query( $wpdb->prepare($sql) );
 	
 		if ($vote == "yes") {

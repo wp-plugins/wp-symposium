@@ -19,7 +19,7 @@ if ($_POST['action'] == 'addStatus') {
 		if ( ($text != __(addslashes("What's on your mind?"), "wp-symposium")) && ($text != '') ) {
 	
 			$wpdb->query( $wpdb->prepare( "
-				INSERT INTO ".$wpdb->prefix."symposium_comments
+				INSERT INTO ".$wpdb->base_prefix."symposium_comments
 				( 	subject_uid, 
 					author_uid,
 					comment_parent,
@@ -40,13 +40,13 @@ if ($_POST['action'] == 'addStatus') {
 			$new_id = $wpdb->insert_id;
 
 		    // Subject's name for use below
-			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = %d", $subject_uid));
+			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = %d", $subject_uid));
 		        
 			// Email all friends who want to know about it
 			$sql = "SELECT u.ID, f.friend_to, u.user_email, m.notify_new_wall 
-			 FROM ".$wpdb->prefix."symposium_friends f 
-			 LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to 
-			 LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID 
+			 FROM ".$wpdb->base_prefix."symposium_friends f 
+			 LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON m.uid = f.friend_to 
+			 LEFT JOIN ".$wpdb->base_prefix."users u ON f.friend_to = u.ID 
 			WHERE f.friend_from = ".$current_user->ID;
 			$recipients = $wpdb->get_results($sql);	
 					
@@ -95,7 +95,7 @@ if ($_POST['action'] == 'addComment') {
 		if ( ($text != __(addslashes("Write a comment..."), "wp-symposium")) && ($text != '') ) {
 	
 			$wpdb->query( $wpdb->prepare( "
-				INSERT INTO ".$wpdb->prefix."symposium_comments
+				INSERT INTO ".$wpdb->base_prefix."symposium_comments
 				( 	subject_uid, 
 					author_uid,
 					comment_parent,
@@ -116,13 +116,13 @@ if ($_POST['action'] == 'addComment') {
 			$new_id = $wpdb->insert_id;
 		        		        
 		    // Subject's name for use below
-			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = %d", $uid));
+			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = %d", $uid));
 		
 			// Email all friends who want to know about it
 			$sql = "SELECT u.ID, f.friend_to, u.user_email, m.notify_new_wall 
-			 FROM ".$wpdb->prefix."symposium_friends f 
-			 LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to 
-			 LEFT JOIN ".$wpdb->prefix."users u ON f.friend_to = u.ID 
+			 FROM ".$wpdb->base_prefix."symposium_friends f 
+			 LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON m.uid = f.friend_to 
+			 LEFT JOIN ".$wpdb->base_prefix."users u ON f.friend_to = u.ID 
 			WHERE f.friend_from = ".$current_user->ID;
 			$recipients = $wpdb->get_results($sql);			
 			if ($recipients) {
@@ -703,15 +703,15 @@ if ($_POST['action'] == 'deletePost') {
 		if ( symposium_safe_param($cid) && symposium_safe_param($uid) ) {
 			
 			if ( symposium_get_current_userlevel($uid) == 5 ) {
-				$sql = "DELETE FROM ".$wpdb->prefix."symposium_comments WHERE cid = ".$cid;
+				$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_comments WHERE cid = ".$cid;
 			} else {
-				$sql = "DELETE FROM ".$wpdb->prefix."symposium_comments WHERE cid = ".$cid." AND (subject_uid = ".$uid." OR author_uid = ".$uid.")";
+				$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_comments WHERE cid = ".$cid." AND (subject_uid = ".$uid." OR author_uid = ".$uid.")";
 			}
 			$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 			if ( $rows_affected > 0 ) {
 	
 				// Delete any replies
-				$sql = "DELETE FROM ".$wpdb->prefix."symposium_comments WHERE comment_parent = ".$cid.")";
+				$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_comments WHERE comment_parent = ".$cid.")";
 				$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 	
 				echo "#".$cid;
@@ -734,7 +734,6 @@ if ($_POST['action'] == 'deletePost') {
 if ($_POST['action'] == 'updateSettings') {
 
 	global $wpdb, $current_user;
-	wp_get_current_user();
 
 	if (is_user_logged_in()) {
 	
@@ -758,20 +757,20 @@ if ($_POST['action'] == 'updateSettings') {
 		
 		$pwmsg = 'OK';
 	
-		$email_exists = $wpdb->get_row("SELECT ID, user_email FROM ".$wpdb->prefix."users WHERE lower(user_email) = '".strtolower($user_email)."'");
+		$email_exists = $wpdb->get_row("SELECT ID, user_email FROM ".$wpdb->base_prefix."users WHERE lower(user_email) = '".strtolower($user_email)."'");
 		if ($email_exists->user_email == $user_email && $email_exists->ID != $current_user->ID) {
 	    	$pwmsg = __("Email already exists, sorry.", "wp-symposium");				
 		} else {
-			$rows_affected = $wpdb->update( $wpdb->prefix.'users', array( 'display_name' => $display_name, 'user_email' => $user_email ), array( 'ID' => $current_user->ID ), array( '%s', '%s' ), array( '%d' ) );
+			$rows_affected = $wpdb->update( $wpdb->base_prefix.'users', array( 'display_name' => $display_name, 'user_email' => $user_email ), array( 'ID' => $current_user->ID ), array( '%s', '%s' ), array( '%d' ) );
 		}
 				
 		if ($password1 != '') {
 			if ($password1 == $password2) {
 				$pwd = wp_hash_password($password1);
-				$sql = "UPDATE ".$wpdb->prefix."users SET user_pass = '".$pwd."' WHERE ID = ".$current_user->ID;
+				$sql = "UPDATE ".$wpdb->base_prefix."users SET user_pass = '".$pwd."' WHERE ID = ".$current_user->ID;
 			    if ($wpdb->query( $wpdb->prepare($sql) ) ) {
 	
-					$sql = "SELECT user_login FROM ".$wpdb->prefix."users WHERE ID = ".$current_user->ID;
+					$sql = "SELECT user_login FROM ".$wpdb->base_prefix."users WHERE ID = ".$current_user->ID;
 					$username = $wpdb->get_var($sql);
 					$id = $current_user->ID;
 					$url = symposium_get_url('profile')."?view=settings&msg=".$pwmsg;
@@ -807,8 +806,7 @@ if ($_POST['action'] == 'updateSettings') {
 if ($_POST['action'] == 'updatePersonal') {
 
 	global $wpdb, $current_user;
-	wp_get_current_user();
-
+	
 	if (is_user_logged_in()) {
 
 		$dob_day = $_POST['dob_day'];
@@ -829,7 +827,8 @@ if ($_POST['action'] == 'updatePersonal') {
 		update_symposium_meta($current_user->ID, 'wall_share', "'".$wall_share."'");
 		update_symposium_meta($current_user->ID, 'extended', "'".$extended."'");
 			
-		echo "OK";
+		//echo "OK";
+		echo $wpdb->last_query;
 	
 	} else {
 		echo "NOT LOGGED IN";
@@ -843,13 +842,12 @@ if ($_POST['action'] == 'updatePersonal') {
 if ($_POST['action'] == 'deleteFriend') {
 
 	global $wpdb, $current_user;
-	wp_get_current_user();
 
 	if (is_user_logged_in()) {
 
 		$friend = $_POST['friend'];
 		
-		$sql = "DELETE FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$friend." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$friend." AND friend_from = ".$current_user->ID.")";
+		$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_friends WHERE (friend_from = ".$friend." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$friend." AND friend_from = ".$current_user->ID.")";
 		if (symposium_safe_param($friend)) {
 			$wpdb->query( $wpdb->prepare( $sql ) );	
 		}
@@ -866,7 +864,6 @@ if ($_POST['action'] == 'deleteFriend') {
 if ($_POST['action'] == 'addFriend') {
 
 	global $wpdb, $current_user;
-	wp_get_current_user();
 
 	if (is_user_logged_in()) {
 	
@@ -875,12 +872,12 @@ if ($_POST['action'] == 'addFriend') {
 		$friend_message = $_POST['friendmessage'];
 		
 		// check that request isn't already there
-		if ( $wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$friend_to." AND friend_to = ".$current_user->ID." OR friend_to = ".$friend_to." AND friend_from = ".$current_user->ID.")")) ) {
+		if ( $wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix."symposium_friends WHERE (friend_from = ".$friend_to." AND friend_to = ".$current_user->ID." OR friend_to = ".$friend_to." AND friend_from = ".$current_user->ID.")")) ) {
 			// already exists
 		} else {
 	
 			$wpdb->query( $wpdb->prepare( "
-				INSERT INTO ".$wpdb->prefix."symposium_friends
+				INSERT INTO ".$wpdb->base_prefix."symposium_friends
 				( 	friend_from, 
 					friend_to,
 					friend_timestamp,
@@ -897,7 +894,7 @@ if ($_POST['action'] == 'addFriend') {
 		}
 		
 		// send email
-		$friend_to = $wpdb->get_var($wpdb->prepare("SELECT user_email FROM ".$wpdb->prefix."users WHERE ID = ".$friend_to));
+		$friend_to = $wpdb->get_var($wpdb->prepare("SELECT user_email FROM ".$wpdb->base_prefix."users WHERE ID = ".$friend_to));
 		$body = sprintf(__("You have received a friend request from %s", "wp-symposium"), $current_user->display_name);
 		symposium_sendmail($friend_to->user_email, "fr", $body);						
 	    // add notification
@@ -917,7 +914,6 @@ if ($_POST['action'] == 'addFriend') {
 if ($_POST['action'] == 'cancelFriend') {
 
 	global $wpdb, $current_user;
-	wp_get_current_user();
 
 	if (is_user_logged_in()) {
 
@@ -925,7 +921,7 @@ if ($_POST['action'] == 'cancelFriend') {
 		$friend_from = $current_user->ID;
 		
 		if (symposium_safe_param($friend_to)) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$friend_from." AND friend_to = ".$friend_to.") OR (friend_from = ".$friend_to." AND friend_to = ".$friend_from.")" ) );	
+			$wpdb->query( $wpdb->prepare( "DELETE FROM ".$wpdb->base_prefix."symposium_friends WHERE (friend_from = ".$friend_from." AND friend_to = ".$friend_to.") OR (friend_from = ".$friend_to." AND friend_to = ".$friend_from.")" ) );	
 		}
 		
 		echo "OK";		
@@ -941,14 +937,13 @@ if ($_POST['action'] == 'cancelFriend') {
 if ($_POST['action'] == 'rejectFriend') {
 
 	global $wpdb, $current_user;
-	wp_get_current_user();
 
 	if (is_user_logged_in()) {
 
 		$friend_to = $_POST['friend_to'];		
 		$friend_from = $current_user->ID;
 
-		$sql = "DELETE FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$friend_to." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$friend_to." AND friend_from = ".$current_user->ID.")";
+		$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_friends WHERE (friend_from = ".$friend_to." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$friend_to." AND friend_from = ".$current_user->ID.")";
 		if (symposium_safe_param($friend_to)) {
 			$wpdb->query( $wpdb->prepare( $sql ) );	
 		}
@@ -966,7 +961,6 @@ if ($_POST['action'] == 'rejectFriend') {
 if ($_POST['action'] == 'acceptFriend') {
 
 	global $wpdb, $current_user;
-	wp_get_current_user();
 
 	if (is_user_logged_in()) {
 
@@ -974,21 +968,21 @@ if ($_POST['action'] == 'acceptFriend') {
 		$friend_to = $_POST['friend_to'];		
 	
 		// Check to see if already a friend
-		$sql = "SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_friends WHERE friend_accepted == 'on' AND ((friend_from = ".$friend_to." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$friend_to." AND friend_from = ".$current_user->ID."))";
+		$sql = "SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_accepted == 'on' AND ((friend_from = ".$friend_to." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$friend_to." AND friend_from = ".$current_user->ID."))";
 		$already_a_friend = $wpdb->get_var($sql);
 		if ($already_a_friend >= 1) {
 			// already a friend
 		} else {
 		
 			// Delete pending request
-			$sql = "DELETE FROM ".$wpdb->prefix."symposium_friends WHERE (friend_from = ".$friend_to." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$friend_to." AND friend_from = ".$current_user->ID.")";
+			$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_friends WHERE (friend_from = ".$friend_to." AND friend_to = ".$current_user->ID.") OR (friend_to = ".$friend_to." AND friend_from = ".$current_user->ID.")";
 			if (symposium_safe_param($friend_from)) {
 				$wpdb->query( $wpdb->prepare( $sql ) );	
 			}
 			
 			// Add the two friendship rows
 			$wpdb->query( $wpdb->prepare( "
-				INSERT INTO ".$wpdb->prefix."symposium_friends
+				INSERT INTO ".$wpdb->base_prefix."symposium_friends
 				( 	friend_from, 
 					friend_to,
 					friend_timestamp,
@@ -1003,7 +997,7 @@ if ($_POST['action'] == 'acceptFriend') {
 		        	) 
 		        ) );
 			$wpdb->query( $wpdb->prepare( "
-				INSERT INTO ".$wpdb->prefix."symposium_friends
+				INSERT INTO ".$wpdb->base_prefix."symposium_friends
 				( 	friend_to, 
 					friend_from,
 					friend_timestamp,

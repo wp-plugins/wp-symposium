@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Members Directory
 Plugin URI: http://www.wpsymposium.com
 Description: Directory component for the Symposium suite of plug-ins. Put [symposium-members] on any WordPress page.
-Version: 0.36.1
+Version: 0.37
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -61,10 +61,10 @@ function symposium_members($ver) {
 				$config = $wpdb->get_row($wpdb->prepare("SELECT online,offline FROM ".$wpdb->prefix . 'symposium_config'));
 				
 				$sql = "SELECT u.ID, m.last_activity, m.city, m.country, m.share, m.wall_share, 
-				(SELECT comment FROM ".$wpdb->prefix."symposium_comments WHERE author_uid = u.ID AND subject_uid = author_uid and comment_parent = 0 ORDER BY cid DESC LIMIT 0,1) AS latest_comment, 
-				(SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$me." AND friend_to = u.ID) AS is_friend 
-				FROM ".$wpdb->prefix."symposium_usermeta m 
-				RIGHT JOIN ".$wpdb->prefix."users u ON m.uid = u.ID 
+				(SELECT comment FROM ".$wpdb->base_prefix."symposium_comments WHERE author_uid = u.ID AND subject_uid = author_uid and comment_parent = 0 ORDER BY cid DESC LIMIT 0,1) AS latest_comment, 
+				(SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$me." AND friend_to = u.ID) AS is_friend 
+				FROM ".$wpdb->base_prefix."symposium_usermeta m 
+				RIGHT JOIN ".$wpdb->base_prefix."users u ON m.uid = u.ID 
 				WHERE u.ID > 0 AND 
 				( (u.display_name LIKE '".$term."%') OR (m.city LIKE '".$term."%') OR (m.country LIKE '".$term."%') OR (u.display_name LIKE '% %".$term."%') )
 				ORDER BY m.last_activity DESC LIMIT ".($page*$page_length-$page_length).",".$page_length;

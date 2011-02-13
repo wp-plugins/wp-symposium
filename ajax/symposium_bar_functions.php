@@ -12,7 +12,7 @@ if ($_POST['action'] == 'symposium_clear_chatroom') {
 
 	global $wpdb;
 	
-   	$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_to = -1";
+   	$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_chat WHERE chat_to = -1";
 	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 	
 	echo "OK";
@@ -28,7 +28,7 @@ if ($_POST['action'] == 'symposium_addchatroom') {
    	$chat_message = $_POST['chat_message'];
    	$r = '';
 
-	if ( $rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_chat", array( 
+	if ( $rows_affected = $wpdb->insert( $wpdb->base_prefix . "symposium_chat", array( 
 		'chat_to' => -1, 
 		'chat_from' => $chat_from, 
 		'chat_message' => $chat_message,
@@ -58,16 +58,20 @@ if ($_POST['action'] == 'symposium_getfriendsonline') {
    	
    	$return = '';
 
-	$sql = "SELECT f.*, m.last_activity, u.display_name, u.ID FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to LEFT JOIN ".$wpdb->prefix."users u ON u.ID = f.friend_to WHERE f.friend_accepted = 'on' AND f.friend_from = ".$me." ORDER BY last_activity DESC";
+	$sql = "SELECT f.*, m.last_activity, u.display_name, u.ID FROM ".$wpdb->base_prefix."symposium_friends f LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON m.uid = f.friend_to LEFT JOIN ".$wpdb->base_prefix."users u ON u.ID = f.friend_to WHERE f.friend_accepted = 'on' AND f.friend_from = ".$me." ORDER BY last_activity DESC";
 	
 	$friends = $wpdb->get_results($sql);
-		
+	
 	foreach ($friends as $friend) {
 		
 		$time_now = time();
-		$last_active_minutes = $friend->last_activity;
+		if ($friend->last_activity) {
+			$last_active_minutes = convert_datetime($friend->last_activity);
+		} else {
+			$last_active_minutes = 999999999;
+		}
 		$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
-										
+		
 		$return .= "<div style='clear:both; margin-top:4px; overflow: auto;'>";		
 			$return .= "<div style='float: left; width:15px; padding-left:4px;'>";
 				if ($last_active_minutes >= $offline) {
@@ -94,8 +98,9 @@ if ($_POST['action'] == 'symposium_getfriendsonline') {
 			$return .= "</div>";
 		$return .= "</div>";
 	}
-	
+
 	echo $friends_online."[split]".$return;
+	
 	exit;
 	
 }
@@ -105,7 +110,7 @@ if ($_POST['action'] == 'symposium_friendrequests') {
 
    	global $wpdb;	
    	$me = $_POST['me'];
-	$sql = "SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_friends f WHERE f.friend_to = ".$me." AND f.friend_accepted != 'on'";
+	$sql = "SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_friends f WHERE f.friend_to = ".$me." AND f.friend_accepted != 'on'";
 	$pending = $wpdb->get_var($sql);
 	
 	echo $pending;
@@ -118,7 +123,7 @@ if ($_POST['action'] == 'symposium_getunreadmail') {
 
    	global $wpdb;	
    	$me = $_POST['me'];
-   	$sql = "SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail'." WHERE mail_to = ".$me." AND mail_in_deleted != 'on' AND mail_read != 'on'";
+   	$sql = "SELECT COUNT(*) FROM ".$wpdb->base_prefix.'symposium_mail'." WHERE mail_to = ".$me." AND mail_in_deleted != 'on' AND mail_read != 'on'";
 	$unread_in = $wpdb->get_var($sql);
 	
 	echo $unread_in;
@@ -139,16 +144,16 @@ if ($_POST['action'] == 'symposium_getchat') {
    	$results = '';
    	
    	// clear rogue chats
-   	$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_to = 0 OR chat_from = 0";
+   	$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_chat WHERE chat_to = 0 OR chat_from = 0";
 	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 
 	// get messages
 	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
-	$sql .= "FROM wp_symposium_chat c ";
-	$sql .= "LEFT JOIN ".$wpdb->prefix."users u1 ON c.chat_from = u1.ID ";
-	$sql .= "LEFT JOIN ".$wpdb->prefix."users u2 ON c.chat_to = u2.ID ";
-	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
-	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
+	$sql .= "FROM ".$wpdb->base_prefix."symposium_chat c ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u1 ON c.chat_from = u1.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.chat_to = u2.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
 	$sql .= "WHERE (";
 	$sql .= "chat_from = ".$me;
 	$sql .= " OR chat_to = ".$me;
@@ -217,16 +222,16 @@ if ($_POST['action'] == 'symposium_getchatroom') {
    	$results = '';
    	
    	// clear rogue chats
-   	$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_to = 0 OR chat_from = 0";
+   	$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_chat WHERE chat_to = 0 OR chat_from = 0";
 	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 
 	// get messages
 	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
-	$sql .= "FROM ".$wpdb->prefix."symposium_chat c ";
-	$sql .= "LEFT JOIN ".$wpdb->prefix."users u1 ON c.chat_from = u1.ID ";
-	$sql .= "LEFT JOIN ".$wpdb->prefix."users u2 ON c.chat_to = u2.ID ";
-	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
-	$sql .= "LEFT JOIN ".$wpdb->prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
+	$sql .= "FROM ".$wpdb->base_prefix."symposium_chat c ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u1 ON c.chat_from = u1.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.chat_to = u2.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
 	$sql .= "WHERE chat_to = -1 ";
 	$sql .= "ORDER BY chid DESC ";
 	$sql .= "LIMIT 0,30";
@@ -308,14 +313,14 @@ if ($_POST['action'] == 'symposium_addchat') {
    	$chat_message = $_POST['chat_message'];
    	$r = '';
    	
-   	$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_message = '[closed-".$chat_to."]' AND ( (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.") )";
+   	$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_chat WHERE chat_message = '[closed-".$chat_to."]' AND ( (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.") )";
 	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 	
 	if ($rows_affected === false) {
 		$r .= $wpdb->last_query;
 	}
 
-	if ( $rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_chat", array( 
+	if ( $rows_affected = $wpdb->insert( $wpdb->base_prefix . "symposium_chat", array( 
 		'chat_to' => $chat_to, 
 		'chat_from' => $chat_from, 
 		'chat_message' => $chat_message,
@@ -339,7 +344,7 @@ if ($_POST['action'] == 'symposium_reopenchat') {
    	$chat_from = $_POST['chat_from'];
 
 	// clear the closed flag
-   	$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_message = '[closed-".$chat_from."]' AND ( (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.") )";
+   	$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_chat WHERE chat_message = '[closed-".$chat_from."]' AND ( (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.") )";
 	$wpdb->query( $wpdb->prepare($sql) );
 
 	return $chat_to;
@@ -354,23 +359,23 @@ if ($_POST['action'] == 'symposium_openchat') {
    	$r = '';
    	
 	// check to see if they are already chatting
-	if ($wpdb->query( $wpdb->prepare("SELECT chid FROM ".$wpdb->prefix."symposium_chat WHERE (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.")"))) {
+	if ($wpdb->query( $wpdb->prepare("SELECT chid FROM ".$wpdb->base_prefix."symposium_chat WHERE (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.")"))) {
 
 		// clear the closed flag
-	   	$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_message = '[closed-".$chat_from."]' AND ( (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.") )";
+	   	$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_chat WHERE chat_message = '[closed-".$chat_from."]' AND ( (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.") )";
 		$wpdb->query( $wpdb->prepare($sql) );
 		$r .= $chat_to;
 
 	} else {
 
-		if ( $rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_chat", array( 
+		if ( $rows_affected = $wpdb->insert( $wpdb->base_prefix . "symposium_chat", array( 
 			'chat_to' => $chat_to, 
 			'chat_from' => $chat_from, 
 			'chat_message' => '[start]',
 			'chat_timestamp' => date("Y-m-d H:i:s") 
 		) ) ) {
 			
-			$display_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$chat_to));
+			$display_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = ".$chat_to));
 			$r .= "OK[split]".$chat_to."[split]".$display_name;
 			
 		}
@@ -391,10 +396,10 @@ if ($_POST['action'] == 'symposium_closechat') {
 	$r = '';
 
 	// has other person closed the window?
-	$sql = "SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_chat WHERE (chat_from = ".$chat_to." AND chat_to = ".$chat_from.") AND INSTR(chat_message, '[closed-".$chat_to."]')";
+	$sql = "SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_chat WHERE (chat_from = ".$chat_to." AND chat_to = ".$chat_from.") AND INSTR(chat_message, '[closed-".$chat_to."]')";
 	if ( $wpdb->get_var($wpdb->prepare($sql)) ) {
 
-		$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.")";
+		$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_chat WHERE (chat_from = ".$chat_from." AND chat_to = ".$chat_to.") OR (chat_from = ".$chat_to." AND chat_to = ".$chat_from.")";
 		if ($wpdb->query( $wpdb->prepare($sql) ) ) {
 			$r .= 'Cleared chat '.$wpdb->last_query;
 		} else {
@@ -403,7 +408,7 @@ if ($_POST['action'] == 'symposium_closechat') {
 
 	} else {
 
-		if ( $rows_affected = $wpdb->insert( $wpdb->prefix . "symposium_chat", array( 
+		if ( $rows_affected = $wpdb->insert( $wpdb->base_prefix . "symposium_chat", array( 
 			'chat_to' => $chat_to, 
 			'chat_from' => $chat_from, 
 			'chat_message' => '[closed-'.$chat_from.']',

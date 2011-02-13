@@ -55,7 +55,7 @@ if (is_user_logged_in()) {
 			if ( imagejpeg($dst_r,$to_file,$jpeg_quality) ) {
 				
 				// update database
-				$wpdb->update( $wpdb->prefix.'symposium_usermeta', 
+				$wpdb->update( $wpdb->base_prefix.'symposium_usermeta', 
 					array( 'profile_photo' => $filename ), 
 					array( 'uid' => $uid ), 
 					array( '%s' ), 
@@ -64,7 +64,7 @@ if (is_user_logged_in()) {
 					
 			} else {
 				
-				$wpdb->update( $wpdb->prefix.'symposium_usermeta', 
+				$wpdb->update( $wpdb->base_prefix.'symposium_usermeta', 
 					array( 'profile_photo' => 'upload_failed' ), 
 					array( 'uid' => $uid ), 
 					array( '%s' ), 

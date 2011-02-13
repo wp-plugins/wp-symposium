@@ -33,7 +33,7 @@ jQuery(document).ready(function() {
 		
 	/*
 	   +------------------------------------------------------------------------------------------+
-	   |                                      PROFILE PHOTO                                       |
+	   |                                      PROFILE PHOTO (AVATAR)                              |
 	   +------------------------------------------------------------------------------------------+
 	*/
 
@@ -160,114 +160,6 @@ jQuery(document).ready(function() {
 		myChart.draw();
 		
 	}
-
-
-	/*
-	   +------------------------------------------------------------------------------------------+
-	   |                                          REGISTER                                        |
-	   +------------------------------------------------------------------------------------------+
-	*/
-
-	// Password strength field	
-	if (jQuery("input#pwd2").length) {
-		jQuery(function() {
-			jQuery('#pwd2').pstrength();
-		});
-	}
-
-	/*
-	   +------------------------------------------------------------------------------------------+
-	   |                                           LOGIN                                          |
-	   +------------------------------------------------------------------------------------------+
-	*/
-
-	if (jQuery("input#symposium_login").length) {
-
-		jQuery('#symposium_login').submit(function() {		
-
-	   		var username = jQuery("#symposium_login_username").val();
-	   		var pwd = jQuery("#symposium_login_pwd").val();
-	   		var forgot = jQuery("#forgotten_email").val();
-	   		var previous_page = jQuery('#previous-page').val();
-	   		
-			if (forgot == '') {
-				if (username != '' && pwd != '') {
-					jQuery(".symposium_pleasewait").inmiddle().show();
-					jQuery.ajax({
-						url: symposium.plugin_url+"ajax/symposium_login_functions.php", 
-						type: "POST",
-						data: ({
-							action:"doLogin",
-							username:username,
-							pwd:pwd,
-							redirect_to:previous_page
-						}),
-					    dataType: "html",
-						async: false,
-						success: function(str){
-							if (str == "FAIL") {
-								jQuery(".symposium_pleasewait").fadeOut("slow");
-								alert("Login failed, please try again");
-							} else {
-								if (str != "Important: Please update!" && str != "none") {
-									window.location.href=str;
-								} else {
-									alert("Trying to redirect, but target plugin URL (Options->Settings) not set up. ("+str+")");
-								}
-							}
-						},
-						error: function(err){
-							alert("L:"+err);
-						}		
-			   		});	
-				}
-				
-			} else {
-
-			   		var sum1 = parseFloat(jQuery("#sum1").val());
-			   		var sum2 = parseFloat(jQuery("#sum2").val());
-			   		var actual = sum1+sum2;
-			   		var result = parseFloat(jQuery("#result").val());
-			   		
-			   		if (actual == result) {
-				
-						jQuery(".symposium_pleasewait").inmiddle().show();
-						jQuery.ajax({
-							url: symposium.plugin_url+"ajax/symposium_login_functions.php", 
-							type: "POST",
-							data: ({
-								action:"doForgot",
-								email:forgot
-							}),
-						    dataType: "html",
-							async: false,
-							success: function(str){
-								jQuery(".symposium_pleasewait").fadeOut("slow");
-								if (str.substring(0, 2) == 'OK') { 
-									jQuery('#symposium_forgotten_password_msg').show("slow");
-									jQuery("#symposium_login_username").val('');
-									jQuery("#symposium_login_pwd").val('');
-									jQuery("#forgotten_email").val('');
-								} else {
-									alert(str);
-								}
-							},
-							error: function(err){
-								alert("L2: "+err);
-							}		
-				   		});
-			   		} else {
-			   			alert('Answer to the sum is incorrect.');
-			   		}					
-			}
-	   	});	
-	   	
-		jQuery('#symposium_forgotten').click(function() {		
-			jQuery('#symposium_forgotten_password').toggle("slow");
-	   	});	
-
-	}
-
 
 	/*
 	   +------------------------------------------------------------------------------------------+
@@ -1454,36 +1346,6 @@ jQuery(document).ready(function() {
 
 	/*
 	   +------------------------------------------------------------------------------------------+
-	   |                                           MENU                                           |
-	   +------------------------------------------------------------------------------------------+
-	*/
-
- 	// Test AJAX
- 	jQuery("#testAJAX").click(function() {
- 		random = Math.floor(Math.random()*10)+1;
- 		alert("The random number being sent is "+random);
-
-	  	jQuery.ajax({
-			url: symposium.plugin_url+"ajax/symposium_menu_functions.php", 
-			type: "POST",
-			data: ({
-				action:"symposium_test",
-				postID:random
-			}),
-		    dataType: "html",
-			async: false,
-			success: function(str_test){
-				jQuery("#testAJAX_results").val('Value of '+str_test+' returned!');
-			},
-			error: function(err){
-				alert("Test:"+err);
-			}		
- 		});
- 		
-	});
-
-	/*
-	   +------------------------------------------------------------------------------------------+
 	   |                                     NOTIFICATION BAR                                     |
 	   +------------------------------------------------------------------------------------------+
 	*/
@@ -1814,21 +1676,30 @@ jQuery(document).ready(function() {
 		jQuery("#jstest").hide();
 	}
 
-	if (jQuery("#hide_motd").length) {	
-		jQuery('#hide_motd').click(function(){
-			jQuery("#motd").slideUp("slow");
-			jQuery.ajax({
-				url: symposium.plugin_url+"ajax/symposium_ajax_functions.php", 
-				type: "POST",
-				data: ({
-					action:"symposium_motd",
-					optin:jQuery("#optin").is(":checked")
-					}),
-			    dataType: "html",
-				async: true
-	   		});	
-		});
-	}
+ 	// Test AJAX
+ 	jQuery("#testAJAX").click(function() {
+ 		random = Math.floor(Math.random()*10)+1;
+ 		alert("The random number being sent is "+random);
+
+	  	jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_menu_functions.php", 
+			type: "POST",
+			data: ({
+				action:"symposium_test",
+				postID:random
+			}),
+		    dataType: "html",
+			async: false,
+			success: function(str_test){
+				jQuery("#testAJAX_results").val('Value of '+str_test+' returned!');
+			},
+			error: function(err){
+				alert("Test:"+err);
+			}		
+ 		});
+ 		
+	});
+	
 			
 });
 

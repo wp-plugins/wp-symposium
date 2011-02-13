@@ -79,25 +79,33 @@ function show_profile_menu($uid1, $uid2) {
 		
 		if ($uid1 > 0) {
 
-			if ($uid1 == $uid2) {
-				$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('My Profile', 'wp-symposium').'</div>';
-			} else {
-				$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('Profile', 'wp-symposium').'</div>';
+			if ( ($uid1 == $uid2) || (strtolower($share) == 'everyone') || (strtolower($share) == 'friends only' && $is_friend) ) {
+	
+				if ($meta->extended != '' || $uid1 == $uid2) {
+					if ($uid1 == $uid2) {
+						$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('My Profile', 'wp-symposium').'</div>';
+					} else {
+						$html .= '<div id="menu_extended" class="symposium_profile_menu">'.__('Profile', 'wp-symposium').'</div>';
+					}
+				}
 			}
 
-			if ($uid1 == $uid2) {
-				$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('My Wall', 'wp-symposium').'</div>';
-				$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('My Friends Activity', 'wp-symposium').'</div>';
-			} else {
-				$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
-				$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
+			if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
+
+				if ($uid1 == $uid2) {
+					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('My Wall', 'wp-symposium').'</div>';
+					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('My Friends Activity', 'wp-symposium').'</div>';
+				} else {
+					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
+					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
+				}
+				$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
 			}
-			$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
 
 			if ( ($uid1 == $uid2) || (strtolower($share) == 'everyone') || (strtolower($share) == 'friends only' && $is_friend) ) {
 	
 				if ($uid1 == $uid2) {
-					$pending_friends = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_friends f WHERE f.friend_to = ".$uid1." AND f.friend_accepted != 'on'");
+					$pending_friends = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_friends f WHERE f.friend_to = ".$uid1." AND f.friend_accepted != 'on'");
 				
 					if ( ($pending_friends > 0) && ($uid1 == $uid2) ) {
 						$pending_friends = " (".$pending_friends.")";
@@ -161,7 +169,7 @@ function symposium_profile_friends($uid) {
 		
 		if ($uid == $current_user->ID) {
 			
-			$sql = "SELECT u1.display_name, u1.ID, f.friend_timestamp, f.friend_message, f.friend_from FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."users u1 ON f.friend_from = u1.ID WHERE f.friend_to = ".$current_user->ID." AND f.friend_accepted != 'on' ORDER BY f.friend_timestamp DESC";
+			$sql = "SELECT u1.display_name, u1.ID, f.friend_timestamp, f.friend_message, f.friend_from FROM ".$wpdb->base_prefix."symposium_friends f LEFT JOIN ".$wpdb->base_prefix."users u1 ON f.friend_from = u1.ID WHERE f.friend_to = ".$current_user->ID." AND f.friend_accepted != 'on' ORDER BY f.friend_timestamp DESC";
 	
 			$requests = $wpdb->get_results($sql);
 			if ($requests) {
@@ -195,7 +203,7 @@ function symposium_profile_friends($uid) {
 		
 		// Friends
 
-		$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$uid." ORDER BY last_activity DESC";
+		$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->base_prefix."symposium_friends f LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$uid." ORDER BY last_activity DESC";
 		$friends = $wpdb->get_results($sql);
 
 		if ($friends) {
@@ -374,7 +382,8 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 
 function symposium_profile_body($uid1, $uid2, $post, $version) {
 	
-	global $wpdb;
+	global $wpdb, $current_user;
+
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
 	$dbpage = $plugin.'/symposium_profile_db.php';
 	$meta = get_symposium_meta_row($uid1);					
@@ -389,6 +398,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 			$bg_color_2 = '';
 		}
 		$privacy = $meta->wall_share;		
+		
 		$is_friend = symposium_friend_of($uid1);
 
 		$html = "";
@@ -397,7 +407,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 		if ($profile_page[strlen($profile_page)-1] != '/') { $profile_page .= '/'; }
 		$q = symposium_string_query($profile_page);		
 
-		if ( ($version == "all_activity") || ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
+		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
 		
 			$html .= "<div id='profile_left_column' style='";
 			if ($config->show_profile_menu != 'on') {
@@ -430,7 +440,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 						// Friends
 						$html .= "<div class='profile_panel_friends_div'>";
 				
-							$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->prefix."symposium_friends f LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$uid1." AND friend_accepted = 'on' ORDER BY last_activity DESC LIMIT 0,6";
+							$sql = "SELECT f.*, m.last_activity FROM ".$wpdb->base_prefix."symposium_friends f LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON m.uid = f.friend_to WHERE f.friend_from = ".$uid1." AND friend_accepted = 'on' ORDER BY last_activity DESC LIMIT 0,6";
 							$friends = $wpdb->get_results($sql);
 				
 							if ($friends) {
@@ -466,7 +476,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 					
 				// Wall
 				$html .= "<div id='symposium_wall'>";
-
+				
 					if ( ($uid1 != $uid2) || (is_user_logged_in() && $is_friend)) {
 						// Post Comment Input
 						$html .= '<input id="symposium_comment" type="text" name="post_comment" class="input-field" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" />';
@@ -475,20 +485,20 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 
 					if ($post != '' && symposium_safe_param($post)) {
 
-						$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.cid = ".$post." AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";
+						$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.cid = ".$post." AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";
 						
 					} else {
 
 						if ($version == "all_activity") {
-							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 						}
 
 						if ($version == "friends_activity") {
-							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) OR ( c.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) OR ( c.subject_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 						}
 
 						if ($version == "wall") {
-							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->prefix."symposium_comments c LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->prefix."users u2 ON c.subject_uid = u2.ID WHERE (c.subject_uid = ".$uid1.") AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE (c.subject_uid = ".$uid1.") AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 						}
 
 					}
@@ -512,17 +522,17 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 										$html .= symposium_make_url(stripslashes($comment->comment));
 	
 										// Replies
-										$sql = "SELECT c.*, u.display_name FROM ".$wpdb->prefix."symposium_comments c 
-											LEFT JOIN ".$wpdb->prefix."users u ON c.author_uid = u.ID 
-											LEFT JOIN ".$wpdb->prefix."symposium_comments p ON c.comment_parent = p.cid 
+										$sql = "SELECT c.*, u.display_name FROM ".$wpdb->base_prefix."symposium_comments c 
+											LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID 
+											LEFT JOIN ".$wpdb->base_prefix."symposium_comments p ON c.comment_parent = p.cid 
 											WHERE ( 
 													(c.subject_uid = ".$uid1.") 
 											   	OR 	(c.author_uid = ".$uid1.") 
 											   	OR 	(p.subject_uid = ".$uid1.") 
 											   	OR 	(p.author_uid = ".$uid1.") 
 											   	OR 	(p.author_uid = ".$uid2.") 
-											   	OR 	(p.subject_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
-											   	OR 	(p.author_uid IN (SELECT friend_to FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
+											   	OR 	(p.subject_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
+											   	OR 	(p.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
 											   ) 
 											   AND c.comment_parent = ".$comment->cid." ORDER BY c.cid";
 										
@@ -591,11 +601,11 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 		} else {
 
 			if ($version == "friends_activity") {
-				$html .= '<p>'.__("Sorry, this member has chosen not to share their friends activity.").'</p>';
+				$html .= '<p>'.__("Sorry, this member has chosen not to share their activity.");
 			}
 
 			if ($version == "wall") {
-				$html .= '<p>'.__("Sorry, this member has chosen not to share their wall.").'</p>';
+				$html .= '<p>'.__("Sorry, this member has chosen not to share their activity.");
 			}
 			
 		}		
@@ -655,9 +665,9 @@ function get_message($mail_mid, $del) {
 	wp_get_current_user();
 
 	if ($del == "in") {
-		$mail = $wpdb->get_row("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->prefix."users u ON m.mail_from = u.ID WHERE mail_mid = ".$mail_mid);
+		$mail = $wpdb->get_row("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->base_prefix."users u ON m.mail_from = u.ID WHERE mail_mid = ".$mail_mid);
 	} else {
-		$mail = $wpdb->get_row("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->prefix."users u ON m.mail_to = u.ID WHERE mail_mid = ".$mail_mid);
+		$mail = $wpdb->get_row("SELECT m.*, u.display_name FROM ".$wpdb->prefix."symposium_mail m LEFT JOIN ".$wpdb->base_prefix."users u ON m.mail_to = u.ID WHERE mail_mid = ".$mail_mid);
 	}
 	
 	$styles = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."symposium_config");
@@ -722,7 +732,7 @@ function symposium_pending_friendship($uid) {
    	global $wpdb, $current_user;
 	wp_get_current_user();
 	
-	$sql = "SELECT * FROM ".$wpdb->prefix."symposium_friends WHERE (friend_accepted != 'on') AND (friend_from = ".$uid." AND friend_to = ".$current_user->ID." OR friend_to = ".$uid." AND friend_from = ".$current_user->ID.")";
+	$sql = "SELECT * FROM ".$wpdb->base_prefix."symposium_friends WHERE (friend_accepted != 'on') AND (friend_from = ".$uid." AND friend_to = ".$current_user->ID." OR friend_to = ".$uid." AND friend_from = ".$current_user->ID.")";
 	
 	if ( $wpdb->get_var($wpdb->prepare($sql)) ) {
 		return true;
@@ -736,7 +746,7 @@ function symposium_friend_of($uid) {
    	global $wpdb, $current_user;
 	wp_get_current_user();
 	
-	if ( $wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_friends WHERE (friend_accepted = 'on') AND (friend_from = ".$uid." AND friend_to = ".$current_user->ID." OR friend_to = ".$uid." AND friend_from = ".$current_user->ID.")")) ) {
+	if ( $wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix."symposium_friends WHERE (friend_accepted = 'on') AND (friend_from = ".$uid." AND friend_to = ".$current_user->ID." OR friend_to = ".$uid." AND friend_from = ".$current_user->ID.")")) ) {
 		return true;
 	} else {
 		return false;
@@ -831,9 +841,9 @@ function update_symposium_meta($uid, $meta, $value) {
 	if ($value == '') { $value = "''"; }
 	
 	// check if exists, and create record if not
-	if ($wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
+	if ($wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
 	} else {
-		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 
+		$wpdb->insert( $wpdb->base_prefix . "symposium_usermeta", array( 
 			'uid' => $uid, 
 			'sound' => 'chime.mp3',
 			'soundchat' => 'tap.mp3',
@@ -848,7 +858,7 @@ function update_symposium_meta($uid, $meta, $value) {
 
 	// now update value
  	$r = false;
-  	if ($wpdb->query("UPDATE ".$wpdb->prefix."symposium_usermeta SET ".$meta." = ".$value." WHERE uid = ".$uid)) {
+  	if ($wpdb->query("UPDATE ".$wpdb->base_prefix."symposium_usermeta SET ".$meta." = ".$value." WHERE uid = ".$uid)) {
   		$r = true;
   	}
   	
@@ -860,9 +870,9 @@ function get_symposium_meta($uid, $meta) {
    	global $wpdb;
 
 	// check if exists, and create record if not
-	if ($wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
+	if ($wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
 	} else {
-		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 
+		$wpdb->insert( $wpdb->base_prefix . "symposium_usermeta", array( 
 			'uid' => $uid, 
 			'sound' => 'chime.mp3',
 			'soundchat' => 'tap.mp3',
@@ -876,7 +886,7 @@ function get_symposium_meta($uid, $meta) {
 			
 	}
 
-	if ($value = $wpdb->get_var($wpdb->prepare("SELECT ".$meta." FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid)) ) {
+	if ($value = $wpdb->get_var($wpdb->prepare("SELECT ".$meta." FROM ".$wpdb->base_prefix.'symposium_usermeta'." WHERE uid = ".$uid)) ) {
 		return $value;
 	} else {
 		return false; 	
@@ -890,9 +900,9 @@ function get_symposium_meta_row($uid) {
 	$row = '';
 	
 	// check if exists, and create record if not
-	if ($row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
+	if ($row = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
 	} else {
-		$wpdb->insert( $wpdb->prefix . "symposium_usermeta", array( 
+		$wpdb->insert( $wpdb->base_prefix . "symposium_usermeta", array( 
 			'uid' => $uid, 
 			'sound' => 'chime.mp3',
 			'soundchat' => 'tap.mp3',
@@ -907,7 +917,7 @@ function get_symposium_meta_row($uid) {
 	}
 	
 	if ($row == '') {
-		if ($row = $wpdb->get_row($wpdb->prepare("SELECT ".$meta." FROM ".$wpdb->prefix.'symposium_usermeta'." WHERE uid = ".$uid)) ) {
+		if ($row = $wpdb->get_row($wpdb->prepare("SELECT ".$meta." FROM ".$wpdb->base_prefix.'symposium_usermeta'." WHERE uid = ".$uid)) ) {
 			return $row;
 		} else {
 			return false; 	
@@ -950,7 +960,7 @@ function symposium_add_notification($msg, $recipient) {
 function symposium_profile_link($uid) {
 	global $wpdb;
 
-	$display_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$uid));
+	$display_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = ".$uid));
 	if (function_exists('symposium_profile')) {
 		$profile_url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix."symposium_config"));
 		
@@ -1087,7 +1097,7 @@ function symposium_sendmail($email, $subject, $msg)
 	global $wpdb;
 	
 	// first get ID of recipient
-	$uid = $wpdb->get_var($wpdb->prepare("SELECT ID FROM ".$wpdb->prefix."users WHERE lower(user_email) = '".strtolower($email)."'"));
+	$uid = $wpdb->get_var($wpdb->prepare("SELECT ID FROM ".$wpdb->base_prefix."users WHERE lower(user_email) = '".strtolower($email)."'"));
 
 	// get footer
 	$footer = $wpdb->get_var($wpdb->prepare("SELECT footer FROM ".$wpdb->prefix.'symposium_config'));
@@ -1098,12 +1108,13 @@ function symposium_sendmail($email, $subject, $msg)
 	$body .= "</style>";
 	$body .= "<div style='margin: 20px; padding:20px; border-radius:10px; background-color: #fff;border:1px solid #000;'>";
 	$body .= $msg."<br /><hr />";
-	$body .= "<div style='width:430px;font-size:10px;border:0px solid #eee;text-align:left;float:left;'>".$footer."</div>";
-	
-	// Powered by message
-	$body .= "<div>Powered by <a href='http://www.wpsymposium.com'>WP Symposium</a> - Social Networking for WordPress</div>";
+	$body .= "<div style='width:430px;font-size:10px;border:0px solid #eee;'>";
+	$body .= $footer."<br />";
 	$body .= "</div>";
 
+	// Powered by message
+	$body .= powered_by_wps();
+	
 	// To send HTML mail, the Content-type header must be set
 	$headers  = 'MIME-Version: 1.0' . "\r\n";
 	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";

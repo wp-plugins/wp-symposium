@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.36.1
+Version: 0.37
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -74,7 +74,7 @@ class Symposium_vote_Widget extends WP_Widget {
 			
 		if (is_user_logged_in()) {
 			
-			$voted = $wpdb->get_var($wpdb->prepare("SELECT widget_voted FROM ".$wpdb->prefix."symposium_usermeta WHERE uid = ".$current_user->ID));
+			$voted = $wpdb->get_var($wpdb->prepare("SELECT widget_voted FROM ".$wpdb->base_prefix."symposium_usermeta WHERE uid = ".$current_user->ID));
 			if ($voted == "on") {
 				
 				echo "<p>";
@@ -129,7 +129,7 @@ class Symposium_vote_Widget extends WP_Widget {
 		// Reset
 		update_option( "symposium_vote_yes", 0 );
 		update_option( "symposium_vote_no", 0 );
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_usermeta SET widget_voted = ''") );
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->base_prefix."symposium_usermeta SET widget_voted = ''") );
 		
 		/* Strip tags (if needed) and update the widget settings. */
 		$instance['symposium_vote_question'] = strip_tags( $new_instance['symposium_vote_question'] );
@@ -202,7 +202,7 @@ class Symposium_members_Widget extends WP_Widget {
 		// Content of widget
 
 		$members = $wpdb->get_results("
-			SELECT * FROM ".$wpdb->prefix."users
+			SELECT * FROM ".$wpdb->base_prefix."users
 			ORDER BY user_registered DESC LIMIT 0,".$symposium_members_count); 
 		
 		if ($members) {
@@ -297,7 +297,7 @@ class Forumrecentposts_Widget extends WP_Widget {
 		// Content of widget
 		$posts = $wpdb->get_results("
 			SELECT tid, topic_subject, topic_owner, topic_post, topic_category, topic_date, display_name, topic_parent 
-			FROM ".$wpdb->prefix.'symposium_topics'." t INNER JOIN ".$wpdb->prefix.'users'." u ON t.topic_owner = u.ID 
+			FROM ".$wpdb->prefix.'symposium_topics'." t INNER JOIN ".$wpdb->base_prefix.'users'." u ON t.topic_owner = u.ID 
 			ORDER BY tid DESC LIMIT 0,".$postcount); 
 		
 		if ($posts) {

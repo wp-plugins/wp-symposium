@@ -20,7 +20,6 @@ include_once('../../../wp-includes/wp-db.php');
 include_once('symposium_functions.php');
 	
 global $wpdb, $current_user;
-wp_get_current_user();
 
 // Non AJAX search (hit submit without selecting)
 if ($_POST['member_id'] != '') {

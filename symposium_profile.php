@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile], [symposium-settings], [symposium-personal], [symposium-friends] or [symposium-extended] on any WordPress page to display relevant content.
-Version: 0.36.1
+Version: 0.37
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -148,7 +148,7 @@ function symposium_show_profile($page)
 		if ($_POST['from'] == 'small_search') {
 			if ($_POST['uid'] == '') {
 				$search = $_POST['member_small'];
-				$uid = $wpdb->get_var("SELECT u.ID FROM ".$wpdb->prefix."users u LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$search."%') OR (m.city LIKE '".$search."%') OR (m.country LIKE '".$search."%') OR (u.display_name LIKE '% %".$search."%') ORDER BY u.display_name LIMIT 0,1");
+				$uid = $wpdb->get_var("SELECT u.ID FROM ".$wpdb->base_prefix."users u LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$search."%') OR (m.city LIKE '".$search."%') OR (m.country LIKE '".$search."%') OR (u.display_name LIKE '% %".$search."%') ORDER BY u.display_name LIMIT 0,1");
 			}
 		} 
 		
@@ -166,7 +166,7 @@ function symposium_show_profile($page)
 
 		}		
 		
-		$user = $wpdb->get_row("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$uid);
+		$user = $wpdb->get_row("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = ".$uid);
 		
 		if ($user) {
 			

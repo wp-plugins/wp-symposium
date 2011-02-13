@@ -21,6 +21,7 @@ CHAT
 FORUM 
 
 - search
+Steven Tryon: linking blog to forum and vice versa
 
 CODEX
 

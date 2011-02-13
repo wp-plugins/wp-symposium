@@ -24,7 +24,7 @@ wp_get_current_user();
 	
 if (is_user_logged_in()) {
 
-	$users = $wpdb->prefix . 'users';
+	$users = $wpdb->base_prefix . 'users';
 	$config = $wpdb->prefix . 'symposium_config';
 	$topics = $wpdb->prefix . 'symposium_topics';
 	$subs = $wpdb->prefix . 'symposium_subs';

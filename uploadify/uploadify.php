@@ -39,7 +39,7 @@ if (!empty($_FILES)) {
 	if (move_uploaded_file($tempFile,$targetFile)) {
 		echo $filename;
 	} else {
-		echo "FAILED";
+		echo "FAILED-moving-".$tempFile."-to-".$targetFile;
 	};
 
 }

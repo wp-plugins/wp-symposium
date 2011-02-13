@@ -75,7 +75,7 @@ if ($_POST['action'] == 'reply') {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_topics SET topic_date = NOW() WHERE tid = ".$tid) );					
 			
 			// Email people who want to know and prepare body
-			$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->prefix."users WHERE ID = ".$current_user->ID));
+			$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = ".$current_user->ID));
 			$parent = $wpdb->get_var($wpdb->prepare("SELECT topic_subject FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$tid));
 			
 			$body = "<span style='font-size:24px'>".$parent."</span><br /><br />";
@@ -89,7 +89,7 @@ if ($_POST['action'] == 'reply') {
 			if ($topic_approved == "on") {
 				$query = $wpdb->get_results("
 					SELECT user_email
-					FROM ".$wpdb->prefix."users u RIGHT JOIN ".$wpdb->prefix."symposium_subs ON ".$wpdb->prefix."symposium_subs.uid = u.ID 
+					FROM ".$wpdb->base_prefix."users u RIGHT JOIN ".$wpdb->prefix."symposium_subs ON ".$wpdb->prefix."symposium_subs.uid = u.ID 
 					WHERE u.ID != ".$current_user->ID." AND tid = ".$tid);
 					
 				if ($query) {						
@@ -136,7 +136,7 @@ if ($_POST['action'] == 'getActivity') {
 			$html .= '<div id="forum_activity_title">'.__('Recently added topics', 'wp-symposium').'</div>';
 		
 			// All topics started
-			$sql = "SELECT t.*, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."users u ON t.topic_owner = u.ID WHERE topic_parent = 0 ORDER BY topic_started DESC LIMIT 0,40";
+			$sql = "SELECT t.*, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->base_prefix."users u ON t.topic_owner = u.ID WHERE topic_parent = 0 ORDER BY topic_started DESC LIMIT 0,40";
 	
 			$topics = $wpdb->get_results($sql);
 			if ($topics) {
@@ -149,7 +149,7 @@ if ($_POST['action'] == 'getActivity') {
 					$html .= "<em>".__("Started by", "wp-symposium")." ".$topic->display_name.", ".symposium_time_ago($topic->topic_started);
 					
 					// Replies
-					$replies = $wpdb->get_results($wpdb->prepare("SELECT t.*, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."users u ON t.topic_owner = u.ID WHERE topic_parent = ".$topic->tid." ORDER BY topic_date DESC"));
+					$replies = $wpdb->get_results($wpdb->prepare("SELECT t.*, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->base_prefix."users u ON t.topic_owner = u.ID WHERE topic_parent = ".$topic->tid." ORDER BY topic_date DESC"));
 					if ($replies) {
 						$cnt = 0;
 						$dt = '';
@@ -197,7 +197,7 @@ if ($_POST['action'] == 'getActivity') {
 					$html .= $text."<br />";
 
 					// Replies
-					$replies = $wpdb->get_results($wpdb->prepare("SELECT t.*, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."users u ON t.topic_owner = u.ID WHERE topic_parent = ".$topic->tid." ORDER BY tid DESC"));
+					$replies = $wpdb->get_results($wpdb->prepare("SELECT t.*, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->base_prefix."users u ON t.topic_owner = u.ID WHERE topic_parent = ".$topic->tid." ORDER BY tid DESC"));
 					if ($replies) {
 						$cnt = 0;
 						$dt = '';
@@ -250,7 +250,7 @@ if ($_POST['action'] == 'getActivity') {
 						$html .= $text."<br />";
 						$html .= "<em>";
 						$html .= __("You replied", "wp_symposium")." ".symposium_time_ago($topic->topic_date);
-						$last_reply = $wpdb->get_row($wpdb->prepare("SELECT t.*, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->prefix."users u ON t.topic_owner = u.ID WHERE topic_parent = ".$topic->topic_parent." ORDER BY tid DESC LIMIT 0,1"));
+						$last_reply = $wpdb->get_row($wpdb->prepare("SELECT t.*, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->base_prefix."users u ON t.topic_owner = u.ID WHERE topic_parent = ".$topic->topic_parent." ORDER BY tid DESC LIMIT 0,1"));
 						if ($last_reply->topic_owner != $topic->topic_owner) {
 							$html .= ", ".__("last reply by", "wp-symposium")." ".$last_reply->display_name." ".symposium_time_ago($last_reply->topic_date).".";
 						} else {

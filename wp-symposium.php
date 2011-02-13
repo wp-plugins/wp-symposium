@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.36.1
+Version: 0.37
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -30,15 +30,13 @@ License: GPL2
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.36.1');
-define('WPS_DBVER', '36');
+define('WPS_VER', '0.37');
+define('WPS_DBVER', '37');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
 add_action('init', 'symposium_notification_setoptions');
 add_action('symposium_notification_hook','symposium_notification_trigger_schedule');
-add_action('wp_login', 'symposium_redirect_login', 10);
-add_action('wp_logout', 'symposium_redirect_logout', 10);
 add_action('wp_footer', 'symposium_lastactivity', 10);
 add_action('template_redirect', 'symposium_replace');
 add_action('wp_print_styles', 'add_symposium_stylesheet');
@@ -116,8 +114,8 @@ function symposium_widget() {
 		echo '<tr><td style="padding:4px">'.__('Views', 'wp-symposium').'</td>';
 		echo '<td style="padding:4px">'.$wpdb->get_var("SELECT SUM(topic_views) FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_parent = 0").'</td></tr>';
 		echo '<tr><td style="padding:4px">'.__('Mail', 'wp-symposium').'</td>';
-		$mailcount = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail');
-		$unread = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail'." WHERE mail_read != 'on'");
+		$mailcount = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->base_prefix.'symposium_mail');
+		$unread = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->base_prefix.'symposium_mail'." WHERE mail_read != 'on'");
 		echo '<td style="padding:4px">'.$mailcount.' ';
 		printf (__('(%s unread)', 'wp-symposium'), $unread);
 		echo '</td></tr>';
@@ -210,11 +208,6 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "offline", "int(11)", "NOT NULL", "'15'");
 	symposium_alter_table("config", "ADD", "wp_alignment", "varchar(16)", "NOT NULL", "'Center'");
 	symposium_alter_table("config", "ADD", "enable_password", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "enable_redirects", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "login_redirect", "varchar(128)", "NOT NULL", "'WordPress default'");
-	symposium_alter_table("config", "ADD", "login_redirect_url", "varchar(128)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "logout_redirect", "varchar(128)", "NOT NULL", "'WordPress default'");
-	symposium_alter_table("config", "ADD", "logout_redirect_url", "varchar(128)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "members_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "avatar_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
@@ -289,11 +282,6 @@ function symposium_activate() {
 	// Add moderation field to topics
 	symposium_alter_table("topics", "ADD", "allow_replies", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("topics", "ADD", "topic_approved", "varchar(2)", "NOT NULL", "'on'");
-
-	// Update motd flag
-	$sql = "UPDATE ".$wpdb->prefix."symposium_config SET motd = ''";
-	$wpdb->query($sql); 
-	
 						      	
 	// ***********************************************************************************************
  	// Update Versions *******************************************************************************
@@ -402,7 +390,7 @@ function symposium_notification_trigger_schedule() {
 					$shown_category = false;
 					$topics = $wpdb->get_results("
 						SELECT tid, topic_subject, topic_parent, topic_post, topic_date, display_name, topic_category 
-						FROM ".$wpdb->prefix.'symposium_topics'." INNER JOIN ".$wpdb->prefix.'users'." ON ".$wpdb->prefix.'symposium_topics'.".topic_owner = ".$wpdb->prefix.'users'.".ID 
+						FROM ".$wpdb->prefix.'symposium_topics'." INNER JOIN ".$wpdb->base_prefix.'users'." ON ".$wpdb->prefix.'symposium_topics'.".topic_owner = ".$wpdb->base_prefix.'users'.".ID 
 						WHERE topic_parent = 0 AND topic_category = ".$category->cid." AND UNIX_TIMESTAMP(topic_date) >= ".$startTime." AND UNIX_TIMESTAMP(topic_date) <= ".$endTime." 
 						ORDER BY tid"); 
 					if ($topics) {
@@ -423,7 +411,7 @@ function symposium_notification_trigger_schedule() {
 
 					$replies = $wpdb->get_results("
 						SELECT tid, topic_subject, topic_parent, topic_post, topic_date, display_name, topic_category 
-						FROM ".$wpdb->prefix.'symposium_topics'." INNER JOIN ".$wpdb->prefix.'users'." ON ".$wpdb->prefix.'symposium_topics'.".topic_owner = ".$wpdb->prefix.'users'.".ID 
+						FROM ".$wpdb->prefix.'symposium_topics'." INNER JOIN ".$wpdb->base_prefix.'users'." ON ".$wpdb->prefix.'symposium_topics'.".topic_owner = ".$wpdb->base_prefix.'users'.".ID 
 						WHERE topic_parent > 0 AND topic_category = ".$category->cid." AND UNIX_TIMESTAMP(topic_date) >= ".$startTime." AND UNIX_TIMESTAMP(topic_date) <= ".$endTime."
 						ORDER BY topic_parent, tid"); 
 					if ($replies) {
@@ -453,7 +441,7 @@ function symposium_notification_trigger_schedule() {
 			
 			$body .= "<p>".__("You can stop receiving these emails at", "wp-symposium")." <a href='".$forum_url."'>".$forum_url."</a>.</p>";
 			
-			$users = $wpdb->get_results("SELECT DISTINCT user_email FROM ".$wpdb->prefix.'users'." u INNER JOIN ".$wpdb->prefix.'symposium_usermeta'." m ON u.ID = m.uid WHERE m.forum_digest = 'on'"); 
+			$users = $wpdb->get_results("SELECT DISTINCT user_email FROM ".$wpdb->base_prefix.'users'." u INNER JOIN ".$wpdb->base_prefix.'symposium_usermeta'." m ON u.ID = m.uid WHERE m.forum_digest = 'on'"); 
 			if ($users) {
 				foreach ($users as $user) {
 					if(symposium_sendmail($user->user_email, __('Daily Forum Digest', 'wp-symposium'), $body)) {
@@ -468,55 +456,6 @@ function symposium_notification_trigger_schedule() {
 
 /* ====================================================== PHP FUNCTIONS ====================================================== */
 
-// Redirect user after log in
-function symposium_redirect_login() {
-	global $wpdb;
-
-	if (!(function_exists('symposium_login'))) {
-		
-		$redirect = $wpdb->get_row($wpdb->prepare("SELECT enable_redirects, login_redirect, login_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
-	
-		if ($redirect->enable_redirects == 'on') {
-			
-			$url = "";	
-
-			switch($redirect->login_redirect) {			
-				case "Profile Wall":
-					$url = symposium_get_url('profile');	
-					break;
-				case "Profile Settings":
-					$url = symposium_get_url('profile')."?view=settings";	
-					break;
-				case "Profile Personal":
-					$url = symposium_get_url('profile')."?view=personal";	
-					break;
-				case "Mail":
-					$url = symposium_get_url('mail');	
-					break;
-				case "Forum":
-					$url = symposium_get_url('forum');	
-					break;
-				case "Custom":
-					$url = $redirect->login_redirect_url;	
-					break;
-				default:
-					if (function_exists('symposium_login')) {
-						$url = symposium_get_url('profile');	
-					} else {
-						$url = "/";
-					}
-					break;
-			}
-
-			if ($url != '') {
-				wp_redirect($url);	
-				exit;
-			}
-
-		}
-	
-	}
-}
 
 // Update user activity on page load
 function symposium_lastactivity() {
@@ -535,20 +474,6 @@ function symposium_lastactivity() {
 	echo get_user_avatar($current_user->ID, 200);
 	echo "</div>";
 	
-}
-
-// Redirect user after logging out
-function symposium_redirect_logout() {
-	global $wpdb;
-	$redirect = $wpdb->get_var($wpdb->prepare("SELECT enable_redirects, logout_redirect, logout_redirect_url FROM ".$wpdb->prefix . 'symposium_config'));
-
-	if ( ($redirect->enable_redirects == 'on') && ($redirect->logout_redirect != "WordPress default") ) {
-		switch($redirect) {			
-			default:
-				wp_redirect($redirect->logout_redirect_url);	
-				exit;
-		}
-	}
 }
 
 // Hook to replace Smilies
@@ -675,7 +600,7 @@ function symposium_unread($buffer){
 	wp_get_current_user();
 
 	// Unread mail
-	$unread_in = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix.'symposium_mail'." WHERE mail_to = ".$current_user->ID." AND mail_in_deleted != 'on' AND mail_read != 'on'");
+	$unread_in = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->base_prefix.'symposium_mail'." WHERE mail_to = ".$current_user->ID." AND mail_in_deleted != 'on' AND mail_read != 'on'");
 	if ($unread_in > 0) {
 		$buffer = str_replace("%m", "(".$unread_in.")", $buffer);
 	} else {
@@ -683,7 +608,7 @@ function symposium_unread($buffer){
 	}
 	
     // Pending friends
-	$pending_friends = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_friends f WHERE f.friend_to = ".$current_user->ID." AND f.friend_accepted != 'on'");
+	$pending_friends = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_friends f WHERE f.friend_to = ".$current_user->ID." AND f.friend_accepted != 'on'");
 
 	if ($pending_friends > 0) {
 		$buffer = str_replace("%f", "(".$pending_friends.")", $buffer);
@@ -704,15 +629,15 @@ function symposium_admin_check() {
 	
 	// Check that user meta matches user table and delete to synchronise
 	$sql = "SELECT uid
-			FROM ".$wpdb->prefix."symposium_usermeta m 
-			LEFT JOIN ".$wpdb->prefix."users u 
+			FROM ".$wpdb->base_prefix."symposium_usermeta m 
+			LEFT JOIN ".$wpdb->base_prefix."users u 
 			ON m.uid = u.ID 
 			WHERE u.ID IS NULL;";
 			
 	$missing_users = $wpdb->get_results($sql); 
 	if ($missing_users) {
 		foreach ($missing_users as $missing) {
-			$sql = "DELETE FROM ".$wpdb->prefix."symposium_usermeta WHERE uid = ".$missing->uid;
+			$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_usermeta WHERE uid = ".$missing->uid;
 			$wpdb->query($sql); 
 		}
 	}	
@@ -861,7 +786,7 @@ function symposium_scriptsAction()
 		if ($page_uid == 0) {
 			if ($_POST['from'] == 'small_search') {
 				$search = $_POST['member_small'];
-				$get_uid = $wpdb->get_var("SELECT u.ID FROM ".$wpdb->prefix."users u LEFT JOIN ".$wpdb->prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$search."%') OR (m.city LIKE '".$search."%') OR (m.country LIKE '".$search."%') OR (u.display_name LIKE '% %".$search."%') ORDER BY u.display_name LIMIT 0,1");
+				$get_uid = $wpdb->get_var("SELECT u.ID FROM ".$wpdb->prefix."base_users u LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$search."%') OR (m.city LIKE '".$search."%') OR (m.country LIKE '".$search."%') OR (u.display_name LIKE '% %".$search."%') ORDER BY u.display_name LIMIT 0,1");
 				if ($get_uid) { $page_uid = $get_uid; }
 			} 
 		}
