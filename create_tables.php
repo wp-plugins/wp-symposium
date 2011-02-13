@@ -262,7 +262,7 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
 } 	
 
-// Create notifications table
+// Create friends table
 $table_name = $wpdb->prefix . "symposium_friends";
 if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
@@ -279,6 +279,24 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
     dbDelta($sql);
 
 } 	
+
+// Create notifications table
+$table_name = $wpdb->prefix . "symposium_notifications";
+if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+	$sql = "CREATE TABLE " . $table_name . " (
+  	nid int(11) NOT NULL auto_increment,
+  	notification_to int(11) NOT NULL,
+  	notification_shown varchar(2) NOT NULL,
+  	notification_message varchar(1024) NOT NULL,
+ 	notification_old varchar(2) NOT NULL default '',
+	PRIMARY KEY nid (nid)
+ 	);";
+
+    dbDelta($sql);
+
+} 	
+
 
 // Create chat table
 $table_name = $wpdb->prefix . "symposium_chat";

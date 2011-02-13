@@ -827,9 +827,9 @@ if ($_POST['action'] == 'updatePersonal') {
 		update_symposium_meta($current_user->ID, 'wall_share', "'".$wall_share."'");
 		update_symposium_meta($current_user->ID, 'extended', "'".$extended."'");
 			
-		//echo "OK";
-		echo $wpdb->last_query;
-	
+		echo "OK";
+		
+		
 	} else {
 		echo "NOT LOGGED IN";
 	}

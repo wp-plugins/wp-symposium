@@ -1106,6 +1106,7 @@
 }
 .symposium-wrapper .topic-post-header
 {
+	text-shadow: 1px 1px 1px #fff; 
 	font-size: 28px;
 	line-height: 32px;
 	margin-bottom: 0px;
