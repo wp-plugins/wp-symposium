@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.0.5
-Stable tag: 0.37
+Stable tag: 0.37.1
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -132,7 +132,7 @@ Q. Are there images other than the usual smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Smilies page at http://www.wpsymposium.com.
 
 Q. Will WP Symposium work on WPMU/WPMS?
-A. Sorry no, not at the moment - but it's planned to get this working at some point.
+A. As from v0.37, yes, WordPress Multi-site is supported.
 
 Q. I don't see friends when they're online, can't edit forum posts or read all mail in my inbox. I see stuff, but not much works...
 A. Sounds like AJAX isn't working, probably due to a Javascript error. Check on the admin Health Check page, and try using Firefox with the Firebug add-in to check for javascript errors. Always try de-activating and re-activating the core WPS plugin.

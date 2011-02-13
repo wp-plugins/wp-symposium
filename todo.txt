@@ -1,6 +1,10 @@
 todo.txt
 --------
 
+GENERAL
+
+- purge tool for wall, forum and chat
+
 NOTIFICATIONS
 
 - template driven
@@ -16,6 +20,7 @@ PROFILE
 
 CHAT
 
+- online light on chat window
 - please wait not showing when window first opens
 
 FORUM 
