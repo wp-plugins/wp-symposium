@@ -283,7 +283,7 @@ function symposium_plugin_debug() {
 		
 		echo '<h2>'.__('Uploadify Test', 'wp-symposium').'</h2></p>';
 		
-		echo '<p>The default browser "browse" button, should be replaced with Uploadify&apos;s.</p>';
+		echo '<p>If working, the default web browser "browse" button below, will be replaced with Uploadify&apos;s version.</p>';
 		echo '<input id="file_upload_admin" name="file_upload_admin" type="file" />';
 		echo '<div id="file_upload_admin_result"></div>';
 	
@@ -368,8 +368,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'profile_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'avatar_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'bar_position')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'bar_label')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'online')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'offline')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_chat')) { $status = "X"; }
@@ -379,7 +377,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'bar_polling')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'chat_polling')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_wp_profile')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'visitors')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'wp_alignment')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'enable_password')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sharing')) { $status = "X"; }
@@ -570,7 +567,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'forum_digest')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'soundchat')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'bar_position')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'notify_new_messages')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'notify_new_wall')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'timezone')) { $status = "X"; }
@@ -648,7 +644,7 @@ function symposium_plugin_debug() {
 			  		echo "&nbsp;&middot;&nbsp;".__('the profile page is at', 'wp-symposium')." <a href='".$config->profile_url."'>$config->profile_url</a><br />";
 			  	}
 			  	if (function_exists('symposium_avatar')) { 
-			  		echo "&nbsp;&middot;&nbsp;".__('the avatar page is at', 'wp-symposium')." <a href='".$config->avatar_url."'>$config->profile_url</a><br />";
+			  		echo "&nbsp;&middot;&nbsp;".__('the avatar page is at', 'wp-symposium')." <a href='".$config->avatar_url."'>$config->avatar_url</a><br />";
 			  	}
 			  	if (function_exists('symposium_members')) { 
 			  		echo "&nbsp;&middot;&nbsp;".__('the members directory page is at', 'wp-symposium')." <a href='".$config->members_url."'>$config->members_url</a><br />";
@@ -1387,8 +1383,6 @@ function symposium_plugin_options() {
 	    // See if the user has posted notification bar settings
 	    if( $_POST[ 'symposium_update' ] == 'B' ) {
 	        $sound = $_POST[ 'sound' ];
-	        $bar_position = $_POST[ 'bar_position' ];
-	        $bar_label = $_POST[ 'bar_label' ];
 	        $use_chat = $_POST[ 'use_chat' ];
 	        $use_chatroom = $_POST[ 'use_chatroom' ];
 	        $chatroom_banned = $_POST[ 'chatroom_banned' ];
@@ -1396,11 +1390,8 @@ function symposium_plugin_options() {
 	        $bar_polling = $_POST[ 'bar_polling' ];
 	        $chat_polling = $_POST[ 'chat_polling' ];
 	        $use_wp_profile = $_POST[ 'use_wp_profile' ];
-	        $visitors = $_POST[ 'visitors' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET sound = '".$sound."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_position = '".$bar_position."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_label = '".$bar_label."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chat = '".$use_chat."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chatroom = '".$use_chatroom."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chatroom_banned = '".$chatroom_banned."'") );					
@@ -1408,10 +1399,9 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_polling = '".$bar_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chat_polling = '".$chat_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_profile = '".$use_wp_profile."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET visitors = '".$visitors."'") );		
 			
 	        // Put an settings updated message on the screen
-			echo "<div class='updated'><p>".__('Notification Bar options saved', 'wp-symposium').".</p></div>";
+			echo "<div class='updated'><p>".__('Panel options saved', 'wp-symposium').".</p></div>";
 			
 	    }
 	    	
@@ -1715,7 +1705,7 @@ function symposium_plugin_options() {
 				echo '<div class="mail_tab nav-tab-'.$profile_active.'"><a href="admin.php?page=symposium_options&view=profile" class="nav-tab-'.$profile_active.'-link">'.__('Profile', 'wp-symposium').'</a></div>';
 			}
 			if (function_exists('add_notification_bar')) {
-				echo '<div class="mail_tab nav-tab-'.$bar_active.'"><a href="admin.php?page=symposium_options&view=bar" class="nav-tab-'.$bar_active.'-link">'.__('Bar', 'wp-symposium').'</a></div>';
+				echo '<div class="mail_tab nav-tab-'.$bar_active.'"><a href="admin.php?page=symposium_options&view=bar" class="nav-tab-'.$bar_active.'-link">'.__('Panel', 'wp-symposium').'</a></div>';
 			}
 			echo '</div>';
 			
@@ -1805,8 +1795,6 @@ function symposium_plugin_options() {
 				if ($view == "bar") {
 
 					$sound = $config->sound;
-					$bar_position = $config->bar_position;
-					$bar_label = $config->bar_label;
 					$use_chat = $config->use_chat;
 					$use_chatroom = $config->use_chatroom;
 					$chatroom_banned = $config->chatroom_banned;
@@ -1814,7 +1802,6 @@ function symposium_plugin_options() {
 					$bar_polling = $config->bar_polling;
 					$chat_polling = $config->chat_polling;
 					$use_wp_profile = $config->use_wp_profile;
-					$visitors = $config->visitors;
 					?>
 
 					<form method="post" action=""> 
@@ -1822,19 +1809,6 @@ function symposium_plugin_options() {
 				
 					<table class="form-table">
 
-					<tr valign="top"> 
-					<th scope="row"><label for="visitors">Show to visitors</label></th>
-					<td>
-					<input type="checkbox" name="visitors" id="visitors" <?php if ($visitors == "on") { echo "CHECKED"; } ?>/>
-					<span class="description"><?php echo __('Should visitors to the site see the notification bar before logging in?', 'wp-symposium'); ?></span></td> 
-					</tr> 
-				
-					<tr valign="top"> 
-					<th scope="row"><label for="bar_label">Label</label></th> 
-					<td><input name="bar_label" type="text" id="bar_label"  value="<?php echo $bar_label; ?>" style="width:300px" class="regular-text" /> 
-					<span class="description"><?php echo __('The text that is shown to the left of the notification bar', 'wp-symposium'); ?></td> 
-					</tr> 
-								
 					<tr valign="top"> 
 					<th scope="row"><label for="sound">Default Sound Alert</label></th> 
 					<td>
@@ -1856,16 +1830,6 @@ function symposium_plugin_options() {
 					</tr> 
 					
 					<?php //if ($sound != 'None') { echo '<embed src="'.WP_PLUGIN_URL.'/wp-symposium/soundmanager/'.$sound.'" width="0" height="0" loop="false" autostart="true"></embed>'; } ?>
-					
-					<tr valign="top"> 
-					<th scope="row"><label for="bar_position">Default Bar Position</label></th> 
-					<td>
-					<select name="bar_position">
-						<option value='bottom'<?php if ($bar_position == 'bottom') { echo ' SELECTED'; } ?>>Bottom</option>
-						<option value='top'<?php if ($bar_position == 'top') { echo ' SELECTED'; } ?>>Top</option>
-					</select> 
-					<span class="description"><?php echo __('Where on the screen the bar is placed', 'wp-symposium'); ?></span></td> 
-					</tr> 	
 					
 					<tr valign="top"> 
 					<th scope="row"><label for="use_chat">Enable chat windows</label></th>

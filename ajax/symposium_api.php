@@ -20,8 +20,12 @@ include_once('../../../../wp-config.php');
 include_once('../../../../wp-includes/wp-db.php');
 include_once('../symposium_functions.php');
 	
-
 global $wpdb;
+
+header('Content-Type: application/x-javascript');
+header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+header('Cache-Control: no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
 
 $wpdb->show_errors();
 

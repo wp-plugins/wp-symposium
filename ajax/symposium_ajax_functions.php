@@ -23,11 +23,29 @@ include_once('../symposium_functions.php');
 
 $action = $_POST['action'].$_GET['action'];
 
+
+if ($action == "symposium_logout") {
+
+  	wp_logout();
+	exit;
+}
+
 if ($action == "symposium_test_ajax") {
 
 	$value = $_POST['postID'];	
 	echo $value*100;
 	exit;
+}
+
+if ($action == "symposium_motd") {
+
+	global $wpdb;
+
+	// Update motd flag
+	$sql = "UPDATE ".$wpdb->prefix."symposium_config SET motd = 'on'";
+	$wpdb->query($sql); 
+	
+	exit;	
 }
 
 ?>

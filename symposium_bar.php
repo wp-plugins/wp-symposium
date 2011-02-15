@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: WP Symposium Notification Bar
+Plugin Name: WP Symposium Panel
 Plugin URI: http://www.wpsymposium.com
-Description: Bar along bottom of screen to display notifications on new messages, mail. Also controls live chat windows. Simply activate to add.
-Version: 0.37.1
+Description: Panel bottom corner of screen to display notifications on new messages, mail, friend online, etc. Also controls live chat windows and chatroom. Simply activate to add.
+Version: 0.38
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -46,11 +46,9 @@ function add_notification_bar()
 			if ($allow_personal_settings != "on") {
 				$sound = $config->sound;
 				$soundchat = $sound;
-				$bar_position = $config->bar_position;
 			} else {
 				$sound = $meta->sound;
 				$soundchat = $meta->soundchat;
-				$bar_position = $meta->bar_position;			
 			}
 			$use_chat = $config->use_chat;
 			$use_chatroom = $config->use_chatroom;
@@ -71,13 +69,6 @@ function add_notification_bar()
 			?>
 				
 			<style>
-				#symposium-notification-bar {
-					<?php echo $bar_position; ?>:0px;
-				}
-				
-				#symposium-chatboxes {
-					<?php echo $bar_position; ?>:28px;
-				}
 											
 				.symposium-online-box {
 					border-radius: <?php echo $border_radius; ?>px;
@@ -94,6 +85,12 @@ function add_notification_bar()
 					}?>
 				}
 				
+				#symposium-logout {
+					background-image:url('<?php echo $plugin; ?>/images/logout.gif');
+					border-radius: <?php echo $border_radius; ?>px;
+					-moz-border-radius: <?php echo $border_radius; ?>px;
+				}
+								
 				#symposium-chatroom-box {
 					background-image:url('<?php echo $plugin; ?>/images/chatroom.gif');
 					border-radius: <?php echo $border_radius; ?>px;
@@ -132,135 +129,94 @@ function add_notification_bar()
 					-moz-border-radius: <?php echo $border_radius; ?>px;
 				}
 			</style>
+
 			
-			<!-- NOTIFICATION BAR -->
-			<div id="symposium-notification-bar">
-				<div id="icons" style="float: left">
-					<?php
-			        echo $config->bar_label;
-					?>
-				</div>
-	
-				<?php if (is_user_logged_in()) {
-					// Chat room
-					if ($use_chatroom == 'on') {
-						echo "<div id='symposium-chatroom-box'></div>";
-					}
-
-					// Pending Friends
-					if (function_exists('symposium_profile')) {
-						echo "<div id='symposium-friends-box' title='".__("Go to Friends", "wp-symposium")."' class='symposium-friends-box symposium-friends-box-none'>";
-					} else {
-						echo "<div id='symposium-friends-box' style='display:none'>";
-					}
-					echo "</div>";
-					
-					// Unread Mail
-					if (function_exists('symposium_mail')) {
-						echo "<div id='symposium-email-box' title='".__("Go to Mail", "wp-symposium")."' class='symposium-email-box symposium-email-box-read'>";
-					} else {
-						echo "<div id='symposium-email-box' style='display:none'>";
-					}
-					echo "</div>";
-	
-					// Friends Status/Online
-					echo "<div id='symposium-online-box' class='symposium-online-box-none'></div>";
-				} ?>
-	
-				<!-- DIV for notification alerts -->
-				<div id="alerts"></div>
-				
-				<!-- DIV for login/logout/etc links -->
-				<div id="info">
-					<?php
-					if (is_user_logged_in()) {
-
-						_e('Logged in as', 'wp-symposium');
-					    
-						if ($use_wp_profile == 'on') {
-							echo ' <a href="/wp-admin/profile.php">'.$current_user->user_login.'</a>';
-						} else {
-							$profilepage = $config->profile_url;
-							if ($profilepage[strlen($profilepage)-1] != '/') { $profilepage .= '/'; }
-							$q = symposium_string_query($profilepage);		
-							echo ' <a href="'.$profilepage.$q.'view=wall">'.$current_user->user_login.'</a>';
-						}
-						
-						if (current_user_can('activate_plugins')) {
-							echo wp_register('.&nbsp;', '');
-						}
-						
-						echo '.&nbsp;';
-						wp_loginout( '/index.php' );
-						echo '.&nbsp;';
-													
-					} else {
-						
-						echo "<a href=".wp_login_url()." class='simplemodal-login' title='".__("Login", "wp-symposium")."'>".__("Login", "wp-symposium")."</a>";
-
-						echo wp_register('&nbsp;', '');
-
-
-					}
-	
-					?>	
-				</div>
-				
-			</div>
+			<?php
 			
-			<?php if (is_user_logged_in()) {
-	
-				echo "<div id='symposium-chatboxes'>";
+			
+			echo "<!-- NOTIFICATION BAR -->";
+
+				if (is_user_logged_in()) {
 		
-					// DIV for who's online
-					echo "<div id='symposium-who-online'>";
-					
-						echo "<div id='symposium-who-online_header' style='width:176px;height:18px;padding:2px;background-color:#000;color:#fff;'>";
-							echo "<div id='symposium-who-online_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";
-						_e("Friends Status", "wp-symposium");
-						echo "</div>";
-						echo "<div id='symposium-friends-online-list'>";
-						echo "</div>";
-														
-					echo "</div>";
-					
-					// DIV for chat room
-					if ($use_chatroom == 'on') {
-						echo "<div id='symposium-chatroom'>";
+					echo "<div id='symposium-chatboxes'>";
+			
+						// DIV for who's online
+						echo "<div id='symposium-who-online'>";
 						
-							echo "<div id='symposium-chatroom_header'>";
-								echo "<div id='symposium-chatroom_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";
-								echo "<div id='symposium-chatroom_max' style='margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/max.gif' title='Maximize' /></div>";
-								echo "<div id='symposium-chatroom_min' style='display:none; margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/min.gif' title='Maximize' /></div>";
-								if (symposium_get_current_userlevel() == 5) {
-									echo "<div id='symposium-chatroom_clear' style='margin-right:5px;float:right;cursor:pointer;'>".__("Clear all", "wp-symposium")."</div>";
-								}
-							_e("Chat Room (visible to all)", "wp-symposium");
+							echo "<div id='symposium-who-online_header' style='width:176px;height:18px;padding:2px;background-color:#000;color:#fff;'>";
+								echo "<div id='symposium-who-online_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";
+							_e("Friends Status", "wp-symposium");
 							echo "</div>";
-							echo "<div id='chatroom_messages'>";
-							echo __("Retrieving chat...", "wp-symposium");
+							echo "<div id='symposium-friends-online-list'>";
 							echo "</div>";
-							echo "<div id='chatroom_typing_area'>";
-								echo "<textarea id='chatroom_textarea' class='chatroom_message' onclick='if (this.value == \"".__("Type here...", "wp-symposium")."\") { this.value=\"\"; }'>".__("Type here...", "wp-symposium")."</textarea>";
-							echo "</div>";
-																					
+															
 						echo "</div>";
-					}
-					
-					// set up chat windows (should match numChatWindows in function do_chat_check() in symposium_bar.js)
-					if ($use_chat == 'on') {
-						for ($w = 1; $w <= 3; $w++) {
-							addChatWindow($w);
+						
+						// DIV for chat room
+						if ($use_chatroom == 'on') {
+							echo "<div id='symposium-chatroom'>";
+							
+								echo "<div id='symposium-chatroom_header'>";
+									echo "<div id='symposium-chatroom_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";
+									echo "<div id='symposium-chatroom_max' style='margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/max.gif' title='Maximize' /></div>";
+									echo "<div id='symposium-chatroom_min' style='display:none; margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/min.gif' title='Maximize' /></div>";
+									if (symposium_get_current_userlevel() == 5) {
+										echo "<div id='symposium-chatroom_clear' style='margin-right:5px;float:right;cursor:pointer;'>".__("Clear all", "wp-symposium")."</div>";
+									}
+								_e("Chat Room (visible to all)", "wp-symposium");
+								echo "</div>";
+								echo "<div id='chatroom_messages'>";
+								echo __("Retrieving chat...", "wp-symposium");
+								echo "</div>";
+								echo "<div id='chatroom_typing_area'>";
+									echo "<textarea id='chatroom_textarea' class='chatroom_message' onclick='if (this.value == \"".__("Type here...", "wp-symposium")."\") { this.value=\"\"; }'>".__("Type here...", "wp-symposium")."</textarea>";
+								echo "</div>";
+																						
+							echo "</div>";
 						}
-					}
-					
-				echo "</div>";
+						
+						// set up chat windows (should match numChatWindows in function do_chat_check() in symposium_bar.js)
+						if ($use_chat == 'on') {
+							for ($w = 1; $w <= 3; $w++) {
+								addChatWindow($w);
+							}
+						}
+						
+					echo "</div>";
 				
+					echo '<div id="symposium-notification-bar">';
 
-	        
-	        			
-			}
+						// Log out
+						echo "<div id='symposium-logout'></div>";
 	
+						// Chat room
+						if ($use_chatroom == 'on') {
+							echo "<div id='symposium-chatroom-box'></div>";
+						}
+	
+						// Pending Friends
+						if (function_exists('symposium_profile')) {
+							echo "<div id='symposium-friends-box' title='".__("Go to Friends", "wp-symposium")."' class='symposium-friends-box symposium-friends-box-none'>";
+						} else {
+							echo "<div id='symposium-friends-box' style='display:none'>";
+						}
+						echo "</div>";
+						
+						// Unread Mail
+						if (function_exists('symposium_mail')) {
+							echo "<div id='symposium-email-box' title='".__("Go to Mail", "wp-symposium")."' class='symposium-email-box symposium-email-box-read'>";
+						} else {
+							echo "<div id='symposium-email-box' style='display:none'>";
+						}
+						echo "</div>";
+		
+						// Friends Status/Online
+						echo "<div id='symposium-online-box' class='symposium-online-box-none'></div>";
+								
+				echo "</div>";
+
+			} 	
+
 		}
 	}
 

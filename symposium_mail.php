@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.37.1
+Version: 0.38
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -224,8 +224,8 @@ function symposium_mail() {
 				
   				$html .= '<form method="post" action="">';
 
-					$html .= '<div class="button floatright send_button">';
-					$html .= '<input id="mail_send_button" type="submit" class="button" value="'.__('Send', 'wp-symposium').'" />';
+					$html .= '<div class="floatright send_button">';
+					$html .= '<input id="mail_send_button" type="submit" class="button" style="height:48px" value="'.__('Send', 'wp-symposium').'" />';
 					$html .= '</div>';
 	
 					$html .= '<div id="compose_mail_to">';

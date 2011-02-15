@@ -547,4 +547,95 @@ if ($_POST['action'] == 'updateForumSubscribe') {
 
 }
 
+// Do search
+if ($_POST['action'] == 'getSearch') {
+
+	$gid = $_POST['gid'];
+	$term = $_POST['term'];
+
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_config"));
+
+	// Work out link to this page, dealing with permalinks or not
+	$thispage = symposium_get_url('forum');
+	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
+	if (strpos($thispage, "?") === FALSE) { 
+		$q = "?";
+	} else {
+		// No Permalink
+		$q = "&";
+	}
+	
+	$html = '<div id="forum_activity_div">';
+	
+		$sql = "SELECT t.*, p.tid AS parent_tid, p.topic_subject AS parent_topic_subject, u.display_name FROM ".$wpdb->prefix."symposium_topics t LEFT JOIN ".$wpdb->base_prefix."users u ON t.topic_owner = u.ID LEFT JOIN ".$wpdb->prefix."symposium_topics p ON t.topic_parent = p.tid WHERE (t.topic_subject LIKE '%".$term."%' OR t.topic_post LIKE '%".$term."%') AND t.topic_group = ".$gid." ORDER BY t.topic_started DESC LIMIT 0,40";
+
+		$topics = $wpdb->get_results($sql);
+		if ($topics) {
+			foreach ($topics as $topic) {		
+				$html .= "<div class='symposium_search_subject_row_div'>";
+				
+					if ($topic->topic_parent == 0) {
+
+						$topic_subject = symposium_bbcode_remove(stripslashes($topic->topic_subject));
+						$topic_subject = preg_replace(
+						  "/(>|^)([^<]+)(?=<|$)/esx",
+						  "'\\1' . str_replace('" . $term . "', '<span class=\"symposium_search_highlight\">" . $term . "</span>', '\\2')",
+						  $topic_subject
+						);
+						$html .= "<div class='symposium_search_subject_div'><a class='symposium_search_subject' href='".$thispage.symposium_permalink($topic->tid, "topic").$q.'cid='.$topic->topic_category.'&show='.$topic->tid."'>".stripslashes($topic_subject)."</a></div>";
+					
+					}
+
+					$text = symposium_bbcode_remove(stripslashes($topic->topic_post));
+					
+					$result = "";
+					$buffer = 10;
+					
+					for ($i = 0; $i <= strlen($text)-strlen($term); $i++) {
+						if ( substr($text, $i, strlen($term)) == $term ) {
+							$start = ($i - $buffer >= 0) ? $i - $buffer : 0;
+							$end = strlen($term) + ($buffer * 2);
+							$end = ($end >= strlen($text)) ? strlen($text) : $end;
+							$snippet = substr($text, $start, $end);
+							if ($start > 0) { $snippet = "...".$snippet; }
+							if ($end < strlen($text)) { $snippet .= "...&nbsp;&nbsp;"; }
+							$result .= $snippet;
+						}
+					}
+
+					if ($result != '') {
+						$result = preg_replace(
+						  "/(>|^)([^<]+)(?=<|$)/esx",
+						  "'\\1' . str_replace('" . $term . "', '<span class=\"symposium_search_highlight\">" . $term . "</span>', '\\2')",
+						  $result
+						);
+
+						$topic_subject = symposium_bbcode_remove(stripslashes($topic->parent_topic_subject));
+						$topic_subject = preg_replace(
+						  "/(>|^)([^<]+)(?=<|$)/esx",
+						  "'\\1' . str_replace('" . $term . "', '<span class=\"symposium_search_highlight\">" . $term . "</span>', '\\2')",
+						  $topic_subject
+						);
+						$html .= "<div class='symposium_search_subject_div'>".__("In reply to", "wp-symposium")." <a class='symposium_search_subject' href='".$thispage.symposium_permalink($topic->parent_tid, "topic").$q.'cid='.$topic->topic_category.'&show='.$topic->parent_tid."'>".stripslashes($topic_subject)."</a> ";
+						$html .= __("by", "wp-symposium")." ".$topic->display_name.", ".symposium_time_ago($topic->topic_started).".";
+						$html .= "</div>";
+						
+						$html .= $result."<br />";	
+						$html .= "<em>".__("Posted by", "wp-symposium")." ".$topic->display_name.", ".symposium_time_ago($topic->topic_started).".</em>";
+					}
+
+				$html .= '</div>';
+				
+			}
+		} else {
+			$html .= "<p>".__("No result found", "wp-symposium").".</p>";
+		}
+
+	$html .= '</div>';
+	
+	//$html .= " ".$wpdb->last_query;
+	echo $html;
+	exit;
+}
+
 ?>

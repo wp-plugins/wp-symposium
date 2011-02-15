@@ -302,11 +302,9 @@ if ($_POST['action'] == 'menu_settings') {
 	// get values
 	$sound = $config->sound;
 	$soundchat = $config->soundchat;
-	$bar_position = $config->bar_position;
 	
 	if ($meta->sound != '') { $sound = $meta->sound; }
 	if ($meta->soundchat != '') { $soundchat = $meta->soundchat; }
-	if ($meta->bar_position != '') { $bar_position = $meta->bar_position; }
 		
 	$timezone = $meta->timezone;
 	$notify_new_messages = $meta->notify_new_messages;
@@ -421,22 +419,7 @@ if ($_POST['action'] == 'menu_settings') {
 						$html .= '</select>';									
 					$html .= '</div>';								
 				$html .= '</div>';
-				
-				// Bar position
-				$html .= '<div style="clear: right; margin-bottom:15px;">';
-					$html .= __('Where do you want the notification bar?', 'wp-symposium');
-					$html .= '<div style="float: right;">';
-						$html .= '<select id="bar_position" name="bar_position">';
-							$html .= "<option value='bottom'";
-								if ($bar_position == 'bottom') { $html .= ' SELECTED'; }
-								$html .= '>Bottom</option>';
-							$html .= "<option value='top'";
-								if ($bar_position == 'top') { $html .= ' SELECTED'; }
-								$html .= '>Top</option>';
-						$html .= '</select>';
-					$html .= '</div>';
-				$html .= '</div>';	
-				
+								
 			}
 
 			// Display name
@@ -739,7 +722,6 @@ if ($_POST['action'] == 'updateSettings') {
 	
 		$notify_new_messages = $_POST['notify_new_messages'];
 		$notify_new_wall = $_POST['notify_new_wall'];
-		$bar_position = $_POST['bar_position'];
 		$timezone = $_POST['timezone'];
 		$sound = $_POST['sound'];
 		$soundchat = $_POST['soundchat'];
@@ -751,7 +733,6 @@ if ($_POST['action'] == 'updateSettings') {
 		update_symposium_meta($current_user->ID, 'timezone', $timezone);
 		update_symposium_meta($current_user->ID, 'notify_new_messages', "'".$notify_new_messages."'");
 		update_symposium_meta($current_user->ID, 'notify_new_wall', "'".$notify_new_wall."'");
-		update_symposium_meta($current_user->ID, 'bar_position', "'".$bar_position."'");
 		update_symposium_meta($current_user->ID, 'sound', "'".$sound."'");
 		update_symposium_meta($current_user->ID, 'soundchat', "'".$soundchat."'");
 		

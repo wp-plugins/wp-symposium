@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.37.1
+Version: 0.38
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -30,8 +30,8 @@ License: GPL2
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.37.1');
-define('WPS_DBVER', '37');
+define('WPS_VER', '0.38');
+define('WPS_DBVER', '38');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -87,6 +87,22 @@ function symposium_admin_warnings() {
 		echo "<div class='error'><p>WPS Symposium: ";
 		_e( sprintf('Javascript file (%s) not found, try de-activating and re-activating the core WPS plugin.', $myJSfile), 'wp-symposium');
 		echo "</p></div>";
+    }
+
+    // MOTD
+    if ($wpdb->get_var("SELECT motd FROM ".$wpdb->prefix.'symposium_config') != 'on') {
+
+	    echo "<div class='updated' id='motd'><strong>".__("WP Symposium", "wp-symposium")."</strong><br /><div style='padding:4px;'>";
+	    	    
+	    echo "<p>";
+		echo "<input type='submit' id='hide_motd' class='button-primary' style='float:right' value='".__('OK (and hide this message)', 'wp-symposium')."' />";
+	    echo "</p>";
+	    echo "<p style='line-height:15px'>";
+	    echo __("Please visit the WP Symposium Options page for important release notes.", "wp-symposium");
+	    echo "</p>";
+	
+	    echo "</div></div>";    	
+	    
     }
 
 }
@@ -216,17 +232,15 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "show_profile_menu", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "show_wall_extras", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
-	symposium_alter_table("config", "ADD", "bar_position", "varchar(6)", "NOT NULL", "'bottom'");
-	symposium_alter_table("config", "ADD", "bar_label", "text", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "use_chat", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "bar_polling", "int(11)", "NOT NULL", "'120'");
 	symposium_alter_table("config", "ADD", "chat_polling", "int(11)", "NOT NULL", "'10'");
-	symposium_alter_table("config", "ADD", "visitors", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "use_chatroom", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "chatroom_banned", "text", "", "''");
 	symposium_alter_table("config", "ADD", "chat_purge", "int(11)", "NOT NULL", "'7'");
 	symposium_alter_table("config", "ADD", "profile_google_map", "int(11)", "NOT NULL", "'250'");
 	symposium_alter_table("config", "ADD", "use_poke", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "motd", "varchar(2)", "NOT NULL", "''");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
@@ -250,7 +264,6 @@ function symposium_activate() {
 	// Modify user meta table
 	symposium_alter_table("usermeta", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
 	symposium_alter_table("usermeta", "ADD", "soundchat", "varchar(32)", "NOT NULL", "'tap.mp3'");
-	symposium_alter_table("usermeta", "ADD", "bar_position", "varchar(6)", "NOT NULL", "'bottom'");
 	symposium_alter_table("usermeta", "ADD", "notify_new_messages", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("usermeta", "ADD", "notify_new_wall", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("usermeta", "ADD", "timezone", "int(11)", "", "0");
@@ -283,6 +296,10 @@ function symposium_activate() {
 	symposium_alter_table("topics", "ADD", "allow_replies", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("topics", "ADD", "topic_approved", "varchar(2)", "NOT NULL", "'on'");
 						      	
+	// Update motd flag
+	$sql = "UPDATE ".$wpdb->prefix."symposium_config SET motd = ''";
+	$wpdb->query($sql); 
+
 	// ***********************************************************************************************
  	// Update Versions *******************************************************************************
 	update_option("symposium_db_version", WPS_DBVER);
@@ -701,9 +718,9 @@ function add_symposium_stylesheet() {
 	echo "<div class='symposium_pleasewait' style='display:none; z-index:999999;'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /> ".__('Please Wait...', 'wp-symposium')."</div>";
 
 	// Favourites DIV
-	echo "<div id='symposium-fav-list' style='display:none; padding:8px; z-index:999999; width: 600px; height:400px; background-color: #fff;' class='shadow'>";	
+	echo "<div id='symposium-fav-list' style='display:none; padding:8px; z-index:999999; width: 850px; height:600px; background-color: #fff;' class='shadow'>";	
 	echo "<strong>".__("Favourites", "wp-symposium")."</strong><div id='favs_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".WP_PLUGIN_URL."/wp-symposium/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
-		echo "<div id='fav-list-internal' style='clear:both;margin-top:12px;height:370px;overflow:auto;padding:0px;'>";
+		echo "<div id='fav-list-internal' style='clear:both;margin-top:12px;height:570px;overflow:auto;padding:0px;'>";
 		echo "</div>";
 	echo "</div>";
 	
@@ -711,6 +728,18 @@ function add_symposium_stylesheet() {
 	echo "<div id='symposium-activity-list' style='display:none; padding:8px; z-index:999999; width: 850px; height:600px; background-color: #fff;' class='shadow'>";	
 	echo "<strong>".__("Forum Activity", "wp-symposium")."</strong><div id='activity_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".WP_PLUGIN_URL."/wp-symposium/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
 		echo "<div id='activity-list-internal' style='clear:both;margin-top:12px;height:570px;overflow:auto;padding:0px;'>";
+		echo "</div>";
+	echo "</div>";
+
+	// Search DIV
+	echo "<div id='symposium-search' style='display:none; padding:12px; z-index:999999; width: 850px; height:600px; background-color: #fff;' class='shadow'>";	
+	echo "<strong>".__("Search", "wp-symposium")."</strong><div id='search_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".WP_PLUGIN_URL."/wp-symposium/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
+		echo "<div id='search-box' style='clear:both;margin-top:12px;'>";
+		echo "<input type='text' id='search-box-input' class='new-topic-subject-input' style='width:75%; float: left; ' />";
+		echo "<input type='submit' id='search-box-go' class='button' style='height: 46px; float: left; margin-left: 10px;' value='".__("Go", "wp-symposium")."' />";
+		echo "</div>";
+	
+		echo "<div id='search-internal' style='clear:both;margin-top:12px;height:480px;overflow:auto;padding:6px;'>";
 		echo "</div>";
 	echo "</div>";
 	

@@ -879,7 +879,6 @@ jQuery(document).ready(function() {
         
 		jQuery("#fav-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
         jQuery("#symposium-fav-list").inmiddle().fadeIn();
-		jQuery(".symposium_pleasewait").inmiddle().fadeIn();
 		
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
@@ -892,7 +891,6 @@ jQuery(document).ready(function() {
 			async: true,
 			success: function(str){
 				jQuery("#fav-list-internal").hide().html(str).fadeIn("slow");
-				jQuery(".symposium_pleasewait").delay(100).fadeOut("slow");
 			},
 			error: function(err){
 				//alert("13:"+err);
@@ -942,7 +940,6 @@ jQuery(document).ready(function() {
         
 		jQuery("#activity-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
         jQuery("#symposium-activity-list").inmiddle().fadeIn();
-		jQuery(".symposium_pleasewait").inmiddle().fadeIn();
 		
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
@@ -955,7 +952,6 @@ jQuery(document).ready(function() {
 			async: true,
 			success: function(str){
 				jQuery("#activity-list-internal").hide().html(str).fadeIn("slow");
-				jQuery(".symposium_pleasewait").delay(100).fadeOut("slow");
 			},
 			error: function(err){
 				//alert("13:"+err);
@@ -966,6 +962,37 @@ jQuery(document).ready(function() {
    	jQuery("#activity_close").click(function() {
 		jQuery('#symposium-activity-list').fadeOut("slow");
    	});
+
+	// Show search
+   	jQuery("#show_search").click(function() {        
+        jQuery("#symposium-search").inmiddle().fadeIn();
+   	});
+	// Close search
+   	jQuery("#search_close").click(function() {
+		jQuery('#symposium-search').fadeOut("slow");
+   	});
+   	// Do search
+   	jQuery("#search-box-go").click(function() {        
+		jQuery("#search-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getSearch",
+				gid:0,
+				term:jQuery("#search-box-input").val()
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				jQuery("#search-internal").hide().html(str).fadeIn("slow");
+			},
+			error: function(err){
+				//alert("13:"+err);
+			}		
+   		});
+	});
    	
 	// Edit topic (AJAX)
    	jQuery("#starting-post").hover(function() {
@@ -1362,6 +1389,26 @@ jQuery(document).ready(function() {
 			// soundManager.consoleOnly = false;
 					
 		  	// Set up icon actions ******************************************************
+
+			// Click on logout?
+	    	jQuery("#symposium-logout").click(function() {
+			  	if ( confirm("Are you sure you want to logout?") ) {
+					jQuery.ajax({
+						url: symposium.plugin_url+"ajax/symposium_ajax_functions.php", 
+						type: "POST",
+						data: ({
+							action:'symposium_logout'
+						}),
+					    dataType: "html",
+						async: false,
+						success: function(str){
+							window.location.href='/';
+						}		
+				  	});
+			  	}
+	    	});
+			
+			// Email icon
 			if (jQuery("#symposium-email-box").css("display") != "none") {
 		    	jQuery("#symposium-email-box").click(function() {
 					window.location.href=symposium.mail_url;
@@ -1369,6 +1416,7 @@ jQuery(document).ready(function() {
 		
 			}
 			
+			// Friends icon
 			if (jQuery("#symposium-friends-box").css("display") != "none") {
 				
 		    	jQuery("#symposium-friends-box").click(function() {
@@ -1699,7 +1747,25 @@ jQuery(document).ready(function() {
  		});
  		
 	});
-	
+
+	if (jQuery("#hide_motd").length) {	
+		jQuery('#hide_motd').click(function(){
+			jQuery("#motd").slideUp("slow");
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_ajax_functions.php", 
+				type: "POST",
+				data: ({
+					action:"symposium_motd"
+					}),
+			    dataType: "html",
+				async: true,
+				success: function(str){
+					window.location.href="admin.php?page=symposium_options";
+				}				
+				
+	   		});	
+		});
+	}	
 			
 });
 
@@ -1804,8 +1870,7 @@ function do_chat_check() {
 									}
 								} else {
 									// New chat session
-									//jQuery('#chat'+w+'_message').append('Powered by <a href="http://www.wpsymposium.com" target="_blank">WP Symposium</a><hr />');
-									jQuery('#chat'+w+'_message').append('Chat is still being developed...<hr />');
+									jQuery('#chat'+w+'_message').append('');
 								}
 							}
 						}

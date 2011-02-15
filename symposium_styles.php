@@ -139,16 +139,16 @@
 					$html .= "	border: 1px solid ".$primary_color.";";			
 					$html .= "}";
 					
-					$html .= ".symposium-wrapper #new-topic-link, .symposium-wrapper #reply-topic-link, .symposium-wrapper .button {";
-					$html .= "	font-family: ".$fontfamily.";";
-					$html .= "	font-size: ".$fontsize."px;";
-					$html .= "	background-color: ".$bigbutton_background.";";
-					$html .= "	color: ".$bigbutton_color.";";
+					$html .= ".symposium-wrapper #new-topic-link, .symposium-wrapper #reply-topic-link, .symposium-wrapper .button,  .button {";
+					$html .= "	font-family: ".$fontfamily." !important;";
+					$html .= "	font-size: ".$fontsize."px !important;";
+					$html .= "	background-color: ".$bigbutton_background." !important;";
+					$html .= "	color: ".$bigbutton_color." !important;";
 					$html .= "}";
 				
-					$html .= ".symposium-wrapper #new-topic-link:hover, .symposium-wrapper #reply-topic-link:hover, .symposium-wrapper .button:hover {";
-					$html .= "	background-color: ".$bigbutton_background_hover.";";
-					$html .= "	color: ".$bigbutton_color_hover.";";
+					$html .= ".symposium-wrapper #new-topic-link:hover, .symposium-wrapper #reply-topic-link:hover, .symposium-wrapper .button:hover,  .button:hover {";
+					$html .= "	background-color: ".$bigbutton_background_hover." !important;";
+					$html .= "	color: ".$bigbutton_color_hover." !important;";
 					$html .= "}";
 									
 					$html .= ".symposium-wrapper .round_bottom_left {";

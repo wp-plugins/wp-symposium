@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Avatar
 Plugin URI: http://www.wpsymposium.com
 Description: Allows members of a WP Symposium powered site to upload a profile photo. Put [symposium-avatar] on any WordPress page.
-Version: 0.37.1
+Version: 0.38
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
