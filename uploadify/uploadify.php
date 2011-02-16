@@ -42,5 +42,7 @@ if (!empty($_FILES)) {
 		echo "FAILED-moving-[".$tempFile."]-to-[".$targetFile."]";
 	};
 
+} else {
+	echo "FAILED-file did not upload at all, maybe permissions?";
 }
 ?>

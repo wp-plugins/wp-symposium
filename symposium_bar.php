@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Panel
 Plugin URI: http://www.wpsymposium.com
 Description: Panel bottom corner of screen to display notifications on new messages, mail, friend online, etc. Also controls live chat windows and chatroom. Simply activate to add.
-Version: 0.38.1
+Version: 0.38.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -143,7 +143,7 @@ function add_notification_bar()
 						// DIV for who's online
 						echo "<div id='symposium-who-online'>";
 						
-							echo "<div id='symposium-who-online_header' style='width:176px;height:18px;padding:2px;background-color:#000;color:#fff;'>";
+							echo "<div id='symposium-who-online_header' style='width:172px;height:24px;padding:4px 4px 0px 4px;background-color:#000;color:#fff;'>";
 								echo "<div id='symposium-who-online_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";
 							_e("Friends Status", "wp-symposium");
 							echo "</div>";
@@ -158,8 +158,6 @@ function add_notification_bar()
 							
 								echo "<div id='symposium-chatroom_header' class='symposium_readChat'>";
 									echo "<div id='symposium-chatroom_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";
-									echo "<div id='symposium-chatroom_max' style='margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/max.gif' title='Maximize' /></div>";
-									echo "<div id='symposium-chatroom_min' style='display:none; margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/min.gif' title='Minimize' /></div>";
 									echo "<div id='symposium-chatroom_small' style='margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/min.gif' title='Minimize' /></div>";
 									echo "<div id='symposium-chatroom_big' style='display:none; margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/max.gif' title='Maximize' /></div>";
 									if (symposium_get_current_userlevel() == 5) {
@@ -231,12 +229,14 @@ function addChatWindow($id) {
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
 
 	echo "<div id='chat".$id."' title='chat".$id."' class='chat_window' style='display:none'>";
-		echo "<div id='chat".$id."_header' style='width:176px;height:18px;padding:2px;background-color:#000;color:#fff;'>";
+		echo "<div id='chat".$id."_header' class='chat_header symposium_readChat'>";
 		echo "<div id='chat".$id."_to' style='display:none'></div>";
 		echo "<div id='chat".$id."_close' class='chat_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='Close' /></div>";
+		echo "<div class='symposium-chat_small' style='margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/min.gif' title='Minimize' /></div>";
+		echo "<div class='symposium-chat_big' style='display:none; margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/max.gif' title='Maximize' /></div>";
 		echo "<div id='chat".$id."_display_name'></div>";
 		echo "</div>";
-		echo "<div id='chat".$id."_message' style='width:176px; height:170px;overflow:auto;padding:2px;padding-bottom:7px;'>";
+		echo "<div id='chat".$id."_message' class='chat_messages'>";
 		echo "</div>";
 		echo "<div style='width:180px; height:40px;'>";
 			echo "<textarea id='chat".$id."_textarea' class='chat_message' onclick='if (this.value == \"".__("Type here...", "wp-symposium")."\") { this.value=\"\"; }' style='background-color:#efefef;border:0px;width:176px;height:34px;'>".__("Type here...", "wp-symposium")."</textarea>";

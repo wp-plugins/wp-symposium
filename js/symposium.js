@@ -1373,7 +1373,7 @@ jQuery(document).ready(function() {
 
 	/*
 	   +------------------------------------------------------------------------------------------+
-	   |                                     NOTIFICATION BAR                                     |
+	   |                                          PANEL                                           |
 	   +------------------------------------------------------------------------------------------+
 	*/
 
@@ -1430,7 +1430,6 @@ jQuery(document).ready(function() {
 		    	});
 		    	jQuery("#symposium-chatroom-box").click(function() {
 					jQuery('#symposium-chatroom').show("fast");
-					jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
 					createCookie('wps_chatroom','show',7);
 		    	});
 		    	jQuery("#symposium-chatroom_close").click(function() {
@@ -1497,42 +1496,18 @@ jQuery(document).ready(function() {
 		   	});	   	
 		   		
 			// Chatroom Change Size ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			jQuery("#symposium-chatroom_max").live('click', function() {
-				var hm = jQuery('#chatroom_messages').height();
-				var hc = jQuery('#symposium-chatroom').height();
-				if (hm < 400) {
-					jQuery('#chatroom_messages').height(hm+400);
-					jQuery('#symposium-chatroom').height(hc+400);
-					jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
-					jQuery('#symposium-chatroom_max').hide();
-					jQuery('#symposium-chatroom_min').show();	
-					jQuery('#symposium-chatroom_small').hide();
-				}
-			});
-			jQuery("#symposium-chatroom_min").live('click', function() {
-				var hm = jQuery('#chatroom_messages').height();
-				var hc = jQuery('#symposium-chatroom').height();
-				if (hm > 400) {
-					jQuery('#chatroom_messages').height(hm-400).attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
-					jQuery('#symposium-chatroom').height(hc-400);
-					jQuery('#symposium-chatroom_max').show();
-					jQuery('#symposium-chatroom_min').hide();
-					jQuery('#symposium-chatroom_small').show();
-				}
-			});
 			jQuery("#symposium-chatroom_big").live('click', function() {
 				var hc = jQuery('#symposium-chatroom').height();
 				if (hc < 50) {
 					jQuery('#chatroom_messages').show();
 					jQuery('#chatroom_typing_area').show();
-					jQuery('#symposium-chatroom').css('margin-top', '0px' )
+					jQuery('#symposium-chatroom').css('margin-top', '0px' );
 					jQuery('#symposium-chatroom').height(hc+214);
 					jQuery('#symposium-chatroom_header').removeClass('symposium_unreadChat').addClass('symposium_readChat');
 					jQuery('#symposium-chatroom_big').hide();
 					jQuery('#symposium-chatroom_small').show();
 					jQuery('#symposium-chatroom_max').show();
 					jQuery('#symposium-chatroom_min').hide();	
-					jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
 					createCookie('wps_chatroom','show',7);
 				}
 			});
@@ -1541,7 +1516,7 @@ jQuery(document).ready(function() {
 				if (hc > 50) {
 					jQuery('#chatroom_messages').hide();
 					jQuery('#chatroom_typing_area').hide();
-					jQuery('#symposium-chatroom').css('margin-top', '214px' )
+					jQuery('#symposium-chatroom').css('margin-top', '214px' );
 					jQuery('#symposium-chatroom').height(hc-214);
 					jQuery('#symposium-chatroom_big').show();
 					jQuery('#symposium-chatroom_small').hide();
@@ -1550,15 +1525,45 @@ jQuery(document).ready(function() {
 					createCookie('wps_chatroom','min',7);
 				}
 			});
-		   		
+
+			// Chat window Change Size ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			jQuery(".symposium-chat_small").live('click', function() {
+				var hc = jQuery(this).parent().parent().height();
+				if (hc > 50) {
+					jQuery(this).parent().parent().css('margin-top', '214px');
+					jQuery(this).parent().find(".chat_messages").hide();
+					jQuery(this).parent().find(".chat_message").hide();
+					jQuery(this).parent().parent().height(hc-214);
+					jQuery(this).parent().find(".symposium-chat_big").show();
+					jQuery(this).hide();
+					// Cookie to store minimised state
+					createCookie('wps_'+jQuery(this).parent().parent().attr("id"),'min',7);
+				}
+			});
+			jQuery(".symposium-chat_big").live('click', function() {
+				var hc = jQuery(this).parent().parent().height();
+				if (hc < 50) {
+					jQuery(this).parent().parent().css('margin-top', '0px');
+					jQuery(this).parent().find(".chat_messages").show();
+					jQuery(this).parent().find(".chat_message").show();
+					jQuery(this).parent().parent().height(hc+214);
+					jQuery(this).parent().find(".symposium-chat_small").show();
+					jQuery(this).hide();
+					jQuery(this).parent().removeClass('symposium_unreadChat').addClass('symposium_readChat');
+					// Remove cookies
+					eraseCookie('wps_'+jQuery(this).parent().parent().attr("id"));
+					eraseCookie('lastchat'+jQuery(this).parent().parent().attr("id"));
+				}
+			});
+								   		
 			// Chat Window Close ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			jQuery(".chat_close").live('click', function() {
 		
 		   		var chat_win = jQuery(this).parent().parent().attr('id');
 		   		var chat_to = jQuery(this).parent().parent().attr('id')+'_to';
 		   		var display_name = jQuery(this).parent().parent().attr('id')+'_display_name';
-		   		jQuery('#'+display_name).html('Closing...');
 				jQuery('#'+chat_win).hide();
+				createCookie('chatwin'+jQuery('#'+chat_to).html(),'hidden',7);
 				
 				jQuery.ajax({
 					url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
@@ -1569,7 +1574,7 @@ jQuery(document).ready(function() {
 						chat_to:jQuery('#'+chat_to).html()
 					}),
 				    dataType: "html",
-					async: false,
+					async: true,
 					success: function(str){
 						jQuery('#'+chat_to).html('');
 					},
@@ -1584,32 +1589,31 @@ jQuery(document).ready(function() {
 			jQuery('.chat_message').keypress(function(event) {
 				if (event.which == 13) {
 					var msg = jQuery(this).val();
-					jQuery.trim(msg);
 					jQuery(this).val('');
+					jQuery.trim(msg);
 					event.preventDefault();
+
+					if (msg != '') {
 		
-			   		var chat_message = jQuery(this).parent().parent().attr('id')+'_message';
-			   		var chat_to = jQuery(this).parent().parent().attr('id')+'_to';
-					
-					jQuery.ajax({
-						url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
-						type: "POST",
-						data: ({
-							action:'symposium_addchat',
-							chat_from:symposium.current_user_id,
-							chat_to:jQuery('#'+chat_to).html(),
-							chat_message:msg
-						}),
-					    dataType: "html",
-						async: false,
-						success: function(str) {
-							jQuery('#'+chat_message).append('<span style="font-weight:bold">'+str+'</span><br />');
-							jQuery('#'+chat_message).attr({ scrollTop: jQuery('#'+chat_message).attr('scrollHeight') });
-						},
-						error: function(err){
-							//alert("16:"+err);
-						}		
-				  	});
+				   		var chat_message = jQuery(this).parent().parent().attr('id')+'_message';
+				   		var chat_to = jQuery(this).parent().parent().attr('id')+'_to';
+
+						jQuery('#'+chat_message).prepend('<div style="border-bottom:1px solid #aaa; color: #006">'+msg+'<br /><span style="float: right; color: #aaa; font-style:italic;">'+symposium.current_user_display_name+'</span><br style="clear:both;" /></div>');
+	
+						jQuery.ajax({
+							url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+							type: "POST",
+							data: ({
+								action:'symposium_addchat',
+								chat_from:symposium.current_user_id,
+								chat_to:jQuery('#'+chat_to).html(),
+								chat_message:msg
+							}),
+						    dataType: "html",
+							async: true
+					  	});
+					  	
+					}
 					
 				}
 			});
@@ -1618,11 +1622,14 @@ jQuery(document).ready(function() {
 			jQuery('#chatroom_textarea').keypress(function(event) {
 				if (event.which == 13) {
 					var msg = jQuery(this).val();
-					jQuery.trim(msg);
 					jQuery(this).val('');
+					jQuery.trim(msg);
 					event.preventDefault();
 	
 					if (msg != '') {
+
+						jQuery('#chatroom_messages').prepend('<div style="border-bottom:1px solid #aaa;"><div style="clear:both;color:#006; font-style:normal;float: left;">'+msg+'</div><div style="clear:both; float:right; color:#aaa; font-style:italic;">'+symposium.current_user_display_name+'</div><br style="clear:both;" /></div>');
+
 						jQuery.ajax({
 							url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
 							type: "POST",
@@ -1632,14 +1639,7 @@ jQuery(document).ready(function() {
 								chat_message:msg
 							}),
 						    dataType: "html",
-							async: false,
-							success: function(str) {
-								jQuery('#chatroom_messages').append('<div style="clear:both;font-weight:bold">'+str+'</div>');
-								jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
-							},
-							error: function(err){
-								//alert("17:"+err);
-							}		
+							async: true
 					  	});
 					}
 				}
@@ -1655,10 +1655,12 @@ jQuery(document).ready(function() {
 		    	// ************** When clicking on a name to chat...
 		    	
 				jQuery(".symposium_online_name").live('click', function() {
+					// clear hidden flag if it's there
+					eraseCookie('chatwin'+jQuery(this).attr("title"));
 		    		// choose a chat box
 		    		var chatbox = 0;
 		    		var already_chatting = 0;
-		    		// first check to see if already chatting to them
+		    		// first check to see if already chatting to them/Volumes/simon.goodchild
 					for (w=1;w<=numChatWindows;w++) {	
 			    		if ( (already_chatting == 0) && (jQuery('#chat'+w+'_to').html() == jQuery(this).attr("title")) ) { already_chatting = w; }
 					}
@@ -1684,7 +1686,7 @@ jQuery(document).ready(function() {
 									chat_to:jQuery(this).attr("title")
 								}),
 							    dataType: "html",
-								async: false,
+								async: true,
 								success: function(str){
 									if (str.substring(0, 2) == 'OK') { 
 										var details = str.split("[split]");
@@ -1737,11 +1739,6 @@ jQuery(document).ready(function() {
 		    		}
 		    	});
 		    	
-			}
-			
-			// Pro features
-			if (symposium.symposium_pro != 'on') {
-				jQuery('#chatroom_messages').css('overflow', 'hidden' );
 			}
 			
 		} else {
@@ -1824,65 +1821,76 @@ function do_chat_check() {
 	    dataType: "html",
 		async: true,
 		success: function(str){
-			if (str != '[topsplit]') {
-				var topsplit=str.split("[topsplit]");
-				if (topsplit.length == 2) {
-					var last_post=topsplit[0];
-					var rows=topsplit[1].split("[split]");
-					var num_rows = rows.length-1;
-					var play_sound = false;
-					
-					// clear chat windows	
-					for (w=1;w<=numChatWindows;w++) {	
-						jQuery('#chat'+w+'_to').html('');
-						jQuery('#chat'+w+'_display_name').html('');
-						jQuery('#chat'+w+'_message').html('');
-					}
-					
-					var allocated_windows = 0;
-					// loop through messages, setting up all the chat windows for each person
-					for (i=0;i<num_rows;i++) {	
-						var details=rows[i].split("[|]");
-						var from = details[0];
-						var to = details[1];
-						var msg = details[2];
-						var name = details[3];
-						var status = details[4];
-	
-						var other = 0;
-						
-						if (from == symposium.current_user_id) {
-							other = to; 
-						} else {
-							other = from;
-						}
+			if (str != '') {
 
-						// see if a window has been allocated
-						var chat_win = 0;
-						for (w=1;w<=numChatWindows;w++) {	
-							if (jQuery('#chat'+w+'_to').html() == other) { chat_win = w; }
-						}
-						
-						if (chat_win == 0) {
-							var allocated = false;
-							for (w=1;w<=numChatWindows;w++) {	
-								if ( (jQuery('#chat'+w+'_to').html() == '') && (allocated == false) ) { 
-									jQuery('#chat'+w+'_to').html(other); 
-									jQuery('#chat'+w+'_display_name').html('<img src="'+symposium.plugin_url+'/images/'+status+'_header.gif"> '+name); 
-										allocated_windows++; 
-										allocated = true;
-									}
+				var rows=str.split("[split]");
+				var num_rows = rows.length-1;
+				var play_sound = false;
+				var last_chid = new Array();
+				var new_last_chid = new Array();
+				
+				// clear chat windows, and get last chid from each
+				for (w=1;w<=numChatWindows;w++) {	
+					last_chid[w] = readCookie('lastchat'+w);
+					jQuery('#chat'+w+'_to').html('');
+					jQuery('#chat'+w+'_message').html('');
+					jQuery('#chat'+w+'_display_name').html('');
+				}
+				
+				var allocated_windows = 0;
+				// loop through messages, setting up all the chat windows for each person
+				for (i=0;i<num_rows;i++) {	
+					var details=rows[i].split("[|]");
+					var chid = details[0];
+					var from = details[1];
+					var to = details[2];
+					var msg = details[3];
+					var name = details[4];
+
+					var other = 0;
+					
+					if (from == symposium.current_user_id) {
+						other = to; 
+					} else {
+						other = from;
+					}
+
+					// see if a window has been allocated
+					var chat_win = 0;
+					for (w=1;w<=numChatWindows;w++) {	
+						if (jQuery('#chat'+w+'_to').html() == other) { chat_win = w; }
+						if (!new_last_chid[w]) {
+							new_last_chid[w] = chid; 
+							if (from != symposium.current_user_id) { 
+								new_last_chid[w] = last_chid[w]; 
+							} else {
+								last_chid[w] = chid;
 							}
 						}
 					}
-				}		
+					
+					// if not, then find next free window
+					if (chat_win == 0) {
+						var allocated = false;
+						for (w=1;w<=numChatWindows;w++) {	
+							if ( (jQuery('#chat'+w+'_to').html() == '') && (allocated == false) ) { 
+								jQuery('#chat'+w+'_to').html(other); 
+								jQuery('#chat'+w+'_display_name').html(name); 
+								allocated_windows++; 
+								allocated = true;
+								new_last_chid[w] = chid;
+							}
+						}
+					}
+				}
 				
 				// Loop through the messages, adding the message to the correct chat window
 				for (i=0;i<num_rows;i++) {	
 					var details=rows[i].split("[|]");
-					var from = details[0];
-					var to = details[1];
-					var msg = details[2];
+					var chid = details[0];
+					var from = details[1];
+					var to = details[2];
+					var msg = details[3];
 	
 					if (from == symposium.current_user_id) {
 						other = to; 
@@ -1900,11 +1908,7 @@ function do_chat_check() {
 							if (chat_win == w) { 
 								if (msg.indexOf('[start]') < 0) { 
 									if (!(msg.indexOf('[closed-'+other+']') >= 0)) {
-										if (from != other) {
-											jQuery('#chat'+w+'_message').append('<span style="color:#006">'+msg+'</span><br />');
-										} else {
-											jQuery('#chat'+w+'_message').append('<span style="color:#600">'+msg+'</span><br />');
-										}
+										jQuery('#chat'+w+'_message').append(msg);
 									}
 								} else {
 									// New chat session
@@ -1919,16 +1923,46 @@ function do_chat_check() {
 				// Show/hide all the chat windows
 				for (w=1;w<=numChatWindows;w++) {	
 					if (jQuery('#chat'+w+'_to').html() != '') {
+
 						var message = jQuery("#chat"+w+"_message").html()+' ';
+						
 						if (message.indexOf('[closed-'+symposium.current_user_id+']') >= 0) { 						
 							jQuery('#chat'+w+'_to').html(''); 
 							jQuery('#chat'+w).hide(); 
+							
 						} else {
+
 							var chat_to = jQuery('#chat'+w+'_to').html();
-							jQuery("#chat"+w+"_message").html(message);
-							jQuery('#chat'+w).show();
-							jQuery("#chat"+w+"_message").attr({ scrollTop: jQuery("#chat"+w+"_message").attr("scrollHeight") });
+							if (readCookie('chatwin'+chat_to) == 'hidden') {
+								eraseCookie('chatwin'+chat_to);
+							} else {
+								if (readCookie('wps_chat'+w) == 'min') {
+									var hc = jQuery('#chat'+w).height();
+									if (hc > 50) {
+										jQuery('#chat'+w).css('margin-top', '214px');
+										jQuery('#chat'+w).find(".message").hide();
+										jQuery('#chat'+w).find(".messages").hide();
+										jQuery('#chat'+w).height(hc-214);
+										jQuery('#chat'+w).find(".symposium-chat_big").show();
+										jQuery('#chat'+w).find(".symposium-chat_small").hide();
+									}
+								}
+
+								jQuery('#chat'+w).show();
+
+							}
+							
 						}
+
+						// Highlight title if new message and minimised
+						if (last_chid[w] != new_last_chid[w]) {
+							if (jQuery('#chat'+w).height() < 50) {
+								jQuery('#chat'+w+'_header').removeClass('symposium_readChat').addClass('symposium_unreadChat');
+							} else {
+								createCookie('lastchat'+w,new_last_chid[w],7);
+							}
+						}
+
 					} else {
 						jQuery('#chat'+w).hide();
 					}
@@ -1958,7 +1992,6 @@ function do_chatroom_check() {
 		var show_chatroom = readCookie('wps_chatroom');
 		if (show_chatroom == "show") {	
 			jQuery('#symposium-chatroom').show("fast");
-			jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
 		}
 		if (show_chatroom == "min") {	
 			var hc = jQuery('#symposium-chatroom').height();
@@ -1974,7 +2007,6 @@ function do_chatroom_check() {
 			jQuery('#symposium-chatroom_min').hide();	
 			
 			jQuery('#symposium-chatroom').show("fast");
-			jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
 		}
 	}
 		
@@ -1990,20 +2022,16 @@ function do_chatroom_check() {
 	    dataType: "html",
 		async: true,
 		success: function(str){
+			
 			var split=str.split("[split]");
 						
 			if (split[1] != readCookie('wps_chatroom_chid') || jQuery('#chatroom_messages').html() == '') {
 				jQuery('#chatroom_messages').html(split[2]);
-				jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
 			}
 			
 			if (split[0] != '' && split[0] != symposium.current_user_id && split[1] != readCookie('wps_chatroom_chid')) {
-				if (jQuery('#symposium-chatroom').height() < 50 && symposium.symposium_pro == 'on') {
+				if (jQuery('#symposium-chatroom').height() < 50) {
 					jQuery('#symposium-chatroom_header').removeClass('symposium_readChat').addClass('symposium_unreadChat');
-				}
-			} else {
-				if (jQuery('#symposium-chatroom').height() > 50) {
-					jQuery('#symposium-chatroom_header').removeClass('symposium_unreadChat').addClass('symposium_readChat');
 				}
 			}
 			createCookie('wps_chatroom_chid',split[1],7);

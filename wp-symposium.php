@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.38.1
+Version: 0.38.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -30,7 +30,7 @@ License: GPL2
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.38.1');
+define('WPS_VER', '0.38.2');
 define('WPS_DBVER', '38');
 
 add_action('init', 'symposium_languages');
@@ -901,14 +901,6 @@ function symposium_scriptsAction()
 		$text_color_2 = '';
 	}
 	
-	if (function_exists('symposium_pro')) {
-		$symposium_pro = 'on';
-	} else {
-		$symposium_pro = '';
-	}
-	
-	
-
 	// Set JS variables
 	wp_localize_script( 'symposium', 'symposium', array(
 		'plugins' => WP_PLUGIN_URL, 
@@ -941,8 +933,7 @@ function symposium_scriptsAction()
 		'bg_color_2' => $bg_color_2,
 		'row_border_size' => $row_border_size,
 		'row_border_style' => $row_border_style,
-		'text_color_2' => $text_color_2,
-		'symposium_pro' => $symposium_pro
+		'text_color_2' => $text_color_2
 	));
 
 }

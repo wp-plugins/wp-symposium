@@ -274,21 +274,17 @@
 	padding: 4px;
 	height: 20px;
 	font-size: 14px;
-	background-color: #999;
-	color: #000;
+	background-color: #000;
+	color: #fff;
 	width: 135px;
 	text-shadow: 0px 1px 1px #fff; 
 	border-radius: 0px !important;
 	-moz-border-radius: 0px !important;
-	-ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=75)";
-	filter: alpha(opacity=75);
-	-moz-opacity: 0.75;
-	-khtml-opacity: 0.75;
- 	opacity: 0.75;
-}
-
-#symposium-notification-bar #icons a {
-	color: #000;
+	-ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	-moz-opacity: 1.00;
+	-khtml-opacity: 1.00;
+ 	opacity: 1.00;
 }
 
 #symposium-notification-bar #icons img {
@@ -296,40 +292,15 @@
 	float: left;		
 }
 
-#symposium-notification-bar #alerts, #symposium-notification-bar #info {
-	float: right;
-	margin-right: 8px;
-}
-#symposium-notification-bar #alerts {
-	float: right;
-	display: none;
-}
-
-#symposium-notification-bar #alerts a, #symposium-notification-bar #info a {
-	color: #000;
-	text-decoration:none;
-}
-#symposium-notification-bar #alerts a:hover, #symposium-notification-bar #info a:hover {
-	color: #000;
-	text-decoration:underline;
-}
-
-.symposium_readChat {
-	background-color: #000;
-}
-.symposium_unreadChat {
-	background-color: #3C4B6B;
-}
-
 #symposium-chatboxes {
 	position:fixed;
 	bottom:0px;
-	right:143px;
+	right:144px;
 }
 
 #symposium-chatboxes .chat_window {
 	float: right;
-	margin-left: 2px;
+	margin-left: 1px;
 	border-radius: 0px;
 	moz-border-radius: 0px;
 	ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -346,7 +317,7 @@
 
 #symposium-chatboxes #symposium-who-online {
 	float: right;
-	margin-left: 2px;
+	margin-left: 1px;
 	border-radius: 0px;
 	-moz-border-radius: 0px;
 	-ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -421,6 +392,28 @@
 	width:356px;
 	height:34px;
 }
+
+#symposium-chatboxes .chat_messages {
+	width:176px; 
+	height:165px;
+	overflow:auto;
+	padding:2px;
+	padding-bottom:7px;
+}
+
+#symposium-chatboxes .chat_header {
+	width:172px;
+	height:24px;
+	padding:4px 4px 0px 4px;
+	color:#fff;
+}
+
+.symposium_readChat {
+	background-color: #000;
+}
+.symposium_unreadChat {
+	background-color: #3C4B6B;
+}
  
 .symposium_online_name {
 	cursor:pointer;
@@ -461,39 +454,30 @@
 }
 
 #symposium-online-box {
-	padding-top:0px;
-	height: 18px;	
+	padding:0px 0px 2px 0px;
+	width: 18px;
+	height: 16px;	
+	font-size: 8px;				
+	text-align:center;
+	float: right;
+	margin-right:10px;
+	cursor: pointer;
 }
 							
 .symposium-online-box {
 	border-radius: 0px;
 	-moz-border-radius: 0px;
-	width: 18px;
-	height:18px;
 	background-color: #0f0;
 	color: #000;
-	text-align:center;
-	float: right;
-	margin-right:10px;
-	cursor: pointer;
-	font-size: 10px;				
+	border: 0px solid #fff;
 	font-weight: bold;
 	text-shadow: 0px 0px 0px #000 !important; 
 }
 .symposium-online-box-none {
 	border-radius: 0px;
 	-moz-border-radius: 0px;
-	text-align:center;
-	background-color: #000;
 	color: #fff;
-	border: 0px solid #fff;
-	float: right;
-	margin-right:10px;
-	width: 17px;
-	height: 17px;
-	padding:0px;
-	cursor: pointer;
-	font-size: 10px;
+	border: 1px solid #fff;
 	font-weight: normal;
 	text-shadow: 0px 0px 0px #000 !important; 
 }
