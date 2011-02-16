@@ -156,17 +156,18 @@ function add_notification_bar()
 						if ($use_chatroom == 'on') {
 							echo "<div id='symposium-chatroom'>";
 							
-								echo "<div id='symposium-chatroom_header'>";
+								echo "<div id='symposium-chatroom_header' class='symposium_readChat'>";
 									echo "<div id='symposium-chatroom_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".$plugin."/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";
 									echo "<div id='symposium-chatroom_max' style='margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/max.gif' title='Maximize' /></div>";
-									echo "<div id='symposium-chatroom_min' style='display:none; margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/min.gif' title='Maximize' /></div>";
+									echo "<div id='symposium-chatroom_min' style='display:none; margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/min.gif' title='Minimize' /></div>";
+									echo "<div id='symposium-chatroom_small' style='margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/min.gif' title='Minimize' /></div>";
+									echo "<div id='symposium-chatroom_big' style='display:none; margin-right:5px;float:right;cursor:pointer;'><img src='".$plugin."/images/max.gif' title='Maximize' /></div>";
 									if (symposium_get_current_userlevel() == 5) {
 										echo "<div id='symposium-chatroom_clear' style='margin-right:5px;float:right;cursor:pointer;'>".__("Clear all", "wp-symposium")."</div>";
 									}
 								_e("Chat Room (visible to all)", "wp-symposium");
 								echo "</div>";
 								echo "<div id='chatroom_messages'>";
-								echo __("Retrieving chat...", "wp-symposium");
 								echo "</div>";
 								echo "<div id='chatroom_typing_area'>";
 									echo "<textarea id='chatroom_textarea' class='chatroom_message' onclick='if (this.value == \"".__("Type here...", "wp-symposium")."\") { this.value=\"\"; }'>".__("Type here...", "wp-symposium")."</textarea>";

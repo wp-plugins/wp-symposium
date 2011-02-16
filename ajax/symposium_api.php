@@ -276,5 +276,37 @@ if ($_GET['action'] == 'replies') {
 
 }						
 
+// Get friends
+// eg: WPROOT_URL/wp-content/plugins/wp-symposium/ajax/symposium_api.php?action=friends&uid=2
+if ($_GET['action'] == 'friends') {
+
+	$uid = $_GET['uid'];
+	
+	$sql = "SELECT f.*, m.last_activity, u.display_name FROM ".$wpdb->base_prefix."symposium_friends f LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON f.friend_to = m.uid LEFT JOIN ".$wpdb->base_prefix."users u ON f.friend_to = u.ID WHERE f.friend_from = ".$uid." ORDER BY last_activity DESC";
+	$friends = $wpdb->get_results($sql);
+
+	$return_arr = array();	
+
+	if ($friends) {
+		
+		foreach ($friends as $friend) {
+			
+			$avatar = get_user_avatar($friend->friend_to, 32);
+			preg_match('/<img\s.*src=["\'](.*?)["\']/i', $avatar, $matches); 
+			$avatar = $matches[1];  
+
+			$row_array['friend_uid'] = $friend->friend_to;
+			$row_array['display_name'] = $friend->display_name;
+			$row_array['avatar'] = $avatar;
+			$row_array['last_activity'] = symposium_time_ago($friend->last_activity);
+
+	        array_push($return_arr,$row_array);
+
+		}
+	}						
+	
+	echo json_encode($return_arr);
+	
+}
 
 ?>

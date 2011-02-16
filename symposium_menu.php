@@ -385,6 +385,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'show_wall_extras')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_google_map')) { $status = "X"; }			
 			if (!symposium_field_exists($table_name, 'use_poke')) { $status = "X"; }			
+			if (!symposium_field_exists($table_name, 'motd')) { $status = "X"; }			
 
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	

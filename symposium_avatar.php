@@ -91,7 +91,7 @@ function symposium_avatar()
 				
 			} else {
 				
-				$html .= "<p>".__(sprintf("Sorry, we have a problem. [%s]", $_GET['img']), "wp_symposium").".</p>";  
+				$html .= "<p>".__(sprintf("Sorry, we file upload went wrong. [%s]", $img_path), "wp_symposium").".</p>";  
 				
 			}
 			

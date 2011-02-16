@@ -23,7 +23,8 @@ if ($_POST['action'] == 'symposium_clear_chatroom') {
 // Add to chatroom
 if ($_POST['action'] == 'symposium_addchatroom') {
 
-   	global $wpdb;
+   	global $wpdb, $current_user;
+   	
    	$chat_from = $_POST['chat_from'];
    	$chat_message = $_POST['chat_message'];
    	$r = '';
@@ -38,7 +39,10 @@ if ($_POST['action'] == 'symposium_addchatroom') {
 	} else {
 		$r .= $wpdb->last_query;
 	}
-   	
+
+	// Update as activity
+	update_symposium_meta($current_user->ID, 'last_activity', "'".date("Y-m-d H:i:s")."'");
+	   	
    	echo $r;
    	exit;
 
@@ -179,7 +183,7 @@ if ($_POST['action'] == 'symposium_getchat') {
 				$last_post = "notme";
 				$last_activity = $chat->fromlast;
 			}
-			$last_active_minutes = $last_activity;
+			$last_active_minutes = convert_datetime($last_activity);
 			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
 			if ($last_active_minutes >= $offline) {
 				$results .= "loggedout[split]";
@@ -214,7 +218,7 @@ if ($_POST['action'] == 'symposium_getchat') {
 // Get chatroom for updates
 if ($_POST['action'] == 'symposium_getchatroom') {
 
-   	global $wpdb;
+   	global $wpdb, $current_user;
 
 	$use_chat = $_POST['use_chat'];	
    	$inactive = $_POST['inactive'];
@@ -226,12 +230,10 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 
 	// get messages
-	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
+	$sql = "SELECT c.*, m1.last_activity AS fromlast, u1.display_name AS fromname ";
 	$sql .= "FROM ".$wpdb->base_prefix."symposium_chat c ";
 	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u1 ON c.chat_from = u1.ID ";
-	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.chat_to = u2.ID ";
 	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
-	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
 	$sql .= "WHERE chat_to = -1 ";
 	$sql .= "ORDER BY chid DESC ";
 	$sql .= "LIMIT 0,30";
@@ -240,12 +242,19 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 	$time_now = time();
 	$chatlist = $wpdb->get_results($sql);
 	$chats = array_reverse($chatlist);
+	
+	$last_chat_chid = '';
+	$last_chat_from = '';
+	
 	if ($chats) {
 		foreach ($chats as $chat) {
 			
 			$c++;
+
+			$last_chat_chid = $chat->chid;
+			$last_chat_from = $chat->chat_from;
 			
-			$last_active_minutes = $chat->fromlast;
+			$last_active_minutes = convert_datetime($chat->fromlast);
 			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
 			if ($last_active_minutes >= $offline) {
 				$status_img = WP_PLUGIN_URL.'/wp-symposium/images/loggedout.gif';
@@ -298,7 +307,7 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 
 	}
 
-   	echo $results;
+   	echo $last_chat_from."[split]".$last_chat_chid."[split]".$results;
    	exit;
 	
 }
@@ -307,7 +316,8 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 // Add to chat
 if ($_POST['action'] == 'symposium_addchat') {
 
-   	global $wpdb;
+   	global $wpdb, $current_user;
+   	
    	$chat_to = $_POST['chat_to'];
    	$chat_from = $_POST['chat_from'];
    	$chat_message = $_POST['chat_message'];
@@ -330,6 +340,9 @@ if ($_POST['action'] == 'symposium_addchat') {
 	} else {
 		$r .= $wpdb->last_query;
 	}
+
+	// Update as activity
+	update_symposium_meta($current_user->ID, 'last_activity', "'".date("Y-m-d H:i:s")."'");
    	
    	echo $r;
    	exit;

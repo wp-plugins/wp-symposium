@@ -900,6 +900,14 @@ function symposium_scriptsAction()
 		$row_border_style = '';
 		$text_color_2 = '';
 	}
+	
+	if (function_exists('symposium_pro')) {
+		$symposium_pro = 'on';
+	} else {
+		$symposium_pro = '';
+	}
+	
+	
 
 	// Set JS variables
 	wp_localize_script( 'symposium', 'symposium', array(
@@ -933,7 +941,8 @@ function symposium_scriptsAction()
 		'bg_color_2' => $bg_color_2,
 		'row_border_size' => $row_border_size,
 		'row_border_style' => $row_border_style,
-		'text_color_2' => $text_color_2
+		'text_color_2' => $text_color_2,
+		'symposium_pro' => $symposium_pro
 	));
 
 }

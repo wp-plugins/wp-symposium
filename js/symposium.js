@@ -1416,7 +1416,7 @@ jQuery(document).ready(function() {
 		
 			}
 			
-			// Friends icon
+			// Icon Actions
 			if (jQuery("#symposium-friends-box").css("display") != "none") {
 				
 		    	jQuery("#symposium-friends-box").click(function() {
@@ -1436,8 +1436,7 @@ jQuery(document).ready(function() {
 		    	jQuery("#symposium-chatroom_close").click(function() {
 					jQuery('#symposium-chatroom').hide("fast");
 					eraseCookie('wps_chatroom');
-		    	});
-				
+		    	});				
 			}
 	
 			// Make DIVS draggable (there is a slight problem, but uncomment if you want this feature)
@@ -1466,10 +1465,12 @@ jQuery(document).ready(function() {
 			   	
 				do_chat_check();
 		   		do_chatroom_check();
+				do_online_friends_check();
 				var refreshChatId = setInterval(function()
 			   	{
 			   		do_chat_check();
 			   		do_chatroom_check();
+					do_online_friends_check();
 			   	}, symposium.chat_polling*1000); // Delay to check for new messages
 		
 			}
@@ -1505,6 +1506,7 @@ jQuery(document).ready(function() {
 					jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
 					jQuery('#symposium-chatroom_max').hide();
 					jQuery('#symposium-chatroom_min').show();	
+					jQuery('#symposium-chatroom_small').hide();
 				}
 			});
 			jQuery("#symposium-chatroom_min").live('click', function() {
@@ -1515,6 +1517,37 @@ jQuery(document).ready(function() {
 					jQuery('#symposium-chatroom').height(hc-400);
 					jQuery('#symposium-chatroom_max').show();
 					jQuery('#symposium-chatroom_min').hide();
+					jQuery('#symposium-chatroom_small').show();
+				}
+			});
+			jQuery("#symposium-chatroom_big").live('click', function() {
+				var hc = jQuery('#symposium-chatroom').height();
+				if (hc < 50) {
+					jQuery('#chatroom_messages').show();
+					jQuery('#chatroom_typing_area').show();
+					jQuery('#symposium-chatroom').css('margin-top', '0px' )
+					jQuery('#symposium-chatroom').height(hc+214);
+					jQuery('#symposium-chatroom_header').removeClass('symposium_unreadChat').addClass('symposium_readChat');
+					jQuery('#symposium-chatroom_big').hide();
+					jQuery('#symposium-chatroom_small').show();
+					jQuery('#symposium-chatroom_max').show();
+					jQuery('#symposium-chatroom_min').hide();	
+					jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+					createCookie('wps_chatroom','show',7);
+				}
+			});
+			jQuery("#symposium-chatroom_small").live('click', function() {
+				var hc = jQuery('#symposium-chatroom').height();
+				if (hc > 50) {
+					jQuery('#chatroom_messages').hide();
+					jQuery('#chatroom_typing_area').hide();
+					jQuery('#symposium-chatroom').css('margin-top', '214px' )
+					jQuery('#symposium-chatroom').height(hc-214);
+					jQuery('#symposium-chatroom_big').show();
+					jQuery('#symposium-chatroom_small').hide();
+					jQuery('#symposium-chatroom_max').hide();
+					jQuery('#symposium-chatroom_min').hide();	
+					createCookie('wps_chatroom','min',7);
 				}
 			});
 		   		
@@ -1704,6 +1737,11 @@ jQuery(document).ready(function() {
 		    		}
 		    	});
 		    	
+			}
+			
+			// Pro features
+			if (symposium.symposium_pro != 'on') {
+				jQuery('#chatroom_messages').css('overflow', 'hidden' );
 			}
 			
 		} else {
@@ -1922,6 +1960,22 @@ function do_chatroom_check() {
 			jQuery('#symposium-chatroom').show("fast");
 			jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
 		}
+		if (show_chatroom == "min") {	
+			var hc = jQuery('#symposium-chatroom').height();
+			if (hc > 50) {
+				jQuery('#chatroom_messages').show();
+				jQuery('#chatroom_typing_area').show();
+				jQuery('#symposium-chatroom').css('margin-top', '214px' )
+				jQuery('#symposium-chatroom').height(hc-214);
+			}
+			jQuery('#symposium-chatroom_big').show();
+			jQuery('#symposium-chatroom_small').hide();
+			jQuery('#symposium-chatroom_max').hide();
+			jQuery('#symposium-chatroom_min').hide();	
+			
+			jQuery('#symposium-chatroom').show("fast");
+			jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+		}
 	}
 		
 	jQuery.ajax({
@@ -1936,8 +1990,24 @@ function do_chatroom_check() {
 	    dataType: "html",
 		async: true,
 		success: function(str){
-			jQuery('#chatroom_messages').html(str);
-			jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+			var split=str.split("[split]");
+						
+			if (split[1] != readCookie('wps_chatroom_chid') || jQuery('#chatroom_messages').html() == '') {
+				jQuery('#chatroom_messages').html(split[2]);
+				jQuery('#chatroom_messages').attr({ scrollTop: jQuery('#chatroom_messages').attr('scrollHeight') });
+			}
+			
+			if (split[0] != '' && split[0] != symposium.current_user_id && split[1] != readCookie('wps_chatroom_chid')) {
+				if (jQuery('#symposium-chatroom').height() < 50 && symposium.symposium_pro == 'on') {
+					jQuery('#symposium-chatroom_header').removeClass('symposium_readChat').addClass('symposium_unreadChat');
+				}
+			} else {
+				if (jQuery('#symposium-chatroom').height() > 50) {
+					jQuery('#symposium-chatroom_header').removeClass('symposium_unreadChat').addClass('symposium_readChat');
+				}
+			}
+			createCookie('wps_chatroom_chid',split[1],7);
+			
 		},
 		error: function(err){
 			//alert("24:"+err);
@@ -1945,59 +2015,9 @@ function do_chatroom_check() {
   	});
 		   	
 }	
-function do_bar_check() {
+function do_online_friends_check() {
 	
-  	// Notifications ************************************************
-	jQuery.ajax({
-		url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
-		type: "POST",
-		data: ({
-			action:"checkForNotifications"
-		}),
-	    dataType: "html",
-		async: true,
-		success: function(str){
-			if (str != '' && str != '-1') {
-				jQuery('#info').hide().delay((symposium.bar_polling*1000) * 0.75).fadeIn('slow'); // 11 seconds
-	    		jQuery('#alerts').html(str);
-	    		if (symposium.sound != 'None') {
-					// soundManager.play('Alert',symposium.plugin_url+'/js/soundmanager/'+symposium.sound);
-	    		}
-				jQuery('#alerts').fadeIn().delay((symposium.bar_polling*1000)*0.5).fadeOut('slow');
-			}
-		},
-		error: function(err){
-			//alert("20:"+err);
-		}		
-  	});
-	
-  	// Email ******************************************************
-	if (jQuery("#symposium-email-box").css("display") != "none") {
-		
-		jQuery.ajax({
-			url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
-			type: "POST",
-			data: ({
-				action:"symposium_getunreadmail", 
-				me:symposium.current_user_id
-			}),
-		    dataType: "html",
-			async: true,
-			success: function(str){
-				if (str > 0) {
-					jQuery("#symposium-email-box").html(str);
-					jQuery("#symposium-email-box").removeClass("symposium-email-box-read");
-					jQuery("#symposium-email-box").addClass("symposium-email-box-unread");
-				}
-			},
-			error: function(err){
-				//alert("21:"+err);
-			}		
-   		});
-
-	}
-	
-  	// Friends ******************************************************
+  	// Friends Online ******************************************************
 	if (jQuery("#symposium-friends-box").css("display") != "none") {
 		
 		jQuery.ajax({
@@ -2053,10 +2073,61 @@ function do_bar_check() {
    		});
    				
 	}
+}
+function do_bar_check() {
+	
+  	// Notifications ************************************************
+	jQuery.ajax({
+		url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+		type: "POST",
+		data: ({
+			action:"checkForNotifications"
+		}),
+	    dataType: "html",
+		async: true,
+		success: function(str){
+			if (str != '' && str != '-1') {
+				jQuery('#info').hide().delay((symposium.bar_polling*1000) * 0.75).fadeIn('slow'); // 11 seconds
+	    		jQuery('#alerts').html(str);
+	    		if (symposium.sound != 'None') {
+					// soundManager.play('Alert',symposium.plugin_url+'/js/soundmanager/'+symposium.sound);
+	    		}
+				jQuery('#alerts').fadeIn().delay((symposium.bar_polling*1000)*0.5).fadeOut('slow');
+			}
+		},
+		error: function(err){
+			//alert("20:"+err);
+		}		
+  	});
+	
+  	// Email ******************************************************
+	if (jQuery("#symposium-email-box").css("display") != "none") {
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+			type: "POST",
+			data: ({
+				action:"symposium_getunreadmail", 
+				me:symposium.current_user_id
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (str > 0) {
+					jQuery("#symposium-email-box").html(str);
+					jQuery("#symposium-email-box").removeClass("symposium-email-box-read");
+					jQuery("#symposium-email-box").addClass("symposium-email-box-unread");
+				}
+			},
+			error: function(err){
+				//alert("21:"+err);
+			}		
+   		});
+
+	}
 	
 }		
 
-// Cookies
 function removeHTMLTags(strInputCode){
  	strInputCode = strInputCode.replace(/&(lt|gt);/g, function (strMatch, p1){
 	 	return (p1 == "lt")? "<" : ">";
@@ -2065,6 +2136,7 @@ function removeHTMLTags(strInputCode){
 	return strTagStrippedText;	
 }
 
+// Cookies
 function createCookie(name,value,days) {
 	if (days) {
 		var date = new Date();
