@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Panel
 Plugin URI: http://www.wpsymposium.com
 Description: Panel bottom corner of screen to display notifications on new messages, mail, friend online, etc. Also controls live chat windows and chatroom. Simply activate to add.
-Version: 0.38
+Version: 0.38.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
