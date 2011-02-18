@@ -200,7 +200,11 @@ if ($_POST['action'] == 'symposium_getchat') {
 			$last_message .= '<div style="color:#aaa">'.__('Last message', 'wp-symposium').' '.symposium_time_ago($chat->chat_timestamp).'.</div>[|]';
 				
 
-			$last_active_minutes = $last_activity;
+			if ($chat->chat_from == $me) {
+				$last_active_minutes = convert_datetime($chat->tolast);
+			} else {
+				$last_active_minutes = convert_datetime($chat->fromlast);
+			}
 			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
 			if ($last_active_minutes >= $offline) {
 				$results .= "loggedout[split]";

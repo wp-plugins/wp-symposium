@@ -494,7 +494,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 						}
 
 						if ($version == "friends_activity") {
-							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) OR ( c.subject_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 						}
 
 						if ($version == "wall") {
@@ -692,7 +692,7 @@ function get_message($mail_mid, $del) {
 		if ($del == "in" || $del == "result") {
 			$msg .= "<div id='message_header_reply'>";
 			$msg .= "<form action='' method='POST'>";
-			$msg .= "<input type='hidden' name='reply_recipient' value=".$mail->mail_from." />";
+			$msg .= "<input type='text' name='reply_recipient' value=".$mail->mail_from." />";
 			$msg .= "<input type='hidden' name='reply_mid' value=".$mail_mid." />";
 			$msg .= '<input type="submit" class="button message_reply" style="margin-right:0px" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Reply', 'wp-symposium').'" />';
 			$msg .= "</form>";

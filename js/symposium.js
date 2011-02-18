@@ -279,9 +279,79 @@ jQuery(document).ready(function() {
    	jQuery(".mail_tab").click(function() {
 		jQuery(".symposium_pleasewait").inmiddle().show();
    	});		
+   	
+   	// Load box on first page load
+	if (jQuery("#search_inbox").length) {
+	 	jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getBox",
+				tray:"in",
+				term:""
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				var html = "";
+				var rows = jQuery.parseJSON(str);
+	            jQuery.each(rows, function(i,row){
+	            	html += "<div id='"+row.mail_mid+"' class='mail_item "+row.mail_read+"'>";
+	            	html += "<div class='mail_item_age'>"+row.mail_sent+"</div>";
+	            	html += "<strong>"+row.mail_from+"</strong><br />";
+					html += "<span class='mailbox_message_subject'>"+row.mail_subject+"</span><br />";
+					html += "<span class='mailbox_message'>"+row.message+"</span>";
+					html += "</div>";
+				});
+				jQuery('#mailbox_list').html(html);
+			},
+			error: function(err){
+				alert("getBox:"+err);
+			}		
+	  		});	
+   	}
+   	
+   	// Search
+   	jQuery("#search_inbox_go").click(function() {
+   		var term = jQuery("#search_inbox").val();
+
+   		if(term != '') {
+			jQuery('#mailbox_list').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
+				type: "POST",
+				data: ({
+					action:"getBox",
+					tray:"in",
+					term:term
+				}),
+			    dataType: "html",
+				async: true,
+				success: function(str){
+					var html = "";
+					var rows = jQuery.parseJSON(str);
+		            jQuery.each(rows, function(i,row){
+		            	html += "<div id='"+row.mail_mid+"' class='mail_item "+row.mail_read+"'>";
+		            	html += "<div class='mail_item_age'>"+row.mail_sent+"</div>";
+		            	html += "<strong>"+row.mail_from+"</strong><br />";
+						html += "<span class='mailbox_message_subject'>"+row.mail_subject+"</span><br />";
+						html += "<span class='mailbox_message'>"+row.message+"</span>";
+						html += "</div>";
+					});
+					jQuery('#mailbox_list').html(html);
+				},
+				error: function(err){
+					alert("getBox:"+err);
+				}		
+	   		});	  
+   		}
+   		   		
+   	});
+   
 
 	// React to click on message list
-   	jQuery(".mail_item").click(function() {
+	jQuery(".mail_item").live('click', function() {
    		
 		jQuery(".symposium_pleasewait").inmiddle().show();
 		var mail_mid = jQuery(this).attr("id");

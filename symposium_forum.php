@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.39
+Version: 0.39.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -51,8 +51,6 @@ function symposium_forum() {
 		
 	$dbpage = WP_PLUGIN_URL.'/'.$plugin_dir.'/symposium_forum_db.php';
 	
-
-
 	$html = "";
 	
 	wp_get_current_user();
@@ -540,8 +538,8 @@ function symposium_forum() {
 	
 								// Topic Title		
 								$html .= "<div class='row_topic'>";
-
-								if (strpos($favs, "[".$topic->tid."]") === FALSE) { } else {
+								
+								if (strpos($favs, "[".$topic->tid."]") === FALSE ) { } else {
 									$html .= "<img src='".$plugin."images/star-on.gif' class='floatleft' style='height:12px; width:12px; margin-right:4px;' />";						
 								}								
 								
@@ -641,7 +639,7 @@ function symposium_forum() {
 								if ($post->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
 
 								// Favourites
-								if ($show != '') {
+								if ($show != '' && is_user_logged_in()) {
 									if (strpos(get_symposium_meta($current_user->ID, 'forum_favs'), "[".$show."]") === FALSE) { 
 										$html .= "<img title='".__("Click to add to favourites", "wp-symposium")."' id='fav_link' src='".$plugin."images/star-off.gif' class='floatleftx' style='height:22px; width:22px; cursor:pointer;' alt='".__("Click to add to favourites", "wp-symposium")."' />";						
 									} else {

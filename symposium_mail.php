@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.39
+Version: 0.39.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -26,7 +26,6 @@ License: GPL2
 */
 
 function symposium_mail() {	
-	
 	
 	global $wpdb, $current_user;
 	wp_get_current_user();
@@ -199,7 +198,7 @@ function symposium_mail() {
 					if (isset($_POST['reply_mid'])) {
 						$mail_message = $wpdb->get_row("SELECT m.*, u.display_name FROM ".$wpdb->base_prefix."symposium_mail m LEFT JOIN ".$wpdb->base_prefix."users u ON m.mail_from = u.ID WHERE mail_mid = ".$_POST['reply_mid']);
 						
-						$subject = $mail_message->mail_subject;
+						$subject = strip_tags($mail_message->mail_subject);
 						if (substr($subject, 0, 4) != "Re: ") {
 							$subject = "Re: ".$subject;
 						}
@@ -260,40 +259,21 @@ function symposium_mail() {
 				
 				$html .= "<div class='style='width:100%; padding:0px; border: 0px; border:1px solid red;'>";
 
-				// Message
-				$html .= "<div style='float: left; width: 100%;'>";
-				$html .= "<div id='in_message' style='margin-left: 325px;'>";
-				$html .= $message_html;
-				$html .= "</div></div>";
-				
-				// Get list of inbox messages
-				$html .= "<div id='mailbox'>";
-				$mail = $wpdb->get_results("SELECT m.*, u.display_name FROM ".$wpdb->base_prefix."symposium_mail m LEFT JOIN ".$wpdb->base_prefix."users u ON m.mail_from = u.ID WHERE mail_in_deleted != 'on' AND mail_to = ".$current_user->ID." ORDER BY mail_mid DESC");
-
-				if ($mail) {
-					foreach ($mail as $item)
-					{
-						if ($item->mail_read != "on") {
-							$row_bg = "row";
-						} else {
-							$row_bg = "row_odd";
-						}
-								
-						$html .= "<div id='".$item->mail_mid."' class='mail_item ".$row_bg."'>";
-						$html .= "<div class='mail_item_age'>";
-						$html .= symposium_time_ago($item->mail_sent);
-						$html .= "</div>";
-						$html .= "<strong>".stripslashes(symposium_profile_link($item->mail_from))."</strong><br />";
-						$html .= "<span class='mailbox_message_subject'>".stripslashes(symposium_bbcode_remove($item->mail_subject))."</span><br />";
-						$message = stripslashes($item->mail_message);
-						if ( strlen($message) > 75 ) { $message = substr($message, 0, 75)."..."; }
-						$html .= "<span class='mailbox_message'>".symposium_bbcode_remove($message)."</span>";
-						$html .= "</div>";
-					}
-				} else {
-					$html .= "<p>".__('You have no mail', 'wp-symposium').".</p>";
-				}
-				$html .= "</div>";
+					// Message
+					$html .= "<div style='float: left; width: 100%;'>";
+					$html .= "<div id='in_message' style='margin-left: 325px;'>";
+					$html .= $message_html;
+					$html .= "</div></div>";
+					
+					// Get list of inbox messages
+					$html .= "<div id='mailbox'>";
+					
+						$html .= "<input id='search_inbox' type='text' style='width: 160px'>";
+						$html .= "<input id='search_inbox_go' class='button' type='submit' style='width: 70px; margin-left:10px;' value='Search'>";
+						
+						$html .= "<div id='mailbox_list'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /></div>";
+						
+					$html .= "</div>";
 				
 				$html .= "</div>";
 				

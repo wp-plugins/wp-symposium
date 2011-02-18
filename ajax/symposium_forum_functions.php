@@ -589,7 +589,7 @@ if ($_POST['action'] == 'getSearch') {
 					} else {
 						$topic_subject = symposium_bbcode_remove(stripslashes($topic->topic_subject));
 						$topic_subject = preg_replace(
-						  "/(>|^)([^<]+)(?=<|$)/esx",
+						  "/(>|^)([^<]+)(?=<|$)/iesx",
 						  "'\\1' . str_replace('" . $term . "', '<span class=\"symposium_search_highlight\">" . $term . "</span>', '\\2')",
 						  $topic_subject
 						);

@@ -4,6 +4,53 @@ include_once('../../../../wp-config.php');
 include_once('../../../../wp-includes/wp-db.php');
 include_once('../symposium_functions.php');
 
+// Get mail messages
+if ($_POST['action'] == 'getBox') {
+	
+	$tray = $_POST["tray"];
+	$term = $_POST["term"];
+
+	if ($tray == "in") {
+		$mail = $wpdb->get_results("SELECT m.*, u.display_name FROM ".$wpdb->base_prefix."symposium_mail m LEFT JOIN ".$wpdb->base_prefix."users u ON m.mail_from = u.ID WHERE mail_in_deleted != 'on' AND mail_to = ".$current_user->ID." AND (u.display_name LIKE '%".$term."%' OR mail_subject LIKE '%".$term."%' OR mail_message LIKE '%".$term."%') ORDER BY mail_mid DESC LIMIT 0,30");
+	}
+
+	$return_arr = array();	
+
+	if ($mail) {
+		foreach ($mail as $item)
+		{
+			if ($item->mail_read != "on") {
+				$row_array['mail_read'] = "row";
+			} else {
+				$row_array['mail_read'] = "row_odd";
+			}
+			$row_array['mail_mid'] = $item->mail_mid;
+			$row_array['mail_sent'] = symposium_time_ago($item->mail_sent);
+			$row_array['mail_from'] = stripslashes(symposium_profile_link($item->mail_from));
+			$row_array['mail_subject'] = stripslashes(symposium_bbcode_remove($item->mail_subject));
+			$row_array['mail_subject'] = preg_replace(
+			  "/(>|^)([^<]+)(?=<|$)/iesx",
+			  "'\\1' . str_replace('" . $term . "', '<span class=\"symposium_search_highlight\">" . $term . "</span>', '\\2')",
+			  $row_array['mail_subject']
+			);
+			$message = stripslashes($item->mail_message);
+			if ( strlen($message) > 75 ) { $message = substr($message, 0, 75)."..."; }
+			$message = preg_replace(
+			  "/(>|^)([^<]+)(?=<|$)/iesx",
+			  "'\\1' . str_replace('" . $term . "', '<span class=\"symposium_search_highlight\">" . $term . "</span>', '\\2')",
+			  $message
+			);
+			$row_array['message'] = symposium_bbcode_remove($message);
+
+	        array_push($return_arr,$row_array);
+
+		}
+	}
+
+	echo json_encode($return_arr);
+
+}
+				
 // Get single mail message
 if ($_POST['action'] == 'getMailMessage') {
 
