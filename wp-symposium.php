@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.38.2
+Version: 0.39
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2

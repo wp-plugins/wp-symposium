@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Panel
 Plugin URI: http://www.wpsymposium.com
 Description: Panel bottom corner of screen to display notifications on new messages, mail, friend online, etc. Also controls live chat windows and chatroom. Simply activate to add.
-Version: 0.38.2
+Version: 0.39
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -92,9 +92,14 @@ function add_notification_bar()
 				}
 								
 				#symposium-chatroom-box {
-					background-image:url('<?php echo $plugin; ?>/images/chatroom.gif');
 					border-radius: <?php echo $border_radius; ?>px;
 					-moz-border-radius: <?php echo $border_radius; ?>px;
+				}
+				.symposium-chatroom-new {
+					background-image:url('<?php echo $plugin; ?>/images/chatroomnew.gif');
+				}
+				.symposium-chatroom-none {
+					background-image:url('<?php echo $plugin; ?>/images/chatroom.gif');
 				}
 				
 				.symposium-email-box {
@@ -190,7 +195,7 @@ function add_notification_bar()
 	
 						// Chat room
 						if ($use_chatroom == 'on') {
-							echo "<div id='symposium-chatroom-box'></div>";
+							echo "<div id='symposium-chatroom-box' class='symposium-chatroom-none'></div>";
 						}
 	
 						// Pending Friends
@@ -239,7 +244,7 @@ function addChatWindow($id) {
 		echo "<div id='chat".$id."_message' class='chat_messages'>";
 		echo "</div>";
 		echo "<div style='width:180px; height:40px;'>";
-			echo "<textarea id='chat".$id."_textarea' class='chat_message' onclick='if (this.value == \"".__("Type here...", "wp-symposium")."\") { this.value=\"\"; }' style='background-color:#efefef;border:0px;width:176px;height:34px;'>".__("Type here...", "wp-symposium")."</textarea>";
+			echo "<textarea id='chat".$id."_textarea' class='chat_message' onclick='if (this.value == \"".__("Type here...", "wp-symposium")."\") { this.value=\"\"; }'>".__("Type here...", "wp-symposium")."</textarea>";
 		echo "</div>";
 	echo "</div>";
 	

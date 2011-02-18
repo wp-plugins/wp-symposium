@@ -35,7 +35,7 @@ if ($_POST['action'] == 'symposium_addchatroom') {
 		'chat_message' => $chat_message,
 		'chat_timestamp' => date("Y-m-d H:i:s") 
 	) ) ) {
-		$r.= stripslashes($chat_message);
+		$r .= stripslashes($chat_message).' '.$wpdb->last_query;
 	} else {
 		$r .= $wpdb->last_query;
 	}
@@ -151,41 +151,78 @@ if ($_POST['action'] == 'symposium_getchat') {
 	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 
 	// get messages
-	$sql = "SELECT c.*, u1.display_name AS fromname, u2.display_name AS toname ";
+	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
 	$sql .= "FROM ".$wpdb->base_prefix."symposium_chat c ";
 	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u1 ON c.chat_from = u1.ID ";
 	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.chat_to = u2.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
 	$sql .= "WHERE (";
 	$sql .= "chat_from = ".$me;
 	$sql .= " OR chat_to = ".$me;
 	$sql .= ")";
 	$sql .= " AND chat_to > 0 ";
-	$sql .= "ORDER BY chid DESC";
+	$sql .= "ORDER BY chid";
 	
 	$chats = $wpdb->get_results($sql);
 	if ($chats) {
 		foreach ($chats as $chat) {
 
 			$results .= $chat->chid."[|]".$chat->chat_from.'[|]'.$chat->chat_to.'[|]';
-			if ($chat->chat_from == $me) {
-				$results .= '<div style="border-bottom:1px solid #aaa; color: #006">';
-			} else {
-				$results .= '<div style="border-bottom:1px solid #aaa; color: #600">';
-			}
-			$results .= stripslashes($chat->chat_message).'<br />';
+			$last_message = $chat->chid."[|]".$chat->chat_from.'[|]'.$chat->chat_to.'[|]';
 
-			$results .= '<span style="float: right; color: #aaa; font-style:italic;">'.stripslashes($chat->fromname).'</span><br style="clear:both;" /></div>';
-			$results .= '[|]';
+
+				if ($chat->chat_from == $me) {
+					$results .= $chat->toname."[|]";
+					$last_message .= $chat->toname."[|]";
+					$results .= "<div>";
+					$results .= "<div style='clear:both;color:#006; font-style:normal;float: left;'>";
+				} else {
+					$results .= $chat->fromname."[|]";
+					$last_message .= $chat->fromname."[|]";
+					$results .= "<div>";
+					$results .= "<div style='clear:both;color:#600; font-style:normal;float: left;'>";
+				}
+	
+				$results .= stripslashes($chat->chat_message);
+				$results .= '</div>';
+				$results .= "<div style='clear:both; float:right; color:#aaa; font-style:italic;'>";
+				if ($chat->chat_from == $current_user->ID) {
+					$results .= __("You", "wp-symposium");
+				} else {
+					$results .= $chat->fromname;
+				}
+				$results .= '</div>';
 			
-			if ($chat->chat_to == $me) {
-				$results .= $chat->fromname."[split]";
-			} else {
-				$results .= $chat->toname."[split]";
-			}
+			$results .= "<br style='clear:both;' /></div>";
+			$results .= '[|]';
+				
+			$last_message .= '<div style="color:#aaa">'.__('Last message', 'wp-symposium').' '.symposium_time_ago($chat->chat_timestamp).'.</div>[|]';
+				
 
+			$last_active_minutes = $last_activity;
+			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
+			if ($last_active_minutes >= $offline) {
+				$results .= "loggedout[split]";
+				$last_message .= "loggedout[split]";
+			} else {
+				if ($last_active_minutes >= $inactive) {
+					$results .= "inactive[split]";
+					$last_message .= "inactive[split]";
+				} else {
+					$results .= "online[split]";
+					$last_message .= "online[split]";
+				}
+			}
+			
+			// Only show 'last message' if over 60 seconds
+			if ((time() - strtotime($chat->chat_timestamp)) < 60) {
+				$last_message = "";
+			}
+			
 		}
 
-		$results = $results;
+		$results = $results.$last_message;
 
 
 	}
@@ -209,9 +246,12 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 
 	// get messages
-	$sql = "SELECT c.*, u1.display_name AS fromname ";
+	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
 	$sql .= "FROM ".$wpdb->base_prefix."symposium_chat c ";
 	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u1 ON c.chat_from = u1.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.chat_to = u2.ID ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m1 ON c.chat_from = m1.uid ";
+	$sql .= "LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m2 ON c.chat_to = m2.uid ";
 	$sql .= "WHERE chat_to = -1 ";
 	$sql .= "ORDER BY chid DESC ";
 	$sql .= "LIMIT 0,30";
@@ -219,8 +259,12 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 	$c = 0;
 	$time_now = time();
 	$chatlist = $wpdb->get_results($sql);
+	$chatlist = array_reverse($chatlist);
 	
-	$results = $wpdb->last_query;
+	
+	$lq = $wpdb->last_query;
+	
+	$results = '';
 	
 	$last_chat_chid = '';
 	$last_chat_from = '';
@@ -233,12 +277,22 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 			
 			$c++;
 
-			if ($last_chat_from == '') {
-				$last_chat_from = $chat->chat_from;
-				$last_chat_chid = $chat->chid;
+			$last_active_minutes = convert_datetime($chat->fromlast);
+			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
+			if ($last_active_minutes >= $offline) {
+				$status_img = WP_PLUGIN_URL.'/wp-symposium/images/loggedout.gif';
+			} else {
+				if ($last_active_minutes >= $inactive) {
+					$status_img = WP_PLUGIN_URL.'/wp-symposium/images/inactive.gif';
+				} else {
+					$status_img = WP_PLUGIN_URL.'/wp-symposium/images/online.gif';
+				}
 			}
+			
+			$last_chat_from = $chat->chat_from;
+			$last_chat_chid = $chat->chid;
 									
-			$results .= "<div style='border-bottom:1px solid #aaa;'>";
+			$results .= "<div>";
 			if ($c&1) {
 				$results .= "<div style='clear:both;color:#006; font-style:normal;float: left;'>";
 			} else {
@@ -248,11 +302,12 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 			$results .= "</div>";
 
 			$results .= "<div style='clear:both; float:right; color:#aaa; font-style:italic;'>";
+			$results .= "<img src='".$status_img."' title='".$status_img."' />&nbsp;";
 			$results .= $chat->fromname;
+			$results .= ", ".symposium_time_ago($chat->chat_timestamp);
 			$results .= '</div>';
 
 			$results .= "<br style='clear:both;' /></div>";
-
 
 		}
 

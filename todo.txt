@@ -1,9 +1,14 @@
 todo.txt
 --------
 
+URGENT
+
+- don't show friends of friends on friends activity
+
+
 GENERAL
 
-- purge tool for wall, forum and chat
+- purge tool for wall, forum and chat (via Admin, Options, Settings)
 
 NOTIFICATIONS
 
@@ -20,12 +25,8 @@ PROFILE
 
 CHAT
 
-- online light on chat window
-- please wait not showing when window first opens
-
 FORUM 
 
-- search
 Steven Tryon: linking blog to forum and vice versa
 
 CODEX
@@ -41,20 +42,9 @@ MAIL
 
 WISH LIST
 
-- paying/subscriptions
-- Option to get members to confirm registration via email
 - Minimum level for categories
+- subcategories
 - 'clear' link on vote widget
 
 
---------------------------------------------------------------------------------------
-
-Gene has replied to their post:
-I get that error on Wall, Friends Activity and All Activity. The other pages load fine.
-Go to their wall...
-http://www.wpsymposium.com/profile?uid=156&post=239
-
-http://wordpress.org/extend/plugins/pierres-wordspew/ clash
-
-string mb_substr ( string $str , int $start [, int $length [, string $encoding ]] )
 

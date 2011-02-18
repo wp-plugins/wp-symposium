@@ -26,8 +26,16 @@ THE SOFTWARE.
 
 if (!empty($_FILES)) {
 
+	include_once('../../../../wp-config.php');
+
 	$tempFile = $_FILES['Filedata']['tmp_name'];
-	$targetPath = $_SERVER['DOCUMENT_ROOT'].'/wp-content/plugins/wp-symposium/uploads/';
+
+	if ( WPS_TMP_DIR != "WPS_TMP_DIR" ) {
+		$targetPath = WPS_TMP_DIR.'/';
+	} else {
+		$targetPath = $_SERVER['DOCUMENT_ROOT'].'/wp-content/plugins/wp-symposium/uploads/';
+	}
+
 	$filename = $_FILES['Filedata']['name'];
 	$filename = preg_replace('/[^A-Za-z0-9.]/','_',$filename);
 	$targetFile =  str_replace('//','/',$targetPath) . $filename;
@@ -35,14 +43,31 @@ if (!empty($_FILES)) {
 	if (!file_exists($targetPath)) {
 		mkdir(str_replace('//','/',$targetPath), 0755, true);
 	}
+
+	if (file_exists($targetPath)) {
+
+		if (file_exists($tempFile)) {
 		
-	if (move_uploaded_file($tempFile,$targetFile)) {
-		echo $filename;
+			if (move_uploaded_file($tempFile,$targetFile)) {
+				echo $filename;
+				exit;
+			} else {
+				echo "FAILED: Could not move ".$tempFile." ".$targetFile;
+				exit;
+			};
+
+		} else {
+			echo "FAILED: Could not find temporary file ".$tempFile;
+			exit;
+		}
+		
 	} else {
-		echo "FAILED-moving-[".$tempFile."]-to-[".$targetFile."]";
-	};
+		echo "FAILED: Could not create ".$targetPath." (".WPS_TMP_DIR.")";
+		exit;
+	}
 
 } else {
-	echo "FAILED-file did not upload at all, maybe permissions?";
+	echo "FAILED: file did not upload at all";
+	exit;
 }
 ?>

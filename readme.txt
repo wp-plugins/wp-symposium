@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.0.5
-Stable tag: 0.38.2
+Stable tag: 0.39
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows, profile page, widgets, and more! 
 
@@ -146,6 +146,15 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 
 == Changelog ==
+
+= 0.39 =
+
+* Profile: Added option to set temporary upload folder (useful on shared servers with PHP restrictions)
+* Forum: Changed link when search result is a reply to point to parent post
+* Panel: Chat windows titles changed colour if minimized and there is a new message
+* Panel: Chatroom icon changes to green if there is a new message and chatroom not open
+* Panel: Changed icons so they are more consistent (gloss effect)
+* Panel: Double default chat window width to make reading messages easier
 
 = 0.38.2 =
 
