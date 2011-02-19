@@ -60,7 +60,7 @@ function get_user_avatar($uid, $size) {
 	if ($profile_photo == '' || profile_photo == 'upload_failed') {
 		return get_avatar($uid, $size);
 	} else {
-		return "<img src='/wp-content/wp-symposium-members/".$uid."/media/photos/profile_pictures/".$profile_photo."' style='width:".$size."px; height:".$size."px' />";
+		return "<img src='".WP_CONTENT_URL."/wp-symposium-members/".$uid."/media/photos/profile_pictures/".$profile_photo."' style='width:".$size."px; height:".$size."px' />";
 	}
 	
 	exit;
@@ -692,7 +692,7 @@ function get_message($mail_mid, $del) {
 		if ($del == "in" || $del == "result") {
 			$msg .= "<div id='message_header_reply'>";
 			$msg .= "<form action='' method='POST'>";
-			$msg .= "<input type='text' name='reply_recipient' value=".$mail->mail_from." />";
+			$msg .= "<input type='hidden' name='reply_recipient' value=".$mail->mail_from." />";
 			$msg .= "<input type='hidden' name='reply_mid' value=".$mail_mid." />";
 			$msg .= '<input type="submit" class="button message_reply" style="margin-right:0px" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Reply', 'wp-symposium').'" />';
 			$msg .= "</form>";

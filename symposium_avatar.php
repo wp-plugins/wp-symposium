@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Avatar
 Plugin URI: http://www.wpsymposium.com
 Description: Allows members of a WP Symposium powered site to upload a profile photo. Put [symposium-avatar] on any WordPress page.
-Version: 0.39.1
+Version: 0.40
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -62,7 +62,7 @@ function symposium_avatar()
 			if ( WPS_TMP_DIR != "WPS_TMP_DIR" ) {
 				$targetPath = WPS_TMP_DIR.'/';
 			} else {
-				$targetPath = $_SERVER['DOCUMENT_ROOT'].'/wp-content/plugins/wp-symposium/uploads/';
+				$targetPath = WP_PLUGIN_DIR.'/wp-symposium/uploads/';
 			}
 			$targetPath =  str_replace('//','/',$targetPath);
 
@@ -74,7 +74,7 @@ function symposium_avatar()
 				ini_set("memory_limit","100M");
 		
 				include_once('SimpleImage.php');
-	
+				
 			   	$image = new symposium_SimpleImage();
 			   	$image->load($img_path);
 			   	$image->resizeToWidth(600);

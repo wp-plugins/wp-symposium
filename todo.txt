@@ -1,45 +1,27 @@
-todo.txt
---------
+todo.txt (MoSCoW)
+-----------------
 
-GENERAL
+Must do (fixes before next release)
+-------
+
+Should do (before next release, unless patch has to go out fixing bugs)
+---------
+
+- Implement poke
+
+Could do (if development time allows)
+--------
 
 - purge tool for wall, forum and chat (via Admin, Options, Settings)
 
-NOTIFICATIONS
+Would do (if life allows!)
+--------
 
-- template driven
-
-MEMBER SEARCH 
-
-- When 'land' on member's page, default to their 'my wall'
-  
-PROFILE
-
-- option receive email on activity in wall post if I've replied or started it
-- Implement poke
-
-CHAT
-
-FORUM 
-
-Steven Tryon: linking blog to forum and vice versa
-
-CODEX
-
-- data dictionary
-- functions
-- javascript variables
-
-MAIL
-
-- strip images from subject text
-- quote feature?
-
-WISH LIST
-
+- template driven notifications
+- optionally receive email on activity in wall post if I've replied or started it
+- Codex
+- Mail: quote feature
+- Forum: Steven Tryon: linking blog to forum and vice versa
 - Minimum level for categories
 - subcategories
 - 'clear' link on vote widget
-
-
-

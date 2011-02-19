@@ -33,7 +33,7 @@ if (!empty($_FILES)) {
 	if ( WPS_TMP_DIR != "WPS_TMP_DIR" ) {
 		$targetPath = WPS_TMP_DIR.'/';
 	} else {
-		$targetPath = $_SERVER['DOCUMENT_ROOT'].'/wp-content/plugins/wp-symposium/uploads/';
+		$targetPath = WP_PLUGIN_DIR.'/wp-symposium/uploads/';
 	}
 
 	$filename = $_FILES['Filedata']['name'];

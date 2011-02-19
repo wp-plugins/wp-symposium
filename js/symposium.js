@@ -50,7 +50,6 @@ jQuery(document).ready(function() {
 			'buttonText': 'Browse for file',
 		    'script'    : symposium.plugin_url+'uploadify/uploadify.php',
 		    'cancelImg' : symposium.plugin_url+'uploadify/cancel.png',
-		    'folder' 	: symposium.plugin_url+'uploads',
 		    'auto'      : true,
 			'onComplete': function(event, queueID, fileObj, response, data) { 
 				if (symposium.avatar_url.indexOf('?') > 0) {

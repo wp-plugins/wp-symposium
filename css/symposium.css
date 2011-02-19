@@ -296,6 +296,7 @@
 	position:fixed;
 	bottom:0px;
 	right:144px;
+	pointer-events: none;
 }
 
 #symposium-chatboxes #symposium-who-online {
@@ -315,6 +316,7 @@
 	background-color: #fff;
 }
 #symposium-chatboxes * {
+	pointer-events: auto;
 	font-size: 12px;				
 }
 #symposium-chatboxes .display_name_link {
@@ -446,6 +448,7 @@
 	margin-right: 10px;
 	width: 18px;
 	height: 18px;
+	pointer-events: auto;
 }
 
 #symposium-logout {

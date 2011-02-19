@@ -42,8 +42,7 @@ if (is_user_logged_in()) {
 			imagecopyresampled($dst_r,$img_r,0,0,$_POST['x'],$_POST['y'],
 			$targ_w,$targ_h,$_POST['w'],$_POST['h']);
 	
-			$wp_content_dir = ABSPATH . 'wp-content';
-			$to_path = $wp_content_dir.'/wp-symposium-members/'.$uid.'/media/photos/profile_pictures/';	
+			$to_path = WP_CONTENT_DIR.'/wp-symposium-members/'.$uid.'/media/photos/profile_pictures/';	
 			$filename = time().'.jpg';
 			$to_file = $to_path.$filename;
 			if (file_exists($to_path)) {
