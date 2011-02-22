@@ -56,7 +56,7 @@ if ($_POST['action'] == 'getMembers') {
 	$plugin_dir = WP_PLUGIN_URL.'/wp-symposium/';
 	$config = $wpdb->get_row($wpdb->prepare("SELECT online,offline FROM ".$wpdb->prefix . 'symposium_config'));
 	
-	$sql = "SELECT m.uid, m.last_activity, m.city, m.country, m.share, m.wall_share,
+	$sql = "SELECT m.uid, m.last_activity, m.status, m.city, m.country, m.share, m.wall_share,
 	(SELECT comment FROM ".$wpdb->base_prefix."symposium_comments WHERE author_uid = m.uid AND subject_uid = author_uid and comment_parent = 0 ORDER BY cid DESC LIMIT 0,1) AS latest_comment, 
 	(SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$me." AND friend_to = m.uid) AS is_friend 
 	FROM ".$wpdb->base_prefix."symposium_usermeta m 
@@ -74,9 +74,13 @@ if ($_POST['action'] == 'getMembers') {
 		foreach ($members as $member) {
 			
 			$time_now = time();
-			$last_active_minutes = strtotime($member->last_activity);
-			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
-											
+			if ($member->last_activity && $member->status != 'offline') {
+				$last_active_minutes = convert_datetime($member->last_activity);
+				$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
+			} else {
+				$last_active_minutes = 999999999;
+			}
+														
 			$html .= "<div class='members_row";
 			if ($member->is_friend == 1 || $member->uid == $me) {
 				$html .= " row corners'>";		

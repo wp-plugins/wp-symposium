@@ -2,8 +2,8 @@
 /*
 Plugin Name: WP Symposium Panel
 Plugin URI: http://www.wpsymposium.com
-Description: Panel bottom corner of screen to display notifications on new messages, mail, friend online, etc. Also controls live chat windows and chatroom. Simply activate to add.
-Version: 0.40
+Description: Panel bottom corner of screen to display notifications on new messages, mail, friend online, etc. Also controls live chat windows, chatroom and online status. Simply activate to add.
+Version: 0.41
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -142,7 +142,7 @@ function add_notification_bar()
 			echo "<!-- NOTIFICATION BAR -->";
 
 				if (is_user_logged_in()) {
-		
+					
 					echo "<div id='symposium-chatboxes'>";
 			
 						// DIV for who's online
@@ -187,7 +187,20 @@ function add_notification_bar()
 						}
 						
 					echo "</div>";
-				
+
+					// Logout button DIV
+					echo "<div id='symposium-logout-div'>";
+						echo "<div id='symposium-online-status-div'>";
+							echo "<input type='checkbox' id='symposium-online-status' ";
+							if ($meta->status == "offline") { echo " CHECKED"; }
+							echo "> ".__("Appear offline?", "wp-symposium");
+						echo "</div>";
+						echo "<div id='symposium-online-status-div'>";
+							echo "<img style='float: left; margin-left: 1px; margin-right: 5px;' src='".WP_PLUGIN_URL."/wp-symposium/images/delete.png' alt='".__("Logout", "wp-symposium")."' />";
+							echo "<a id='symposium-logout-link' href='javascript:void(0);'>".__("Logout", "wp-symposium")."</a>";
+						echo "</div>";
+					echo "</div>";
+
 					echo '<div id="symposium-notification-bar">';
 
 						// Log out

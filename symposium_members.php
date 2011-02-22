@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Members Directory
 Plugin URI: http://www.wpsymposium.com
 Description: Directory component for the Symposium suite of plug-ins. Put [symposium-members] on any WordPress page.
-Version: 0.40
+Version: 0.41
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -53,7 +53,7 @@ function symposium_members($ver) {
 				$html .= '<input type="text" id="member" name="member" class="members_search_box new-topic-subject-input" value="'.$term.'" />';
 				$html .= '<input type="hidden" id="member_id" name="member_id" />';
 				$html .= '<div style="float:right; padding:0px;">';
-				$html .= '<input id="members_go_button" type="submit" class="button" value="'.__("Go", "wp-symposium").'" />';
+				$html .= '<input id="members_go_button" type="submit" class="symposium-button" value="'.__("Go", "wp-symposium").'" />';
 				$html .= '</div>';
 		
 				$html .= '</form>';
@@ -136,7 +136,7 @@ function symposium_members($ver) {
 				$html .= '<form method="post" action="'.$dbpage.'"> ';
 		
 				$html .= '<div style="float:right; padding:0px;">';
-				$html .= '<input id="members_go_button" type="submit" class="button" value="'.__("Go", "wp-symposium").'" />';
+				$html .= '<input id="members_go_button" type="submit" class="symposium-button" value="'.__("Go", "wp-symposium").'" />';
 				$html .= '</div>';
 		
 				$html .= '<input type="text" id="member" name="member" class="members_search_box new-topic-subject-input" onfocus="this.value = \'\';" value="" />';

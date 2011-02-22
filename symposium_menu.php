@@ -366,6 +366,8 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'mail_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'members_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_url')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'groups_url')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'group_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'avatar_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'online')) { $status = "X"; }
@@ -468,6 +470,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'comment_parent')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'comment_timestamp')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'comment')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'group')) { $status = "X"; }
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -600,7 +603,7 @@ function symposium_plugin_debug() {
 	
 		// ********** Reset database version
 	   	echo '<h2>'.__('Re-apply database upgrades', 'wp-symposium').'</h2>';
-	   	echo "<p>".__('To re-run the database table modifications, de-activate and re-activate the core plugin. This will not destory any tables or any data.', 'wp-symposium')."</p>";
+	   	echo "<p>".__('To re-run the database table modifications, de-activate and re-activate the core plugin. This will not destroy any tables or any data.', 'wp-symposium')."</p>";
 	
 		// ********** Test AJAX
 	   	echo '<h2>'.__('Anindya AJAX test', 'wp-symposium').'</h2>';
@@ -631,7 +634,7 @@ function symposium_plugin_debug() {
 		  		echo $db_ver."<br />";
 		  	}
 	
-			if ( ($config->forum_url == "Important: Please update!") || ($config->members_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->avatar_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
+			if ( ($config->forum_url == "Important: Please update!") || ($config->members_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->avatar_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!")  || ($config->group_url == "Important: Please update!") || ($config->groups_url == "Important: Please update!") ) {
 				echo $fail."You must update your plugin URLs on the <a href='admin.php?page=symposium_options&view=settings'>options page</a>.".$fail2;
 			} else {
 			  	echo __('According to the Options page', 'wp-symposium').":<br />";
@@ -649,6 +652,10 @@ function symposium_plugin_debug() {
 			  	}
 			  	if (function_exists('symposium_members')) { 
 			  		echo "&nbsp;&middot;&nbsp;".__('the members directory page is at', 'wp-symposium')." <a href='".$config->members_url."'>$config->members_url</a><br />";
+			  	}
+			  	if (function_exists('symposium_groups')) { 
+			  		echo "&nbsp;&middot;&nbsp;".__('the groups directory page is at', 'wp-symposium')." <a href='".$config->groups_url."'>$config->members_url</a><br />";
+			  		echo "&nbsp;&middot;&nbsp;".__('the group profile page is at', 'wp-symposium')." <a href='".$config->group_url."'>$config->group_url</a><br />";
 			  	}
 			  	echo __('Click the links above to check', 'wp-symposium');
 			}
@@ -683,8 +690,10 @@ function symposium_plugin_debug() {
 	    } else {
 	    	echo "<p style='color:green; font-weight:bold;'>".__( sprintf("Javascript file (%s) found.", $myJSfile) )."</p>";
 	    }
-	    echo "<div id='jstest'>".$fail.__( "Javascript has not loaded, or there is an error in the JS file. Try re-activating the core WPS plugin.", "wp-symposium").$fail2."</div>";
+	    echo "<p>If you find that certain WPS things don't work, like buttons or uploading profile photos, it is probably because the Symposium Javascript file isn't loading and/or working. Usually, this is because of another WordPress plugin. Try deactivating all plugins apart from WPS plugins, and re-activate them one at a time until the error re-occurs, this will help you locate the plugin that is clashing.Also try use Firefox, with the Firebug add-in installed - this will show you where the Javascript error is occuring.</p>";
 	    	  	
+	    echo "<div id='jstest'>".$fail.__( "You have problems with Javascript. This may be because a plugin is loading another version of jQuery or jQuery UI - try deactivating all plugins apart from WPS plugins, and re-activate them one at a time until the error re-occurs, this will help you locate the plugin that is clashing. It might also be because there is an error in a JS file, either the symposium.js or another plugin script. Always try re-activating the core WPS plugin.", "wp-symposium").$fail2."</div>";
+	    
 		// ********** User Level  	
 	   	echo '<h2>'.__('User Level Test', 'wp-symposium').'</h2>';
 		echo '<table class="widefat">';
@@ -1500,6 +1509,8 @@ function symposium_plugin_options() {
 	        $avatar_url = $_POST[ 'avatar_url' ];
 	        $members_url = $_POST[ 'members_url' ];
 	        $profile_url = $_POST[ 'profile_url' ];
+	        $groups_url = $_POST[ 'groups_url' ];
+	        $group_url = $_POST[ 'group_url' ];
 	        $wp_alignment = $_POST[ 'wp_alignment' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET footer = '".$footer."'") );					
@@ -1514,6 +1525,8 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET avatar_url = '".$avatar_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET members_url = '".$members_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET profile_url = '".$profile_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET groups_url = '".$groups_url."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET group_url = '".$group_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_alignment = '".$wp_alignment."'") );				
 			
 	        // Put an settings updated message on the screen
@@ -1912,6 +1925,8 @@ function symposium_plugin_options() {
 					$avatar_url = $config->avatar_url;
 					$members_url = $config->members_url;
 					$profile_url = $config->profile_url;
+					$groups_url = $config->groups_url;
+					$group_url = $config->group_url;
 					$wp_alignment = $config->wp_alignment;
 					?>
 									
@@ -1950,6 +1965,18 @@ function symposium_plugin_options() {
 					<th scope="row"><label for="members_url">Members Directory URL</label></th> 
 					<td><input name="members_url" type="text" id="members_url"  value="<?php echo $members_url; ?>" class="regular-text" /> 
 					<span class="description"><?php echo __('Full URL of the page that includes [symposium-members]', 'wp-symposium'); ?></td> 
+					</tr> 					
+
+					<tr valign="top"> 
+					<th scope="row"><label for="groups_url">Groups URL</label></th> 
+					<td><input name="groups_url" type="text" id="groups_url"  value="<?php echo $groups_url; ?>" class="regular-text" /> 
+					<span class="description"><?php echo __('Full URL of the page that includes [symposium-groups]', 'wp-symposium'); ?></td> 
+					</tr> 					
+
+					<tr valign="top"> 
+					<th scope="row"><label for="group_url">Group Profile URL</label></th> 
+					<td><input name="group_url" type="text" id="group_url"  value="<?php echo $group_url; ?>" class="regular-text" /> 
+					<span class="description"><?php echo __('Full URL of the page that includes [symposium-group]', 'wp-symposium'); ?></td> 
 					</tr> 					
 
 					<tr valign="top"> 

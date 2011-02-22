@@ -125,7 +125,7 @@
 
 /* Buttons */
 
-.symposium-wrapper .button, 	.button
+.symposium-wrapper .symposium-button, .symposium-button
 {
 	background-color: #aaa;
 	color: #000;
@@ -137,7 +137,7 @@
 	height: 28px;
 	cursor: pointer;
 }
-.symposium-wrapper .button:hover, .button:hover
+.symposium-wrapper .symposium-button:hover, .symposium-button:hover
 {
 	background-color: #666;
 	color: #fff;
@@ -290,6 +290,17 @@
 #symposium-notification-bar #icons img {
 	margin-right: 8px;		
 	float: left;		
+}
+
+#symposium-logout-div {
+	display:none;
+	position:fixed;
+	right:0px;
+	width: 135px;
+	bottom:28px;
+	padding: 4px;
+	background-color: #000;
+	color: #fff;
 }
 
 #symposium-chatboxes {
@@ -1203,7 +1214,6 @@
 	width:95%; 
 	margin-bottom: 0px;
 	padding:6px;
-	padding-bottom:3px;
 }
 
 .symposium-wrapper .members_info {
@@ -1215,6 +1225,7 @@
 .symposium-wrapper .members_location {
 	float: right;
 	font-style:italic;
+	text-align:right;
 }
 
 .symposium-wrapper .members_avatar {

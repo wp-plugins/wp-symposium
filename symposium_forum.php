@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.40
+Version: 0.41
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -224,7 +224,7 @@ function symposium_forum() {
 				// Sub Menu for Logged in User
 				if ($show == '') {
 					
-					$html .= '<input type="submit" class="button" id="new-topic-button" value="'.__("Start a New Topic", "wp-symposium").'" />';
+					$html .= '<input type="submit" class="symposium-button" id="new-topic-button" value="'.__("Start a New Topic", "wp-symposium").'" />';
 
 				}
 				
@@ -275,20 +275,16 @@ function symposium_forum() {
 					$html .= '<div class="emailreplies label"><input type="checkbox" name="new_topic_subscribe"';
 					if ($new_topic_subscribe != '') { $html .= 'checked'; } 
 					$html .= '> '.__("Email me when I get any replies", "wp-symposium").'</div>';
-					$html .= '<input type="submit" class="button" style="float: left" value="'.__("Post", "wp-symposium").'" />';
+					$html .= '<input type="submit" class="symposium-button" style="float: left" value="'.__("Post", "wp-symposium").'" />';
 					$html .= '</form>';
-					$html .= '<input id="cancel_post" type="submit" class="button clear" onClick="javascript:void(0)" value="'.__("Cancel", "wp-symposium").'" />';
+					$html .= '<input id="cancel_post" type="submit" class="symposium-button clear" onClick="javascript:void(0)" value="'.__("Cancel", "wp-symposium").'" />';
 					
 				$html .= '</div>';
 					
 			} else {
 		
 				$html .= __("Until you login, you can only view the forum.", "wp-symposium");
-				if ($config->use_wp_login == "on") {
-					$html .= " <a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='".__("Login", "wp-symposium")."'>".__("Login", "wp-symposium").".</a>";
-				} else {
-					$html .= ' <a href="'.$config->custom_login_url.'?redirect_to='.get_permalink().'">'.__("Login", "wp-symposium").'.</a>';
-				}
+				$html .= " <a href=".wp_login_url( get_permalink() )." class='simplemodal-login' title='".__("Login", "wp-symposium")."'>".__("Login", "wp-symposium").".</a>";
 				$html .= "<br />";
 		
 			}
@@ -613,8 +609,8 @@ function symposium_forum() {
 						}
 						$html .= '</select></div>';
 						$html .= '<div style="float:right; margin-right:15px;">';
-						$html .= '<input type="submit" class="button edit_topic_submit" value="'.__("Update", "wp-symposium").'" />';
-						$html .= '<input type="submit" class="button edit_topic_cancel" value="'.__("Cancel", "wp-symposium").'" />';
+						$html .= '<input type="submit" class="symposium-button edit_topic_submit" value="'.__("Update", "wp-symposium").'" />';
+						$html .= '<input type="submit" class="symposium-button edit_topic_cancel" value="'.__("Cancel", "wp-symposium").'" />';
 						$html .= '</div>';
 					$html .= '</div>';
 					
@@ -759,7 +755,7 @@ function symposium_forum() {
 						$html .= '<div class="reply-topic-subject label">'.__("Reply to this Topic", "wp-symposium").'</div>';
 						$html .= '<textarea class="reply-topic-text elastic" id="symposium_reply_text"></textarea>';
 						$html .= '<div class="quick-reply-warning warning" style="display:none">'.__("Please enter a message", "wp-symposium").'</div>';
-						$html .= '<input type="submit" id="quick-reply-warning" class="button" style="float: left" value="'.__("Reply", "wp-symposium").'" />';
+						$html .= '<input type="submit" id="quick-reply-warning" class="symposium-button" style="float: left" value="'.__("Reply", "wp-symposium").'" />';
 					}				
 					$html .= '</div>';
 				}

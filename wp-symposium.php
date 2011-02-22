@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.40
+Version: 0.41
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -30,8 +30,8 @@ License: GPL2
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.40');
-define('WPS_DBVER', '40');
+define('WPS_VER', '0.41');
+define('WPS_DBVER', '41');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -113,7 +113,7 @@ function symposium_dashboard_widget(){
 }
 function symposium_widget() {
 	
-	global $wpdb;
+	global $wpdb, $current_user;
 	
 	echo '<img src="'.WP_PLUGIN_URL.'/wp-symposium/images/logo_small.gif" alt="WP Symposium logo" style="float:right; width:100px;height:120px;" />';
 
@@ -154,7 +154,7 @@ function symposium_widget() {
 			echo '<tr><td colspan="2" style="padding:4px">';
 			if (function_exists('symposium_profile')) {
 				$url = $wpdb->get_var($wpdb->prepare("SELECT profile_url FROM ".$wpdb->prefix . 'symposium_config'));
-				echo '<a href="'.$url.'">'.__('Go to Profile', 'wp-symposium').'</a>';
+				echo '<a href="'.$url.'?uid='.$current_user->ID.'">'.__('Go to Profile', 'wp-symposium').'</a>';
 			} else {
 				echo 'Profile not activated';
 			}
@@ -175,6 +175,17 @@ function symposium_widget() {
 				echo '<a href="'.$url.'">'.__('Go to Member Directory', 'wp-symposium').'</a>';
 			} else {
 				echo 'Member Directory not activated';
+			}
+			echo "</td></tr>";
+			
+			echo '<tr><td colspan="2" style="padding:4px">';
+			if (function_exists('symposium_groups')) {
+				$url = $wpdb->get_var($wpdb->prepare("SELECT groups_url FROM ".$wpdb->prefix . 'symposium_config'));
+				echo '<a href="'.$url.'">'.__('Go to Group Directory', 'wp-symposium').'</a><br />';
+				$url = $wpdb->get_var($wpdb->prepare("SELECT group_url FROM ".$wpdb->prefix . 'symposium_config'));
+				echo '<a href="'.$url.'">'.__('Go to Group Profile', 'wp-symposium').'</a>';
+			} else {
+				echo 'Groups not activated';
 			}
 			echo "</td></tr>";
 			
@@ -241,15 +252,16 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "profile_google_map", "int(11)", "NOT NULL", "'250'");
 	symposium_alter_table("config", "ADD", "use_poke", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "motd", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "groups_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "group_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
 
-	// Modify Profile table
-	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
-
 	// Modify Comments table
 	symposium_alter_table("comments", "MODIFY", "comment_timestamp", "datetime", "", "");
+	symposium_alter_table("comments", "ADD", "is_group", "varchar(2)", "NOT NULL", "''");
 	
 	// Modify Friends table
 	symposium_alter_table("friends", "MODIFY", "friend_timestamp", "datetime", "", "");
@@ -639,8 +651,8 @@ function symposium_unread($buffer){
 
 function symposium_admin_check() {
 	global $wpdb;
-	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, members_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
-	if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
+	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, members_url, profile_url, groups_url, group_url FROM ".$wpdb->prefix . 'symposium_config'));
+	if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") || ($urls->groups_url == "Important: Please update!") || ($urls->group_url == "Important: Please update!") ) {
 		echo "<div class='updated'><p><strong>".__("Important! Please set URLs in WP Symposium Options immediately (set to none if you are not using a particular plugin)", "wp-symposium").".</strong></p></div>";
 	}
 	
@@ -677,9 +689,17 @@ function add_symposium_stylesheet() {
 
 	if (!is_admin()) {
 
-	    // Check to see if there is a theme css instead
+	    // Load CSS
 	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium/css/symposium.css';
 	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/css/symposium.css';
+	    if ( file_exists($myStyleFile) ) {
+	        wp_register_style('symposium_StyleSheet', $myStyleUrl);
+	        wp_enqueue_style('symposium_StyleSheet');
+	    }
+
+		// Load pro CSS if exists (Groups)
+	    $myStyleUrl = WP_PLUGIN_URL . '/wp-symposium-pro/css/symposium-groups.css';
+	    $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium-pro/css/symposium-groups.css';
 	    if ( file_exists($myStyleFile) ) {
 	        wp_register_style('symposium_StyleSheet', $myStyleUrl);
 	        wp_enqueue_style('symposium_StyleSheet');
@@ -736,7 +756,7 @@ function add_symposium_stylesheet() {
 	echo "<strong>".__("Search", "wp-symposium")."</strong><div id='search_close' style='float:right;cursor:pointer;width:18px; text-align:center'><img src='".WP_PLUGIN_URL."/wp-symposium/images/delete.png' alt='".__("Close", "wp-symposium")."' /></div>";	
 		echo "<div id='search-box' style='clear:both;margin-top:12px;'>";
 		echo "<input type='text' id='search-box-input' class='new-topic-subject-input' style='width:75%; float: left; ' />";
-		echo "<input type='submit' id='search-box-go' class='button' style='height: 46px; float: left; margin-left: 10px;' value='".__("Go", "wp-symposium")."' />";
+		echo "<input type='submit' id='search-box-go' class='symposium-button' style='height: 46px; float: left; margin-left: 10px;' value='".__("Go", "wp-symposium")."' />";
 		echo "</div>";
 	
 		echo "<div id='search-internal' style='clear:both;margin-top:12px;height:480px;overflow:auto;padding:6px;'>";
@@ -819,6 +839,17 @@ function symposium_scriptsAction()
 				if ($get_uid) { $page_uid = $get_uid; }
 			} 
 		}
+		
+		// Group page
+		if (isset($_GET['gid'])) {
+			$page_gid = $_GET['gid']*1;
+		} else {
+			$page_gid = 0;
+			if (isset($_POST['gid'])) { 
+				$page_gid = $_POST['gid']*1; 
+			}
+		}
+		
 				
 		// Forum
 		if (isset($_GET['show'])) {
@@ -906,11 +937,14 @@ function symposium_scriptsAction()
 		'plugins' => WP_PLUGIN_URL, 
 		'plugin_url' => WP_PLUGIN_URL.'/wp-symposium/', 
 		'plugin_path' => $symposium_plugin_path,
+		'plugin_pro_url' => WP_PLUGIN_URL.'/wp-symposium-', 
 		'inactive' => $config->online,
 		'forum_url' => $config->forum_url,
 		'mail_url' => $config->mail_url,
 		'profile_url' => $config->profile_url,
 		'avatar_url' => $config->avatar_url,
+		'groups_url' => $config->groups_url,
+		'group_url' => $config->group_url,
 		'offline' => $config->offline,
 		'use_chat' => $config->use_chat,
 		'chat_polling' => $config->chat_polling,
@@ -923,6 +957,7 @@ function symposium_scriptsAction()
 		'current_user_id' => $current_user->ID,
 		'current_user_display_name' => stripslashes($current_user->display_name),
 		'current_user_page' => $page_uid,
+		'current_group' => $page_gid,
 		'widget_vote_yes' => $yes, 
 		'widget_vote_no' => $no,
 		'post' => $_GET['post'],

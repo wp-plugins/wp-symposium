@@ -24,15 +24,17 @@ if ($_POST['action'] == 'addStatus') {
 					author_uid,
 					comment_parent,
 					comment_timestamp,
-					comment
+					comment,
+					is_group
 				)
-				VALUES ( %d, %d, %d, %s, %s )", 
+				VALUES ( %d, %d, %d, %s, %s, %s )", 
 		        array(
 		        	$subject_uid, 
 		        	$author_uid, 
 		        	0,
 		        	date("Y-m-d H:i:s"),
-		        	$text
+		        	$text,
+		        	''
 		        	) 
 		        ) );
 
@@ -100,15 +102,17 @@ if ($_POST['action'] == 'addComment') {
 					author_uid,
 					comment_parent,
 					comment_timestamp,
-					comment
+					comment,
+					is_group
 				)
-				VALUES ( %d, %d, %d, %s, %s )", 
+				VALUES ( %d, %d, %d, %s, %s, %s )", 
 		        array(
 		        	$uid, 
 		        	$current_user->ID, 
 		        	$parent,
 		        	date("Y-m-d H:i:s"),
-		        	$text
+		        	$text,
+		        	''
 		        	) 
 		        ) );
 
@@ -479,7 +483,7 @@ if ($_POST['action'] == 'menu_settings') {
 		$html .= '</div> ';
 		 
 		$html .= '<p style="clear:right" class="submit"> ';
-		$html .= '<input type="submit" id="updateSettingsButton" name="Submit" class="button" value="'.__('Save', 'wp-symposium').'" /> ';
+		$html .= '<input type="submit" id="updateSettingsButton" name="Submit" class="symposium-button" value="'.__('Save', 'wp-symposium').'" /> ';
 		$html .= '</p> ';
 	
 	$html .= "</div>";
@@ -649,9 +653,68 @@ if ($_POST['action'] == 'menu_personal') {
 		$html .= '</div> ';
 		 
 		$html .= '<p style="clear:right" class="submit"> ';
-			$html .= '<input type="submit" id="updatePersonalButton" name="Submit" class="button" value="'.__('Save', 'wp-symposium').'" /> ';
+			$html .= '<input type="submit" id="updatePersonalButton" name="Submit" class="symposium-button" value="'.__('Save', 'wp-symposium').'" /> ';
 		$html .= '</p> ';
 	
+	$html .= "</div>";
+		
+	echo $html;
+	exit;
+	
+}
+
+// Show Groups
+if ($_POST['action'] == 'menu_groups') {
+
+	global $wpdb, $current_user;
+
+	$uid = $_POST['uid1'];
+
+	$plugin = WP_PLUGIN_URL.'/wp-symposium';
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
+	
+	$html .= "<div id='profile_left_column' style='";
+	if ($config->show_profile_menu != 'on') {
+		$html .= " border-left:0px;";
+	}			
+	$html .= "'>";
+	
+		$sql = "SELECT m.*, g.*, (SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_group_members WHERE group_id = g.gid) AS member_count  
+		FROM ".$wpdb->prefix."symposium_group_members m 
+		LEFT JOIN ".$wpdb->prefix."symposium_groups g ON m.group_id = g.gid 
+		WHERE m.member_id = ".$uid;
+		
+		$groups = $wpdb->get_results($sql);	
+		
+		if ($groups) {
+			foreach ($groups as $group) {	
+				
+				$html .= "<div class='groups_row row corners'>";	
+					
+					$html .= "<div class='groups_info'>";
+	
+						$html .= "<div class='groups_avatar'>";
+							$html .= get_group_avatar($group->gid, 64);
+						$html .= "</div>";
+
+						$html .= "<div class='group_name'>";
+						$html .= "<a href='".symposium_get_url('group')."?gid=".$group->gid."'>".stripslashes($group->name)."</a>";
+						$html .= "</div>";
+						
+						$html .= "<div class='group_member_count'>";
+						$html .= __("Member Count:", "wp-symposium")." ".$group->member_count;
+						if ($group->last_activity) {
+							$html .= '<br /><em>'.__('last active', 'wp-symposium').' '.symposium_time_ago($group->last_activity).".</em>";
+						}
+						$html .= "</div>";
+						
+					$html .= "</div>";
+					
+				$html .= "</div>";
+				
+			}
+		}
+
 	$html .= "</div>";
 		
 	echo $html;

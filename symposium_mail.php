@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.40
+Version: 0.41
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL2
@@ -224,7 +224,7 @@ function symposium_mail() {
   				$html .= '<form method="post" action="">';
 
 					$html .= '<div class="floatright send_button">';
-					$html .= '<input id="mail_send_button" type="submit" class="button" style="height:48px" value="'.__('Send', 'wp-symposium').'" />';
+					$html .= '<input id="mail_send_button" type="submit" class="symposium-button" style="height:48px" value="'.__('Send', 'wp-symposium').'" />';
 					$html .= '</div>';
 	
 					$html .= '<div id="compose_mail_to">';
@@ -269,7 +269,7 @@ function symposium_mail() {
 					$html .= "<div id='mailbox'>";
 					
 						$html .= "<input id='search_inbox' type='text' style='width: 160px'>";
-						$html .= "<input id='search_inbox_go' class='button' type='submit' style='width: 70px; margin-left:10px;' value='Search'>";
+						$html .= "<input id='search_inbox_go' class='symposium-button' type='submit' style='width: 70px; margin-left:10px;' value='Search'>";
 						
 						$html .= "<div id='mailbox_list'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /></div>";
 						

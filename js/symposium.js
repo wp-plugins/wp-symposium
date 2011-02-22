@@ -25,6 +25,10 @@ jQuery(document).ready(function() {
 	  var answer = confirm("Are you sure?");
 	  return answer // answer is a boolean
 	});
+	jQuery(".deletebutton").click(function(){
+	  var answer = confirm("Are you sure?");
+	  return answer // answer is a boolean
+	});
 	   
 	// Set up auto-expanding textboxes
 	if (jQuery(".elastic").length) {	
@@ -1459,8 +1463,31 @@ jQuery(document).ready(function() {
 					
 		  	// Set up icon actions ******************************************************
 
-			// Click on logout?
-	    	jQuery("#symposium-logout").click(function() {
+			// Hover/click on logout?
+	    	jQuery("#symposium-logout").mouseover(function() {
+	    		jQuery("#symposium-logout-div").show();
+	    	});
+	    	jQuery("#symposium-logout-div").mouseleave(function() {
+	    		jQuery("#symposium-logout-div").fadeOut('slow');
+	    	});
+	    	
+			// Click on change online status?
+	    	jQuery("#symposium-online-status").click(function() {
+				var status = jQuery("#symposium-online-status").is(":checked");
+				jQuery.ajax({
+					url: symposium.plugin_url+"ajax/symposium_bar_functions.php", 
+					type: "POST",
+					data: ({
+						action:'symposium_status',
+						status:status
+					}),
+				    dataType: "html",
+					async: false
+			  	});
+	    	});
+			
+			// Click on logout link
+	    	jQuery("#symposium-logout-link").click(function() {
 			  	if ( confirm("Are you sure you want to logout?") ) {
 					jQuery.ajax({
 						url: symposium.plugin_url+"ajax/symposium_ajax_functions.php", 
@@ -1474,6 +1501,8 @@ jQuery(document).ready(function() {
 							window.location.href='/';
 						}		
 				  	});
+			  	} else {
+		    		jQuery("#symposium-logout-div").hide();
 			  	}
 	    	});
 			

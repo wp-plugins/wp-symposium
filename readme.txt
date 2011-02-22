@@ -6,13 +6,13 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.0.5
-Stable tag: 0.40
+Stable tag: 0.41
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, chat room, profile page, widgets, and more! You simply choose which you want to activate! 
+WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, chat room, profile page, widgets, and support for other plugins such as Groups! You simply choose which you want to activate! 
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
 
@@ -95,17 +95,21 @@ IMPORTANT: Update settings on the Options page.
 
 == Screenshots ==
 
-1. Changing Styles
-2. Email notification
-3. Categories (optional)
-4. Start new topic
-5. Forum topic with replies
-6. Admin options screen
-7. Edit Topic/Move Topic
-8. Admin categories screen
-9. Admin menu
-10. Using smilies
-11. SEO friendly links
+1. Member Wall
+2. Friends
+3. Profile Photo
+4. Custom extended information
+5. Mail
+6. Forum Categories
+7. Forum Topic
+8. Edit Forum Post
+9. Smilies/Emoticons
+10. Friends online status
+11. Site-wide chatroom
+12. Latest Forum Posts widget
+13. New Members widget
+14. Yes/No Vote widget
+15. Easily change styles
 
 == Frequently Asked Questions ==
 
@@ -148,6 +152,16 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 
 == Changelog ==
+
+= 0.41 =
+
+* Core: BBCode now supports [b], [i], [u], [s], [code], [url], [url=], [img] and [youtube]
+* Groups: Added supporting core code for Groups plugin
+
+= 0.40.1 =
+
+* Panel: Added user-defined online status
+* Core: Change button class to symposium-button to avoid clashes with theme CSS
 
 = 0.40 =
 

@@ -19,37 +19,36 @@ function symposium_bbcode_remove($text_to_search) {
  $pattern = '|[[\/\!]*?[^\[\]]*?]|si';
  $replace = '';
  return preg_replace($pattern, $replace, $text_to_search);
+
 }
 
-function symposium_bbcode_replace($txt) {
-	
-	$arr = array( 
-		array("code", "<pre>" , "</pre>"),
-		array("b", "<strong>" , "</strong>"),
-		array("i", "<em>" , "</em>"),
-		array("u", "<u>" , "</u>"),
-		array("s", "<s>" , "</s>"),
-    ); 
-    
-    foreach ($arr as $code) {
-             
-	 	if (strpos($txt, "[".$code[0]."]") >= 0 && strpos($txt, "[/".$code[0]."]") >= 0) {
-			$txt = str_replace("[".$code[0]."]", $code[1], $txt);
-			$txt = str_replace("[/".$code[0]."]", $code[2], $txt);
-	 	}
-	 	
-    }
+function symposium_bbcode_replace($text_to_search) {
 
-	$content_processed = preg_replace_callback(
-  		'#\<pre\>(.+?)\<\/pre\>#s',
-  		create_function(
-    		'$matches',
-    		'return "<pre>".str_replace(chr(13), "", htmlentities($matches[1]))."</pre>";'
-  		),
-  		$txt
-		);
+	$search = array(
+	        '@\[(?i)b\](.*?)\[/(?i)b\]@si',
+	        '@\[(?i)i\](.*?)\[/(?i)i\]@si',
+	        '@\[(?i)s\](.*?)\[/(?i)s\]@si',
+	        '@\[(?i)u\](.*?)\[/(?i)u\]@si',
+	        '@\[(?i)img\](.*?)\[/(?i)img\]@si',
+	        '@\[(?i)url\](.*?)\[/(?i)url\]@si',
+	        '@\[(?i)url=(.*?)\](.*?)\[/(?i)url\]@si',
+	        '@\[(?i)code\](.*?)\[/(?i)code\]@si',
+	        '@\[youtube\].*?(?:v=)?([^?&[]+)(&[^[]*)?\[/youtube\]@is'
+	);
+	$replace = array(
+	        '<b>\\1</b>',
+	        '<i>\\1</i>',
+	        '<s>\\1</s>',
+	        '<u>\\1</u>',
+	        '<img src="\\1">',
+	        '<a href="\\1">\\1</a>',
+	        '<a href="\\1">\\2</a>',
+	        '<code>\\1</code>',
+	        '<iframe title="YouTube video player" width="640" height="390" src="http://www.youtube.com/embed/\\1" frameborder="0" allowfullscreen></iframe>'
+	);
 
-	return $content_processed;
+   return preg_replace($search, $replace, $text_to_search);
+
 }
 
 function get_user_avatar($uid, $size) {
@@ -57,7 +56,7 @@ function get_user_avatar($uid, $size) {
 	global $wpdb;
 	$profile_photo = get_symposium_meta($uid, 'profile_photo');
 	
-	if ($profile_photo == '' || profile_photo == 'upload_failed') {
+	if ($profile_photo == '' || $profile_photo == 'upload_failed') {
 		return get_avatar($uid, $size);
 	} else {
 		return "<img src='".WP_CONTENT_URL."/wp-symposium-members/".$uid."/media/photos/profile_pictures/".$profile_photo."' style='width:".$size."px; height:".$size."px' />";
@@ -100,6 +99,13 @@ function show_profile_menu($uid1, $uid2) {
 					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
 				}
 				$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
+				if (function_exists('symposium_group')) {
+					if ($uid1 == $uid2) {
+						$html .= '<div id="menu_groups" class="symposium_profile_menu">'.__('My Groups', 'wp-symposium').'</div>';
+					} else {
+						$html .= '<div id="menu_groups" class="symposium_profile_menu">'.__('Groups', 'wp-symposium').'</div>';
+					}
+				}				
 			}
 
 			if ( ($uid1 == $uid2) || (strtolower($share) == 'everyone') || (strtolower($share) == 'friends only' && $is_friend) ) {
@@ -122,7 +128,6 @@ function show_profile_menu($uid1, $uid2) {
 				if (function_exists('symposium_avatar')) {
 					$html .= '<div id="menu_photo" class="symposium_profile_menu">'.__('Profile Photo', 'wp-symposium').'</div>';
 				}
-				
 				$html .= '<div id="menu_personal" class="symposium_profile_menu">'.__('Personal', 'wp-symposium').'</div>';
 				$html .= '<div id="menu_settings" class="symposium_profile_menu">'.__('Preferences', 'wp-symposium').'</div>';
 
@@ -187,10 +192,10 @@ function symposium_profile_friends($uid) {
 							$html .= "<em>".stripslashes($request->friend_message)."</em>";
 						$html .= "</div>";
 						$html .= "<div style='clear: both; float:right;'>";
-							$html .= '<input type="submit" title="'.$request->friend_from.'" id="rejectfriendrequest" class="button" value="'.__('Reject', 'wp-symposium').'" /> ';
+							$html .= '<input type="submit" title="'.$request->friend_from.'" id="rejectfriendrequest" class="symposium-button" value="'.__('Reject', 'wp-symposium').'" /> ';
 						$html .= "</div>";
 						$html .= "<div style='float:right;'>";
-							$html .= '<input type="submit" title="'.$request->friend_from.'" id="acceptfriendrequest" class="button" value="'.__('Accept', 'wp-symposium').'" /> ';
+							$html .= '<input type="submit" title="'.$request->friend_from.'" id="acceptfriendrequest" class="symposium-button" value="'.__('Accept', 'wp-symposium').'" /> ';
 						$html .= "</div>";
 					$html .= "</div>";
 				}
@@ -235,12 +240,12 @@ function symposium_profile_friends($uid) {
 					$html .= "</div>";
 
 					$html .= "<div style='clear: both; float:right;'>";
-						$html .= '<input type="submit" title="'.$friend->friend_to.'" class="button frienddelete" value="'.__('Remove', 'wp-symposium').'" /> ';
+						$html .= '<input type="submit" title="'.$friend->friend_to.'" class="symposium-button frienddelete" value="'.__('Remove', 'wp-symposium').'" /> ';
 						$html .= '</form>';
 					$html .= "</div>";
 				
 					$html .= "<div style='float:right;'>";
-						$html .='<input type="button" value="'.__('Send Mail', 'wp-symposium').'" class="button" onclick="document.location = \''.$mailpage.$q.'view=compose&to='.$friend->friend_to.'\';">';
+						$html .='<input type="symposium-button" value="'.__('Send Mail', 'wp-symposium').'" class="symposium-button" onclick="document.location = \''.$mailpage.$q.'view=compose&to='.$friend->friend_to.'\';">';
 					$html .= "</div>";
 
 				$html .= "</div>";
@@ -320,7 +325,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 	
 								// Status Input
 								$html .= '<input type="text" id="symposium_status" name="status" class="input-field" value="'.__("What's on your mind?", "wp-symposium").'" onfocus="this.value = \'\';" />';
-								$html .= '&nbsp;<input id="symposium_add_update" type="submit" class="button" value="'.__('Update', 'wp-symposium').'" /> ';
+								$html .= '&nbsp;<input id="symposium_add_update" type="submit" class="symposium-button" value="'.__('Update', 'wp-symposium').'" /> ';
 								
 							} else {
 														
@@ -330,19 +335,19 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 									// A friend
 			
 									// Send mail
-									$html .='<input type="button" value="Send Mail" id="profile_send_mail_button" class="button" onclick="document.location = \''.$url.'?view=compose&to='.$uid1.'\';">';
+									$html .='<input type="symposium-button" value="Send Mail" id="profile_send_mail_button" class="symposium-button" onclick="document.location = \''.$url.'?view=compose&to='.$uid1.'\';">';
 
 									// Poke
 									$poke = $config->poke;
 									if ($poke != '') {
-										//$html .='<input type="button" value="'.$poke.'" class="button">';
+										//$html .='<input type="button" value="'.$poke.'" class="symposium-button">';
 									}
 									
 								} else {
 									
 									if (symposium_pending_friendship($uid1)) {
 										// Pending
-										$html .= '<input type="submit" title="'.$uid1.'" id="cancelfriendrequest" class="button" value="'.__('Cancel Friend Request', 'wp-symposium').'" /> ';
+										$html .= '<input type="submit" title="'.$uid1.'" id="cancelfriendrequest" class="symposium-button" value="'.__('Cancel Friend Request', 'wp-symposium').'" /> ';
 										$html .= '<div id="cancelfriendrequest_done" class="hidden">'.__('Friend Request Cancelled', 'wp-symposium').'</div>';
 									} else {							
 										// Not a friend
@@ -350,7 +355,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 										$html .= '<span id="add_as_friend_title">'.__('Add as a Friend', 'wp-symposium').'...</span>';
 										$html .= '<div id="add_as_friend_message">';
 										$html .= '<input type="text" id="addfriend" class="input-field" onclick="this.value=\'\'" value="'.__('Add a personal message...', 'wp-symposium').'">';
-										$html .= '<input type="submit" title="'.$uid1.'" id="addasfriend" class="button" value="'.__('Add', 'wp-symposium').'" /> ';
+										$html .= '<input type="submit" title="'.$uid1.'" id="addasfriend" class="symposium-button" value="'.__('Add', 'wp-symposium').'" /> ';
 										$html .= '</div></div>';
 										$html .= '<div id="addasfriend_done2" class="hidden">'.__('Friend Request Sent', 'wp-symposium').'</div>';
 									}
@@ -480,25 +485,25 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 					if ( ($uid1 != $uid2) || (is_user_logged_in() && $is_friend)) {
 						// Post Comment Input
 						$html .= '<input id="symposium_comment" type="text" name="post_comment" class="input-field" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" />';
-						$html .= '&nbsp;<input id="symposium_add_comment" type="submit" class="button" value="'.__('Post', 'wp-symposium').'" /> ';
+						$html .= '&nbsp;<input id="symposium_add_comment" type="submit" class="symposium-button" value="'.__('Post', 'wp-symposium').'" /> ';
 					}
 
 					if ($post != '' && symposium_safe_param($post)) {
 
-						$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.cid = ".$post." AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";
+						$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.cid = ".$post." AND c.comment_parent = 0 AND c.is_group != 'on' ORDER BY c.comment_timestamp DESC LIMIT 0,20";
 						
 					} else {
 
 						if ($version == "all_activity") {
-							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE c.comment_parent = 0 AND c.is_group != 'on' ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 						}
 
 						if ($version == "friends_activity") {
-							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE ( (c.subject_uid = ".$uid1.") OR (c.author_uid = ".$uid1.") OR ( c.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid1.")) ) AND c.comment_parent = 0 AND c.is_group != 'on' ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 						}
 
 						if ($version == "wall") {
-							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE (c.subject_uid = ".$uid1.") AND c.comment_parent = 0 ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
+							$sql = "SELECT c.*, u.display_name, u2.display_name AS subject_name FROM ".$wpdb->base_prefix."symposium_comments c LEFT JOIN ".$wpdb->base_prefix."users u ON c.author_uid = u.ID LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.subject_uid = u2.ID WHERE (c.subject_uid = ".$uid1.") AND c.comment_parent = 0 AND c.is_group != 'on' ORDER BY c.comment_timestamp DESC LIMIT 0,20";							
 						}
 
 					}
@@ -534,7 +539,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 											   	OR 	(p.subject_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
 											   	OR 	(p.author_uid IN (SELECT friend_to FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$uid2.")) 
 											   ) 
-											   AND c.comment_parent = ".$comment->cid." ORDER BY c.cid";
+											   AND c.comment_parent = ".$comment->cid." AND c.is_group != 'on' ORDER BY c.cid";
 										
 										$replies = $wpdb->get_results($sql);	
 										$count = 0;
@@ -578,7 +583,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 											$html .= '<div>';
 											$html .= '<input id="symposium_reply_'.$comment->cid.'" type="text" name="wall_comment" class="input-field reply_field" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" />';
 											$html .= '<input id="symposium_author_'.$comment->cid.'" type="hidden" value="'.$comment->author_uid.'" />';
-											$html .= '&nbsp;<input title="'.$comment->cid.'" type="submit" style="width:75px" class="button symposium_add_reply" value="'.__('Add', 'wp-symposium').'" />';
+											$html .= '&nbsp;<input title="'.$comment->cid.'" type="submit" style="width:75px" class="symposium-button symposium_add_reply" value="'.__('Add', 'wp-symposium').'" />';
 											$html .= '</div>';
 										}
 										
@@ -684,7 +689,7 @@ function get_message($mail_mid, $del) {
 		$msg .= "<div id='message_header_delete'>";
 		$msg .= "<form action='' method='POST'>";
 		$msg .= "<input type='hidden' name='del".$del."' value=".$mail_mid." />";
-		$msg .= '<input type="submit" class="button message_delete" style="margin-right:0px" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Delete', 'wp-symposium').'" />';
+		$msg .= '<input type="submit" class="symposium-button message_delete" style="margin-right:0px" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Delete', 'wp-symposium').'" />';
 		$msg .= "</form>";
 		$msg .= "</div>";
 		
@@ -694,7 +699,7 @@ function get_message($mail_mid, $del) {
 			$msg .= "<form action='' method='POST'>";
 			$msg .= "<input type='hidden' name='reply_recipient' value=".$mail->mail_from." />";
 			$msg .= "<input type='hidden' name='reply_mid' value=".$mail_mid." />";
-			$msg .= '<input type="submit" class="button message_reply" style="margin-right:0px" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Reply', 'wp-symposium').'" />';
+			$msg .= '<input type="submit" class="symposium-button message_reply" style="margin-right:0px" onclick="jQuery(\'.pleasewait\').inmiddle().show();" value="'.__('Reply', 'wp-symposium').'" />';
 			$msg .= "</form>";
 			$msg .= "</div>";
 		}
@@ -773,7 +778,7 @@ function symposium_get_current_userlevel() {
 
 function symposium_get_url($plugin) {
 	global $wpdb;
-	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, members_url, avatar_url, mail_url, profile_url FROM ".$wpdb->prefix . 'symposium_config'));
+	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, members_url, avatar_url, mail_url, profile_url, groups_url, group_url FROM ".$wpdb->prefix . 'symposium_config'));
 	$return = false;
 	if ($plugin == 'mail') {
 		$return = $urls->mail_url;
@@ -789,6 +794,12 @@ function symposium_get_url($plugin) {
 	}
 	if ($plugin == 'members') {
 		$return = $urls->members_url;
+	}
+	if ($plugin == 'groups') {
+		$return = $urls->groups_url;
+	}
+	if ($plugin == 'group') {
+		$return = $urls->group_url;
 	}
 	return $return;
 }
@@ -1143,6 +1154,65 @@ function powered_by_wps() {
 
 	return "<div id='powered_by_wps'><a href='http://www.wpsymposium.com' target='_blank'>".__('Powered by WP Symposium - Social Networking for WordPress', 'wp-symposium')." v".WPS_VER."</a></div>";
 
+}
+
+// Groups
+
+function get_group_avatar($gid, $size) {
+
+	global $wpdb;
+	
+	$sql = "SELECT group_photo FROM ".$wpdb->prefix."symposium_groups WHERE gid = ".$gid;
+	$group_photo = $wpdb->get_var($sql);
+	
+	if ($group_photo == '' || $group_photo == 'upload_failed') {
+		return "<img src='http://0.gravatar.com/avatar/20b298cbea87cdf62ab6bf93256acf8f?s=128&d=identicon&r=G' style='height:".$size."px; width:".$size."px; border-radius:5px;' />";
+	} else {
+		return "<img src='".WP_CONTENT_URL."/wp-symposium-groups/".$gid."/media/photos/profile_pictures/".$group_photo."' style='width:".$size."px; height:".$size."px' />";
+	}
+	
+	exit;
+
+}
+
+function symposium_member_of($gid) {
+	
+	global $wpdb, $current_user;
+
+	$sql = "SELECT valid FROM ".$wpdb->prefix."symposium_group_members   
+	WHERE group_id = ".$gid." AND member_id = ".$current_user->ID;
+	$member = $wpdb->get_var($sql);
+	
+	if ($member) {
+		if ($member == "on") {
+			return "yes";
+		} else {
+			return "pending";
+		}
+	} else {
+		return "no";
+	}
+
+}
+
+function symposium_group_admin($gid) {
+	
+	global $wpdb, $current_user;
+
+	$sql = "SELECT admin FROM ".$wpdb->prefix."symposium_group_members   
+	WHERE group_id = ".$gid." AND member_id = ".$current_user->ID;
+	$admin = $wpdb->get_var($sql);
+	
+	if ($admin) {
+		if ($admin == "on") {
+			return "yes";
+		} else {
+			return "no";
+		}
+	} else {
+		return "no";
+	}
+	
 }
 
 ?>

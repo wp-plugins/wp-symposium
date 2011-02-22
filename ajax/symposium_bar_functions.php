@@ -7,6 +7,27 @@ include_once('../symposium_functions.php');
 global $wpdb, $current_user;
 wp_get_current_user();
 
+// Change online status
+if ($_POST['action'] == 'symposium_status') {
+
+	global $wpdb, $current_user;
+   	$status = $_POST['status'];
+   	
+   	if ($status == 'true') {
+
+		$rows_affected = $wpdb->update( $wpdb->base_prefix.'symposium_usermeta', array( 'status' => 'offline' ), array( 'uid' => $current_user->ID ), array( '%s' ), array( '%d' ) );
+
+   	} else {
+
+		$rows_affected = $wpdb->update( $wpdb->base_prefix.'symposium_usermeta', array( 'status' => '' ), array( 'uid' => $current_user->ID ), array( '%s' ), array( '%d' ) );
+
+   	}
+   	
+   	echo "OK";
+   	exit;
+	
+}
+
 // Clear chatoom
 if ($_POST['action'] == 'symposium_clear_chatroom') {
 
@@ -62,19 +83,19 @@ if ($_POST['action'] == 'symposium_getfriendsonline') {
    	
    	$return = '';
 
-	$sql = "SELECT f.*, m.last_activity, u.display_name, u.ID FROM ".$wpdb->base_prefix."symposium_friends f LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON m.uid = f.friend_to LEFT JOIN ".$wpdb->base_prefix."users u ON u.ID = f.friend_to WHERE f.friend_accepted = 'on' AND f.friend_from = ".$me." ORDER BY last_activity DESC";
+	$sql = "SELECT f.*, m.last_activity, m.status, u.display_name, u.ID FROM ".$wpdb->base_prefix."symposium_friends f LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON m.uid = f.friend_to LEFT JOIN ".$wpdb->base_prefix."users u ON u.ID = f.friend_to WHERE f.friend_accepted = 'on' AND f.friend_from = ".$me." ORDER BY last_activity DESC";
 	
 	$friends = $wpdb->get_results($sql);
 	
 	foreach ($friends as $friend) {
 		
 		$time_now = time();
-		if ($friend->last_activity) {
+		if ($friend->last_activity && $friend->status != 'offline') {
 			$last_active_minutes = convert_datetime($friend->last_activity);
+			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
 		} else {
 			$last_active_minutes = 999999999;
 		}
-		$last_active_minutes = floor(($time_now-$last_active_minutes)/60);
 		
 		$return .= "<div style='clear:both; margin-top:4px; overflow: auto;'>";		
 			$return .= "<div style='float: left; width:15px; padding-left:4px;'>";
@@ -151,7 +172,7 @@ if ($_POST['action'] == 'symposium_getchat') {
 	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 
 	// get messages
-	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
+	$sql = "SELECT c.*, m1.last_activity AS fromlast, m1.status, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
 	$sql .= "FROM ".$wpdb->base_prefix."symposium_chat c ";
 	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u1 ON c.chat_from = u1.ID ";
 	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.chat_to = u2.ID ";
@@ -203,7 +224,12 @@ if ($_POST['action'] == 'symposium_getchat') {
 			if ($chat->chat_from == $me) {
 				$last_active_minutes = convert_datetime($chat->tolast);
 			} else {
-				$last_active_minutes = convert_datetime($chat->fromlast);
+
+				if ($chat->fromlast && $chat->status != 'offline') {
+					$last_active_minutes = convert_datetime($friend->last_activity);
+				} else {
+					$last_active_minutes = 999999999;
+				}
 			}
 			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
 			if ($last_active_minutes >= $offline) {
@@ -250,7 +276,7 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 	$rows_affected = $wpdb->query( $wpdb->prepare($sql) );
 
 	// get messages
-	$sql = "SELECT c.*, m1.last_activity AS fromlast, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
+	$sql = "SELECT c.*, m1.last_activity AS fromlast, m1.status, m2.last_activity AS tolast, u1.display_name AS fromname, u2.display_name AS toname ";
 	$sql .= "FROM ".$wpdb->base_prefix."symposium_chat c ";
 	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u1 ON c.chat_from = u1.ID ";
 	$sql .= "LEFT JOIN ".$wpdb->base_prefix."users u2 ON c.chat_to = u2.ID ";
@@ -281,7 +307,12 @@ if ($_POST['action'] == 'symposium_getchatroom') {
 			
 			$c++;
 
-			$last_active_minutes = convert_datetime($chat->fromlast);
+			if ($chat->fromlast && $friend->status != 'offline') {
+				$last_active_minutes = convert_datetime($friend->last_activity);
+			} else {
+				$last_active_minutes = 999999999;
+			}
+
 			$last_active_minutes = floor(($time_now-$last_active_minutes)/60);			
 			if ($last_active_minutes >= $offline) {
 				$status_img = WP_PLUGIN_URL.'/wp-symposium/images/loggedout.gif';
