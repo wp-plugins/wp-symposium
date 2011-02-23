@@ -3,10 +3,10 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.41
+Version: 0.42
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
-License: GPL2
+License: GPL3
 */
 	
 /*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
@@ -30,8 +30,8 @@ License: GPL2
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.41');
-define('WPS_DBVER', '41');
+define('WPS_VER', '0.42');
+define('WPS_DBVER', '42');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -255,6 +255,7 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "groups_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "group_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "group_all_create", "varchar(2)", "NOT NULL", "'on'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");

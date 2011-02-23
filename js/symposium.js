@@ -871,7 +871,7 @@ jQuery(document).ready(function() {
    			
    	});			
 
-	// reject a friend request
+	// accept a friend request
 	jQuery("#acceptfriendrequest").live('click', function() {
 		jQuery(".symposium_notice").inmiddle().show();
 		

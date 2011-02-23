@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.0.5
-Stable tag: 0.41
+Stable tag: 0.42
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -120,7 +120,7 @@ Q. Can I try it out?
 A. Yep, go to www.wpsymposium.com
 
 Q. Is WP Symposium covered by the GPL license?
-A. Yes, for sure. Everything listed on the WordPress directory is covered by the GPL licence. There may be other plugins that are compatible with WP Symposium that are sold commercially, but what is listed here will always be covered by the GPL licence.
+A. Yes, for sure. Everything listed on the WordPress directory is covered by the GPL v3 licence. There may be other plugins that are compatible with WP Symposium that are sold commercially, but what is listed here will always be covered by the GPL licence.
 
 Q. What's the one thing I probably haven't done?
 A. Set up your page URL's in the admin Options -> Settings page...
@@ -152,6 +152,10 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 
 == Changelog ==
+
+= 0.42 =
+
+* Core: Fixed rogue error report on Health check
 
 = 0.41 =
 

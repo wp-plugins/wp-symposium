@@ -4,6 +4,8 @@ include_once('symposium_functions.php');
 
 /*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
 
+	License: GPL3
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
     published by the Free Software Foundation.
@@ -388,6 +390,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'profile_google_map')) { $status = "X"; }			
 			if (!symposium_field_exists($table_name, 'use_poke')) { $status = "X"; }			
 			if (!symposium_field_exists($table_name, 'motd')) { $status = "X"; }			
+			if (!symposium_field_exists($table_name, 'group_all_create')) { $status = "X"; }			
 
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -470,7 +473,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'comment_parent')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'comment_timestamp')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'comment')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'group')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'is_group')) { $status = "X"; }
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -1474,6 +1477,17 @@ function symposium_plugin_options() {
 			
 	    }
 
+	    // See if the user has posted profile settings
+	    if( $_POST[ 'symposium_update' ] == 'G' ) {
+	        $group_all_create = $_POST[ 'group_all_create' ];
+
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET group_all_create = '".$group_all_create."'") );					
+
+	        // Put an settings updated message on the screen
+			echo "<div class='updated'><p>".__('Group options saved', 'wp-symposium').".</p></div>";
+			
+	    }
+
 		// Delete an extended field?
    		if ($_GET['del_eid'] != '') {
 			$wpdb->query( $wpdb->prepare( "
@@ -1648,6 +1662,7 @@ function symposium_plugin_options() {
 		$forum_active = 'inactive';
 		$register_active = 'inactive';
 		$bar_active = 'inactive';
+		$group_active = 'inactive';
 		$profile_active = 'inactive';
 		$view = "settings";
 		if ( !isset($_GET['view']) || ($_GET['view'] == 'notes') ) {
@@ -1656,6 +1671,7 @@ function symposium_plugin_options() {
 			$forum_active = 'inactive';
 			$register_active = 'inactive';
 			$bar_active = 'inactive';
+			$group_active = 'inactive';
 			$profile_active = 'inactive';
 			$view = "notes";
 		} 
@@ -1665,6 +1681,7 @@ function symposium_plugin_options() {
 			$forum_active = 'inactive';
 			$register_active = 'inactive';
 			$bar_active = 'inactive';
+			$group_active = 'inactive';
 			$profile_active = 'active';
 			$view = "profile";
 		} 
@@ -1674,6 +1691,7 @@ function symposium_plugin_options() {
 			$forum_active = 'active';
 			$register_active = 'inactive';
 			$bar_active = 'inactive';
+			$group_active = 'inactive';
 			$profile_active = 'inactive';
 			$view = "forum";
 		} 
@@ -1683,6 +1701,7 @@ function symposium_plugin_options() {
 			$forum_active = 'inactive';
 			$register_active = 'active';
 			$bar_active = 'inactive';
+			$group_active = 'inactive';
 			$profile_active = 'inactive';
 			$view = "register";
 		} 
@@ -1691,6 +1710,7 @@ function symposium_plugin_options() {
 			$settings_active = 'inactive';
 			$forum_active = 'inactive';
 			$register_active = 'inactive';
+			$group_active = 'inactive';
 			$bar_active = 'active';
 			$view = "bar";
 		} 
@@ -1700,8 +1720,19 @@ function symposium_plugin_options() {
 			$forum_active = 'inactive';
 			$register_active = 'inactive';
 			$bar_active = 'inactive';
+			$group_active = 'inactive';
 			$profile_active = 'inactive';
 			$view = "settings";
+		} 
+		if ($_GET['view'] == "groups") {
+			$notes_active = 'inactive';
+			$settings_active = 'inactive';
+			$forum_active = 'inactive';
+			$register_active = 'inactive';
+			$bar_active = 'inactive';
+			$group_active = 'active';
+			$profile_active = 'inactive';
+			$view = "groups";
 		} 
 	
 		echo '<div class="symposium-wrapper" style="margin-top:15px">';
@@ -1720,6 +1751,9 @@ function symposium_plugin_options() {
 			}
 			if (function_exists('add_notification_bar')) {
 				echo '<div class="mail_tab nav-tab-'.$bar_active.'"><a href="admin.php?page=symposium_options&view=bar" class="nav-tab-'.$bar_active.'-link">'.__('Panel', 'wp-symposium').'</a></div>';
+			}
+			if (function_exists('symposium_group')) {
+				echo '<div class="mail_tab nav-tab-'.$group_active.'"><a href="admin.php?page=symposium_options&view=groups" class="nav-tab-'.$group_active.'-link">'.__('Groups', 'wp-symposium').'</a></div>';
 			}
 			echo '</div>';
 			
@@ -2388,7 +2422,37 @@ function symposium_plugin_options() {
 					echo '</form>';
 									  
 				} // End of Profile
-													
+
+				// GROUPS
+				if ($view == "groups") {
+
+				    // Get values from database  
+					$group_all_create = $config->group_all_create;
+
+					?>
+						
+					<form method="post" action=""> 
+					<input type="hidden" name="symposium_update" value="G">
+				
+					<table class="form-table"> 
+				
+					<tr valign="top"> 
+					<th scope="row"><label for="group_all_create"><?php _e('All users can create', 'wp-symposium'); ?></label></th>
+					<td>
+					<input type="checkbox" name="group_all_create" id="group_all_create" <?php if ($group_all_create == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('All users or restricted to administrators only', 'wp-symposium'); ?></span></td> 
+					</tr> 
+
+					<?php
+					echo '</table>';
+					 					
+					echo '<p class="submit">';
+					echo '<input type="submit" name="Submit" class="button-primary" value="'.__('Save Changes', 'wp-symposium').'" />';
+					echo '</p>';
+					echo '</form>';
+									  
+				} // End of Groups
+																	
 			echo '</div>'; // End of tab content
 		
 		echo '</div>'; // End of Symposium Wrapper

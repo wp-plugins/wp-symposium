@@ -1,6 +1,8 @@
 <?php
 /*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
 
+	License: GPL3
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
     published by the Free Software Foundation.
@@ -1181,16 +1183,17 @@ function symposium_member_of($gid) {
 
 	$sql = "SELECT valid FROM ".$wpdb->prefix."symposium_group_members   
 	WHERE group_id = ".$gid." AND member_id = ".$current_user->ID;
-	$member = $wpdb->get_var($sql);
+	$members = $wpdb->get_results($sql);
 	
-	if ($member) {
-		if ($member == "on") {
+	if (!$members) {
+		return "no";
+	} else {
+		$member = $members[0];
+		if ($member->valid == "on") {
 			return "yes";
 		} else {
 			return "pending";
 		}
-	} else {
-		return "no";
 	}
 
 }
