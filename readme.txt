@@ -156,7 +156,7 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 = 0.43 =
 
 * Profile: Avatar plugin removed, functionality added to Profile plugin. Use [symposium-avatar] to default profile page to profile photo
-* Profile: Uploaded photos can now stored in either the database, or the file system
+* Profile: Uploaded photos can be now stored in either the database, or the file system
 * Profile: Wall: Text is persistent in post/reply fields
 * Health Check: Upload image test added
 
