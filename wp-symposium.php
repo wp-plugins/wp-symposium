@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.42
+Version: 0.43
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,14 +30,15 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.42');
-define('WPS_DBVER', '42');
+define('WPS_VER', '0.43');
+define('WPS_DBVER', '43');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
 add_action('init', 'symposium_notification_setoptions');
 add_action('symposium_notification_hook','symposium_notification_trigger_schedule');
 add_action('wp_footer', 'symposium_lastactivity', 10);
+add_action('wp_head', 'symposium_header', 10);
 add_action('template_redirect', 'symposium_replace');
 add_action('wp_print_styles', 'add_symposium_stylesheet');
 add_action('init', 'symposium_scriptsAction');
@@ -48,7 +49,7 @@ if (is_admin()) {
 	add_action('wp_dashboard_setup', 'symposium_dashboard_widget');	
 	add_action('init', 'symposium_admin_init');
 	add_action('admin_notices', 'symposium_admin_check');
-}		   	
+}
 
 register_activation_hook(__FILE__,'symposium_activate');
 register_deactivation_hook(__FILE__, 'symposium_deactivate');
@@ -237,7 +238,6 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "enable_password", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "members_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
-	symposium_alter_table("config", "ADD", "avatar_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "sharing", "varchar(32)", "", "''");
 	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "show_profile_menu", "varchar(2)", "NOT NULL", "'on'");
@@ -256,6 +256,11 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "groups_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "group_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "group_all_create", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "profile_avatars", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "img_db", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "img_path", "varchar(128)", "NOT NULL", "'".WP_CONTENT_DIR."/wps-content'");
+	symposium_alter_table("config", "ADD", "img_url", "varchar(128)", "NOT NULL", "'/wp-content/wps-content'");
+	symposium_alter_table("config", "ADD", "img_upload", "mediumblob", "", "");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
@@ -295,6 +300,7 @@ function symposium_activate() {
 	symposium_alter_table("usermeta", "ADD", "widget_voted", "varchar(2)", "", "''");
 	symposium_alter_table("usermeta", "ADD", "profile_photo", "varchar(64)", "", "''");
 	symposium_alter_table("usermeta", "ADD", "forum_favs", "TEXT", "", "");
+	symposium_alter_table("usermeta", "ADD", "profile_avatar", "mediumblob", "", "");
 
 	// Modify styles table
 	symposium_alter_table("styles", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
@@ -486,6 +492,10 @@ function symposium_notification_trigger_schedule() {
 
 /* ====================================================== PHP FUNCTIONS ====================================================== */
 
+// Header hook
+function symposium_header() {
+	include_once('symposium_styles.php');
+}
 
 // Update user activity on page load
 function symposium_lastactivity() {
@@ -653,7 +663,16 @@ function symposium_unread($buffer){
 function symposium_admin_check() {
 	global $wpdb;
 	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, mail_url, members_url, profile_url, groups_url, group_url FROM ".$wpdb->prefix . 'symposium_config'));
-	if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") || ($urls->groups_url == "Important: Please update!") || ($urls->group_url == "Important: Please update!") ) {
+	
+	$warning = false;
+	if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
+		$warning = true;
+	}
+	if ( (function_exists('symposium_group')) && ( ($urls->groups_url == "Important: Please update!") || ($urls->group_url == "Important: Please update!") ) ) {
+		$warning = true;
+	}
+	
+	if ($warning == true) {
 		echo "<div class='updated'><p><strong>".__("Important! Please set URLs in WP Symposium Options immediately (set to none if you are not using a particular plugin)", "wp-symposium").".</strong></p></div>";
 	}
 	
@@ -804,8 +823,7 @@ function symposium_admin_init() {
 }
 
 // Add Symposium JS scripts to WordPress for use
-function symposium_scriptsAction()
-{
+function symposium_scriptsAction() {
 
 	$symposium_plugin_url = WP_PLUGIN_URL.'/wp-symposium/';
 	$symposium_plugin_path = str_replace("http://".$_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"], "", $symposium_plugin_url);
@@ -943,7 +961,6 @@ function symposium_scriptsAction()
 		'forum_url' => $config->forum_url,
 		'mail_url' => $config->mail_url,
 		'profile_url' => $config->profile_url,
-		'avatar_url' => $config->avatar_url,
 		'groups_url' => $config->groups_url,
 		'group_url' => $config->group_url,
 		'offline' => $config->offline,

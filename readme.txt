@@ -5,8 +5,8 @@ Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
-Tested up to: 3.0.5
-Stable tag: 0.42
+Tested up to: 3.1
+Stable tag: 0.43
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -47,7 +47,7 @@ Find out more, and try it out on our own social network at www.wpsymposium.com.
   
 == Installation ==
 
-An admin guide is available at www.wpsymposium.com/download-install.
+An admin guide is available at www.wpsymposium.com/downloadinstall.
 
 Important - after activating for the first time, make sure you go to the Options page and set up the pages on which
 you're going to use the WP Symposium plugins.
@@ -152,6 +152,13 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 
 == Changelog ==
+
+= 0.43 =
+
+* Profile: Avatar plugin removed, functionality added to Profile plugin. Use [symposium-avatar] to default profile page to profile photo
+* Profile: Uploaded photos can now stored in either the database, or the file system
+* Profile: Wall: Text is persistent in post/reply fields
+* Health Check: Upload image test added
 
 = 0.42 =
 

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Members Directory
 Plugin URI: http://www.wpsymposium.com
 Description: Directory component for the Symposium suite of plug-ins. Put [symposium-members] on any WordPress page.
-Version: 0.42
+Version: 0.43
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -33,7 +33,7 @@ function symposium_members($ver) {
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
 	$dbpage = $plugin.'/symposium_members_db.php';
 
-	include_once('symposium_styles.php');
+	//include_once('symposium_styles.php');
 
 	$html .= '<div class="symposium-wrapper">';
 	

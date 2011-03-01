@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Forum
 Plugin URI: http://www.wpsymposium.com
 Description: Forum component for the Symposium suite of plug-ins. Put [symposium-forum] on any WordPress page to display forum.
-Version: 0.42
+Version: 0.43
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -60,8 +60,8 @@ function symposium_forum() {
 	$cats = $wpdb->prefix . 'symposium_cats';
 
 	// Includes
-	include_once('symposium_styles.php');
-	include_once('symposium_functions.php');
+	//include_once('symposium_styles.php');
+	//include_once('symposium_functions.php');
 
 	// Get user level
 	$user_level = symposium_get_current_userlevel();

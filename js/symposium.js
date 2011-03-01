@@ -34,83 +34,6 @@ jQuery(document).ready(function() {
 	if (jQuery(".elastic").length) {	
 		jQuery('.elastic').elastic();
 	}
-		
-	/*
-	   +------------------------------------------------------------------------------------------+
-	   |                                      PROFILE PHOTO (AVATAR)                              |
-	   +------------------------------------------------------------------------------------------+
-	*/
-
-	if (jQuery("#profile_jcrop_target").length) {	
-		jQuery(".symposium_pleasewait").inmiddle().show().delay(3000).fadeOut("slow");
-	}
-	
-	if (jQuery("#file_upload").length) {
-		
-		jQuery(".symposium_pleasewait").inmiddle().show().delay(3000).fadeOut("slow");
-		
-		jQuery('#file_upload').uploadify({
-		    'uploader'  : symposium.plugin_url+'uploadify/uploadify.swf',
-			'buttonText': 'Browse for file',
-		    'script'    : symposium.plugin_url+'uploadify/uploadify.php',
-		    'cancelImg' : symposium.plugin_url+'uploadify/cancel.png',
-		    'auto'      : true,
-			'onComplete': function(event, queueID, fileObj, response, data) { 
-				if (symposium.avatar_url.indexOf('?') > 0) {
-					window.location.href=symposium.avatar_url+"&crop=y&img="+response;
-				} else {
-					window.location.href=symposium.avatar_url+"?crop=y&img="+response;
-				}
-			}
-	   	});
-		  
-	}
-	if (jQuery("#file_upload_admin").length) {
-		
-		jQuery('#file_upload_admin').uploadify({
-		    'uploader'  : symposium.plugin_url+'uploadify/uploadify.swf',
-			'buttonText': 'Browse for file',
-		    'script'    : symposium.plugin_url+'uploadify/uploadify.php',
-		    'cancelImg' : symposium.plugin_url+'uploadify/cancel.png',
-		    'folder' 	: symposium.plugin_url+'uploads',
-		    'auto'      : true,
-			'onComplete': function(event, queueID, fileObj, response, data) { 
-				var uploaded_img = '<img src="'+symposium.plugin_url+'uploads/'+response+'" style="width:150px;" />';
-				jQuery('#file_upload_admin_result').html('Uploaded '+response+'<br />'+uploaded_img);
-			}
-	   	});
-		  
-	}
-	
-
-	if (jQuery("#profile_jcrop_target").length) {
-		jQuery('#profile_jcrop_target').Jcrop({
-			onChange: showPreview,
-			onSelect: showPreview,
-			aspectRatio: 1
-		});
-	}
-
-	function showPreview(coords)
-	{
-		var rx = 100 / coords.w;
-		var ry = 100 / coords.h;
-
-		jQuery('#x').val(coords.x);
-		jQuery('#y').val(coords.y);
-		jQuery('#x2').val(coords.x2);
-		jQuery('#y2').val(coords.y2);
-		jQuery('#w').val(coords.w);
-		jQuery('#h').val(coords.h);
-			
-		jQuery('#profile_preview').css({
-			width: Math.round(rx * jQuery('#profile_jcrop_target').width()) + 'px',
-			height: Math.round(ry * jQuery('#profile_jcrop_target').height()) + 'px',
-			marginLeft: '-' + Math.round(rx * coords.x) + 'px',
-			marginTop: '-' + Math.round(ry * coords.y) + 'px'
-		});
-	};
-		
 
 
 	/*
@@ -434,11 +357,12 @@ jQuery(document).ready(function() {
 	if (jQuery("#profile_body").length) {
 		
 		var menu_id = 'menu_'+symposium.view;
+		
 		if (menu_id == 'menu_in') { menu_id = 'menu_wall'; }
 		if (jQuery('#force_profile_page').length) {
 			menu_id = 'menu_'+jQuery('#force_profile_page').html();
 		}
-
+		
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
 			type: "POST",
@@ -449,8 +373,36 @@ jQuery(document).ready(function() {
 				uid2:symposium.current_user_id				
 			}),
 		    dataType: "html",
+			async: true,
 			success: function(str){
 				jQuery('#profile_body').html(str);
+
+				jQuery('#profile_file_upload').uploadify({
+				    'uploader'  : symposium.plugin_url+'uploadify/uploadify.swf',
+					'buttonText': 'Browse for file',
+				    'script'    : symposium.plugin_url+'uploadify/upload_profile_avatar.php?uid='+symposium.current_user_id,
+				    'cancelImg' : symposium.plugin_url+'uploadify/cancel.png',
+				    'auto'      : true,
+					'onError' 	: function(event, ID, fileObj, errorObj) {
+									 alert("Error: "+errorObj.type+" "+errorObj.info);
+      							  },
+      				'onComplete': function(event, queueID, fileObj, response, data) { 
+
+										if (response.substring(0, 5) == 'Error') {
+											alert(response); 
+										} else {
+											jQuery('#profile_image_to_crop').html(response);
+					
+											jQuery('#profile_jcrop_target').Jcrop({
+												onChange: showProfilePreview,
+												onSelect: showProfilePreview,
+												aspectRatio: 1
+											});
+										}				
+								  }
+					
+			   	});
+
 			}
    		});	
    		
@@ -460,12 +412,7 @@ jQuery(document).ready(function() {
 	jQuery(".symposium_profile_menu").click(function(){
 		
 		var menu_id = jQuery(this).attr("id");
-		jQuery('#profile_body').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
-		
-		if (menu_id == 'menu_photo') {
-			window.location.href=symposium.avatar_url;
-			exit;
-		}
+		//jQuery('#profile_body').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
 
 		if (!(jQuery("#profile_body").length)) {
 			var view = menu_id.replace(/menu_/g, "");
@@ -483,12 +430,99 @@ jQuery(document).ready(function() {
 				uid2:symposium.current_user_id				
 			}),
 		    dataType: "html",
+			async: true,
 			success: function(str){
 				jQuery('#profile_body').hide().html(str).fadeIn("slow");
+
+				jQuery('#profile_file_upload').uploadify({
+				    'uploader'  : symposium.plugin_url+'uploadify/uploadify.swf',
+					'buttonText': 'Browse for file',
+				    'script'    : symposium.plugin_url+'uploadify/upload_profile_avatar.php?uid='+symposium.current_user_id,
+				    'cancelImg' : symposium.plugin_url+'uploadify/cancel.png',
+				    'auto'      : true,
+					'onError' 	: function(event, ID, fileObj, errorObj) {
+									 alert("Error: "+errorObj.type+" "+errorObj.info);
+      							  },
+					'onComplete': function(event, queueID, fileObj, response, data) { 
+						
+						if (response.substring(0, 5) == 'Error') {
+							alert(response); 
+						} else {
+							jQuery('#profile_image_to_crop').html(response);
+	
+							jQuery('#profile_jcrop_target').Jcrop({
+								onChange: showProfilePreview,
+								onSelect: showProfilePreview,
+								aspectRatio: 1
+							});
+						}
+
+					}
+			   	});
 			}
    		});	
 
 	});
+
+	if (jQuery("#profile_jcrop_target").length) {
+		jQuery('#profile_jcrop_target').Jcrop({
+			onChange: showPreview,
+			onSelect: showPreview,
+			aspectRatio: 1
+		});
+	}
+
+	function showProfilePreview(coords)
+	{
+		var rx = 100 / coords.w;
+		var ry = 100 / coords.h;
+
+		jQuery('#x').val(coords.x);
+		jQuery('#y').val(coords.y);
+		jQuery('#x2').val(coords.x2);
+		jQuery('#y2').val(coords.y2);
+		jQuery('#w').val(coords.w);
+		jQuery('#h').val(coords.h);
+			
+		jQuery('#profile_preview').css({
+			width: Math.round(rx * jQuery('#profile_jcrop_target').width()) + 'px',
+			height: Math.round(ry * jQuery('#profile_jcrop_target').height()) + 'px',
+			marginLeft: '-' + Math.round(rx * coords.x) + 'px',
+			marginTop: '-' + Math.round(ry * coords.y) + 'px'
+		});
+	};
+
+	// Save profile avatar
+	jQuery("#saveProfileAvatar").live('click', function() {
+		jQuery(".symposium_notice").inmiddle().show();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+			type: "POST",
+			data: ({
+				action:"saveProfileAvatar",
+				uid:symposium.current_user_id,
+				x:jQuery("#x").val(),
+				y:jQuery("#y").val(),
+				w:jQuery("#w").val(),
+				h:jQuery("#h").val()
+				}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (trim(str) == 'reload') {
+					location.reload();
+				} else {
+					jQuery(".symposium_notice").fadeOut("slow");
+					alert(str);
+				}
+			},
+			error: function(err){
+				alert("saveProfileAvatar:"+err);
+			}		
+   		});
+   			
+   	});		
 
 	// Show delete link on wall post hover
 	jQuery('.wall_post').live('mouseover mouseout', function(event) {
@@ -712,13 +746,10 @@ jQuery(document).ready(function() {
 					/* when password changes, have to log in again, can't work out why */
 					window.location.href=window.location.href;
 				}
-				if (str != 'OK') {
-					alert(str);
-				}
 				jQuery(".symposium_notice").fadeOut("slow");
 			},
 			error: function(err){
-				alert("P4:"+err);
+				alert("updateSettings:"+err);
 			}		
    		});
    			
@@ -752,13 +783,10 @@ jQuery(document).ready(function() {
 		    dataType: "html",
 			async: true,
 			success: function(str){
-				if (str != 'OK') {
-					alert(str);
-				}
 				jQuery(".symposium_notice").fadeOut("slow");
 			},
 			error: function(err){
-				//alert("P5:"+err);
+				alert("updatePersonal:"+err);
 			}		
    		});
    			
@@ -921,7 +949,11 @@ jQuery(document).ready(function() {
 	// Fav Icon
    	jQuery("#fav_link").click(function() {
    		
-		jQuery(".symposium_notice").inmiddle().fadeIn();
+		if (jQuery('#fav_link').attr('src') == symposium.plugin_url+'images/star-on.gif' ) {
+			jQuery('#fav_link').attr({ src: symposium.plugin_url+'images/star-off.gif' });
+		} else {
+			jQuery('#fav_link').attr({ src: symposium.plugin_url+'images/star-on.gif' });
+		}
 		
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
@@ -931,18 +963,7 @@ jQuery(document).ready(function() {
 				tid:symposium.show_tid
 			}),
 		    dataType: "html",
-			async: true,
-			success: function(str){
-				if (str == "added") {
-					jQuery('#fav_link').attr({ src: symposium.plugin_url+'images/star-on.gif' });
-				} else {
-					jQuery('#fav_link').attr({ src: symposium.plugin_url+'images/star-off.gif' });
-				}
-				jQuery(".symposium_notice").delay(100).fadeOut("slow");
-			},
-			error: function(err){
-				//alert("12:"+err);
-			}		
+			async: true
    		});
 
    	});
@@ -1865,6 +1886,91 @@ jQuery(document).ready(function() {
 		jQuery("#jstest").hide();
 	}
 
+	// Uploadify
+	jQuery('#admin_file_upload').uploadify({
+	    'uploader'  : symposium.plugin_url+'uploadify/uploadify.swf',
+		'buttonText': 'Browse for file',
+	    'script'    : symposium.plugin_url+'uploadify/upload_admin_avatar.php?uid='+symposium.current_user_id,
+	    'cancelImg' : symposium.plugin_url+'uploadify/cancel.png',
+	    'auto'      : true,
+		'onError' 	: function(event, ID, fileObj, errorObj) {
+						 alert("Error: "+errorObj.type+" "+errorObj.info);
+					  },
+		'onComplete': function(event, queueID, fileObj, response, data) { 
+			
+							if (response.substring(0, 5) == 'Error') {
+								alert(response); 
+							} else {
+								jQuery('#admin_image_to_crop').html(response);
+		
+								jQuery('#admin_jcrop_target').Jcrop({
+									onChange: showAdminPreview,
+									onSelect: showAdminPreview,
+									aspectRatio: 1
+								});
+							}				
+					  }
+   	});
+			
+	if (jQuery("#admin_jcrop_target").length) {
+		jQuery('#admin_jcrop_target').Jcrop({
+			onChange: showAdminPreview,
+			onSelect: showAdminPreview,
+			aspectRatio: 1
+		});
+	}
+
+	function showAdminPreview(coords)
+	{
+		var rx = 100 / coords.w;
+		var ry = 100 / coords.h;
+
+		jQuery('#x').val(coords.x);
+		jQuery('#y').val(coords.y);
+		jQuery('#x2').val(coords.x2);
+		jQuery('#y2').val(coords.y2);
+		jQuery('#w').val(coords.w);
+		jQuery('#h').val(coords.h);
+			
+		jQuery('#admin_preview').css({
+			width: Math.round(rx * jQuery('#admin_jcrop_target').width()) + 'px',
+			height: Math.round(ry * jQuery('#admin_jcrop_target').height()) + 'px',
+			marginLeft: '-' + Math.round(rx * coords.x) + 'px',
+			marginTop: '-' + Math.round(ry * coords.y) + 'px'
+		});
+	};
+
+	// Save admin avatar
+	jQuery("#saveAdminAvatar").live('click', function() {
+		jQuery(".symposium_notice").inmiddle().show();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_ajax_functions.php", 
+			type: "POST",
+			data: ({
+				action:"saveAdminAvatar",
+				uid:symposium.current_user_id,
+				x:jQuery("#x").val(),
+				y:jQuery("#y").val(),
+				w:jQuery("#w").val(),
+				h:jQuery("#h").val()
+				}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				if (trim(str) != '') {
+					alert(str);
+				}
+				location.reload();
+			},
+			error: function(err){
+				jQuery(".symposium_notice").fadeOut("slow");
+				alert("saveAdminAvatar:"+err);
+			}		
+   		});
+   			
+   	});
+
  	// Test AJAX
  	jQuery("#testAJAX").click(function() {
  		random = Math.floor(Math.random()*10)+1;
@@ -2415,6 +2521,20 @@ function validate_form(thisform)
 
 }
 
+function strpos (haystack, needle, offset) {
+    var i = (haystack + '').indexOf(needle, (offset || 0));
+    return i === -1 ? false : i;
+}
+
+function trim(s)
+{
+	var l=0; var r=s.length -1;
+	while(l < s.length && s[l] == ' ')
+	{	l++; }
+	while(r > l && s[r] == ' ')
+	{	r-=1;	}
+	return s.substring(l, r+1);
+}
 
 // Password strength
 (function(A){A.extend(A.fn,{pstrength:function(B){var B=A.extend({verdects:["Very weak","Weak","Medium","Strong","Very strong"],colors:["#f00","#c06","#f60","#3c0","#3f0"],scores:[10,15,30,40],common:["password","sex","god","123456","123","welcome","test","qwerty","admin"],minchar:6},B);return this.each(function(){var C=A(this).attr("id");A(this).after("<div class=\"pstrength-info\" id=\""+C+"_text\"></div>");A(this).after("<div class=\"pstrength-bar\" id=\""+C+"_bar\" style=\"border: 1px solid white; font-size: 1px; height: 5px; width: 0px;\"></div>");A(this).keyup(function(){A.fn.runPassword(A(this).val(),C,B)})})},runPassword:function(D,F,C){nPerc=A.fn.checkPassword(D,C);var B="#"+F+"_bar";var E="#"+F+"_text";if(nPerc==-200){strColor="#f00";strText="Unsafe password word!";A(B).css({width:"0%"})}else{if(nPerc<0&&nPerc>-199){strColor="#ccc";strText="Too short";A(B).css({width:"5%"})}else{if(nPerc<=C.scores[0]){strColor=C.colors[0];strText=C.verdects[0];A(B).css({width:"10%"})}else{if(nPerc>C.scores[0]&&nPerc<=C.scores[1]){strColor=C.colors[1];strText=C.verdects[1];A(B).css({width:"25%"})}else{if(nPerc>C.scores[1]&&nPerc<=C.scores[2]){strColor=C.colors[2];strText=C.verdects[2];A(B).css({width:"50%"})}else{if(nPerc>C.scores[2]&&nPerc<=C.scores[3]){strColor=C.colors[3];strText=C.verdects[3];A(B).css({width:"75%"})}else{strColor=C.colors[4];strText=C.verdects[4];A(B).css({width:"92%"})}}}}}}A(B).css({backgroundColor:strColor});A(E).html("<span style='color: "+strColor+";'>"+strText+"</span>")},checkPassword:function(C,B){var F=0;var E=B.verdects[0];if(C.length<B.minchar){F=(F-100)}else{if(C.length>=B.minchar&&C.length<=(B.minchar+2)){F=(F+6)}else{if(C.length>=(B.minchar+3)&&C.length<=(B.minchar+4)){F=(F+12)}else{if(C.length>=(B.minchar+5)){F=(F+18)}}}}if(C.match(/[a-z]/)){F=(F+1)}if(C.match(/[A-Z]/)){F=(F+5)}if(C.match(/\d+/)){F=(F+5)}if(C.match(/(.*[0-9].*[0-9].*[0-9])/)){F=(F+7)}if(C.match(/.[!,@,#,$,%,^,&,*,?,_,~]/)){F=(F+5)}if(C.match(/(.*[!,@,#,$,%,^,&,*,?,_,~].*[!,@,#,$,%,^,&,*,?,_,~])/)){F=(F+7)}if(C.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)){F=(F+2)}if(C.match(/([a-zA-Z])/)&&C.match(/([0-9])/)){F=(F+3)}if(C.match(/([a-zA-Z0-9].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z0-9])/)){F=(F+3)}for(var D=0;D<B.common.length;D++){if(C.toLowerCase()==B.common[D]){F=-200}}return F}})})(jQuery)

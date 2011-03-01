@@ -1,6 +1,6 @@
 <?php
 // Includes
-include_once('symposium_functions.php');
+//include_once('symposium_functions.php');
 
 /*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
 
@@ -275,6 +275,9 @@ function symposium_plugin_debug() {
 
  	$wpdb->show_errors();
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_config'));
+
+  	$fail = "<span style='color:red; font-weight:bold;'>";
+  	$fail2 = "</span><br /><br />";
  	
   	echo '<div class="wrap">';
 	  	
@@ -282,18 +285,46 @@ function symposium_plugin_debug() {
 	  	echo '<h2>WP Symposium Health Check</h2>';
 	
 		echo "<div style='width:45%; float:right'>";
-		
-		echo '<h2>'.__('Uploadify Test', 'wp-symposium').'</h2></p>';
-		
-		echo '<p>If working, the default web browser "browse" button below, will be replaced with Uploadify&apos;s version.</p>';
-		echo '<input id="file_upload_admin" name="file_upload_admin" type="file" />';
-		echo '<div id="file_upload_admin_result"></div>';
+
+	  	echo '<h2>'.__('Image Uploading', 'wp-symposium').'</h2><p>';
 	
-	  	echo '<h2>'.__('Table Structures', 'wp-symposium').'</h2><p>';
+		if ($config->img_db == "on") {
+			echo __("<p>You are storing images in the database.</p>", "wp-symposium");
+			if ($config->img_upload != '' ) {
+				echo "<p><img src='".WP_CONTENT_URL."/plugins/wp-symposium/uploadify/get_admin_avatar.php?' style='width:100px; height:100px' /></p>";
+			}
+		} else {
+			echo __("<p>You are storing images in the file system.</p>", "wp-symposium");			
+			$profile_photo = $wpdb->get_var($wpdb->prepare("SELECT profile_photo FROM ".$wpdb->prefix.'symposium_usermeta'));			
+			$src = $config->img_url."/members/".$current_user->ID."/profile/".$profile_photo;
+			if ($profile_photo != '') {
+				echo "<p><img src='".$src."' style='width:100px; height:100px' /></p>";
+			}
+
+			if (file_exists($config->img_path)) {
+			    echo "<p>The folder ".$config->img_path." exists, where images uploaded will be placed.</p>";
+			} else {
+				if (!mkdir($config->img_path, 0777, true)) {
+				    echo '<p>Failed to create '.$config->img_path.'...</p>';
+				} else {
+					echo '<p>Created '.$config->img_path.'.</p>';
+				}
+			}
+			
+			if ($config->img_url == '') {
+		   		echo "<p>".$fail.__('You must set the URL for your images on the <a href="/wp-admin/admin.php?page=symposium_options&view=settings">settings page</a>.', 'wp-symposium').$fail2."</p>";
+			} else {
+				echo "<p>The URL to your images folder is ".$config->img_url.".</p>";
+			}
+		}
+		
+		
+		echo '<input id="admin_file_upload" name="file_upload" type="file" />';
+		echo '<div id="admin_image_to_crop"></div>';
+		
+	  	echo '<h2 style="clear:both">'.__('Table Structures', 'wp-symposium').'</h2><p>';
 	  	
 	  	$ok = __('Test Result', 'wp-symposium').": <span style='color:green; font-weight:bold;'>OK</span><br /><br />";
-	  	$fail = "<span style='color:red; font-weight:bold;'>";
-	  	$fail2 = "</span><br /><br />";
 	  	$overall = "ok";
 	  	
 	  	// Categories
@@ -370,7 +401,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'profile_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'groups_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'group_url')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'avatar_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sound')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'online')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'offline')) { $status = "X"; }
@@ -391,7 +421,12 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'use_poke')) { $status = "X"; }			
 			if (!symposium_field_exists($table_name, 'motd')) { $status = "X"; }			
 			if (!symposium_field_exists($table_name, 'group_all_create')) { $status = "X"; }			
-
+			if (!symposium_field_exists($table_name, 'profile_avatars')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'img_db')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'img_path')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'img_url')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'img_upload')) { $status = "X"; }	
+					
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -589,7 +624,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'wall_share')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'extended')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'widget_voted')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'profile_photo')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'profile_avatar')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'forum_favs')) { $status = "X"; }
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -637,7 +672,15 @@ function symposium_plugin_debug() {
 		  		echo $db_ver."<br />";
 		  	}
 	
-			if ( ($config->forum_url == "Important: Please update!") || ($config->members_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->avatar_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!")  || ($config->group_url == "Important: Please update!") || ($config->groups_url == "Important: Please update!") ) {
+			$warning = false;
+			if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
+				$warning = true;
+			}
+			if ( (function_exists('symposium_group')) && ( ($urls->groups_url == "Important: Please update!") || ($urls->group_url == "Important: Please update!") ) ) {
+				$warning = true;
+			}
+				
+			if ($warning == true) {
 				echo $fail."You must update your plugin URLs on the <a href='admin.php?page=symposium_options&view=settings'>options page</a>.".$fail2;
 			} else {
 			  	echo __('According to the Options page', 'wp-symposium').":<br />";
@@ -650,14 +693,11 @@ function symposium_plugin_debug() {
 			  	if (function_exists('symposium_profile')) { 
 			  		echo "&nbsp;&middot;&nbsp;".__('the profile page is at', 'wp-symposium')." <a href='".$config->profile_url."'>$config->profile_url</a><br />";
 			  	}
-			  	if (function_exists('symposium_avatar')) { 
-			  		echo "&nbsp;&middot;&nbsp;".__('the avatar page is at', 'wp-symposium')." <a href='".$config->avatar_url."'>$config->avatar_url</a><br />";
-			  	}
 			  	if (function_exists('symposium_members')) { 
 			  		echo "&nbsp;&middot;&nbsp;".__('the members directory page is at', 'wp-symposium')." <a href='".$config->members_url."'>$config->members_url</a><br />";
 			  	}
 			  	if (function_exists('symposium_groups')) { 
-			  		echo "&nbsp;&middot;&nbsp;".__('the groups directory page is at', 'wp-symposium')." <a href='".$config->groups_url."'>$config->members_url</a><br />";
+			  		echo "&nbsp;&middot;&nbsp;".__('the groups directory page is at', 'wp-symposium')." <a href='".$config->groups_url."'>$config->groups_url</a><br />";
 			  		echo "&nbsp;&middot;&nbsp;".__('the group profile page is at', 'wp-symposium')." <a href='".$config->group_url."'>$config->group_url</a><br />";
 			  	}
 			  	echo __('Click the links above to check', 'wp-symposium');
@@ -741,7 +781,9 @@ function symposium_plugin_debug() {
 	    	$to = $_POST['symposium_testemail_address'];
 			if (symposium_sendmail($to, "WP Symposium Test Email", __("This is a test email sent from", "wp-symposium")." ".get_site_url())) {
 				echo "<div class='updated'><p>";
-				echo sprintf(__('Email to %s sent successfully.', 'wp-symposium'), $to);
+				$from = $wpdb->get_var($wpdb->prepare("SELECT from_email FROM ".$wpdb->prefix.'symposium_config'))."\r\n";
+				echo sprintf(__('Email sent to %s from', 'wp-symposium'), $to);
+				echo ' '.$from;
 				echo "</p></div>";
 			} else {
 				echo "<div class='error'><p>".__("Email failed to send", "wp-symposium").".</p></div>";
@@ -1427,6 +1469,8 @@ function symposium_plugin_options() {
 		    $show_profile_menu = $_POST['show_profile_menu'];
 		    $show_wall_extras = $_POST['show_wall_extras'];
 		    $profile_google_map = $_POST['profile_google_map'];
+		    $profile_avatars = $_POST['profile_avatars'];
+		    
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET online = '".$online."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET offline = '".$offline."'") );					
@@ -1435,6 +1479,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_profile_menu = '".$show_profile_menu."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_wall_extras = '".$show_wall_extras."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET profile_google_map = '".$profile_google_map."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET profile_avatars = '".$profile_avatars."'") );
 			
 			// Update extended fields
 	   		if ($_POST['eid'] != '') {
@@ -1520,12 +1565,14 @@ function symposium_plugin_options() {
 	        $wp_width = str_replace('%', 'pc', ($_POST[ 'wp_width' ]));
 	        $forum_url = $_POST[ 'forum_url' ];
 	        $mail_url = $_POST[ 'mail_url' ];
-	        $avatar_url = $_POST[ 'avatar_url' ];
 	        $members_url = $_POST[ 'members_url' ];
 	        $profile_url = $_POST[ 'profile_url' ];
 	        $groups_url = $_POST[ 'groups_url' ];
 	        $group_url = $_POST[ 'group_url' ];
 	        $wp_alignment = $_POST[ 'wp_alignment' ];
+	        $img_db = $_POST[ 'img_db' ];
+	        $img_path = $_POST[ 'img_path' ];
+	        $img_url = $_POST[ 'img_url' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET footer = '".$footer."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET from_email = '".$from_email."'") );					
@@ -1536,15 +1583,32 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_width = '".$wp_width."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET mail_url = '".$mail_url."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET avatar_url = '".$avatar_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET members_url = '".$members_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET profile_url = '".$profile_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET groups_url = '".$groups_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET group_url = '".$group_url."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_alignment = '".$wp_alignment."'") );				
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET img_db = '".$img_db."'") );				
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET img_path = '".$img_path."'") );				
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET img_url = '".$img_url."'") );				
+			
+			echo "<div class='updated'>";
+			
+			// Making content path if it doesn't exist
+			if ($img_db != 'on') {
+				
+				if (!file_exists($img_path)) {
+					if (!mkdir($img_path, 0777, true)) {
+					    echo '<p>Failed to create '.$img_path.'...</p>';
+					} else {
+						echo '<p>Created '.$img_path.'.</p>';
+					}
+				}
+
+			}
 			
 	        // Put an settings updated message on the screen
-			echo "<div class='updated'><p>".__('Settings saved', 'wp-symposium').".</p></div>";
+			echo "<p>".__('Settings saved', 'wp-symposium').".</p></div>";
 			
 	    }
 
@@ -1956,12 +2020,16 @@ function symposium_plugin_options() {
 					$emoticons = $config->emoticons;	
 					$forum_url = $config->forum_url;
 					$mail_url = $config->mail_url;
-					$avatar_url = $config->avatar_url;
 					$members_url = $config->members_url;
 					$profile_url = $config->profile_url;
 					$groups_url = $config->groups_url;
 					$group_url = $config->group_url;
 					$wp_alignment = $config->wp_alignment;
+					$img_db = $config->img_db;
+					$img_path = $config->img_path;
+					$img_url = $config->img_url;
+					$img_tmp = ini_get('upload_tmp_dir');
+					
 					?>
 									
 					<form method="post" action=""> 
@@ -1974,44 +2042,76 @@ function symposium_plugin_options() {
 					<tr valign="top"> 
 					<th scope="row"><label for="forum_url">Forum URL</label></th> 
 					<td><input name="forum_url" type="text" id="forum_url"  value="<?php echo $forum_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Full URL of the page that includes [symposium-forum]', 'wp-symposium'); ?></td> 
+					<span class="description"><?php echo __('Absolute path of the page that includes [symposium-forum], eg: /forum', 'wp-symposium'); ?></td> 
 					</tr> 
 								
 					<tr valign="top"> 
 					<th scope="row"><label for="mail_url">Mail URL</label></th> 
 					<td><input name="mail_url" type="text" id="mail_url"  value="<?php echo $mail_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Full URL of the page that includes [symposium-mail]', 'wp-symposium'); ?></td> 
+					<span class="description"><?php echo __('Absolute path of the page that includes [symposium-mail], eg: /mail', 'wp-symposium'); ?></td> 
 					</tr> 
 								
 					<tr valign="top"> 
 					<th scope="row"><label for="profile_url">Profile URL</label></th> 
 					<td><input name="profile_url" type="text" id="profile_url"  value="<?php echo $profile_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Full URL of the page that includes [symposium-profile]', 'wp-symposium'); ?></td> 
-					</tr> 					
-
-					<tr valign="top"> 
-					<th scope="row"><label for="avatar_url">Avatar URL</label></th> 
-					<td><input name="avatar_url" type="text" id="avatar_url"  value="<?php echo $avatar_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Full URL of the page that includes [symposium-avatar]', 'wp-symposium'); ?></td> 
+					<span class="description"><?php echo __('Absolute path of the page that includes [symposium-profile], eg: /profile', 'wp-symposium'); ?></td> 
 					</tr> 					
 
 					<tr valign="top"> 
 					<th scope="row"><label for="members_url">Members Directory URL</label></th> 
 					<td><input name="members_url" type="text" id="members_url"  value="<?php echo $members_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Full URL of the page that includes [symposium-members]', 'wp-symposium'); ?></td> 
+					<span class="description"><?php echo __('Absolute path of the page that includes [symposium-members], eg: /members', 'wp-symposium'); ?></td> 
 					</tr> 					
 
-					<tr valign="top"> 
-					<th scope="row"><label for="groups_url">Groups URL</label></th> 
-					<td><input name="groups_url" type="text" id="groups_url"  value="<?php echo $groups_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Full URL of the page that includes [symposium-groups]', 'wp-symposium'); ?></td> 
-					</tr> 					
+					<?php if (function_exists('symposium_groups')) { ?>
+						<tr valign="top"> 
+						<th scope="row"><label for="groups_url">Groups URL</label></th> 
+						<td><input name="groups_url" type="text" id="groups_url"  value="<?php echo $groups_url; ?>" class="regular-text" /> 
+						<span class="description"><?php echo __('Absolute path of the page that includes [symposium-groups], eg: /groups', 'wp-symposium'); ?></td> 
+						</tr> 					
+
+						<tr valign="top"> 
+						<th scope="row"><label for="group_url">Group Profile URL</label></th> 
+						<td><input name="group_url" type="text" id="group_url"  value="<?php echo $group_url; ?>" class="regular-text" /> 
+						<span class="description"><?php echo __('Absolute path of the page that includes [symposium-group], eg: /group', 'wp-symposium'); ?></td> 
+						</tr> 	
+					<?php } ?>				
 
 					<tr valign="top"> 
-					<th scope="row"><label for="group_url">Group Profile URL</label></th> 
-					<td><input name="group_url" type="text" id="group_url"  value="<?php echo $group_url; ?>" class="regular-text" /> 
-					<span class="description"><?php echo __('Full URL of the page that includes [symposium-group]', 'wp-symposium'); ?></td> 
-					</tr> 					
+					<th scope="row"><label for="img_db">Images in database</label></th>
+					<td>
+					<input type="checkbox" name="img_db" id="img_db" <?php if ($img_db == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __("Upload images to database, if not then to file system - <span style='font-weight:bold; text-decoration: underline'>do not change once WP Symposium is live!</span>", 'wp-symposium'); ?></span></td> 
+					</tr> 
+					
+					<?php if ($img_db != "on") { ?>
+						
+						<tr valign="top" style='background-color: #ccc;'> 
+						<th scope="row"><label for="img_path">Images directory</label></th> 
+						<td><input name="img_path" type="text" id="img_path"  value="<?php echo $img_path; ?>" class="regular-text" /> 
+						<span class="description"><?php echo __('All images are stored here, in folder hierarchy', 'wp-symposium'); ?></td> 
+						</tr> 					
+
+						<tr valign="top" style='background-color: #ccc;'> 
+						<td colspan=2>
+							From PHP.INI on your server, the PHP temporary upload folder is: <?php echo $img_tmp; ?>
+							<?php if ($img_tmp == '') { echo " <strong>You need to <a href='http://uk.php.net/manual/en/ini.core.php#ini.upload-tmp-dir'>set this in your php.ini</a> file</strong>"; } ?>
+						</td>
+						</tr> 	
+
+						<tr valign="top" style='background-color: #ccc;'> 
+						<th scope="row"><label for="img_url">Images URL</label></th> 
+						<td><input name="img_url" type="text" id="img_url"  value="<?php echo $img_url; ?>" class="regular-text" /> 
+						<span class="description"><?php echo __('URL to the images folder, eg: /wp-content/wps-content', 'wp-symposium'); ?></td> 
+						</tr> 					
+
+					<?php } else { ?>
+
+						<input name="img_path" type="hidden" id="img_path"  value="<?php echo $img_path; ?>" /> 
+						<input name="img_url" type="hidden" id="img_url"  value="<?php echo $img_url; ?>" /> 
+						
+					<?php } ?>
+						
 
 					<tr valign="top"> 
 					<th scope="row"><label for="email_footer">Email Notifications</label></th> 
@@ -2286,6 +2386,7 @@ function symposium_plugin_options() {
 					$online = $config->online;
 					$offline = $config->offline;
 					$use_poke = $config->use_poke;
+					$profile_avatars = $config->profile_avatars;
 					$enable_password = $config->enable_password;
 					$show_profile_menu = $config->show_profile_menu;
 					$show_wall_extras = $config->show_wall_extras;
@@ -2298,6 +2399,13 @@ function symposium_plugin_options() {
 				
 					<table class="form-table"> 
 				
+					<tr valign="top"> 
+					<th scope="row"><label for="profile_avatars"><?php _e('Profile Photos', 'wp-symposium'); ?></label></th>
+					<td>
+					<input type="checkbox" name="profile_avatars" id="profile_avatars" <?php if ($profile_avatars == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Allow members to upload their own profile photos, over-riding the internal WordPress avatars', 'wp-symposium'); ?></span></td> 
+					</tr> 
+
 					<tr valign="top"> 
 					<th scope="row"><label for="use_poke"><?php _e('Poke', 'wp-symposium'); ?></label></th>
 					<td>

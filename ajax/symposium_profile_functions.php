@@ -1,8 +1,123 @@
 <?php
 
 include_once('../../../../wp-config.php');
-include_once('../../../../wp-includes/wp-db.php');
-include_once('../symposium_functions.php');
+//include_once('../../../../wp-includes/wp-db.php');
+//include_once('../symposium_functions.php');
+
+// Update Profile Avatar
+if ($_POST['action'] == 'saveProfileAvatar') {
+
+	global $wpdb;
+
+	if (is_user_logged_in()) {
+	
+		$uid = $_POST['uid'];
+		$x = $_POST['x'];
+		$y = $_POST['y'];
+		$w = $_POST['w'];
+		$h = $_POST['h'];
+		
+		$r = '';
+		
+		if ($w > 0) {	
+
+			// set new size and quality
+			$targ_w = $targ_h = 200;
+			$jpeg_quality = 90;
+
+			// database or filesystem
+			$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_config'));
+		
+			if ($config->img_db == 'on') {
+				
+				// Using database
+			
+				$sql = "SELECT profile_avatar FROM ".$wpdb->base_prefix."symposium_usermeta WHERE uid = ".$uid;
+				$avatar = stripslashes($wpdb->get_var($sql));	
+			
+				// create master from database
+				$img_r = imagecreatefromstring($avatar);
+				// set new size
+				$targ_w = $targ_h = 200;
+				// create temporary image
+				$dst_r = ImageCreateTrueColor( $targ_w, $targ_h );		
+				// copy to new image, with new dimensions
+				imagecopyresampled($dst_r,$img_r,0,0,$x,$y,$targ_w,$targ_h,$w,$h);
+				// copy to variable
+				ob_start();
+				imageJPEG($dst_r);
+				$new_img = ob_get_contents();
+				ob_end_clean();
+				
+				// update database with resized blob
+				$wpdb->update( $wpdb->base_prefix.'symposium_usermeta', 
+					array( 'profile_avatar' => addslashes($new_img) ), 
+					array( 'uid' => $uid ), 
+					array( '%s' ), 
+					array( '%d' )
+					);
+
+				$r = 'reload';
+					
+			} else {
+				
+				// Using filesystem
+				
+				$profile_photo = $wpdb->get_var($wpdb->prepare("SELECT profile_photo FROM ".$wpdb->prefix.'symposium_usermeta WHERE uid = '.$uid));
+			
+				$src = $config->img_path."/members/".$uid."/profile/".$profile_photo;
+				
+				$img_r = imagecreatefromjpeg($src);
+				$dst_r = ImageCreateTrueColor( $targ_w, $targ_h );
+			
+				if ( imagecopyresampled($dst_r,$img_r,0,0,$x,$y,$targ_w,$targ_h,$w,$h) ) {
+		
+					$to_path = $config->img_path."/members/".$uid."/profile/";
+					$filename = time().'.jpg';
+					$to_file = $to_path.$filename;
+					if (file_exists($to_path)) {
+					    // folder already there
+					} else {
+						mkdir(str_replace('//','/',$to_path), 0777, true);
+					}
+					
+					if ( imagejpeg($dst_r,$to_file,$jpeg_quality) ) {
+					
+						// update database
+						$wpdb->update( $wpdb->base_prefix.'symposium_usermeta', 
+							array( 'profile_photo' => $filename ), 
+							array( 'uid' => $uid ), 
+							array( '%s' ), 
+							array( '%d' )
+							);
+						
+						$r = 'reload';
+						
+					} else {
+					
+						$r = 'conversion to jpeg failed';
+						
+					}
+						
+				} else {
+
+					$r = 'crop failed: '.$src.','.$dst_r.','.$img_r.','.$wpdb->last_query;
+					
+				}
+			}
+			
+		}
+		
+	} else {
+		
+		$r = "NOT LOGGED IN";
+		
+	}
+	
+	echo $r;	
+	exit;
+	
+}
 
 // AJAX function to add status
 if ($_POST['action'] == 'addStatus') {
@@ -290,6 +405,22 @@ if ($_POST['action'] == 'menu_extended') {
 	
 }
 
+// Profile Avatar
+if ($_POST['action'] == 'menu_avatar') {
+
+	$html .= "<div id='profile_left_column'>";
+	
+		// Choose a new avatar
+		$html .= '<p>'.__('Choose an image...', 'wp-symposium').'</p>';
+		$html .= '<input id="profile_file_upload" name="file_upload" type="file" />';
+		$html .= '<div id="profile_image_to_crop"></div>';
+
+	$html .= '</div>';
+
+	echo $html;
+	exit;				
+}
+				
 // Show Settings
 if ($_POST['action'] == 'menu_settings') {
 
@@ -698,7 +829,7 @@ if ($_POST['action'] == 'menu_groups') {
 						$html .= "</div>";
 
 						$html .= "<div class='group_name'>";
-						$html .= "<a href='".symposium_get_url('group')."?gid=".$group->gid."'>".stripslashes($group->name)."</a>";
+						$html .= "<a href='".$config->group_url."?gid=".$group->gid."'>".stripslashes($group->name)."</a>";
 						$html .= "</div>";
 						
 						$html .= "<div class='group_member_count'>";

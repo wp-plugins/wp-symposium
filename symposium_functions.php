@@ -56,12 +56,32 @@ function symposium_bbcode_replace($text_to_search) {
 function get_user_avatar($uid, $size) {
 	
 	global $wpdb;
-	$profile_photo = get_symposium_meta($uid, 'profile_photo');
+	$config = $wpdb->get_row($wpdb->prepare("SELECT img_db, img_url, profile_avatars FROM ".$wpdb->prefix . 'symposium_config'));
+
+	if ($config->img_db == "on") {
 	
-	if ($profile_photo == '' || $profile_photo == 'upload_failed') {
-		return get_avatar($uid, $size);
+		$profile_photo = get_symposium_meta($uid, 'profile_avatar');
+		$profile_avatars = $config->profile_avatars;
+	
+		if ($profile_photo == '' || $profile_photo == 'upload_failed' || $profile_avatars != 'on') {
+			return get_avatar($uid, $size);
+		} else {
+			return "<img src='".WP_CONTENT_URL."/plugins/wp-symposium/uploadify/get_profile_avatar.php?uid=".$uid."' style='width:".$size."px; height:".$size."px' />";
+		}
+		
 	} else {
-		return "<img src='".WP_CONTENT_URL."/wp-symposium-members/".$uid."/media/photos/profile_pictures/".$profile_photo."' style='width:".$size."px; height:".$size."px' />";
+
+		$profile_photo = get_symposium_meta($uid, 'profile_photo');
+		$profile_avatars = $config->profile_avatars;
+
+		if ($profile_photo == '' || $profile_photo == 'upload_failed' || $profile_avatars != 'on') {
+			return get_avatar($uid, $size);
+		} else {
+			$img_url = $config->img_url."/members/".$uid."/profile/";	
+			$img_src =  str_replace('//','/',$img_url) . $profile_photo;
+			return "<img src='".$img_src."' style='width:".$size."px; height:".$size."px' />";
+		}
+		
 	}
 	
 	exit;
@@ -127,8 +147,9 @@ function show_profile_menu($uid1, $uid2) {
 			}
 		
 			if ($uid1 == $uid2) {
-				if (function_exists('symposium_avatar')) {
-					$html .= '<div id="menu_photo" class="symposium_profile_menu">'.__('Profile Photo', 'wp-symposium').'</div>';
+				$config = $wpdb->get_row($wpdb->prepare("SELECT profile_avatars FROM ".$wpdb->prefix . 'symposium_config'));
+				if ($config->profile_avatars == 'on') {
+					$html .= '<div id="menu_avatar" class="symposium_profile_menu">'.__('Profile Photo', 'wp-symposium').'</div>';
 				}
 				$html .= '<div id="menu_personal" class="symposium_profile_menu">'.__('Personal', 'wp-symposium').'</div>';
 				$html .= '<div id="menu_settings" class="symposium_profile_menu">'.__('Preferences', 'wp-symposium').'</div>';
@@ -252,10 +273,12 @@ function symposium_profile_friends($uid) {
 
 				$html .= "</div>";
 			}
+			
+		} else {
+			$html .= __("No friends.", "wp-symposium");
 		}						
 
-	$html .= '</div>';
-	
+	$html .= '</div>';	
 	return $html;
 	
 }
@@ -326,7 +349,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 							if ($uid1 == $uid2) {
 	
 								// Status Input
-								$html .= '<input type="text" id="symposium_status" name="status" class="input-field" value="'.__("What's on your mind?", "wp-symposium").'" onfocus="this.value = \'\';" />';
+								$html .= '<input type="text" id="symposium_status" name="status" class="input-field" onblur="this.value=(this.value==\'\') ? \''.__("What\'s on your mind?", 'wp-symposium').'\' : this.value;" onfocus="this.value=(this.value==\''.__("What\'s on your mind?", 'wp-symposium').'\') ? \'\' : this.value;" value="'.__("What's on your mind?", 'wp-symposium').'" />';
 								$html .= '&nbsp;<input id="symposium_add_update" type="submit" class="symposium-button" value="'.__('Update', 'wp-symposium').'" /> ';
 								
 							} else {
@@ -483,10 +506,12 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 					
 				// Wall
 				$html .= "<div id='symposium_wall'>";
+
+
 				
 					if ( ($uid1 != $uid2) || (is_user_logged_in() && $is_friend)) {
 						// Post Comment Input
-						$html .= '<input id="symposium_comment" type="text" name="post_comment" class="input-field" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" />';
+						$html .= '<input id="symposium_comment" type="text" name="post_comment" class="input-field" onblur="this.value=(this.value==\'\') ? \''.__('Write a comment...', 'wp-symposium').'\' : this.value;" onfocus="this.value=(this.value==\''.__('Write a comment...', 'wp-symposium').'\') ? \'\' : this.value;" value="'.__('Write a comment...', 'wp-symposium').'"  />';
 						$html .= '&nbsp;<input id="symposium_add_comment" type="submit" class="symposium-button" value="'.__('Post', 'wp-symposium').'" /> ';
 					}
 
@@ -583,7 +608,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 										// Reply field
 										if ( $uid1 == $uid2 || (is_user_logged_in() && $is_friend)) {
 											$html .= '<div>';
-											$html .= '<input id="symposium_reply_'.$comment->cid.'" type="text" name="wall_comment" class="input-field reply_field" value="'.__('Write a comment', 'wp-symposium').'..." onfocus="this.value = \'\';" />';
+											$html .= '<input id="symposium_reply_'.$comment->cid.'" type="text" name="wall_comment" class="input-field reply_field" onblur="this.value=(this.value==\'\') ? \''.__('Write a comment...', 'wp-symposium').'\' : this.value;" onfocus="this.value=(this.value==\''.__('Write a comment...', 'wp-symposium').'\') ? \'\' : this.value;" value="'.__('Write a comment...', 'wp-symposium').'" />';
 											$html .= '<input id="symposium_author_'.$comment->cid.'" type="hidden" value="'.$comment->author_uid.'" />';
 											$html .= '&nbsp;<input title="'.$comment->cid.'" type="submit" style="width:75px" class="symposium-button symposium_add_reply" value="'.__('Add', 'wp-symposium').'" />';
 											$html .= '</div>';
@@ -599,6 +624,8 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 	
 							
 						}
+					} else {
+						$html .= "no comments";
 					}
 				
 				$html .= "</div>";
@@ -803,6 +830,9 @@ function symposium_get_url($plugin) {
 	if ($plugin == 'group') {
 		$return = $urls->group_url;
 	}
+	if ($return == false) {
+		$return = "INVALID PLUGIN URL REQUESTED (".$plugin.")";
+	}
 	return $return;
 }
 
@@ -842,6 +872,13 @@ function symposium_alter_table($table, $action, $field, $format, $null, $default
 		}
 	  	$wpdb->query($sql);
 	}
+	
+	if ($action == "DROP") {
+		$sql = "ALTER TABLE ".$wpdb->prefix."symposium_".$table." DROP ".$field;
+	  	$wpdb->query($sql);
+	}
+	
+	
 	
 	return $success;
 
@@ -1162,19 +1199,38 @@ function powered_by_wps() {
 
 function get_group_avatar($gid, $size) {
 
+
 	global $wpdb;
+	$config = $wpdb->get_row($wpdb->prepare("SELECT img_db, img_url, profile_avatars FROM ".$wpdb->prefix . 'symposium_config'));
+
+	if ($config->img_db == "on") {
 	
-	$sql = "SELECT group_photo FROM ".$wpdb->prefix."symposium_groups WHERE gid = ".$gid;
-	$group_photo = $wpdb->get_var($sql);
-	
-	if ($group_photo == '' || $group_photo == 'upload_failed') {
-		return "<img src='http://0.gravatar.com/avatar/20b298cbea87cdf62ab6bf93256acf8f?s=128&d=identicon&r=G' style='height:".$size."px; width:".$size."px; border-radius:5px;' />";
+		$sql = "SELECT group_avatar FROM ".$wpdb->prefix."symposium_groups WHERE gid = ".$gid;
+		$group_photo = $wpdb->get_var($sql);
+
+		if ($group_photo == '' || $group_photo == 'upload_failed') {
+			return "<img src='http://0.gravatar.com/avatar/20b298cbea87cdf62ab6bf93256acf8f?s=128&d=identicon&r=G' style='height:".$size."px; width:".$size."px; border-radius:5px;' />";
+		} else {
+			return "<img src='".WP_CONTENT_URL."/plugins/wp-symposium-groups/uploadify/get_group_avatar.php?gid=".$gid."' style='width:".$size."px; height:".$size."px' />";
+		}
+		
 	} else {
-		return "<img src='".WP_CONTENT_URL."/wp-symposium-groups/".$gid."/media/photos/profile_pictures/".$group_photo."' style='width:".$size."px; height:".$size."px' />";
+
+		$sql = "SELECT profile_photo FROM ".$wpdb->prefix."symposium_groups WHERE gid = ".$gid;
+		$profile_photo = $wpdb->get_var($sql);
+
+		if ($profile_photo == '' || $profile_photo == 'upload_failed') {
+			return get_avatar(-2, $size);
+		} else {
+			$img_url = $config->img_url."/groups/".$gid."/profile/";	
+			$img_src =  str_replace('//','/',$img_url) . $profile_photo;
+			return "<img src='".$img_src."' style='width:".$size."px; height:".$size."px' />";
+		}
+		
 	}
 	
 	exit;
-
+	
 }
 
 function symposium_member_of($gid) {

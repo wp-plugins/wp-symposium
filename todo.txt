@@ -12,7 +12,7 @@ Should do (before next release, unless patch has to go out fixing bugs)
 Could do (if development time allows)
 --------
 
-- purge tool for wall, forum and chat (via Admin, Options, Settings)
+- Add purge tool for wall, forum and chat (via Admin, Options, Settings - move from Panel)
 
 Would do (if life allows!)
 --------
@@ -24,4 +24,4 @@ Would do (if life allows!)
 - Forum: Steven Tryon: linking blog to forum and vice versa
 - Minimum level for categories
 - subcategories
-- 'clear' link on vote widget
+- 'clear my vote' link on vote widget

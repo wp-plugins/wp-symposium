@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.42
+Version: 0.43
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -47,8 +47,8 @@ function symposium_mail() {
 	$html = "";
 
 	// Includes
-	include_once('symposium_styles.php');
-	include_once('symposium_functions.php');
+	//include_once('symposium_styles.php');
+	//include_once('symposium_functions.php');
 
 
 	/* ================================================================================================================== */

@@ -23,30 +23,40 @@
    theme's folder, eg: wp-content/themes/my-current-theme/my-symposium.css, and
    copy the styles that you want to change into that file.
    
+   A good starting point is the global section below.
+
    View the WPS Health Check page to verify that it is being used.
    
    ************************************************************************ 
 */
 
+/* ============================================================================================================== */
+/* GLOBAL STYLES FOR QUICK CHANGE (search for these names elsewhere in the stylesheet for more granular changes)  */
+/* ============================================================================================================== */
 
-/* CORE CSS =============================================================== */
-
+/* Wrapper around WP Symposium markup - effects everything within */
 .symposium-wrapper
 {
 	overflow: auto;
-	width:95%;
+	width:640px;
 	margin: 0 auto;
 	padding: 0px;
 	overflow-x: hidden;
 	-ms-overflow-x: hidden;
-	font-family: "Lucida Grande","Lucida Sans Unicode",Tahoma,Verdana,sans-serif;
-	font-size: 14px;
-	line-height: 22px;
-	color: #000;
 }
 .symposium-wrapper * {
 	border-radius: 0px;
 	-moz-border-radius: 0px;
+}
+
+/* Fonts */
+.symposium-wrapper,
+.symposium-wrapper .symposium-button, .symposium-button, 
+input {
+	font-family: "Lucida Grande","Lucida Sans Unicode",Tahoma,Verdana,sans-serif;
+	font-size: 14px;
+	line-height: 22px;
+	color: #000;
 }
 
 .symposium-wrapper a {
@@ -60,13 +70,91 @@
 	color: #666;
 	text-decoration: underline;
 }
-
 .symposium-wrapper img 
 {
 	border: 0;
 	margin: 0;
 	padding: 0;
 }
+
+/* Buttons */
+.symposium-wrapper .symposium-button, .symposium-button {
+	background-color: #aaa;
+	color: #000;
+}
+.symposium-wrapper .symposium-button:hover, .symposium-button:hover {
+	background-color: #666;
+	color: #fff;
+}
+
+/* Profile - optional included information */
+.symposium-wrapper #profile_right_column {
+	background-color: #fff;
+}
+
+/* Panel (was Notification bar), including chat */
+#symposium-notification-bar, #symposium-logout-div {
+	background-color: #000;
+	color: #fff;
+}
+#symposium-chatboxes #symposium-who-online,
+#symposium-chatboxes #symposium-chatroom, 
+#symposium-chatboxes .chat_window, 
+.symposium-wrapper .categories_background, 
+.symposium-wrapper #mail_tabs .nav-tab-active, 
+.symposium-wrapper #mail-main {
+	background-color: #fff;
+	color: #000;
+}
+#symposium-chatboxes #chatroom_textarea, 
+#symposium-chatboxes .chat_message, 
+.symposium-wrapper .wall_reply_div, 
+.symposium-wrapper #mail_tabs .nav-tab-inactive {
+	background-color:#efefef;
+	color: #000;
+}
+
+/* "Table" layouts, eg: mail, forum ... */
+.symposium-wrapper .table_header {
+	background-color: #999;	
+	color: #000;
+}
+.symposium-wrapper .row {
+	background-color: #eee;
+	color: #000;
+}
+.symposium-wrapper .row_odd {
+	background-color: #ddd;
+	color: #000;
+}
+.symposium-wrapper .row:hover, .symposium-wrapper .row_odd:hover
+{
+	background-color: #fff;
+}
+
+/* Forum */
+.symposium-wrapper #new-topic, .symposium-wrapper #edit-topic-div, #symposium-fav-list, #symposium-activity-list, #symposium-search, {
+	background-color: #fff;	
+	color: #000;
+}
+.symposium-wrapper #starting-post, .symposium-wrapper #child-posts
+{
+	background-color: #ddd;
+	color: #000;
+}
+
+/* Other */
+.symposium_search_highlight {
+	background-color: #ff0;
+}
+
+/* ============================================================================================================== */
+/* END OF GLOBAL STYLES SECTION                                                                                   */
+/* ============================================================================================================== */
+
+
+
+/* CORE CSS =============================================================== */
 
 .symposium-wrapper .hidden {
 	display:none;
@@ -127,8 +215,6 @@
 
 .symposium-wrapper .symposium-button, .symposium-button
 {
-	background-color: #aaa;
-	color: #000;
 	text-align: center; 
 	border: 0px;
 	margin-right: 10px; 
@@ -136,11 +222,6 @@
 	width: 125px; 
 	height: 28px;
 	cursor: pointer;
-}
-.symposium-wrapper .symposium-button:hover, .symposium-button:hover
-{
-	background-color: #666;
-	color: #fff;
 }
 
 .symposium-wrapper .delete, .symposium-wrapper .delete_post, .symposium-delete-fav, .symposium-wrapper .edit {
@@ -274,8 +355,6 @@
 	padding: 4px;
 	height: 20px;
 	font-size: 10px;
-	background-color: #000;
-	color: #fff;
 	width: 135px;
 	text-shadow: 0px 1px 1px #fff; 
 	border-radius: 0px !important;
@@ -299,8 +378,6 @@
 	width: 135px;
 	bottom:28px;
 	padding: 4px;
-	background-color: #000;
-	color: #fff;
 }
 
 #symposium-chatboxes {
@@ -324,7 +401,6 @@
 	height:240px;
 	padding:0px;
 	border:1px solid #000;
-	background-color: #fff;
 }
 #symposium-chatboxes * {
 	pointer-events: auto;
@@ -360,7 +436,6 @@
 	height:240px;
 	padding:0px;
 	border:1px solid #000;
-	background-color: #fff;
 	display: none;
 }
 #symposium-chatboxes #symposium-chatroom_header {
@@ -383,7 +458,6 @@
 	height:40px;
 }
 #symposium-chatboxes #chatroom_textarea {
-	background-color:#efefef;
 	border:0px;
 	width:356px;
 	height:34px;
@@ -403,7 +477,6 @@
 	height:240px;
 	padding:0px;
 	border:1px solid #000;
-	background-color: #fff;
 }
 
 #symposium-chatboxes .chat_messages {
@@ -422,7 +495,6 @@
 }
 
 #symposium-chatboxes .chat_message {
-	background-color:#efefef;
 	border:0px;
 	width:356px;
 	height:34px;
@@ -431,7 +503,7 @@
 	background-color: #000;
 }
 .symposium_unreadChat {
-	background-color: #3C4B6B;
+	background-color: #aaa;
 }
  
 .symposium_online_name {
@@ -569,7 +641,7 @@
 }
 
 .symposium-wrapper #symposium_status {
-	width:300px; 
+	width:280px; 
 	margin: 0px;
 }
 
@@ -637,7 +709,6 @@
 	padding: 10px;
 	width: 260px;
 	margin: 0 0 15px 15px;
-	background-color: #fff;
 }
 
 .symposium-wrapper .input-field {
@@ -698,7 +769,6 @@
 }
 
 .symposium-wrapper .wall_reply_div {
-	background-color:#efefef;
 	float: left; 
 	overflow:visible; 
 	width:100%;
@@ -856,7 +926,6 @@
 	padding: 0px;
 	height:36px;
 	min-height:36px;
-	background-color: #999;
 	border-radius:0px;
 	-moz-border-radius:0px;
 }
@@ -873,7 +942,6 @@
 	clear: both;
 	overflow: auto;
 	border-radius: 0px;
-	background-color: #eee;
 	width: 100%;
 }
 .symposium-wrapper .row_odd
@@ -881,12 +949,7 @@
 	clear: both;
 	overflow: auto;
 	border-radius: 0px;
-	background-color: #ddd;
 	width: 100%;
-}
-.symposium-wrapper .row:hover, .symposium-wrapper .row_odd:hover
-{
-	background-color: #fff;
 }
 
 .symposium-wrapper .row_topic, .symposium-wrapper .row_startedby, .symposium-wrapper .row_replies, .symposium-wrapper .row_views
@@ -922,7 +985,6 @@
 	color: #fff;
 }
 .symposium-wrapper .categories_background {
-	background-color: #fff;
 	padding: 6px;
 	border-radius: 0;
 }
@@ -1014,7 +1076,6 @@
 	padding-left: 15px;
 	padding-top: 10px;
 	border: 1px solid #000;
-	background-color: #fff;
 	z-index: 99999999;
 }
 
@@ -1055,9 +1116,6 @@
 }
 .symposium_search_subject {
 	font-weight:bold;
-}
-.symposium_search_highlight {
-	background-color: #ff0;
 }
 
 .symposium-wrapper #edit-topic-div, #symposium-fav-list, #symposium-activity-list, #symposium-search
@@ -1104,7 +1162,6 @@
 {
 	border: 1px solid #aaa;
 	padding-right: 5px;
-	background-color: #ddd;
 	padding: 4px 10px 4px 10px;
 	clear: both;
 }
@@ -1112,10 +1169,6 @@
 {
 	clear: both;
 	margin-top:8px;
-}
-.symposium-wrapper #child-posts
-{
-	background-color: #eee;
 }
 .symposium-wrapper .topic-post-header-with-fav
 {
@@ -1198,6 +1251,7 @@
 .symposium-wrapper #image_instructions {
 	margin-left: 20px; 
 	float: left;
+	width: 250px;
 }
 
 /* MEMBERS ============================================================== */
@@ -1372,13 +1426,10 @@
 .symposium-wrapper #mail_tabs .nav-tab-active {
 	z-index: 3;
 	border-bottom: 1px solid #fff;
-	background-color: #fff;
 }
-
 .symposium-wrapper #mail_tabs .nav-tab-inactive {
 	z-index: 1;
 	border-bottom: 1px solid #000;
-	background-color: #efefef;
 }
 
 .symposium-wrapper #mail_tabs .nav-tab-active-link {
@@ -1399,11 +1450,9 @@
 	overflow: hidden;
 	width: 95%;
 	border: 1px solid #000;
-	background-color: #fff;
 	padding: 10px;
 	margin-bottom: 15px;
 }
-
 .symposium-wrapper .mail_item {
 	padding: 4px;
 }

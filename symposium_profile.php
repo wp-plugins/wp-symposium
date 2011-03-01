@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile], [symposium-settings], [symposium-personal], [symposium-friends] or [symposium-extended] on any WordPress page to display relevant content.
-Version: 0.42
+Version: 0.43
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -51,8 +51,8 @@ function symposium_profile_member_menu()
 			$uid = $current_user->ID;
 		}	        			
 	
-		include_once('symposium_styles.php');
-		include_once('symposium_functions.php');
+		//include_once('symposium_styles.php');
+		//include_once('symposium_functions.php');
 		
 		$html = "<div class='symposium-wrapper'>";
 		$html .= show_profile_menu($uid, $current_user->ID);
@@ -132,6 +132,15 @@ function symposium_profile_extended()
 		
 }
 
+// [symposium-avatar]
+function symposium_profile_avatar()  
+{  
+										
+	return symposium_show_profile("avatar");
+	exit;
+		
+}
+
 
 
 // Adds profile page
@@ -175,8 +184,8 @@ function symposium_show_profile($page)
 			$html = "";
 		
 			// Includes
-			include_once('symposium_styles.php');
-			include_once('symposium_functions.php');
+			//include_once('symposium_styles.php');
+			//include_once('symposium_functions.php');
 			
 			// Wrapper
 			$html .= "<div class='symposium-wrapper'>";
@@ -195,7 +204,7 @@ function symposium_show_profile($page)
 						$page = $_POST['view'];
 					}
 					if ($page == '') { $page = "wall"; }
-
+					
 					$html .= "<div id='force_profile_page' style='display:none'>".$page."</div>";
 					$html .= "<div id='profile_body'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /></div>";
 		
@@ -231,6 +240,7 @@ add_shortcode('symposium-all', 'symposium_profile_all');
 add_shortcode('symposium-personal', 'symposium_profile_personal');  
 add_shortcode('symposium-settings', 'symposium_profile_settings');  
 add_shortcode('symposium-extended', 'symposium_profile_extended');  
+add_shortcode('symposium-avatar', 'symposium_profile_avatar');  
 add_shortcode('symposium-menu', 'symposium_profile_member_menu');  
 add_shortcode('symposium-member-header', 'symposium_profile_member_header');  
 
