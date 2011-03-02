@@ -120,7 +120,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	border_radius varchar(2) NOT NULL,
 	label varchar(12) NOT NULL,
 	footer varchar(64) NOT NULL,
-	show_categories varchar(2) NOT NULL,
 	send_summary varchar(2) NOT NULL,
 	forum_url varchar(128) NOT NULL,
 	from_email varchar(128) NOT NULL,

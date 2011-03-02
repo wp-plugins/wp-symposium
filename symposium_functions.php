@@ -53,40 +53,6 @@ function symposium_bbcode_replace($text_to_search) {
 
 }
 
-function get_user_avatar($uid, $size) {
-	
-	global $wpdb;
-	$config = $wpdb->get_row($wpdb->prepare("SELECT img_db, img_url, profile_avatars FROM ".$wpdb->prefix . 'symposium_config'));
-
-	if ($config->img_db == "on") {
-	
-		$profile_photo = get_symposium_meta($uid, 'profile_avatar');
-		$profile_avatars = $config->profile_avatars;
-	
-		if ($profile_photo == '' || $profile_photo == 'upload_failed' || $profile_avatars != 'on') {
-			return get_avatar($uid, $size);
-		} else {
-			return "<img src='".WP_CONTENT_URL."/plugins/wp-symposium/uploadify/get_profile_avatar.php?uid=".$uid."' style='width:".$size."px; height:".$size."px' />";
-		}
-		
-	} else {
-
-		$profile_photo = get_symposium_meta($uid, 'profile_photo');
-		$profile_avatars = $config->profile_avatars;
-
-		if ($profile_photo == '' || $profile_photo == 'upload_failed' || $profile_avatars != 'on') {
-			return get_avatar($uid, $size);
-		} else {
-			$img_url = $config->img_url."/members/".$uid."/profile/";	
-			$img_src =  str_replace('//','/',$img_url) . $profile_photo;
-			return "<img src='".$img_src."' style='width:".$size."px; height:".$size."px' />";
-		}
-		
-	}
-	
-	exit;
-}
-
 function show_profile_menu($uid1, $uid2) {
 	
 	global $wpdb;
@@ -207,7 +173,7 @@ function symposium_profile_friends($uid) {
 				foreach ($requests as $request) {
 					$html .= "<div id='request_".$request->friend_from."' style='clear:right; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
 						$html .= "<div style='float: left; width:64px; margin-right: 15px'>";
-							$html .= get_user_avatar($request->ID, 64);
+							$html .= get_avatar($request->ID, 64);
 						$html .= "</div>";
 						$html .= "<div style='float: left;'>";
 							$html .= symposium_profile_link($request->ID)."<br />";
@@ -247,7 +213,7 @@ function symposium_profile_friends($uid) {
 												
 				$html .= "<div id='friend_".$friend->friend_to."' style='clear:right; margin-top:8px; overflow: auto; margin-bottom: 15px; '>";		
 					$html .= "<div style='float: left; width:64px; margin-right: 15px'>";
-						$html .= get_user_avatar($friend->friend_to, 64);
+						$html .= get_avatar($friend->friend_to, 64);
 					$html .= "</div>";
 					$html .= "<div style='float: left;'>";
 						$html .= symposium_profile_link($friend->friend_to)."<br />";
@@ -395,7 +361,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 		
 			// Photo
 			$html .= "<div id='profile_photo' class='corners'>";
-			$html .= get_user_avatar($uid1, 200);
+			$html .= get_avatar($uid1, 200);
 			$html .= "</div>";
 
 		$html .= "</div>";
@@ -487,7 +453,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 																	
 									$html .= "<div class='profile_panel_friends_div_row'>";		
 										$html .= "<div class='profile_panel_friends_div_avatar'>";
-											$html .= get_user_avatar($friend->friend_to, 42);
+											$html .= get_avatar($friend->friend_to, 42);
 										$html .= "</div>";
 										$html .= "<div>";
 											$html .= symposium_profile_link($friend->friend_to)."<br />";
@@ -596,7 +562,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 													$html .= "</div>";
 													
 													$html .= "<div class='wall_reply_avatar'>";
-														$html .= get_user_avatar($reply->author_uid, 40);
+														$html .= get_avatar($reply->author_uid, 40);
 													$html .= "</div>";		
 												$html .= "</div>";
 											}
@@ -617,7 +583,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 									$html .= "</div>";
 								$html .= "</div>";
 								$html .= "<div class='wall_post_avatar'>";
-									$html .= get_user_avatar($comment->author_uid, 64);
+									$html .= get_avatar($comment->author_uid, 64);
 								$html .= "</div>";
 							$html .= "</div>";
 							
@@ -711,7 +677,7 @@ function get_message($mail_mid, $del) {
 	$msg = "<div id='message_header'>";
 	
 		$msg .= "<div id='message_header_avatar'>";
-			$msg .= get_user_avatar($mail->mail_from, 44);
+			$msg .= get_avatar($mail->mail_from, 44);
 		$msg .= "</div>";
 
 		// Delete

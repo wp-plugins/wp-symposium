@@ -34,7 +34,7 @@ if ($_GET['term'] != '') {
 			} else {
 				$row_array['country'] = '';
 			}
-			$row_array['avatar'] = get_user_avatar($item->ID, 40);
+			$row_array['avatar'] = get_avatar($item->ID, 40);
 			
 	        array_push($return_arr,$row_array);
 		}
@@ -105,7 +105,7 @@ if ($_POST['action'] == 'getMembers') {
 					}
 
 					$html .= "<div class='members_avatar'>";
-						$html .= get_user_avatar($member->uid, 64);
+						$html .= get_avatar($member->uid, 64);
 					$html .= "</div>";
 					$html .= symposium_profile_link($member->uid).', last active '.symposium_time_ago($member->last_activity).". ";
 					if ($last_active_minutes >= $offline) {

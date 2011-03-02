@@ -29,6 +29,54 @@ header('Pragma: no-cache');
 
 $wpdb->show_errors();
 
+// Get my profile information
+// eg: WPROOT_URL/wp-content/plugins/wp-symposium/ajax/symposium_api.php?action=profile&uid=2
+if ($_GET['action'] == 'profile') {
+
+	global $wpdb;
+
+	$uid = $_GET['uid'];
+	
+	$return_arr = array();		
+
+	$meta = get_symposium_meta_row($uid);					
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
+	
+	$row_array['dob_day'] = $meta->dob_day;
+	$row_array['dob_month'] = $meta->dob_month;
+	$row_array['dob_year'] = $meta->dob_year;
+	$row_array['city'] = $meta->city;
+	$row_array['country'] = $meta->country;
+	$row_array['last_activity'] = $meta->last_activity;
+	
+	// Extended Information			
+	$names = array();
+	$values = array();
+	$extended = $meta->extended;
+	$fields = explode('[|]', $extended);
+	if ($fields) {
+		foreach ($fields as $field) {
+			
+			$split = explode('[]', $field);
+			if ( ($split[0] != '') && ($split[1] != '') ) {
+				$label = $wpdb->get_var($wpdb->prepare("SELECT extended_name FROM ".$wpdb->prefix."symposium_extended WHERE eid = ".$split[0]));
+
+				array_push($names, $label);
+				array_push($values, symposium_make_url($split[1]));
+
+			}
+		}
+		
+	} 
+	
+	$row_array['extended_names'] = $names;
+	$row_array['extended_values'] = $values;
+    array_push($return_arr, $row_array);
+	
+	echo json_encode($return_arr);
+	
+}
+
 // Add post
 // eg: symposium_api.php?action=post&subject_uid=309&author_uid=499&text=This%20is%20to%20Simon's%20wall
 if ($_GET['action'] == 'post') {
@@ -180,8 +228,6 @@ if ($_GET['action'] == 'authenticate') {
 
 }
 
-// Get my profile information
-
 // Get wall top level only
 // eg: WPROOT_URL/wp-content/plugins/wp-symposium/ajax/symposium_api.php?action=wall&uid=2&version=all
 if ($_GET['action'] == 'wall') {
@@ -211,7 +257,7 @@ if ($_GET['action'] == 'wall') {
 		foreach ($list as $item) {
 						
 			$reply_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->base_prefix."symposium_comments WHERE comment_parent = ".$item->cid);	
-			$avatar = get_user_avatar($item->author_uid, 32);
+			$avatar = get_avatar($item->author_uid, 32);
 			preg_match('/<img\s.*src=["\'](.*?)["\']/i', $avatar, $matches); 
 			$avatar = $matches[1];  
 			
@@ -252,7 +298,7 @@ if ($_GET['action'] == 'replies') {
 	if ($replies) {
 		foreach ($replies as $reply) {
 						
-			$avatar = get_user_avatar($reply->author_uid, 32);
+			$avatar = get_avatar($reply->author_uid, 32);
 			preg_match('/<img\s.*src=["\'](.*?)["\']/i', $avatar, $matches); 
 			$avatar = $matches[1];  
 			
@@ -291,7 +337,7 @@ if ($_GET['action'] == 'friends') {
 		
 		foreach ($friends as $friend) {
 			
-			$avatar = get_user_avatar($friend->friend_to, 32);
+			$avatar = get_avatar($friend->friend_to, 32);
 			preg_match('/<img\s.*src=["\'](.*?)["\']/i', $avatar, $matches); 
 			$avatar = $matches[1];  
 

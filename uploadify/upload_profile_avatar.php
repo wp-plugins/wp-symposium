@@ -130,32 +130,41 @@ if (!empty($_FILES)) {
 			$img_src =  str_replace('//','/',$img_url) . $filename;
 						
 		}
+
+		if ($config->img_crop == "on") {
 		
-		if ($html == '') {
+			if ($html == '') {
 								
-			$html .= '<div id="image_to_crop">';
-			$html .= "<img src='".$img_src."' id='profile_jcrop_target' />";
-			$html .= '</div>';
+				$html .= '<div id="image_to_crop">';
+				$html .= "<img src='".$img_src."' id='profile_jcrop_target' />";
+				$html .= '</div>';
 			
-			$html .= '<div id="image_preview"> ';
-			$html .= "<img src='".$img_src."' id='profile_preview' />";
-			$html .= '</div>';
+				$html .= '<div id="image_preview"> ';
+				$html .= "<img src='".$img_src."' id='profile_preview' />";
+				$html .= '</div>';
 		
-			$html .= '<div id="image_instructions"> ';
-			$html .= '<p>'.__('Select an area above...', 'wp-symposium').'</p>';
-				$html .= '<input type="hidden" id="x" name="x" />';
-				$html .= '<input type="hidden" id="y" name="y" />';
-				$html .= '<input type="hidden" id="x2" name="x2" />';
-				$html .= '<input type="hidden" id="y2" name="y2" />';
-				$html .= '<input type="hidden" id="w" name="w" />';
-				$html .= '<input type="hidden" id="h" name="h" />';
-				$html .= '<input type="submit" id="saveProfileAvatar" class="symposium-button" value="OK" />';
-			$html .= '</div>';
+				$html .= '<div id="image_instructions"> ';
+				$html .= '<p>'.__('Select an area above...', 'wp-symposium').'</p>';
+					$html .= '<input type="hidden" id="x" name="x" />';
+					$html .= '<input type="hidden" id="y" name="y" />';
+					$html .= '<input type="hidden" id="x2" name="x2" />';
+					$html .= '<input type="hidden" id="y2" name="y2" />';
+					$html .= '<input type="hidden" id="w" name="w" />';
+					$html .= '<input type="hidden" id="h" name="h" />';
+					$html .= '<input type="submit" id="saveProfileAvatar" class="symposium-button" value="OK" />';
+				$html .= '</div>';
 			
-			echo $html;
+				echo $html;
+				exit;
+			
+	        }
+	
+		} else {
+			
+			echo 'no-crop';
 			exit;
 			
-        }
+		}
 
 	} else {
 		

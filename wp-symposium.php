@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.43
+Version: 0.44
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,13 +30,12 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.43');
-define('WPS_DBVER', '43');
+define('WPS_VER', '0.44');
+define('WPS_DBVER', '44');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
 add_action('init', 'symposium_notification_setoptions');
-add_action('symposium_notification_hook','symposium_notification_trigger_schedule');
 add_action('wp_footer', 'symposium_lastactivity', 10);
 add_action('wp_head', 'symposium_header', 10);
 add_action('template_redirect', 'symposium_replace');
@@ -257,13 +256,17 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "group_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "group_all_create", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "profile_avatars", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "img_db", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "img_db", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "img_path", "varchar(128)", "NOT NULL", "'".WP_CONTENT_DIR."/wps-content'");
 	symposium_alter_table("config", "ADD", "img_url", "varchar(128)", "NOT NULL", "'/wp-content/wps-content'");
 	symposium_alter_table("config", "ADD", "img_upload", "mediumblob", "", "");
+	symposium_alter_table("config", "ADD", "img_crop", "varchar(2)", "NOT NULL", "'on'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
+
+	// Modify Forum Categories table
+	symposium_alter_table("cats", "ADD", "cat_parent", "int(11)", "NOT NULL", "0");
 
 	// Modify Comments table
 	symposium_alter_table("comments", "MODIFY", "comment_timestamp", "datetime", "", "");
@@ -319,6 +322,9 @@ function symposium_activate() {
 	$sql = "UPDATE ".$wpdb->prefix."symposium_config SET motd = ''";
 	$wpdb->query($sql); 
 
+	// Setup Notifications
+	symposium_notification_setoptions();
+	
 	// ***********************************************************************************************
  	// Update Versions *******************************************************************************
 	update_option("symposium_db_version", WPS_DBVER);
@@ -492,6 +498,130 @@ function symposium_notification_trigger_schedule() {
 
 /* ====================================================== PHP FUNCTIONS ====================================================== */
 
+// Replace get_avatar
+
+if ( !function_exists(get_avatar) ) {
+		
+	function get_avatar( $id_or_email, $size = '96', $default = '', $alt = false ) {
+	
+		if ( false === $alt)
+			$safe_alt = '';
+		else
+			$safe_alt = esc_attr( $alt );
+	
+		if ( !is_numeric($size) )
+			$size = '96';
+	
+		$email = '';
+		if ( is_numeric($id_or_email) ) {
+			$id = (int) $id_or_email;
+			$user = get_userdata($id);
+			if ( $user )
+				$email = $user->user_email;
+		} elseif ( is_object($id_or_email) ) {
+			// No avatar for pingbacks or trackbacks
+			$allowed_comment_types = apply_filters( 'get_avatar_comment_types', array( 'comment' ) );
+			if ( ! empty( $id_or_email->comment_type ) && ! in_array( $id_or_email->comment_type, (array) $allowed_comment_types ) )
+				return false;
+	
+			if ( !empty($id_or_email->user_id) ) {
+				$id = (int) $id_or_email->user_id;
+				$user = get_userdata($id);
+				if ( $user)
+					$email = $user->user_email;
+			} elseif ( !empty($id_or_email->comment_author_email) ) {
+				$email = $id_or_email->comment_author_email;
+			}
+		} else {
+			$email = $id_or_email;
+		}
+	
+		if ( empty($default) ) {
+			$avatar_default = get_option('avatar_default');
+			if ( empty($avatar_default) )
+				$default = 'mystery';
+			else
+				$default = $avatar_default;
+		}
+	
+		if ( !empty($email) )
+			$email_hash = md5( strtolower( $email ) );
+	
+		if ( is_ssl() ) {
+			$host = 'https://secure.gravatar.com';
+		} else {
+			if ( !empty($email) )
+				$host = sprintf( "http://%d.gravatar.com", ( hexdec( $email_hash[0] ) % 2 ) );
+			else
+				$host = 'http://0.gravatar.com';
+		}
+	
+		if ( 'mystery' == $default )
+			$default = "$host/avatar/ad516503a11cd5ca435acc9bb6523536?s={$size}"; // ad516503a11cd5ca435acc9bb6523536 == md5('unknown@gravatar.com')
+		elseif ( 'blank' == $default )
+			$default = includes_url('images/blank.gif');
+		elseif ( !empty($email) && 'gravatar_default' == $default )
+			$default = '';
+		elseif ( 'gravatar_default' == $default )
+			$default = "$host/avatar/s={$size}";
+		elseif ( empty($email) )
+			$default = "$host/avatar/?d=$default&amp;s={$size}";
+		elseif ( strpos($default, 'http://') === 0 )
+			$default = add_query_arg( 's', $size, $default );
+	
+		if ( !empty($email) ) {
+			$out = "$host/avatar/";
+			$out .= $email_hash;
+			$out .= '?s='.$size;
+			$out .= '&amp;d=' . urlencode( $default );
+	
+			$rating = get_option('avatar_rating');
+			if ( !empty( $rating ) )
+				$out .= "&amp;r={$rating}";
+	
+			$avatar = "<img alt='{$safe_alt}' src='{$out}' class='avatar avatar-{$size} photo' height='{$size}' width='{$size}' />";
+		} else {
+			$avatar = "<img alt='{$safe_alt}' src='{$default}' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";
+		}
+	
+		$return = '';
+		
+		global $wpdb;
+				
+		$config = $wpdb->get_row($wpdb->prepare("SELECT img_db, img_url, profile_avatars FROM ".$wpdb->prefix . 'symposium_config'));
+	
+		if ($config->img_db == "on") {
+		
+			$profile_photo = get_symposium_meta($id, 'profile_avatar');
+			$profile_avatars = $config->profile_avatars;
+		
+			if ($profile_photo == '' || $profile_photo == 'upload_failed' || $profile_avatars != 'on') {
+				$return .= apply_filters('get_avatar', $avatar, $id_or_email, $size, $default, $alt);
+			} else {
+				$return .= "<img src='".WP_CONTENT_URL."/plugins/wp-symposium/uploadify/get_profile_avatar.php?uid=".$id."' style='width:".$size."px; height:".$size."px' class='avatar avatar-".$size." photo' />";
+			}
+			
+		} else {
+	
+			$profile_photo = get_symposium_meta($id, 'profile_photo');
+			$profile_avatars = $config->profile_avatars;
+	
+			if ($profile_photo == '' || $profile_photo == 'upload_failed' || $profile_avatars != 'on') {
+				$return .= apply_filters('get_avatar', $avatar, $id_or_email, $size, $default, $alt);
+			} else {
+				$img_url = $config->img_url."/members/".$id."/profile/";	
+				$img_src =  str_replace('//','/',$img_url) . $profile_photo;
+				$return .= "<img src='".$img_src."' style='width:".$size."px; height:".$size."px' class='avatar avatar-".$size." photo' />";
+			}
+			
+		}
+	
+		return $return;
+		
+	}
+	
+}
+
 // Header hook
 function symposium_header() {
 	include_once('symposium_styles.php');
@@ -511,7 +641,7 @@ function symposium_lastactivity() {
 
 	// Place hidden div of current user to use when adding to screen
 	echo "<div id='symposium_current_user_avatar' style='display:none;'>";
-	echo get_user_avatar($current_user->ID, 200);
+	echo get_avatar($current_user->ID, 200);
 	echo "</div>";
 	
 }

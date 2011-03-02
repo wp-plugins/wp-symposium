@@ -1320,7 +1320,10 @@ input {
 
 #symposium_member_small {
 	width:200px; 
-	height:14px;
+	height:20px;
+	font-size:10px;
+	margin: 2px 0px;
+	padding: 0px;
 }
 
 /* MAIL ============================================================== */

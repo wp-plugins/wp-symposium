@@ -4,6 +4,10 @@ todo.txt (MoSCoW)
 Must do (fixes before next release)
 -------
 
+FORUM
+
+Share links
+
 Should do (before next release, unless patch has to go out fixing bugs)
 ---------
 
@@ -12,6 +16,7 @@ Should do (before next release, unless patch has to go out fixing bugs)
 Could do (if development time allows)
 --------
 
+- Members - show all option/shortcode
 - Add purge tool for wall, forum and chat (via Admin, Options, Settings - move from Panel)
 
 Would do (if life allows!)

@@ -146,7 +146,6 @@ function symposium_plugin_menu() {
 	}
 	add_submenu_page('symposium_options', __('Health Check', 'wp-symposium'), __('Health Check', 'wp-symposium'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
 }
-add_action('admin_menu', 'symposium_plugin_menu');
 
 function symposium_plugin_moderation() {
 
@@ -339,6 +338,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'listorder')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'allow_new')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'defaultcat')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'cat_parent')) { $status = "X"; }
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -372,7 +372,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'border_radius')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'label')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'footer')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'show_categories')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'send_summary')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'forum_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'from_email')) { $status = "X"; }
@@ -426,6 +425,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'img_path')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'img_url')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'img_upload')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'img_crop')) { $status = "X"; }	
 					
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -1573,6 +1573,7 @@ function symposium_plugin_options() {
 	        $img_db = $_POST[ 'img_db' ];
 	        $img_path = $_POST[ 'img_path' ];
 	        $img_url = $_POST[ 'img_url' ];
+	        $img_crop = $_POST[ 'img_crop' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET footer = '".$footer."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET from_email = '".$from_email."'") );					
@@ -1591,6 +1592,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET img_db = '".$img_db."'") );				
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET img_path = '".$img_path."'") );				
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET img_url = '".$img_url."'") );				
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET img_crop = '".$img_crop."'") );				
 			
 			echo "<div class='updated'>";
 			
@@ -1615,7 +1617,6 @@ function symposium_plugin_options() {
 	    // See if the user has posted forum settings
 	    if( $_POST[ 'symposium_update' ] == 'F' ) {
 	    	    	        
-	        $show_categories = $_POST[ 'show_categories' ];
 	        $send_summary = $_POST[ 'send_summary' ];
 	        $include_admin = $_POST[ 'include_admin' ];
 	        $oldest_first = $_POST[ 'oldest_first' ];
@@ -1634,7 +1635,6 @@ function symposium_plugin_options() {
 
 	        $sharing = $sharing_facebook.$sharing_twitter.$sharing_myspace.$sharing_bebo.$sharing_linkedin.$sharing_email;
 
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET show_categories = '".$show_categories."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET send_summary = '".$send_summary."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET include_admin = '".$include_admin."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET oldest_first = '".$oldest_first."'") );					
@@ -2028,6 +2028,7 @@ function symposium_plugin_options() {
 					$img_db = $config->img_db;
 					$img_path = $config->img_path;
 					$img_url = $config->img_url;
+					$img_crop = $config->img_crop;
 					$img_tmp = ini_get('upload_tmp_dir');
 					
 					?>
@@ -2112,7 +2113,13 @@ function symposium_plugin_options() {
 						
 					<?php } ?>
 						
-
+					<tr valign="top"> 
+					<th scope="row"><label for="img_crop">Crop images</label></th>
+					<td>
+					<input type="checkbox" name="img_crop" id="img_crop" <?php if ($img_crop == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __("Allow uploaded images to be cropped</span>", 'wp-symposium'); ?></span></td> 
+					</tr> 
+					
 					<tr valign="top"> 
 					<th scope="row"><label for="email_footer">Email Notifications</label></th> 
 					<td><input name="email_footer" type="text" id="email_footer"  value="<?php echo $footer; ?>" class="regular-text" /> 
@@ -2188,7 +2195,6 @@ function symposium_plugin_options() {
 				// FORUM
 				if ($view == "forum") {
 
-					$show_categories = $config->show_categories;
 					$send_summary = $config->send_summary;
 					$include_admin = $config->include_admin;
 					$oldest_first = $config->oldest_first;
@@ -2224,13 +2230,6 @@ function symposium_plugin_options() {
 					<td>
 					<input type="checkbox" name="send_summary" id="send_summary" <?php if ($send_summary == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Enable daily summaries to all members via email', 'wp-symposium'); ?></span></td> 
-					</tr> 
-				
-					<tr valign="top"> 
-					<th scope="row"><label for="show_categories"><?php _e('Categories', 'wp-symposium'); ?></label></th>
-					<td>
-					<input type="checkbox" name="show_categories" id="show_categories" <?php if ($show_categories == "on") { echo "CHECKED"; } ?>/>
-					<span class="description"><?php echo __('Organise forum topics by categories', 'wp-symposium'); ?></span></td> 
 					</tr> 
 				
 					<tr valign="top"> 
@@ -2339,41 +2338,38 @@ function symposium_plugin_options() {
 					
 					<?php
 
-					if ($show_categories == "on") {
-						$topics = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_category=0 AND topic_parent=0");
-				
-						if ($topics) {
-							echo "<p>".__('The following topics are un-categorised, if you want them to appear in a category, please select below.', 'wp-symposium')."</p>";
-							echo '<form method="post" action="">';
-							echo '<input type="hidden" name="categories_update" value="Y">';
-						
-							echo '<table class="form-table">';
-				
-							foreach ($topics as $topic) {
-								echo '<tr valign="top">';
-								echo '<th scope="row"><label for="topic_category">'.$topic->topic_subject.'</label></th>';
-								echo '<td>';
-								echo '<input type="hidden" name="tid[]" value='.$topic->tid.' />';
-								echo '<select name="topic_category[]">';
-								$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats');
-								if ($categories) {
-									foreach ($categories as $category) {
-										echo '<option value='.$category->cid.'>'.$category->title.'</option>';
-									}
-								}				
-								echo '</select>';
-								echo '</td>';
-								echo '</tr>';
-							}
-				
-							echo '</table>';
-				
-							echo '<p class="submit">';
-							echo '<input type="submit" name="Submit" class="button-primary" value="'.__('Update Categories', 'wp-symposium').'" />';
-							echo '</p>';
-							echo '</form>';
-				
+					$topics = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_topics'." WHERE topic_category=0 AND topic_parent=0");
+			
+					if ($topics) {
+						echo "<p>".__('The following topics are un-categorised, if you want them to appear in a category, please select below.', 'wp-symposium')."</p>";
+						echo '<form method="post" action="">';
+						echo '<input type="hidden" name="categories_update" value="Y">';
+					
+						echo '<table class="form-table">';
+			
+						foreach ($topics as $topic) {
+							echo '<tr valign="top">';
+							echo '<th scope="row"><label for="topic_category">'.$topic->topic_subject.'</label></th>';
+							echo '<td>';
+							echo '<input type="hidden" name="tid[]" value='.$topic->tid.' />';
+							echo '<select name="topic_category[]">';
+							$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats');
+							if ($categories) {
+								foreach ($categories as $category) {
+									echo '<option value='.$category->cid.'>'.$category->title.'</option>';
+								}
+							}				
+							echo '</select>';
+							echo '</td>';
+							echo '</tr>';
 						}
+			
+						echo '</table>';
+			
+						echo '<p class="submit">';
+						echo '<input type="submit" name="Submit" class="button-primary" value="'.__('Update Categories', 'wp-symposium').'" />';
+						echo '</p>';
+						echo '</form>';
 					}
 				  
 				} // End of Forum
@@ -2569,5 +2565,10 @@ function symposium_plugin_options() {
 	  	
 } 	
 
+/* =============== ADD TO ADMIN MENU =============== */
+
+if (is_admin()) {
+	add_action('admin_menu', 'symposium_plugin_menu');
+}
 
 ?>

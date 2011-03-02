@@ -432,6 +432,7 @@ jQuery(document).ready(function() {
 		    dataType: "html",
 			async: true,
 			success: function(str){
+
 				jQuery('#profile_body').hide().html(str).fadeIn("slow");
 
 				jQuery('#profile_file_upload').uploadify({
@@ -448,13 +449,19 @@ jQuery(document).ready(function() {
 						if (response.substring(0, 5) == 'Error') {
 							alert(response); 
 						} else {
-							jQuery('#profile_image_to_crop').html(response);
+							
+							if (trim(response) == 'no-crop') {
+								location.reload();
+							} else {
+
+								jQuery('#profile_image_to_crop').html(response);
 	
-							jQuery('#profile_jcrop_target').Jcrop({
-								onChange: showProfilePreview,
-								onSelect: showProfilePreview,
-								aspectRatio: 1
-							});
+								jQuery('#profile_jcrop_target').Jcrop({
+									onChange: showProfilePreview,
+									onSelect: showProfilePreview,
+									aspectRatio: 1
+								});
+							}
 						}
 
 					}
@@ -932,13 +939,38 @@ jQuery(document).ready(function() {
 	   +------------------------------------------------------------------------------------------+
 	*/
 
+	if (jQuery("#symposium-forum-div").length) {
+		// On page load, get forum top level
+
+		jQuery("#symposium-forum-div").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getForum",
+				cat_id:0
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				str = trim(str);
+				jQuery("#symposium-forum-div").html(str);
+			},
+			error: function(err){
+				alert("getForum:"+err);
+			}		
+   		});
+		
+	}
+
    	jQuery(".backto").click(function() {
 		jQuery(".symposium_pleasewait").inmiddle().show();
    	});		
-	jQuery(".new-topic-subject-warning").hide();
-	jQuery(".new_topic_text-warning").hide();
-	jQuery(".reply_text-warning").hide();
-	jQuery(".quick-reply-warning").hide();
+	//jQuery(".new-topic-subject-warning").hide();
+	//jQuery(".new_topic_text-warning").hide();
+	//jQuery(".reply_text-warning").hide();
+	//jQuery(".quick-reply-warning").hide();
 
 	jQuery("#share_link").hover(function() {
 		jQuery("#share_label").show("slide", {direction: 'right'}, 300);
@@ -947,7 +979,7 @@ jQuery(document).ready(function() {
 	});
 	
 	// Fav Icon
-   	jQuery("#fav_link").click(function() {
+	jQuery("#fav_link").live('click', function() {
    		
 		if (jQuery('#fav_link').attr('src') == symposium.plugin_url+'images/star-on.gif' ) {
 			jQuery('#fav_link').attr({ src: symposium.plugin_url+'images/star-off.gif' });
@@ -969,7 +1001,7 @@ jQuery(document).ready(function() {
    	});
 
 	// Show favourites list
-   	jQuery("#show_favs").click(function() {
+	jQuery("#show_favs").live('click', function() {
         
 		jQuery("#fav-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
         jQuery("#symposium-fav-list").inmiddle().fadeIn();
@@ -1030,7 +1062,7 @@ jQuery(document).ready(function() {
    	});
    	
 	// Show activity list
-   	jQuery("#show_activity").click(function() {
+	jQuery("#show_activity").live('click', function() {
         
 		jQuery("#activity-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
         jQuery("#symposium-activity-list").inmiddle().fadeIn();
@@ -1058,7 +1090,7 @@ jQuery(document).ready(function() {
    	});
 
 	// Show search
-   	jQuery("#show_search").click(function() {        
+	jQuery("#show_search").live('click', function() {
         jQuery("#symposium-search").inmiddle().fadeIn();
    	});
 	// Close search
@@ -1577,23 +1609,15 @@ jQuery(document).ready(function() {
 			if (symposium.current_user_id > 0 ) {
 			
 			   	// Check for notifications, unread mail, friend requests, etc
-				do_bar_check();
-			   	var refreshId = setInterval(function()
-			   	{
-					do_bar_check();
-			   	}, symposium.bar_polling*1000); // Delay to check for new mail, etc
-			   	
-				do_chat_check();
-		   		do_chatroom_check();
-				do_online_friends_check();
-				var refreshChatId = setInterval(function()
-			   	{
-			   		do_chat_check();
-			   		do_chatroom_check();
-					do_online_friends_check();
-			   	}, symposium.chat_polling*1000); // Delay to check for new messages
-		
+				bar_polling();
+				chat_polling();
+				setTimeout("bar_polling()", symposium.bar_polling*1000);
+				setTimeout("chat_polling()", symposium.chat_polling*1000);
+				
 			}
+
+
+			
 	
 			// Chatroom Clear ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			jQuery("#symposium-chatroom_clear").live('click', function() {
@@ -2536,5 +2560,15 @@ function trim(s)
 	return s.substring(l, r+1);
 }
 
+function bar_polling() {
+	do_bar_check();				
+	setTimeout(bar_polling, symposium.bar_polling*1000);
+}
+function chat_polling() {
+	do_chat_check();
+	do_chatroom_check();
+	do_online_friends_check();
+	setTimeout(chat_polling, symposium.chat_polling*1000);
+}
 // Password strength
 (function(A){A.extend(A.fn,{pstrength:function(B){var B=A.extend({verdects:["Very weak","Weak","Medium","Strong","Very strong"],colors:["#f00","#c06","#f60","#3c0","#3f0"],scores:[10,15,30,40],common:["password","sex","god","123456","123","welcome","test","qwerty","admin"],minchar:6},B);return this.each(function(){var C=A(this).attr("id");A(this).after("<div class=\"pstrength-info\" id=\""+C+"_text\"></div>");A(this).after("<div class=\"pstrength-bar\" id=\""+C+"_bar\" style=\"border: 1px solid white; font-size: 1px; height: 5px; width: 0px;\"></div>");A(this).keyup(function(){A.fn.runPassword(A(this).val(),C,B)})})},runPassword:function(D,F,C){nPerc=A.fn.checkPassword(D,C);var B="#"+F+"_bar";var E="#"+F+"_text";if(nPerc==-200){strColor="#f00";strText="Unsafe password word!";A(B).css({width:"0%"})}else{if(nPerc<0&&nPerc>-199){strColor="#ccc";strText="Too short";A(B).css({width:"5%"})}else{if(nPerc<=C.scores[0]){strColor=C.colors[0];strText=C.verdects[0];A(B).css({width:"10%"})}else{if(nPerc>C.scores[0]&&nPerc<=C.scores[1]){strColor=C.colors[1];strText=C.verdects[1];A(B).css({width:"25%"})}else{if(nPerc>C.scores[1]&&nPerc<=C.scores[2]){strColor=C.colors[2];strText=C.verdects[2];A(B).css({width:"50%"})}else{if(nPerc>C.scores[2]&&nPerc<=C.scores[3]){strColor=C.colors[3];strText=C.verdects[3];A(B).css({width:"75%"})}else{strColor=C.colors[4];strText=C.verdects[4];A(B).css({width:"92%"})}}}}}}A(B).css({backgroundColor:strColor});A(E).html("<span style='color: "+strColor+";'>"+strText+"</span>")},checkPassword:function(C,B){var F=0;var E=B.verdects[0];if(C.length<B.minchar){F=(F-100)}else{if(C.length>=B.minchar&&C.length<=(B.minchar+2)){F=(F+6)}else{if(C.length>=(B.minchar+3)&&C.length<=(B.minchar+4)){F=(F+12)}else{if(C.length>=(B.minchar+5)){F=(F+18)}}}}if(C.match(/[a-z]/)){F=(F+1)}if(C.match(/[A-Z]/)){F=(F+5)}if(C.match(/\d+/)){F=(F+5)}if(C.match(/(.*[0-9].*[0-9].*[0-9])/)){F=(F+7)}if(C.match(/.[!,@,#,$,%,^,&,*,?,_,~]/)){F=(F+5)}if(C.match(/(.*[!,@,#,$,%,^,&,*,?,_,~].*[!,@,#,$,%,^,&,*,?,_,~])/)){F=(F+7)}if(C.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)){F=(F+2)}if(C.match(/([a-zA-Z])/)&&C.match(/([0-9])/)){F=(F+3)}if(C.match(/([a-zA-Z0-9].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z0-9])/)){F=(F+3)}for(var D=0;D<B.common.length;D++){if(C.toLowerCase()==B.common[D]){F=-200}}return F}})})(jQuery)

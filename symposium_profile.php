@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile], [symposium-settings], [symposium-personal], [symposium-friends] or [symposium-extended] on any WordPress page to display relevant content.
-Version: 0.43
+Version: 0.44
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -233,15 +233,19 @@ function symposium_show_profile($page)
 }  
 
 /* ====================================================== SET SHORTCODE ====================================================== */
-add_shortcode('symposium-profile', 'symposium_profile');  
-add_shortcode('symposium-friends', 'symposium_profile_friend');  
-add_shortcode('symposium-activity', 'symposium_profile_activity');  
-add_shortcode('symposium-all', 'symposium_profile_all');  
-add_shortcode('symposium-personal', 'symposium_profile_personal');  
-add_shortcode('symposium-settings', 'symposium_profile_settings');  
-add_shortcode('symposium-extended', 'symposium_profile_extended');  
-add_shortcode('symposium-avatar', 'symposium_profile_avatar');  
-add_shortcode('symposium-menu', 'symposium_profile_member_menu');  
-add_shortcode('symposium-member-header', 'symposium_profile_member_header');  
 
+if (!is_admin()) {
+
+	add_shortcode('symposium-profile', 'symposium_profile');  
+	add_shortcode('symposium-friends', 'symposium_profile_friend');  
+	add_shortcode('symposium-activity', 'symposium_profile_activity');  
+	add_shortcode('symposium-all', 'symposium_profile_all');  
+	add_shortcode('symposium-personal', 'symposium_profile_personal');  
+	add_shortcode('symposium-settings', 'symposium_profile_settings');  
+	add_shortcode('symposium-extended', 'symposium_profile_extended');  
+	add_shortcode('symposium-avatar', 'symposium_profile_avatar');  
+	add_shortcode('symposium-menu', 'symposium_profile_member_menu');  
+	add_shortcode('symposium-member-header', 'symposium_profile_member_header');  
+
+}
 ?>

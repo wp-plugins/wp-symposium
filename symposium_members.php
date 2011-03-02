@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Members Directory
 Plugin URI: http://www.wpsymposium.com
 Description: Directory component for the Symposium suite of plug-ins. Put [symposium-members] on any WordPress page.
-Version: 0.43
+Version: 0.44
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -108,7 +108,7 @@ function symposium_members($ver) {
 								}
 			
 								$html .= "<div class='members_avatar'>";
-									$html .= get_user_avatar($member->ID, 64);
+									$html .= get_avatar($member->ID, 64);
 								$html .= "</div>";
 								$html .= symposium_profile_link($member->ID).', '.__('last active', 'wp-symposium').' '.symposium_time_ago($member->last_activity).". ";
 								if ($last_active_minutes >= $offline) {
@@ -180,7 +180,9 @@ function symposium_members($ver) {
 }
 
 /* ====================================================== SET SHORTCODE ====================================================== */
-add_shortcode('symposium-members', 'symposium_members');  
+if (!is_admin()) {
+	add_shortcode('symposium-members', 'symposium_members');  
+}
 
 
 
