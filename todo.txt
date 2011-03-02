@@ -1,0 +1,27 @@
+todo.txt (MoSCoW)
+-----------------
+
+Must do (fixes before next release)
+-------
+
+Should do (before next release, unless patch has to go out fixing bugs)
+---------
+
+- Implement poke
+
+Could do (if development time allows)
+--------
+
+- Add purge tool for wall, forum and chat (via Admin, Options, Settings - move from Panel)
+
+Would do (if life allows!)
+--------
+
+- template driven notifications
+- optionally receive email on activity in wall post if I've replied or started it
+- Codex
+- Mail: quote feature
+- Forum: Steven Tryon: linking blog to forum and vice versa
+- Minimum level for categories
+- subcategories
+- 'clear my vote' link on vote widget
