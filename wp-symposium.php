@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.44
+Version: 0.45
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,8 +30,8 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.44');
-define('WPS_DBVER', '44');
+define('WPS_VER', '0.45');
+define('WPS_DBVER', '45');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -228,7 +228,6 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "jquery", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "jqueryui", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "emoticons", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "seo", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "moderation", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "mail_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "online", "int(11)", "NOT NULL", "'3'");
@@ -247,7 +246,6 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "chat_polling", "int(11)", "NOT NULL", "'10'");
 	symposium_alter_table("config", "ADD", "use_chatroom", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "chatroom_banned", "text", "", "''");
-	symposium_alter_table("config", "ADD", "chat_purge", "int(11)", "NOT NULL", "'7'");
 	symposium_alter_table("config", "ADD", "profile_google_map", "int(11)", "NOT NULL", "'250'");
 	symposium_alter_table("config", "ADD", "use_poke", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "motd", "varchar(2)", "NOT NULL", "''");
@@ -398,19 +396,24 @@ function symposium_notification_trigger_schedule() {
 	global $wpdb;
 
 	// *************************************** First do daily jobs ***************************************
-	// Wipe Audit
-	$wpdb->query("DELETE FROM ".$wbdb->prefix."symposium_audit");
 	// Clear Chat Windows (tidy up anyone who didn't close a chat window)
 	$wpdb->query("DELETE FROM ".$wbdb->prefix."symposium_chat");
 	// Clean irrelevant notifications
 	$wpdb->query("DELETE FROM ".$wbdb->prefix."symposium_notifications WHERE notification_to = 0");
-	// Calculate how old chat has to be, to be deleted
-	$chat_purge = $wpdb->get_var($wpdb->prepare("SELECT chat_purge FROM ".$wpdb->prefix . 'symposium_config'));
-	$wpdb->query( $wpdb->prepare( "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_timestamp < %s", array(date("Y-m-d H:i:s",strtotime('-'.$chat_purge.' days'))) ) );	
-	
+	// Remove duplicate/rogue members
+	$sql = "CREATE TABLE ".$wpdb->prefix."wps_tmp AS SELECT * FROM ".$wpdb->prefix."symposium_usermeta WHERE 1 GROUP BY uid";
+	$wpdb->query( $wpdb->prepare($sql) );
+	$sql = "DELETE FROM ".$wpdb->prefix."symposium_usermeta WHERE mid NOT IN (SELECT mid FROM ".$wpdb->prefix."wps_tmp)";
+	$wpdb->query( $wpdb->prepare($sql) );
+	$sql = "DROP TABLE ".$wpdb->prefix."wps_tmp";
+	$wpdb->query( $wpdb->prepare($sql) );
+	$sql = "DELETE FROM ".$wpdb->prefix."symposium_usermeta WHERE uid = 0";
+	$wpdb->query( $wpdb->prepare($sql) );
+		
 	// ******************************************* Daily Digest ******************************************
 	$send_summary = $wpdb->get_var($wpdb->prepare("SELECT send_summary FROM ".$wpdb->prefix . 'symposium_config'));
 	if ($send_summary == "on") {
+		
 		// Calculate yesterday			
 		$startTime = mktime(0, 0, 0, date('m'), date('d')-1, date('Y'));
 		$endTime = mktime(23, 59, 59, date('m'), date('d')-1, date('Y'));
@@ -700,69 +703,6 @@ function symposium_smilies($buffer){ // $buffer contains entire page
 	return $buffer;
 }
 
-// Hook for URL redirect
-function symposium_redirect($buffer){ 
-	
-	global $wpdb;
-	
-	$seo = $wpdb->get_var($wpdb->prepare("SELECT seo FROM ".$wpdb->prefix . 'symposium_config'));
-	
-	// check for forum redirect
-		
-	if ($seo == "on") {
-	
-		$thispage = get_permalink();
-	
-		if (function_exists('symposium_forum')) {
-				
-			$forum_url = $wpdb->get_var($wpdb->prepare("SELECT forum_url FROM ".$wpdb->prefix."symposium_config"));
-			if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
-			
-			$parsed_url=parse_url($_SERVER['REQUEST_URI']);
-			
-			if ( substr(get_site_url().$parsed_url['path'], 0, strlen($forum_url)) == $forum_url ) {
-				
-				$path = $parsed_url['path'];
-				if ($path[strlen($path)-1] != '/') { $path .= '/'; }
-				$paths = explode('/',$path);
-				$query = $parsed_url['query'];
-				
-				$max = count($paths);
-				$id = $paths[$max-4];
-				$category = $paths[$max-3];
-				$topic = $paths[$max-2];
-				if (is_numeric($category)) {
-					// Categories not in use
-					$id = $category;
-					$category = "-";
-				}
-						
-				// If an ID was passed	
-				if ($id != '') {
-					if (!(isset($_GET['show']))) {
-						// Just show category
-						header("Location: ".$forum_url."?cid=".$id);
-						exit;					
-					} else {				
-						// Try getting category for id
-						$cat_id = $wpdb->get_var($wpdb->prepare("SELECT topic_category FROM ".$wpdb->prefix."symposium_topics"." WHERE tid = ".$id));
-						if ($cat_id != 0) {
-							header("Location: ".$forum_url."?cid=".$cat_id."&show=".$id);
-							exit;
-						} else {
-							header("Location: ".$forum_url."?cid=&show=".$id);
-							exit;
-						}
-					}
-				}
-			}
-		}
-		
-	}
-	
-    return $buffer;
-}
-
 // Hook for adding unread mail, etc
 function symposium_unread($buffer){ 
 	
@@ -818,6 +758,8 @@ function symposium_admin_check() {
 		foreach ($missing_users as $missing) {
 			$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_usermeta WHERE uid = ".$missing->uid;
 			$wpdb->query($sql); 
+			$sql = "DELETE FROM ".$wpdb->base_prefix."symposium_friends WHERE friend_from = ".$missing->uid." or friend_to = ".$missing->uid;
+			$wpdb->query($sql); 
 		}
 	}	
 }
@@ -827,8 +769,6 @@ function symposium_admin_check() {
 function symposium_replace(){
 	ob_start();
 	ob_start('symposium_unread');
-	ob_start('symposium_smilies');
-	ob_start('symposium_redirect');
 }
 
 /* ====================================================== ADMIN FUNCTIONS ====================================================== */
@@ -865,14 +805,15 @@ function add_symposium_stylesheet() {
 	    
 	    // Load other CSS's
 	    
-		wp_register_style('symposium_jcrop-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery.Jcrop.css');
-		wp_enqueue_style('symposium_jcrop-css');
-		
 		wp_register_style('symposium_uploadify-css', WP_PLUGIN_URL.'/wp-symposium/uploadify/uploadify.css');
 		wp_enqueue_style('symposium_uploadify-css');
 	    
 
 	}
+
+	wp_register_style('symposium_jcrop-css', WP_PLUGIN_URL.'/wp-symposium/css/jquery.Jcrop.css');
+	wp_enqueue_style('symposium_jcrop-css');
+	
 
 	// Only load if chosen
 	$jquery = $wpdb->get_var($wpdb->prepare("SELECT jquery FROM ".$wpdb->prefix . 'symposium_config'));

@@ -96,7 +96,7 @@
 									
 					// Forum
 	
-					echo ".symposium-wrapper #symposium_table  {";
+					echo ".symposium-wrapper #symposium_table {";
 					echo "	border: ".$table_border."px solid ".$primary_color.";";	
 					echo "}";
 				

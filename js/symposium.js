@@ -942,20 +942,26 @@ jQuery(document).ready(function() {
 	if (jQuery("#symposium-forum-div").length) {
 		// On page load, get forum top level
 
-		jQuery("#symposium-forum-div").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+		jQuery(".symposium_pleasewait").inmiddle().show();
 
+		var sub = "getForum";
+		if (symposium.show_tid > 0) {
+			var sub = "getTopic";
+		}
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
 			type: "POST",
 			data: ({
-				action:"getForum",
-				cat_id:0
+				action:sub,
+				cat_id:symposium.cat_id,
+				topic_id:symposium.show_tid
 			}),
 		    dataType: "html",
 			async: true,
 			success: function(str){
 				str = trim(str);
 				jQuery("#symposium-forum-div").html(str);
+				jQuery(".symposium_pleasewait").fadeOut("slow");
 			},
 			error: function(err){
 				alert("getForum:"+err);
@@ -963,19 +969,57 @@ jQuery(document).ready(function() {
    		});
 		
 	}
+	
+	// Click on category title to drill down
+	jQuery(".category_title").live('click', function() {
 
-   	jQuery(".backto").click(function() {
 		jQuery(".symposium_pleasewait").inmiddle().show();
-   	});		
-	//jQuery(".new-topic-subject-warning").hide();
-	//jQuery(".new_topic_text-warning").hide();
-	//jQuery(".reply_text-warning").hide();
-	//jQuery(".quick-reply-warning").hide();
 
-	jQuery("#share_link").hover(function() {
-		jQuery("#share_label").show("slide", {direction: 'right'}, 300);
-	}, function () {
-		jQuery("#share_label").hide("slide", {direction: 'right'}, 300);
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getForum",
+				cat_id:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				str = trim(str);
+				jQuery("#symposium-forum-div").html(str);
+				jQuery(".symposium_pleasewait").fadeOut("slow");
+			},
+			error: function(err){
+				alert("getForum:"+err);
+			}		
+   		});
+
+	});
+	
+	// Click on topic subject title
+	jQuery(".topic_subject").live('click', function() {
+
+		jQuery(".symposium_pleasewait").inmiddle().show();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getTopic",
+				topic_id:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				str = trim(str);
+				jQuery("#symposium-forum-div").html(str);
+				jQuery(".symposium_pleasewait").fadeOut("slow");
+			},
+			error: function(err){
+				alert("getTopic:"+err);
+			}		
+   		});
+		
 	});
 	
 	// Fav Icon
@@ -986,13 +1030,12 @@ jQuery(document).ready(function() {
 		} else {
 			jQuery('#fav_link').attr({ src: symposium.plugin_url+'images/star-on.gif' });
 		}
-		
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
 			type: "POST",
 			data: ({
 				action:"toggleFav",
-				tid:symposium.show_tid
+				tid:jQuery(this).attr("title")
 			}),
 		    dataType: "html",
 			async: true
@@ -1121,11 +1164,14 @@ jQuery(document).ready(function() {
 	});
    	
 	// Edit topic (AJAX)
-   	jQuery("#starting-post").hover(function() {
+	jQuery('#starting-post').live('mouseover mouseout', function(event) {
+	  if (event.type == 'mouseover') {
         jQuery(this).find("#edit-this-topic").show();
-   	}, function() {
+	  } else {
         jQuery(this).find("#edit-this-topic").hide();
-   	});
+	  }
+	});
+
 	// Edit the topic
    	jQuery("#edit-this-topic").click(function() {
 		jQuery(".symposium_pleasewait").inmiddle().show();
@@ -1161,7 +1207,7 @@ jQuery(document).ready(function() {
    	});	    	
 
    	// Edit a reply
-   	jQuery(".edit-child-topic").click(function() {
+	jQuery(".edit_forum_reply").live('click', function() {
 		jQuery(".symposium_pleasewait").inmiddle().show();
 		jQuery("#new-category-div").hide();
     	var tid = jQuery(this).attr("id");	
@@ -1239,7 +1285,7 @@ jQuery(document).ready(function() {
    	});
 
 	// Add new reply to a topic
-	jQuery("#quick-reply-warning").click(function(){
+	jQuery("#quick-reply-warning").live('click', function() {
 
 		var reply_text = jQuery('#symposium_reply_text').val().replace(/[\n\r]$/,"");
 		
@@ -1278,40 +1324,125 @@ jQuery(document).ready(function() {
 	});
 
 
-	// Show delete link on row hover
-    jQuery(".row").hover(function() {
-        jQuery(this).find(".delete_post").show()
-    }, function() {
-        jQuery(this).find(".delete_post").hide();
-    });
-    jQuery(".row_odd").hover(function() {
-        jQuery(this).find(".delete_post").show()
-    }, function() {
-        jQuery(this).find(".delete_post").hide();
-    });	    
-    jQuery(".child-reply").hover(function() {
-        jQuery(this).find(".delete_post").show();
-        jQuery(this).find(".edit").show();
-    }, function() {
-        jQuery(this).find(".delete_post").hide();
-        jQuery(this).find(".edit").hide();
-    });
-    
-	// Show new topic and reply topic forms
-	jQuery("#new-topic-button").click(function() {
-	  	jQuery("#new-topic").toggle("slow");
+	// Show delete links on hover
+	jQuery('.row').live('mouseover mouseout', function(event) {
+	  if (event.type == 'mouseover') {
+        jQuery(this).find(".delete_topic").show()
+	  } else {
+        jQuery(this).find(".delete_topic").hide();
+	  }
 	});
-	jQuery("#cancel_post").click(function() {
-	  	jQuery("#new-topic").hide("slow");
+	jQuery('.row_odd').live('mouseover mouseout', function(event) {
+	  if (event.type == 'mouseover') {
+        jQuery(this).find(".delete_topic").show()
+	  } else {
+        jQuery(this).find(".delete_topic").hide();
+	  }
 	});
-	jQuery("#cancel_reply").click(function() {
-	  	jQuery("#reply-topic").hide("slow");
+	jQuery('.child-reply').live('mouseover mouseout', function(event) {
+	  if (event.type == 'mouseover') {
+        jQuery(this).find(".delete_forum_reply").show();
+        jQuery(this).find(".edit_forum_reply").show();
+	  } else {
+        jQuery(this).find(".delete_forum_reply").hide();
+        jQuery(this).find(".edit_forum_reply").hide();
+	  }
 	});
 	
+	// Delete reply
+	jQuery('.delete_forum_reply').live('click', function(event) {
+
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"deleteReply",
+				topic_id:jQuery(this).attr("id")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				jQuery('#reply'+str).slideUp("slow");
+			}	
+   		});	
+
+	});
+
+    // Delete topic
+	jQuery(".delete_topic").live('click', function() {
+		
+		if ( confirm("Are you sure?") ) {
+	  	
+	    	var topic_id = jQuery(this).attr("id");	
+
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+				type: "POST",
+				data: ({
+					action:"deleteTopic",
+					topic_id:topic_id
+				}),
+			    dataType: "html",
+				async: false,
+				success: function(str){
+					jQuery('#row'+str).slideUp("slow");
+				}	
+	   		});
+	
+		}
+		
+	});
+
+	// Show new topic and reply topic forms
+	jQuery("#new-topic-button").live('click', function() {
+	  	jQuery("#new-topic").show();
+	  	jQuery("#new-topic-button").hide();
+	});
+	jQuery("#cancel_post").live('click', function() {
+	  	jQuery("#new-topic").hide();
+	  	jQuery("#new-topic-button").show();
+	});
+
+	// Post a new topic
+	jQuery("#new_post").live('click', function() {
+		
+		jQuery(".symposium_pleasewait").inmiddle().show();
+
+		var subject = jQuery('#new_topic_subject').val();
+		var text = jQuery('#new_topic_text').val();
+		var category = jQuery('#new_topic_category').val();
+		
+		var subscribed = '';
+        if(jQuery('#new_topic_subscribe').is(":checked")) {
+			var subscribed = 'on'
+		}
+
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"forumNewPost",
+				'subject':subject,
+				'text':text,
+				'category':category,
+				'subscribed':subscribed
+			}),
+			success: function(str){
+				window.location.href=str;
+				},
+		    error: function(err){
+				jQuery(".symposium_pleasewait").fadeOut("slow");
+				alert("updateForumSubscribe:"+err);
+			}		
+   		});
+		
+	});
+	
+	
 	// Has a checkbox been clicked? If so, check if one for symposium (AJAX)
-    jQuery("input[type='checkbox']").bind("click",function() {
+	jQuery("input[type='checkbox']").live('click', function() {
     	
-    	var checkbox = jQuery(this).attr("id");		    		
+    	var checkbox = jQuery(this).attr("id");		
 
     	// Subscribe to New Forum Topics in a category
     	if (checkbox == "symposium_subscribe") {
@@ -1323,7 +1454,7 @@ jQuery(document).ready(function() {
 					type: "POST",
 					data: ({
 						action:"updateForumSubscribe",
-						'cid':symposium.cat_id,
+						'cid':jQuery(this).attr("title"),
 						"value":1
 					}),
 				    error: function(err){
@@ -1338,7 +1469,7 @@ jQuery(document).ready(function() {
 					type: "POST",
 					data: ({
 						action:"updateForumSubscribe",
-						'cid':symposium.cat_id,
+						'cid':jQuery(this).attr("title"),
 						"value":0
 					}),
 				    error: function(err){
@@ -1360,7 +1491,7 @@ jQuery(document).ready(function() {
 					type: "POST",
 					data: ({
 						action:"updateForum",
-						'tid':symposium.show_tid, 
+						'tid':jQuery(this).attr("title"), 
 						'value':1
 					}),
 				    error: function(err){
@@ -1375,7 +1506,7 @@ jQuery(document).ready(function() {
 					type: "POST",
 					data: ({
 						action:"updateForum",
-						'tid':symposium.show_tid, 
+						'tid':jQuery(this).attr("title"), 
 						'value':0
 					}),
 				    error: function(err){
@@ -1397,7 +1528,7 @@ jQuery(document).ready(function() {
 					type: "POST",
 					data: ({
 						action:"updateForumSticky",
-						'tid':symposium.show_tid, 
+						'tid':jQuery(this).attr("title"), 
 						'value':1
 					}),
 				    error: function(err){
@@ -1412,7 +1543,7 @@ jQuery(document).ready(function() {
 					type: "POST",
 					data: ({
 						action:"updateForumSticky",
-						'tid':symposium.show_tid, 
+						'tid':jQuery(this).attr("title"), 
 						'value':0
 					}),
 				    error: function(err){
@@ -1458,7 +1589,7 @@ jQuery(document).ready(function() {
 			jQuery(".symposium_notice").delay(100).fadeOut("slow");
     	}
     		
-    	// Replied
+    	// Replies
     	if (checkbox == "replies") {
 			jQuery(".symposium_notice").inmiddle().fadeIn();
 	        if(jQuery(this).is(":checked")) {
@@ -1468,7 +1599,7 @@ jQuery(document).ready(function() {
 					type: "POST",
 					data: ({
 						action:"updateTopicReplies", 
-						'tid':symposium.show_tid, 
+						'tid':jQuery(this).attr("title"), 
 						'value':'on'
 					}),
 				    error: function(err){
@@ -1483,7 +1614,7 @@ jQuery(document).ready(function() {
 					type: "POST",
 					data: ({
 						action:"updateTopicReplies", 
-						'tid':symposium.show_tid, 
+						'tid':jQuery(this).attr("title"), 
 						'value':''
 					}),
 				    error: function(err){

@@ -609,7 +609,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 			}
 			
 		}		
-		return $html;
+		return symposium_smilies($html);
 		
 	} else {
 		
@@ -773,7 +773,7 @@ function symposium_get_current_userlevel() {
 
 function symposium_get_url($plugin) {
 	global $wpdb;
-	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, members_url, avatar_url, mail_url, profile_url, groups_url, group_url FROM ".$wpdb->prefix . 'symposium_config'));
+	$urls = $wpdb->get_row($wpdb->prepare("SELECT forum_url, members_url, mail_url, profile_url, groups_url, group_url FROM ".$wpdb->prefix . 'symposium_config'));
 	$return = false;
 	if ($plugin == 'mail') {
 		$return = $urls->mail_url;
@@ -1175,10 +1175,12 @@ function get_group_avatar($gid, $size) {
 		$group_photo = $wpdb->get_var($sql);
 
 		if ($group_photo == '' || $group_photo == 'upload_failed') {
-			return "<img src='http://0.gravatar.com/avatar/20b298cbea87cdf62ab6bf93256acf8f?s=128&d=identicon&r=G' style='height:".$size."px; width:".$size."px; border-radius:5px;' />";
+			return "<img src='".WP_CONTENT_URL."/plugins/wp-symposium/images/unknown.jpg' style='height:".$size."px; width:".$size."px;' />";
 		} else {
 			return "<img src='".WP_CONTENT_URL."/plugins/wp-symposium-groups/uploadify/get_group_avatar.php?gid=".$gid."' style='width:".$size."px; height:".$size."px' />";
 		}
+		
+		return $html;
 		
 	} else {
 
@@ -1186,7 +1188,7 @@ function get_group_avatar($gid, $size) {
 		$profile_photo = $wpdb->get_var($sql);
 
 		if ($profile_photo == '' || $profile_photo == 'upload_failed') {
-			return get_avatar(-2, $size);
+			return "<img src='".WP_CONTENT_URL."/plugins/wp-symposium/images/unknown.jpg' style='height:".$size."px; width:".$size."px;' />";
 		} else {
 			$img_url = $config->img_url."/groups/".$gid."/profile/";	
 			$img_src =  str_replace('//','/',$img_url) . $profile_photo;

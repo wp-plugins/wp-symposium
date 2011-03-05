@@ -285,6 +285,62 @@ function symposium_plugin_debug() {
 	
 		echo "<div style='width:45%; float:right'>";
 
+	  	echo '<h2 style="clear:both">'.__('Database Purge Tool', 'wp-symposium').'</h2><p>';
+	
+		// Purge users
+		if ($_POST['purge_users'] != '' && $_POST['purge_users'] > 0 && is_numeric($_POST['purge_users']) ) {
+			
+			$sql = "SELECT uid FROM ".$wpdb->prefix."symposium_usermeta WHERE last_activity <= '".date("Y-m-d H:i:s",strtotime('-'.$_POST['purge_users'].' days'))."'";	
+			$members = $wpdb->get_results($sql);
+			
+			$cnt = 0;
+			foreach ($members as $member) {
+				$cnt++;
+				$wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix."users WHERE ID = ".$member->uid) );
+				$wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix."symposium_group_members WHERE member_id = ".$member->uid) );
+				$wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix."symposium_friends WHERE friend_from = ".$member->uid." OR friend_to = ".$member->uid) );
+			}
+			$sql = "DELETE FROM ".$wpdb->prefix."symposium_usermeta WHERE last_activity <= '".date("Y-m-d H:i:s",strtotime('-'.$_POST['purge_users'].' days'))."'";	
+			$wpdb->query( $wpdb->prepare($sql) );
+			
+	        echo "<div style='border:1px solid #060;background-color: #9f9; border-radius:5px;padding-left:8px; margin-bottom:10px;'>";
+			echo "Users deleted: ".$cnt;
+			echo "</div>";
+		}
+
+		// Purge chat
+		if ($_POST['purge_chat'] != '' && is_numeric($_POST['purge_chat']) ) {
+			
+			$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_timestamp <= '".date("Y-m-d H:i:s",strtotime('-'.$_POST['purge_chat'].' days'))."'";	
+			$wpdb->query( $wpdb->prepare($sql) );
+			
+	        echo "<div style='border:1px solid #060;background-color: #9f9; border-radius:5px;padding-left:8px; margin-bottom:10px;'>";
+			echo "Chat purged.";
+			echo "</div>";
+		}
+
+		// Remove Duplicate/Rogue members
+		$sql = "CREATE TABLE ".$wpdb->prefix."wps_tmp AS SELECT * FROM ".$wpdb->prefix."symposium_usermeta WHERE 1 GROUP BY uid";
+		$wpdb->query( $wpdb->prepare($sql) );
+		$sql = "DELETE FROM ".$wpdb->prefix."symposium_usermeta WHERE mid NOT IN (SELECT mid FROM ".$wpdb->prefix."wps_tmp)";
+		$wpdb->query( $wpdb->prepare($sql) );
+		$sql = "DROP TABLE ".$wpdb->prefix."wps_tmp";
+		$wpdb->query( $wpdb->prepare($sql) );
+		$sql = "DELETE FROM ".$wpdb->prefix."symposium_usermeta WHERE uid = 0";
+		$wpdb->query( $wpdb->prepare($sql) );
+		
+		echo '<p>'.__('Users and chat purged are <strong>deleted</strong> - you cannot undo this! I recommend you take a backup first.', 'wp-symposium').'</p>';
+		echo '<p style="font-style: italic">'.__('Leave an item blank to ignore - leave both values blank to just remove duplicate members.', 'wp-symposium').'</p>';
+		echo '<form action="" method="post"><p>';
+		echo __('Users who have not logged in for at least', 'wp-symposium');
+			echo ' <input type="text" size="3" name="purge_users"> ';
+			echo __('days', 'wp-symposium')."<br />";
+		echo __('Chat older than', 'wp-symposium');
+			echo ' <input type="text" size="3" name="purge_chat"> ';
+			echo __('days', 'wp-symposium')."</p>";
+		echo '<input type="submit" class="button-primary delete" value="Purge">';
+		echo '</form>';
+
 	  	echo '<h2>'.__('Image Uploading', 'wp-symposium').'</h2><p>';
 	
 		if ($config->img_db == "on") {
@@ -393,7 +449,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'jquery')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'jqueryui')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'emoticons')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'seo')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'moderation')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'mail_url')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'members_url')) { $status = "X"; }
@@ -405,7 +460,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'offline')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_chat')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_chatroom')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'chat_purge')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'chatroom_banned')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'bar_polling')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'chat_polling')) { $status = "X"; }
@@ -733,7 +787,7 @@ function symposium_plugin_debug() {
 	    } else {
 	    	echo "<p style='color:green; font-weight:bold;'>".__( sprintf("Javascript file (%s) found.", $myJSfile) )."</p>";
 	    }
-	    echo "<p>If you find that certain WPS things don't work, like buttons or uploading profile photos, it is probably because the Symposium Javascript file isn't loading and/or working. Usually, this is because of another WordPress plugin. Try deactivating all plugins apart from WPS plugins, and re-activate them one at a time until the error re-occurs, this will help you locate the plugin that is clashing.Also try use Firefox, with the Firebug add-in installed - this will show you where the Javascript error is occuring.</p>";
+	    echo "<p>If you find that certain WPS things don't work, like buttons or uploading profile photos, it is probably because the Symposium Javascript file isn't loading and/or working. Usually, this is because of another WordPress plugin. Try deactivating all plugins apart from WPS plugins, and re-activate them one at a time until the error re-occurs, this will help you locate the plugin that is clashing. Also try using Firefox, with the Firebug add-in installed - this will show you where the Javascript error is occuring.</p>";
 	    	  	
 	    echo "<div id='jstest'>".$fail.__( "You have problems with Javascript. This may be because a plugin is loading another version of jQuery or jQuery UI - try deactivating all plugins apart from WPS plugins, and re-activate them one at a time until the error re-occurs, this will help you locate the plugin that is clashing. It might also be because there is an error in a JS file, either the symposium.js or another plugin script. Always try re-activating the core WPS plugin.", "wp-symposium").$fail2."</div>";
 	    
@@ -1441,7 +1495,6 @@ function symposium_plugin_options() {
 	        $use_chat = $_POST[ 'use_chat' ];
 	        $use_chatroom = $_POST[ 'use_chatroom' ];
 	        $chatroom_banned = $_POST[ 'chatroom_banned' ];
-	        $chat_purge = $_POST[ 'chat_purge' ];
 	        $bar_polling = $_POST[ 'bar_polling' ];
 	        $chat_polling = $_POST[ 'chat_polling' ];
 	        $use_wp_profile = $_POST[ 'use_wp_profile' ];
@@ -1450,7 +1503,6 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chat = '".$use_chat."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_chatroom = '".$use_chatroom."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chatroom_banned = '".$chatroom_banned."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chat_purge = '".$chat_purge."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET bar_polling = '".$bar_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET chat_polling = '".$chat_polling."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_wp_profile = '".$use_wp_profile."'") );					
@@ -1560,7 +1612,6 @@ function symposium_plugin_options() {
 	        $from_email = $_POST[ 'from_email' ];
 	        $jquery = $_POST[ 'jquery' ];
 	        $jqueryui = $_POST[ 'jqueryui' ];
-	        $seo = $_POST[ 'seo' ];
 	        $emoticons = $_POST[ 'emoticons' ];
 	        $wp_width = str_replace('%', 'pc', ($_POST[ 'wp_width' ]));
 	        $forum_url = $_POST[ 'forum_url' ];
@@ -1579,7 +1630,6 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET from_email = '".$from_email."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET jquery = '".$jquery."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET jqueryui = '".$jqueryui."'") );					
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET seo = '".$seo."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET emoticons = '".$emoticons."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET wp_width = '".$wp_width."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_url = '".$forum_url."'") );					
@@ -1910,7 +1960,6 @@ function symposium_plugin_options() {
 					$use_chat = $config->use_chat;
 					$use_chatroom = $config->use_chatroom;
 					$chatroom_banned = $config->chatroom_banned;
-					$chat_purge = $config->chat_purge;
 					$bar_polling = $config->bar_polling;
 					$chat_polling = $config->chat_polling;
 					$use_wp_profile = $config->use_wp_profile;
@@ -1962,14 +2011,7 @@ function symposium_plugin_options() {
 					<td><input name="chatroom_banned" type="text" id="chatroom_banned"  value="<?php echo $chatroom_banned; ?>" /> 
 					<span class="description"><?php echo __('Comma separated list of words not allowed in the chatroom', 'wp-symposium'); ?></td> 
 					</tr> 
-								
-					<tr valign="top"> 
-					<th scope="row"><label for="chat_purge">Chat purge age</label></th> 
-					<td><input name="chat_purge" type="text" id="chat_purge"  value="<?php echo $chat_purge; ?>" /> 
-					<span class="description"><?php echo __('How old in days, messages need to be before removed from database', 'wp-symposium'); ?></td> 
-					</tr> 
-								
-				
+												
 					<tr valign="top"> 
 					<th scope="row"><label for="bar_polling">Polling Intervals</label></th> 
 					<td><input name="bar_polling" type="text" id="bar_polling"  value="<?php echo $bar_polling; ?>" /> 
@@ -2016,7 +2058,6 @@ function symposium_plugin_options() {
 					$from_email = $config->from_email;
 					$jquery = $config->jquery;
 					$jqueryui = $config->jqueryui;
-					$seo = $config->seo;
 					$emoticons = $config->emoticons;	
 					$forum_url = $config->forum_url;
 					$mail_url = $config->mail_url;
@@ -2165,13 +2206,6 @@ function symposium_plugin_options() {
 					<td>
 					<input type="checkbox" name="jqueryui" id="jqueryui" <?php if ($jqueryui == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Load jQuery UI on non-admin pages, disable if causing problems', 'wp-symposium'); ?></span></td> 
-					</tr> 
-				
-					<tr valign="top"> 
-					<th scope="row"><label for="seo">SEO extended links</label></th>
-					<td>
-					<input type="checkbox" name="seo" id="seo" <?php if ($seo == "on") { echo "CHECKED"; } ?>/>
-					<span class="description"><?php echo __('Some other plugins may clash with this feature (causes 404 errors)', 'wp-symposium'); ?></span></td> 
 					</tr> 
 				
 					<tr valign="top"> 

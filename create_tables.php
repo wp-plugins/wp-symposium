@@ -150,7 +150,6 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 	'border_radius' => '5',
 	'label' => '#000',
 	'footer' => 'Please don\'t reply to this email',
-	'show_categories' => 'on',
 	'send_summary' => 'on',
 	'forum_url' => 'Important: Please update!',	 			  
 	'from_email' => 'noreply@example.com'
