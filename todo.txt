@@ -1,0 +1,48 @@
+todo.txt (MoSCoW)
+-----------------
+
+Must do (fixes before next release)
+-------
+
+Show no friends, no friends activity
+
+FORUM
+
+	Edit throughout
+	Categories admin
+	Show no wall activity
+	Show no groups message
+	
+GROUPS
+
+	The groups plugin has a issue with wp default permalink setting. It does not call pages correctly and
+	will not let you create or view groups. I had to change my site to numeric permalinks for plugin to work.
+
+Should do (planned to do for next release, but might not happen)
+---------
+
+- Forum - reputation
+- Forum - marked certain users as support (different colour)
+
+Could do (if development time allows)
+--------
+
+- Forum - users can vote for removal, and when x number of votes received, it is deleted
+
+Would do (if life allows!)
+--------
+
+- template driven notifications
+- Implement poke (needs notifications)
+- optionally receive email on activity in wall post if I've replied or started it
+- Codex
+- Mail: quote feature
+- Forum: Steven Tryon: linking blog to forum and vice versa
+- Minimum level for categories
+- 'clear my vote' link on vote widget
+
+
+
+
+
+
