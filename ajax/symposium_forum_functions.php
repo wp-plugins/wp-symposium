@@ -371,10 +371,10 @@ if ($_POST['action'] == 'getTopic') {
 			// Update views
 			if ($user_level == 5) {
 				if ($config->include_admin == "on") { 
-					$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
+					$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_topics SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
 				}
 			} else {
-				$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
+				$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_topics SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
 			}
 					
 		$html .= "</div>";		
@@ -672,8 +672,10 @@ if ($_POST['action'] == 'getForum') {
 					$html .= "</div>";
 
 					// Topic Count
-					$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_topics WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = 0 AND topic_category = %d", $current_user->ID, $category->cid));
 					$html .= "<div class='row_topic row_replies'>";
+					$topic_count = get_topic_count($category->cid);
+
+					if ($topic_count > 0) {
 						$html .= "<div class='post_count' style='color:".$text_color.";'>".$topic_count."</div>";
 						$html .= "<div style='color:".$text_color.";' class='post_count_label'>";
 						if ($topic_count != 1) {
@@ -682,6 +684,7 @@ if ($_POST['action'] == 'getForum') {
 							$html .= __("TOPIC", "wp-symposium");
 						}
 						$html .= "</div>";
+					}
 					$html .= "</div>";
 
 					// Category title
@@ -773,9 +776,11 @@ if ($_POST['action'] == 'getForum') {
 				
 					// Views
 					$html .= "<div class='row_views'>";
-					if ($reply_views) { 
-						$html .= "<div class='post_count' style='color:".$text_color.";'>".$reply_views."</div>";
+					$html .= "<div class='post_count' style='color:".$text_color.";'>".$reply_views."</div>";
+					if ($reply_views != 1) { 
 						$html .= "<div style='color:".$text_color.";' class='post_count_label'>".__("VIEWS", "wp-symposium")."</div>";
+					} else {
+						$html .= "<div style='color:".$text_color.";' class='post_count_label'>".__("VIEW", "wp-symposium")."</div>";						
 					}
 					$html .= "</div>";
 				
@@ -834,6 +839,17 @@ if ($_POST['action'] == 'getForum') {
 	echo $html;
 	
 }
+
+function get_topic_count($cat) {
+	
+	global $wpdb, $current_user;
+
+	$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_topics WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = 0 AND topic_category = %d", $current_user->ID, $cat));
+	
+	echo $topic_count;
+	
+}
+
 
 // Reply to Topic ****************************************************************
 if ($_POST['action'] == 'reply') {
