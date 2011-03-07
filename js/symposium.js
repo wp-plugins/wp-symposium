@@ -961,7 +961,11 @@ jQuery(document).ready(function() {
 			success: function(str){
 				str = trim(str);
 				jQuery("#symposium-forum-div").html(str);
+<<<<<<< .mine
+				jQuery(".symposium_pleasewait").fadeOut("slow");		
+=======
 				jQuery(".symposium_pleasewait").fadeOut("slow");
+>>>>>>> .r356920
 			},
 			error: function(err){
 				alert("getForum:"+err);
@@ -1173,19 +1177,22 @@ jQuery(document).ready(function() {
 	});
 
 	// Edit the topic
-   	jQuery("#edit-this-topic").click(function() {
+	jQuery("#edit-this-topic").live('click', function() {
+	
 		jQuery(".symposium_pleasewait").inmiddle().show();
 		jQuery("#new-category-div").show();
-    	var tid = jQuery(".edit-topic-tid").attr("id");	
-		jQuery("#edit_topic_subject").val("Please wait...");
-		jQuery("#edit_topic_text").html("Retrieving content...");
+    	var tid = jQuery(this).attr("title");	
+		jQuery("#edit_topic_subject").val("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+		jQuery("#edit_topic_text").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+
+		jQuery("#edit-topic-div").inmiddle().fadeIn();
 		
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
 			type: "POST",
 			data: ({
 				action:"getEditDetails",
-				tid:symposium.show_tid
+				tid:tid
 			}),
 		    dataType: "html",
 			async: false,
@@ -1198,11 +1205,10 @@ jQuery(document).ready(function() {
 				jQuery("#new-category").val(details[4]);
 			},
 			error: function(err){
-				//alert("2:"+err);
+				//alert("getEditDetails:"+err);
 			}		
    		});
    					
-		jQuery("#edit-topic-div").inmiddle().fadeIn();
 		jQuery(".symposium_pleasewait").fadeOut("slow");
    	});	    	
 
@@ -1241,7 +1247,7 @@ jQuery(document).ready(function() {
    	});	 
    	
    	// Update contents of edit form
-	jQuery(".edit_topic_submit").click(function(){
+	jQuery(".edit_topic_submit").live('click', function() {
 		jQuery(".symposium_notice").inmiddle().show();
    		var tid = jQuery(".edit-topic-tid").attr("id");	
    		var parent = jQuery(".edit-topic-parent").attr("id");
@@ -1273,13 +1279,13 @@ jQuery(document).ready(function() {
 				jQuery(".symposium_notice").fadeOut("fast");
 			},
 			error: function(err){
-				//alert("4:"+err);
+				//alert("updateEditDetails:"+err);
 			}		
    		});
    		
 	});
 	// Cancel form
-	jQuery(".edit_topic_cancel").click(function(){
+	jQuery(".edit_topic_cancel").live('click', function() {
 		jQuery("#edit-topic-div").fadeOut("fast");
 		jQuery(".symposium_notice").fadeOut("fast");
    	});

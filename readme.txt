@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.45
+Stable tag: 0.46
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -147,11 +147,18 @@ Q. There used to be a login and registration plugin, where did they go?
 A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login.
 
 Q. How can I get rid of the Powered By message?
-A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade.
+A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. However, if you subscribe at www.wpsymposium.com and activate the Groups plugin, it is automatically removed.
 
 
 
 == Changelog ==
+
+= 0.46 =
+
+* Forum: Member rankings
+* Forum: Edit functions re-implemented
+* Admin: Updated Forum Categories to create sub-categories
+* Core: Powered by WPS message not shown if Groups plugin is activated (doesn't need to be used, just activated)
 
 = 0.45 =
 

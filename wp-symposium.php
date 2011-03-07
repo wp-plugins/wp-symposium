@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.45
+Version: 0.46
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,8 +30,8 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.45');
-define('WPS_DBVER', '45');
+define('WPS_VER', '0.46');
+define('WPS_DBVER', '46');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -259,6 +259,7 @@ function symposium_activate() {
 	symposium_alter_table("config", "ADD", "img_url", "varchar(128)", "NOT NULL", "'/wp-content/wps-content'");
 	symposium_alter_table("config", "ADD", "img_upload", "mediumblob", "", "");
 	symposium_alter_table("config", "ADD", "img_crop", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "forum_ranks", "varchar(128)", "NOT NULL", "'on;Emperor;Monarch;Lord;Duke;Count;Earl;Viscount;Bishop;Baron;Knight;Peasant'");
 	
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");

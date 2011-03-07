@@ -480,7 +480,8 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'img_url')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'img_upload')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'img_crop')) { $status = "X"; }	
-					
+			if (!symposium_field_exists($table_name, 'forum_ranks')) { $status = "X"; }	
+										
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -916,6 +917,7 @@ function symposium_plugin_categories() {
    		$range = array_keys($_POST['cid']);
 		foreach ($range as $key) {
 		    $cid = $_POST['cid'][$key];
+		    $cat_parent = $_POST['cat_parent'][$key];
 		    $title = $_POST['title'][$key];
 		    $listorder = $_POST['listorder'][$key];
 		    $allow_new = $_POST['allow_new'][$key];
@@ -928,9 +930,9 @@ function symposium_plugin_categories() {
 		    
 			$wpdb->query( $wpdb->prepare( "
 				UPDATE ".$wpdb->prefix.'symposium_cats'."
-				SET title = %s, listorder = %s, allow_new = %s, defaultcat = %s
+				SET title = %s, cat_parent = %d, listorder = %s, allow_new = %s, defaultcat = %s
 				WHERE cid = %d", 
-		        $title, $listorder, $allow_new, $defaultcat, $cid  ) );
+		        $title, $cat_parent, $listorder, $allow_new, $defaultcat, $cid  ) );
 		        			
 		}
 
@@ -941,12 +943,14 @@ function symposium_plugin_categories() {
 		$wpdb->query( $wpdb->prepare( "
 			INSERT INTO ".$wpdb->prefix.'symposium_cats'."
 			( 	title, 
+				cat_parent,
 				listorder,
 				allow_new
 			)
-			VALUES ( %s, %d, %s )", 
+			VALUES ( %s, %d, %d, %s )", 
 	        array(
 	        	$_POST['new_title'], 
+	        	$_POST['new_parent'],
 	        	$_POST['new_listorder'],
 	        	$_POST['new_allow_new']
 	        	) 
@@ -980,6 +984,7 @@ function symposium_plugin_categories() {
 	<table class="form-table">
 	<tr>
 	<td style="width:20px">ID</td>
+	<td style="width:60px"><?php echo __('Parent ID', 'wp-symposium'); ?></td>
 	<td><?php echo __('Category Title', 'wp-symposium'); ?></td>
 	<td><?php echo __('Order', 'wp-symposium'); ?></td>
 	<td><?php echo __('Allow new topics', 'wp-symposium'); ?></td>
@@ -987,36 +992,11 @@ function symposium_plugin_categories() {
 	</tr> 
 	
 	<?php
-	$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats ORDER BY listorder');
-
-	if ($categories) {
-		foreach ($categories as $category) {
-
-			echo '<tr valign="top">';
-			echo '<input name="cid[]" type="hidden" value="'.$category->cid.'" />';
-			echo '<td>'.$category->cid.'</td>';
-			echo '<td><input name="title[]" type="text" value="'.stripslashes($category->title).'" class="regular-text" /></td>';
-			echo '<td><input name="listorder[]" type="text" value="'.$category->listorder.'" /></td>';
-			echo '<td>';
-			echo '<select name="allow_new[]">';
-			echo '<option value="on"';
-				if ($category->allow_new == "on") { echo " SELECTED"; }
-				echo '>'.__('Yes', 'wp-symposium').'</option>';
-			echo '<option value=""';
-				if ($category->allow_new != "on") { echo " SELECTED"; }
-				echo '>'.__('No', 'wp-symposium').'</option>';
-			echo '</select>';
-			echo '</td>';
-			echo '</td>';
-			echo '<td><a class="areyousure" href="?page=symposium_categories&action=delcid&cid='.$category->cid.'">'.__('Delete', 'wp-symposium').'</td></td>';
-			echo '</tr>';
-	
-		}
-	}
+	show_forum_children(0, 0);
 	?>
 	
-	<tr><td colspan=2 align='right'><?php echo __('Default Category for new Topics', 'wp-symposium'); ?>:</td>
-	<td colspan=3>
+	<tr><td colspan=2 align='left'><?php echo __('Default Category', 'wp-symposium'); ?>:</td>
+	<td colspan=4>
 	<?php
 	$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats ORDER BY listorder');
 
@@ -1033,11 +1013,22 @@ function symposium_plugin_categories() {
 	</td>
 	</tr>
 
-	<tr><td colspan=5><hr /></td></tr>
+	<tr><td colspan=6><hr /><h3><?php echo __('Add New Category', 'wp-symposium'); ?></h3></td></tr>
+
+	<tr>
+	<td style="width:20px"></td>
+	<td style="width:60px"><?php echo __('Parent ID', 'wp-symposium'); ?></td>
+	<td><?php echo __('Category Title', 'wp-symposium'); ?></td>
+	<td><?php echo __('Order', 'wp-symposium'); ?></td>
+	<td><?php echo __('Allow new topics', 'wp-symposium'); ?></td>
+	<td>&nbsp;</td>
+	</tr> 
+
 	<tr valign="top">
 	<td>&nbsp;</td>
+	<td><input name="new_parent" type="text" value="0" style="width:50px" />
 	<td><input name="new_title" type="text" onclick="javascript:this.value = ''" value="<?php echo __('Add New Category', 'wp-symposium'); ?>..." class="regular-text" />
-	<td><input name="new_listorder" type="text" value="0" />
+	<td><input name="new_listorder" type="text" value="0" style="width:50px" />
 	<td>
 	<input type="checkbox" name="new_allow_new" CHECKED />
 	</td>
@@ -1050,7 +1041,7 @@ function symposium_plugin_categories() {
 	</p> 
 	
 	<p>
-	<?php echo __('Note: if you delete a category that has topics, you will need to select a parent category for those topics if you want to make use of the categories feature.', 'wp-symposium'); ?>
+	<?php echo __('Note: if you delete a category that has topics, those topics will be placed at the top level of the forum.', 'wp-symposium'); ?>
 	<p>
 	</form> 
 	
@@ -1059,6 +1050,41 @@ function symposium_plugin_categories() {
   	echo '</div>';
 
 } 	
+
+function show_forum_children($id, $indent) {
+	
+	global $wpdb;
+	
+	$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."symposium_cats WHERE cat_parent = ".$id." ORDER BY listorder");
+
+	if ($categories) {
+		foreach ($categories as $category) {
+
+			echo '<tr valign="top">';
+			echo '<input name="cid[]" type="hidden" value="'.$category->cid.'" />';
+			echo '<td>'.str_repeat("...", $indent).'&nbsp;'.$category->cid.'</td>';
+			echo '<td><input name="cat_parent[]" type="text" value="'.stripslashes($category->cat_parent).'" style="width:50px" /></td>';
+			echo '<td><input name="title[]" type="text" value="'.stripslashes($category->title).'" class="regular-text" /></td>';
+			echo '<td><input name="listorder[]" type="text" value="'.$category->listorder.'" style="width:50px" /></td>';
+			echo '<td>';
+			echo '<select name="allow_new[]">';
+			echo '<option value="on"';
+				if ($category->allow_new == "on") { echo " SELECTED"; }
+				echo '>'.__('Yes', 'wp-symposium').'</option>';
+			echo '<option value=""';
+				if ($category->allow_new != "on") { echo " SELECTED"; }
+				echo '>'.__('No', 'wp-symposium').'</option>';
+			echo '</select>';
+			echo '</td>';
+			echo '</td>';
+			echo '<td><a class="areyousure" href="?page=symposium_categories&action=delcid&cid='.$category->cid.'">'.__('Delete', 'wp-symposium').'</td></td>';
+			echo '</tr>';
+
+			show_forum_children($category->cid, $indent+1);
+	
+		}
+	}	
+}
 
 function symposium_plugin_styles() {
 	
@@ -1676,6 +1702,12 @@ function symposium_plugin_options() {
 	        $closed_word = $_POST[ 'closed_word' ];
 	        $fontfamily = $_POST[ 'fontfamily' ];
 	        $moderation = $_POST[ 'moderation' ];
+	        $forum_ranks = $_POST[ 'forum_ranks' ].';';
+			for ( $rank = 1; $rank <= 11; $rank ++) {
+				$forum_ranks .= $_POST['rank'.$rank];
+				if ($rank < 11) { $forum_ranks .= ';'; }
+			}
+	
 	        if ($_POST[ 'sharing_facebook' ] == 'on') { $sharing_facebook = "fb;"; } else { $sharing_facebook = ""; }
 	        if ($_POST[ 'sharing_twitter' ] == 'on') { $sharing_twitter = "tw;"; } else { $sharing_twitter = ""; }
 	        if ($_POST[ 'sharing_myspace' ] == 'on') { $sharing_myspace = "ms;"; } else { $sharing_myspace = ""; }
@@ -1694,6 +1726,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET closed_word = '".$closed_word."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET moderation = '".$moderation."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET sharing = '".$sharing."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_ranks = '".$forum_ranks."'") );					
 
 	        // Put an settings updated message on the screen
 			echo "<div class='updated'><p>".__('Forum options saved', 'wp-symposium').".</p></div>";
@@ -2237,6 +2270,7 @@ function symposium_plugin_options() {
 					$viewer = $config->viewer;
 					$closed_word = $config->closed_word;
 					$moderation = $config->moderation;
+					$forum_ranks = $config->forum_ranks;
 					$sharing = $config->sharing;
 					if ( strpos($sharing, "fb") === FALSE ) { $sharing_facebook = ''; } else { $sharing_facebook = 'on'; }
 					if ( strpos($sharing, "tw") === FALSE ) { $sharing_twitter = ''; } else { $sharing_twitter = 'on'; }
@@ -2352,7 +2386,44 @@ function symposium_plugin_options() {
 					<input type="checkbox" name="sharing_linkedin" id="sharing_linkedin" <?php if ($sharing_linkedin == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('LinkedIn', 'wp-symposium'); ?></span></td> 
 					</tr> 
-				
+
+					<?php
+					$ranks = explode(';', $forum_ranks);
+					?>
+					<tr valign="top"> 
+					<th scope="row"><label for="forum_ranks"><?php _e('Forum ranks', 'wp-symposium'); ?></label></th>
+					<td>
+					<input type="checkbox" name="forum_ranks" id="forum_ranks" <?php if ($ranks[0] == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Use ranks on the forum?', 'wp-symposium'); ?></span></td> 
+					</tr>
+
+					<?php
+					for ( $rank = 1; $rank <= 11; $rank ++) {
+						?>
+						<tr valign="top"> 
+						<th scope="row"><label for="closed_word">
+							<?php 
+							if ($rank == 11) {
+								echo '<em>'.__('(blank ranks are not used)', 'wp-symposium').'</em>';
+							} else {
+								echo "&nbsp;";
+							}
+						?>
+							</label></th>
+						<td><input name="rank<?php echo $rank; ?>" type="text" id="rank<?php echo $rank; ?>"  value="<?php echo $ranks[$rank]; ?>" /> 
+						<span class="description">
+						<?php 
+						if ($rank == 1) {
+							echo __('Most posts', 'wp-symposium'); 
+						} else {
+							echo __('Rank'.' '.($rank-1), 'wp-symposium'); 							
+						}
+						?></span></td> 
+						</tr>
+					<?php
+					}
+					?>
+																		
 					</table> 
 				
 				

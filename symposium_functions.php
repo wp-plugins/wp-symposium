@@ -17,6 +17,48 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+function forum_rank($uid) {
+	
+	global $wpdb;	
+	
+	$max_sql = "SELECT topic_owner, COUNT(*) AS cnt FROM ".$wpdb->prefix."symposium_topics GROUP BY topic_owner ORDER BY cnt DESC LIMIT 0,1";
+	$max = $wpdb->get_row($max_sql);
+
+	$min_sql = "SELECT topic_owner, COUNT(*) AS cnt FROM ".$wpdb->prefix."symposium_topics GROUP BY topic_owner ORDER BY cnt LIMIT 0,1";
+	$min = $wpdb->get_row($min_sql);
+
+	$my_sql = "SELECT COUNT(*) AS cnt FROM ".$wpdb->prefix."symposium_topics WHERE topic_owner = ".$uid;
+	$my_count = $wpdb->get_var($my_sql);
+	
+	$range = $max->cnt - $min->cnt;
+	$forum_ranks = $wpdb->get_var("SELECT forum_ranks FROM ".$wpdb->prefix."symposium_config");
+
+	$ranks = explode(';', $forum_ranks);
+	$num_ranks = 0;
+	for ( $rank = 2; $rank <= 11; $rank ++) {
+		if ($ranks[$rank] != '') { $num_ranks++; }
+	}
+	
+	$step = ($range / $num_ranks);
+
+	if ($my_count == $max->cnt) { 
+		return $ranks[1];
+	} else {
+		for ( $l = 1; $l <= $num_ranks; $l=$l+1) {
+			
+			$bottom = $max->cnt - ($l * $step);
+			$top = $bottom + $step;
+			
+			if ($my_count >= $bottom && $my_count <= $top) {
+				return $ranks[$l+1];
+			}
+		}
+	}
+	
+	return '-';
+
+}
+
 function symposium_bbcode_remove($text_to_search) {
  $pattern = '|[[\/\!]*?[^\[\]]*?]|si';
  $replace = '';
@@ -1126,7 +1168,9 @@ function symposium_sendmail($email, $subject, $msg)
 	$body .= "</div>";
 
 	// Powered by message
-	$body .= powered_by_wps();
+	if (!function_exists('symposium_groups')) {
+		$body .= powered_by_wps();
+	}
 	
 	// To send HTML mail, the Content-type header must be set
 	$headers  = 'MIME-Version: 1.0' . "\r\n";
@@ -1157,8 +1201,10 @@ function convert_datetime($str) {
 
 function powered_by_wps() {
 
-	return "<div id='powered_by_wps'><a href='http://www.wpsymposium.com' target='_blank'>".__('Powered by WP Symposium - Social Networking for WordPress', 'wp-symposium')." v".WPS_VER."</a></div>";
-
+	if (!function_exists('symposium_groups')) {
+		return "<div id='powered_by_wps'><a href='http://www.wpsymposium.com' target='_blank'>".__('Powered by WP Symposium - Social Networking for WordPress', 'wp-symposium')." v".WPS_VER."</a></div>";
+	}
+	
 }
 
 // Groups
