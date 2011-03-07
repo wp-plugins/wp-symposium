@@ -7,7 +7,6 @@ include_once('../../../../wp-config.php');
 global $wpdb, $current_user;
 wp_get_current_user();
 
-<<<<<<< .mine
 // Forum stats *************************************************************
 if ($_POST['action'] == 'forum_info') {
 	
@@ -372,10 +371,10 @@ if ($_POST['action'] == 'getTopic') {
 			// Update views
 			if ($user_level == 5) {
 				if ($config->include_admin == "on") { 
-					$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
+					$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_topics SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
 				}
 			} else {
-				$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
+				$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_topics SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
 			}
 					
 		$html .= "</div>";		
@@ -457,395 +456,6 @@ if ($_POST['action'] == 'getTopic') {
 	
 }
 
-=======
-// Delete Reply *************************************************************
-if ($_POST['action'] == 'deleteReply') {
-
-	if (current_user_can('level_10')) {
-		$tid = $_POST['topic_id'];
-		if (symposium_safe_param($tid)) {
-			$wpdb->query("DELETE FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$tid);
-		}
-		
-		echo $tid;
-		
-	} else {
-		echo "NOT ADMIN";
-	}
-	
-}
-
-// Delete Topic and Replies *************************************************
-if ($_POST['action'] == 'deleteTopic') {
-
-	if (current_user_can('level_10')) {
-		$tid = $_POST['topic_id'];
-		if (symposium_safe_param($tid)) {
-			$wpdb->query("DELETE FROM ".$wpdb->prefix."symposium_topics WHERE topic_parent = ".$tid);
-			$wpdb->query("DELETE FROM ".$wpdb->prefix."symposium_topics WHERE tid = ".$tid);
-			$wpdb->query("DELETE FROM ".$wpdb->prefix."symposium_subs WHERE tid = ".$tid);
-		}
-		
-		echo $tid;
-		
-	} else {
-		echo "NOT ADMIN";
-	}
-	
-}
-
-// New Topic ****************************************************************
-if ($_POST['action'] == 'forumNewPost') {
-
-	$new_topic_subject = $_POST['subject'];
-	$new_topic_text = $_POST['text'];
-	$new_topic_category = $_POST['category'];
-	$new_topic_subscribe = $_POST['subscribed'];
-
-	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_config"));
-
-	// Check for moderation
-	if ($config->moderation == "on") {
-		$topic_approved = "";
-	} else {
-		$topic_approved = "on";
-	}
-
-	if ($new_topic_subject == '') { $new_topic_subject = __('No subject', 'wp-symposium'); }
-	if ($new_topic_text == '') { $new_topic_text = __('No message', 'wp-symposium');  }
-	
-	if ( is_user_logged_in() ) {
-		
-		// Get forum URL worked out
-		$forum_url = symposium_get_url('forum');
-		if ($forum_url[strlen($forum_url)-1] != '/') { $forum_url .= '/'; }
-		if (isset($_GET[page_id]) && $_GET[page_id] != '') {
-			// No Permalink
-			$q = "&";
-		} else {
-			$q = "?";
-		}
-		
-		// Check for duplicates
-		$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$topics." WHERE topic_subject = '".$new_topic_subject."' and topic_post = '".$new_topic_text."' AND topic_owner = ".$current_user->ID));
-
-		if ($topic_count > 1) {
-			// Don't double post (also helps reduce spam)
-		} else {						
-			
-			// Store new topic in post
-			
-			// Don't allow HTML
-			$new_topic_text = str_replace("<", "&lt;", $new_topic_text);
-			$new_topic_text = str_replace(">", "&gt;", $new_topic_text);
-
-			$wpdb->query( $wpdb->prepare( "
-				INSERT INTO ".$wpdb->prefix."symposium_topics 
-				( 	topic_subject,
-					topic_category, 
-					topic_post, 
-					topic_date, 
-					topic_started, 
-					topic_owner, 
-					topic_parent, 
-					topic_views,
-					topic_approved
-				)
-				VALUES ( %s, %d, %s, %s, %s, %d, %d, %d, %s )", 
-		        array(
-		        	$new_topic_subject, 
-		        	$new_topic_category,
-		        	$new_topic_text, 
-		        	date("Y-m-d H:i:s"), 
-					date("Y-m-d H:i:s"), 
-					$current_user->ID, 
-					0,
-					0,
-					$topic_approved
-		        	) 
-		        ) );
-		        
-			// Store subscription if wanted
-			$new_tid = $wpdb->insert_id;
-			if ($new_topic_subscribe == 'on') {
-				$wpdb->query( $wpdb->prepare( "
-					INSERT INTO ".$wpdb->prefix."symposium_subs 
-					( 	uid, 
-						tid
-					)
-					VALUES ( %d, %d )", 
-			        array(
-			        	$current_user->ID, 
-			        	$new_tid
-			        	) 
-			        ) );
-			}
-			
-			// Set category to the category posted into
-			$cat_id = $new_topic_category;
-							
-			// Get post owner name and prepare email body
-			$owner_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = ".$current_user->ID));
-			$body = "<p>".$owner_name." ".__('has started a new topic', 'wp-symposium');
-			$category = $wpdb->get_var($wpdb->prepare("SELECT title FROM ".$wpdb->prefix."symposium_cats WHERE cid = ".$cat_id));
-			$body .= " ".__('in', 'wp-symposium')." ".$category;
-			$body .= "...</p>";
-								
-			$body .= "<span style='font-size:24px'>".$new_topic_subject."</span><br /><br />";
-			$body .= "<p>".$new_topic_text."</p>";
-			$url = $forum_url."?cid=".$cat_id."&show=".$new_tid;
-			$body .= "<p><a href='".$url."'>".$url."</a></p>";
-			$body = str_replace(chr(13), "<br />", $body);
-			$body = str_replace("\\r\\n", "<br />", $body);
-			$body = str_replace("\\", "", $body);
-			
-			if ($topic_approved == "on") {
-				// Email people who want to know	
-				$query = $wpdb->get_results("
-					SELECT user_email
-					FROM ".$wpdb->base_prefix."users u RIGHT JOIN ".$wpdb->prefix."symposium_subs s ON s.uid = u.ID 
-					WHERE s.tid = 0 AND u.ID != ".$current_user->ID." AND s.cid = ".$cat_id);
-					
-				if ($query) {					
-					foreach ($query as $user) {
-						symposium_sendmail($user->user_email, __('New Forum Topic', 'wp-symposium'), $body);						
-					}						
-				}
-			} else {
-				// Email admin if post needs approval
-				$body = "<span style='font-size:24px font-style:italic;'>".__('Moderation Required', 'wp-symposium')."</span><br /><br />".$body;
-				symposium_sendmail(get_bloginfo('admin_email'), __('Moderation Required', 'wp-symposium'), $body);
-			}	
-			
-			echo $url;
-			exit;
-		}
-	}
-	
-	echo 'NOT LOGGED IN';
-
-}
-
-// Get Topic ****************************************************************
-if ($_POST['action'] == 'getTopic') {
-	
-	$topic_id = $_POST['topic_id'];
-	
-	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_config"));
-	$plugin = get_site_url().'/wp-content/plugins/wp-symposium/';
-
-	$post = $wpdb->get_row("
-		SELECT tid, topic_subject, topic_approved, topic_category, topic_post, topic_started, display_name, topic_sticky, topic_owner 
-		FROM ".$wpdb->prefix."symposium_topics t INNER JOIN ".$wpdb->base_prefix."users u ON t.topic_owner = u.ID 
-		WHERE (t.topic_approved = 'on' OR t.topic_owner = ".$current_user->ID.") AND tid = ".$topic_id);
-		
-	if ($post) {
-
-		// Breadcrumbs
-		$cat_id = $post->topic_category;
-
-		$html .= '<div id="topic_breadcrumbs" class="breadcrumbs">';
-
-			$this_level = $wpdb->get_row($wpdb->prepare("SELECT cid, title, cat_parent FROM ".$wpdb->prefix."symposium_cats WHERE cid = %d", $cat_id));
-			if ($this_level->cat_parent == 0) {
-				$html .= '<a href="javascript:void(0)" class="category_title" title="0">'.__('Forum Home', 'wp-symposium')."</a> > ";
-				$html .= '<a href="javascript:void(0);" class="category_title" title="'.$this_level->cid.'">'.trim($this_level->title).'</a>';
-			} else {
-
-				$parent_level = $wpdb->get_row($wpdb->prepare("SELECT cid, title, cat_parent FROM ".$wpdb->prefix."symposium_cats WHERE cid = %d", $this_level->cat_parent));
-
-				if ($parent_level->cat_parent == 0) {
-					$html .= '<a href="javascript:void(0)" class="category_title" title="0">'.__('Forum Home', 'wp-symposium')."</a> > ";
-				} else {
-					$parent_level_2 = $wpdb->get_row($wpdb->prepare("SELECT cid, title, cat_parent FROM ".$wpdb->prefix."symposium_cats WHERE cid = %d", $parent_level->cat_parent));
-					$html .= '<a href="javascript:void(0)" class="category_title" title="0">'.__('Forum Home', 'wp-symposium')."</a> > " ;
-					$html .= '<a href="javascript:void(0)" class="category_title" title="'.$parent_level_2->cid.'">'.$parent_level_2->title."</a> > ";
-				}
-				$html .= '<a href="javascript:void(0)" class="category_title" title="'.$parent_level->cid.'">'.$parent_level->title."</a> > " ;
-				$html .= '<a href="javascript:void(0)" class="category_title" title="'.$this_level->cid.'">'.$this_level->title."</a>" ;
-			}
-
-		$html .= '</div>';
-		
-		// Subscribe, Sticky and Allow Replies
-		$html .= "<div class='floatleft label'>";
-			$html .= "<input type='checkbox' title='".$post->tid."' id='subscribe' name='subscribe'";
-			$subscribed_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_subs WHERE tid = %d and uid = %d", $post->tid, $current_user->ID));
-			if ($subscribed_count > 0) { $html .= ' checked'; } 
-			$html .= "> ".__("Receive emails for new replies", "wp-symposium");
-			if (current_user_can('level_10')) {
-				$html .= "&nbsp;&nbsp;&nbsp;<input type='checkbox' title='".$post->tid."' id='sticky' name='sticky'";
-				if ($post->topic_sticky > 0) { $html .= ' checked'; }
-				$html .= "> ".__("Sticky", "wp-symposium");
-				$html .= "&nbsp;&nbsp;&nbsp;<input type='checkbox' title='".$post->tid."' id='replies' name='replies'";
-				$allow_replies = $wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d", $post->tid));
-				if ($allow_replies == "on") { $html .= ' checked'; }
-				$html .= "> ".__("Replies allowed", "wp-symposium");
-			}
-		$html .= "</div>";
-		
-		// Sharing icons
-		if ($config->sharing != '') {
-			$html .= show_sharing_icons($cat_id, $post->tid, $config->sharing);
-		}
-		
-		// Edit Form
-		$html .= '<div id="edit-topic-div" class="shadow">';
-			$html .= '<div class="new-topic-subject label">'.__("Topic Subject", "wp-symposium").'</div>';
-			$html .= '<div id="'.$post->tid.'" class="edit-topic-tid"></div>';
-			$html .= '<div id="" class="edit-topic-parent"></div>';
-			$html .= '<input class="new-topic-subject-input" id="edit_topic_subject" type="text" name="edit_topic_subject" value="">';
-			$html .= '<div class="new-topic-subject label">'.__("Topic Text", "wp-symposium").'</div>';
-			$html .= '<textarea class="new-topic-subject-text" id="edit_topic_text" name="edit_topic_text"></textarea>';
-			$html .= '<div id="new-category-div" style="float:left">'.__("Move Category", "wp-symposium").': <select name="new-category" id="new-category" style="width: 200px">';
-			$html .= '<option value="">'.__("Select", "wp-symposium").'...</option>';
-			$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_cats ORDER BY listorder');			
-			if ($categories) {
-				foreach ($categories as $category) {
-					if ($category->allow_new == "on" || current_user_can('level_10')) {
-						$html .= '<option value='.$category->cid.'>'.stripslashes($category->title).'</option>';
-					}
-				}
-			}
-			$html .= '</select></div>';
-			$html .= '<div style="float:right; margin-right:15px;">';
-			$html .= '<input type="submit" class="symposium-button edit_topic_submit" value="'.__("Update", "wp-symposium").'" />';
-			$html .= '<input type="submit" class="symposium-button edit_topic_cancel" value="'.__("Cancel", "wp-symposium").'" />';
-			$html .= '</div>';
-		$html .= '</div>';
-		
-		// Topic starting post
-		$html .= "<div id='starting-post'>";
-		
-			if ( ($post->topic_owner == $current_user->ID) || (current_user_can('level_10')) ) {
-				//$html .= "<div id='edit-this-topic' class='edit_topic edit label' style='cursor:pointer'>".__("Edit", "wp-symposium")."</div>";
-			}
-
-			// Show topic header
-			$html .= "<div id='top_of_first_post'>";
-			
-				$html .= "<div class='avatar' style='margin-bottom:0px; margin-top:6px;'>";
-					$html .= get_avatar($post->topic_owner, 64);
-				$html .= "</div>";
-			
-				$html .= "<div class='topic-post-header-with-fav'>";
-			
-					$html .= "<div class='topic-post-header'>";
-					
-						$post_text = symposium_bbcode_replace(stripslashes($post->topic_subject));
-						$html .= stripslashes($post_text);
-			
-						if ($post->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
-
-						// Favourites
-						if (is_user_logged_in()) {
-							if (strpos(get_symposium_meta($current_user->ID, 'forum_favs'), "[".$post->tid."]") === FALSE) { 
-								$html .= "<img title='".$post->tid."' id='fav_link' src='".$plugin."images/star-off.gif' style='height:22px; width:22px; cursor:pointer;' alt='".__("Click to add to favourites", "wp-symposium")."' />";						
-							} else {
-								$html .= "<img title='".$post->tid."' id='fav_link' src='".$plugin."images/star-on.gif' style='height:22px; width:22px; cursor:pointer;' alt='".__("Click to remove to favourites", "wp-symposium")."' />";						
-							}
-						}
-
-
-					$html .= "</div><div style='clear:both'></div>";
-										
-					$html .= "<div class='started-by' style='margin-top:10px'>";
-					$html .= __("Started by", "wp-symposium")." ".symposium_profile_link($post->topic_owner)." ".symposium_time_ago($post->topic_started);
-					$html .= "</div>";
-
-					$post_text = symposium_make_url(stripslashes($post->topic_post));
-					$post_text = symposium_bbcode_replace($post_text);
-					$html .= "<div class='topic-post-post'>".str_replace(chr(13), "<br />", $post_text)."</div>";
-				
-				$html .= "</div><div style='clear:both'></div>";				
-												
-			$html .= "</div>";
-
-			// Update views
-			if ($user_level == 5) {
-				if ($config->include_admin == "on") { 
-					$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
-				}
-			} else {
-				$wpdb->query( $wpdb->prepare("UPDATE ".$topics." SET topic_views = topic_views + 1 WHERE tid = %d", $post->tid) );
-			}
-					
-		$html .= "</div>";		
-	
-
-		// Replies
-		$sql = "SELECT tid, topic_subject, topic_approved, topic_post, topic_date, topic_owner, display_name, ID
-			FROM ".$wpdb->prefix."symposium_topics t INNER JOIN ".$wpdb->base_prefix."users u ON t.topic_owner = u.ID 
-			WHERE (t.topic_approved = 'on' OR t.topic_owner = %d) AND t.topic_parent = %d ORDER BY tid";
-		
-		if ($config->oldest_first != "on") { $sql .= " DESC"; }
-	
-		$child_query = $wpdb->get_results($wpdb->prepare($sql, $current_user->ID, $post->tid));
-
-		$html .= "<div id='child-posts'>";
-
-			if ($child_query) {
-
-				foreach ($child_query as $child) {
-
-					$html .= "<div id='reply".$child->tid."' class='child-reply'>";
-						if ( ($child->topic_owner == $current_user->ID) || (current_user_can('level_10')) ) {
-							$html .= "<a href='javascript:void(0)' class='floatright link_cursor delete_forum_reply' style='display:none' id='".$child->tid."'>".__("Delete", "wp-symposium")."</a>";
-							//$html .= "<a href='javascript:void(0)' class='floatright link_cursor edit_forum_reply' style='display:none; margin-right: 10px' id='".$child->tid."'>".__("Edit", "wp-symposium")."</a>";
-						}
-						$html .= "<div class='avatar'>";
-							$html .= get_avatar($child->ID, 64);
-						$html .= "</div>";
-						$html .= "<div class='started-by'>".symposium_profile_link($child->topic_owner)." ".__("replied", "wp-symposium")." ".symposium_time_ago($child->topic_date)."...";
-						$html .= "</div>";
-						$html .= "<div id='child_".$child->tid."' class='child-reply-post'>";
-							$reply_text = symposium_make_url(stripslashes($child->topic_post));
-							$reply_text = symposium_bbcode_replace($reply_text);
-							$reply_text = str_replace(chr(10), "<br />", $reply_text);
-							$reply_text = str_replace(chr(13), "<br />", $reply_text);
-							$html .= "<p>".$reply_text;
-							if ($child->topic_approved != 'on') { $html .= " <em>[".__("pending approval", "wp-symposium")."]</em>"; }
-							$html .= "</p>";
-						$html .= "</div>";
-					$html .= "</div>";
-
-					// Separator
-					$html .= "<div class='sep'></div>";						
-
-				}
-			
-		} else {
-		
-			$html .= "<div class='child-reply'>";
-			$html .= __("No replies posted yet.", "wp-symposium");
-			$html .= "</div>";
-			$html .= "<div class='sep'></div>";						
-		
-		}			
-
-		$html .= "</div>";
-	
-		// Quick Reply
-		if (is_user_logged_in()) {
-			$html .= '<div id="reply-topic-bottom" name="reply-topic-bottom">';
-			if ($wpdb->get_var($wpdb->prepare("SELECT allow_replies FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d", $post->tid)) == "on")
-			{
-				$html .= '<input type="hidden" id="symposium_reply_tid" value="'.$post->tid.'">';
-				$html .= '<input type="hidden" id="symposium_reply_cid" value="'.$cat_id.'">';
-				$html .= '<div class="reply-topic-subject label">'.__("Reply to this Topic", "wp-symposium").'</div>';
-				$html .= '<textarea class="reply-topic-text elastic" id="symposium_reply_text"></textarea>';
-				$html .= '<input type="submit" id="quick-reply-warning" class="symposium-button" style="float: left" value="'.__("Reply", "wp-symposium").'" />';
-			}				
-			$html .= '</div>';
-		}
-		
-	}
-		
-	echo symposium_smilies($html);
-	
-}
-
->>>>>>> .r356920
 // Get Forum ****************************************************************
 if ($_POST['action'] == 'getForum') {
 	
@@ -1062,8 +672,10 @@ if ($_POST['action'] == 'getForum') {
 					$html .= "</div>";
 
 					// Topic Count
-					$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_topics WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = 0 AND topic_category = %d", $current_user->ID, $category->cid));
 					$html .= "<div class='row_topic row_replies'>";
+					$topic_count = get_topic_count($category->cid);
+
+					if ($topic_count > 0) {
 						$html .= "<div class='post_count' style='color:".$text_color.";'>".$topic_count."</div>";
 						$html .= "<div style='color:".$text_color.";' class='post_count_label'>";
 						if ($topic_count != 1) {
@@ -1072,6 +684,7 @@ if ($_POST['action'] == 'getForum') {
 							$html .= __("TOPIC", "wp-symposium");
 						}
 						$html .= "</div>";
+					}
 					$html .= "</div>";
 
 					// Category title
@@ -1163,9 +776,11 @@ if ($_POST['action'] == 'getForum') {
 				
 					// Views
 					$html .= "<div class='row_views'>";
-					if ($reply_views) { 
-						$html .= "<div class='post_count' style='color:".$text_color.";'>".$reply_views."</div>";
+					$html .= "<div class='post_count' style='color:".$text_color.";'>".$reply_views."</div>";
+					if ($reply_views != 1) { 
 						$html .= "<div style='color:".$text_color.";' class='post_count_label'>".__("VIEWS", "wp-symposium")."</div>";
+					} else {
+						$html .= "<div style='color:".$text_color.";' class='post_count_label'>".__("VIEW", "wp-symposium")."</div>";						
 					}
 					$html .= "</div>";
 				
@@ -1224,6 +839,17 @@ if ($_POST['action'] == 'getForum') {
 	echo $html;
 	
 }
+
+function get_topic_count($cat) {
+	
+	global $wpdb, $current_user;
+
+	$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_topics WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = 0 AND topic_category = %d", $current_user->ID, $cat));
+	
+	echo $topic_count;
+	
+}
+
 
 // Reply to Topic ****************************************************************
 if ($_POST['action'] == 'reply') {
