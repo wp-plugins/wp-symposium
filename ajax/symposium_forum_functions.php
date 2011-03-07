@@ -473,6 +473,8 @@ if ($_POST['action'] == 'getForum') {
 
 	// Breadcrumbs
 		
+	$html = '';
+	
 	$html .= '<div id="forum_breadcrumbs" class="breadcrumbs">';
 
 		if ($cat_id > 0) {
@@ -706,7 +708,7 @@ if ($_POST['action'] == 'getForum') {
 		
 	}
 		
-		// Show topics in this category ++++++++++++++++++++++++++++++++++++++++++++++++++
+	// Show topics in this category ++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	$query = $wpdb->get_results($wpdb->prepare("
 		SELECT tid, topic_subject, topic_approved, topic_post, topic_owner, topic_date, display_name, topic_sticky, allow_replies 
@@ -846,7 +848,7 @@ function get_topic_count($cat) {
 
 	$topic_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_topics WHERE (topic_approved = 'on' OR topic_owner = %d) AND topic_parent = 0 AND topic_category = %d", $current_user->ID, $cat));
 	
-	echo $topic_count;
+	return $topic_count;
 	
 }
 
