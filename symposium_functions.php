@@ -24,38 +24,25 @@ function forum_rank($uid) {
 	$max_sql = "SELECT topic_owner, COUNT(*) AS cnt FROM ".$wpdb->prefix."symposium_topics GROUP BY topic_owner ORDER BY cnt DESC LIMIT 0,1";
 	$max = $wpdb->get_row($max_sql);
 
-	$min_sql = "SELECT topic_owner, COUNT(*) AS cnt FROM ".$wpdb->prefix."symposium_topics GROUP BY topic_owner ORDER BY cnt LIMIT 0,1";
-	$min = $wpdb->get_row($min_sql);
-
 	$my_sql = "SELECT COUNT(*) AS cnt FROM ".$wpdb->prefix."symposium_topics WHERE topic_owner = ".$uid;
 	$my_count = $wpdb->get_var($my_sql);
 	
-	$range = $max->cnt - $min->cnt;
 	$forum_ranks = $wpdb->get_var("SELECT forum_ranks FROM ".$wpdb->prefix."symposium_config");
 
 	$ranks = explode(';', $forum_ranks);
-	$num_ranks = 0;
-	for ( $rank = 2; $rank <= 11; $rank ++) {
-		if ($ranks[$rank] != '') { $num_ranks++; }
-	}
+	$my_rank = '';
 	
-	$step = ($range / $num_ranks);
-
 	if ($my_count == $max->cnt) { 
-		return $ranks[1];
+		$my_rank = $ranks[1];
 	} else {
-		for ( $l = 1; $l <= $num_ranks; $l=$l+1) {
-			
-			$bottom = $max->cnt - ($l * $step);
-			$top = $bottom + $step;
-			
-			if ($my_count >= $bottom && $my_count <= $top) {
-				return $ranks[$l+1];
+		for ( $l = 10; $l >= 1; $l=$l-1) {
+			if ($my_count >= $ranks[($l*2)+2]) {
+				$my_rank = $ranks[($l*2)+1];
 			}
 		}
 	}
 	
-	return '-';
+	return $my_rank;
 
 }
 

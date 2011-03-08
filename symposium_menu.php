@@ -481,6 +481,7 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'img_upload')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'img_crop')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'forum_ranks')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'forum_ajax')) { $status = "X"; }	
 										
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -1702,10 +1703,11 @@ function symposium_plugin_options() {
 	        $closed_word = $_POST[ 'closed_word' ];
 	        $fontfamily = $_POST[ 'fontfamily' ];
 	        $moderation = $_POST[ 'moderation' ];
+	        $forum_ajax = $_POST[ 'forum_ajax' ];
 	        $forum_ranks = $_POST[ 'forum_ranks' ].';';
 			for ( $rank = 1; $rank <= 11; $rank ++) {
-				$forum_ranks .= $_POST['rank'.$rank];
-				if ($rank < 11) { $forum_ranks .= ';'; }
+				$forum_ranks .= $_POST['rank'.$rank].";";
+				$forum_ranks .= $_POST['score'.$rank].";";
 			}
 	
 	        if ($_POST[ 'sharing_facebook' ] == 'on') { $sharing_facebook = "fb;"; } else { $sharing_facebook = ""; }
@@ -1724,6 +1726,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET preview2 = ".$preview2) );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET viewer = '".$viewer."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET closed_word = '".$closed_word."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_ajax = '".$forum_ajax."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET moderation = '".$moderation."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET sharing = '".$sharing."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET forum_ranks = '".$forum_ranks."'") );					
@@ -1922,7 +1925,9 @@ function symposium_plugin_options() {
 					$admin_email = get_bloginfo('admin_email');
 					$version = get_option("symposium_version");
 					
-					$goto = "http://www.wpsymposium.com/wp-content/symposium_activation.php?action=symposium_activationlog&url=".$url."&admin_email=".$admin_email."&version=".$version;
+					$users = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->base_prefix."users"); 
+					
+					$goto = "http://www.wpsymposium.com/wp-content/symposium_activation.php?action=symposium_activationlog&url=".$url."&admin_email=".$admin_email."&version=".$version."&users=".$users;
 					
 				}
 				// End
@@ -2270,6 +2275,7 @@ function symposium_plugin_options() {
 					$viewer = $config->viewer;
 					$closed_word = $config->closed_word;
 					$moderation = $config->moderation;
+					$forum_ajax = $config->forum_ajax;
 					$forum_ranks = $config->forum_ranks;
 					$sharing = $config->sharing;
 					if ( strpos($sharing, "fb") === FALSE ) { $sharing_facebook = ''; } else { $sharing_facebook = 'on'; }
@@ -2286,6 +2292,13 @@ function symposium_plugin_options() {
 				
 					<table class="form-table"> 
 					
+					<tr valign="top"> 
+					<th scope="row"><label for="forum_ajax"><?php _e('Use AJAX', 'wp-symposium'); ?></label></th>
+					<td>
+					<input type="checkbox" name="forum_ajax" id="forum_ajax" <?php if ($forum_ajax == "on") { echo "CHECKED"; } ?>/>
+					<span class="description"><?php echo __('Use AJAX or hyperlinks and page re-loading?', 'wp-symposium'); ?></span></td> 
+					</tr> 
+				
 					<tr valign="top"> 
 					<th scope="row"><label for="moderation"><?php _e('Moderation', 'wp-symposium'); ?></label></th>
 					<td>
@@ -2399,26 +2412,41 @@ function symposium_plugin_options() {
 
 					<?php
 					for ( $rank = 1; $rank <= 11; $rank ++) {
-						?>
-						<tr valign="top"> 
-						<th scope="row"><label for="closed_word">
-							<?php 
-							if ($rank == 11) {
-								echo '<em>'.__('(blank ranks are not used)', 'wp-symposium').'</em>';
-							} else {
-								echo "&nbsp;";
-							}
-						?>
-							</label></th>
-						<td><input name="rank<?php echo $rank; ?>" type="text" id="rank<?php echo $rank; ?>"  value="<?php echo $ranks[$rank]; ?>" /> 
-						<span class="description">
-						<?php 
-						if ($rank == 1) {
-							echo __('Most posts', 'wp-symposium'); 
-						} else {
-							echo __('Rank'.' '.($rank-1), 'wp-symposium'); 							
-						}
-						?></span></td> 
+						echo '<tr valign="top">';
+							if ($rank == 1) { ?>
+
+								<th scope="row">
+									Title and Posts Required
+								</th>
+
+							<? } else { ?>
+
+								<th scope="row"><label for="closed_word">
+									<?php 
+									if ($rank == 11) {
+										echo '<em>'.__('(blank ranks are not used)', 'wp-symposium').'</em>';
+									} else {
+										echo "&nbsp;";
+									}
+									?>
+								</label></th>
+
+							<? } ?>
+							<td>
+								<input name="rank<?php echo $rank; ?>" type="text" id="rank<?php echo $rank; ?>"  value="<?php echo $ranks[($rank*2-1)]; ?>" /> 
+								<?php if ($rank > 1) { ?>
+									<input name="score<?php echo $rank; ?>" type="text" id="score<?php echo $rank; ?>" style="width:50px" value="<?php echo $ranks[($rank*2)]; ?>" /> 
+								<? } ?>
+
+								<span class="description">
+									<?php 
+								if ($rank == 1) {
+									echo __('Most posts', 'wp-symposium'); 
+								} else {
+									echo __('Rank'.' '.($rank-1), 'wp-symposium'); 							
+								}
+								?></span>
+							</td> 
 						</tr>
 					<?php
 					}

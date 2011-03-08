@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.46
+Stable tag: 0.47.1
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -152,6 +152,17 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 
 == Changelog ==
+
+= 0.47.1 = 
+
+* Core: Activation changed in line with WP v3.1 (activation trigger not fired on automatic upgrade, based on WP option value)
+* Forum: Changed member rankings so admin can set levels manually
+* Forum: Choice of AJAX or hyperlinks/page reloading
+
+= 0.46.1 =
+
+* CSS: Minor change to avoid global font size change
+* Forum: Change to view count
 
 = 0.46 =
 

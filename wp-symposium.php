@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.46
+Version: 0.47.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,8 +30,8 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.46');
-define('WPS_DBVER', '46');
+define('WPS_VER', '0.47.1');
+define('WPS_DBVER', '47');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -56,6 +56,141 @@ register_uninstall_hook(__FILE__, 'symposium_uninstall');
 
 /* ===================================================== ADMIN ====================================================== */
 
+// Check for updates
+if ( get_option("symposium_version") != WPS_VER && is_admin()) {
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+	// Create initial versions of tables *************************************************************************************
+
+	include('create_tables.php');
+
+  	// Update tables *************************************************************************************
+
+   	// Add option fields	
+	symposium_alter_table("config", "ADD", "allow_new_topics", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "preview1", "int(11)", "NOT NULL", "'45'");
+	symposium_alter_table("config", "ADD", "preview2", "int(11)", "NOT NULL", "'90'");
+	symposium_alter_table("config", "ADD", "viewer", "varchar(32)", "NOT NULL", "'Guest'");
+	symposium_alter_table("config", "ADD", "include_admin", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "oldest_first", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "wp_width", "varchar(6)", "NOT NULL", "'650px'");
+	symposium_alter_table("config", "ADD", "main_background", "varchar(12)", "NOT NULL", "'#fff'");
+	symposium_alter_table("config", "ADD", "closed_opacity", "varchar(6)", "NOT NULL", "'1.0'");
+	symposium_alter_table("config", "ADD", "closed_word", "varchar(32)", "NOT NULL", "'closed'");
+	symposium_alter_table("config", "ADD", "fontfamily", "varchar(64)", "NOT NULL", "'Georgia,Times'");
+	symposium_alter_table("config", "ADD", "fontsize", "varchar(16)", "NOT NULL", "'13'");
+	symposium_alter_table("config", "ADD", "headingsfamily", "varchar(64)", "NOT NULL", "'Arial,Helvetica'");
+	symposium_alter_table("config", "ADD", "headingssize", "varchar(16)", "NOT NULL", "'20'");
+	symposium_alter_table("config", "ADD", "jquery", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "jqueryui", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "emoticons", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "moderation", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "mail_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "online", "int(11)", "NOT NULL", "'3'");
+	symposium_alter_table("config", "ADD", "offline", "int(11)", "NOT NULL", "'15'");
+	symposium_alter_table("config", "ADD", "wp_alignment", "varchar(16)", "NOT NULL", "'Center'");
+	symposium_alter_table("config", "ADD", "enable_password", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "members_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "sharing", "varchar(32)", "", "''");
+	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "show_profile_menu", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "show_wall_extras", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
+	symposium_alter_table("config", "ADD", "use_chat", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "bar_polling", "int(11)", "NOT NULL", "'120'");
+	symposium_alter_table("config", "ADD", "chat_polling", "int(11)", "NOT NULL", "'10'");
+	symposium_alter_table("config", "ADD", "use_chatroom", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "chatroom_banned", "text", "", "''");
+	symposium_alter_table("config", "ADD", "profile_google_map", "int(11)", "NOT NULL", "'250'");
+	symposium_alter_table("config", "ADD", "use_poke", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "motd", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "groups_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "group_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
+	symposium_alter_table("config", "ADD", "group_all_create", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "profile_avatars", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "img_db", "varchar(2)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "img_path", "varchar(128)", "NOT NULL", "'".WP_CONTENT_DIR."/wps-content'");
+	symposium_alter_table("config", "ADD", "img_url", "varchar(128)", "NOT NULL", "'/wp-content/wps-content'");
+	symposium_alter_table("config", "ADD", "img_upload", "mediumblob", "", "");
+	symposium_alter_table("config", "ADD", "img_crop", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "forum_ranks", "varchar(128)", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "forum_ajax", "varchar(2)", "NOT NULL", "'on'");
+
+	$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET forum_ranks = 'on;Emperor;0;Monarch;200;Lord;150;Duke;125;Count;100;Earl;75;Viscount;50;Bishop;25;Baron;10;Knight;5;Peasant;0'"); 
+
+	// Modify Mail table
+	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
+
+	// Modify Forum Categories table
+	symposium_alter_table("cats", "ADD", "cat_parent", "int(11)", "NOT NULL", "0");
+
+	// Modify Comments table
+	symposium_alter_table("comments", "MODIFY", "comment_timestamp", "datetime", "", "");
+	symposium_alter_table("comments", "ADD", "is_group", "varchar(2)", "NOT NULL", "''");
+	
+	// Modify Friends table
+	symposium_alter_table("friends", "MODIFY", "friend_timestamp", "datetime", "", "");
+
+	// Modify Chat table
+	symposium_alter_table("chat", "ADD", "chat_room", "int(11)", "NOT NULL", "'0'");
+	symposium_alter_table("chat", "MODIFY", "chat_timestamp", "datetime", "", "");
+
+	// Modify Notification bar table
+	symposium_alter_table("notifications", "ADD", "notification_old", "varchar(2)", "NOT NULL", "''");
+
+	// Modify user meta table
+	symposium_alter_table("usermeta", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
+	symposium_alter_table("usermeta", "ADD", "soundchat", "varchar(32)", "NOT NULL", "'tap.mp3'");
+	symposium_alter_table("usermeta", "ADD", "notify_new_messages", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("usermeta", "ADD", "notify_new_wall", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("usermeta", "ADD", "timezone", "int(11)", "", "0");
+	symposium_alter_table("usermeta", "ADD", "city", "varchar(32)", "", "");
+	symposium_alter_table("usermeta", "ADD", "country", "varchar(32)", "", "");
+	symposium_alter_table("usermeta", "ADD", "dob_day", "int(11)", "", "");
+	symposium_alter_table("usermeta", "ADD", "dob_month", "int(11)", "", "");
+	symposium_alter_table("usermeta", "ADD", "dob_year", "int(11)", "", "");
+	symposium_alter_table("usermeta", "ADD", "share", "varchar(32)", "", "'Friends only'");
+	symposium_alter_table("usermeta", "ADD", "last_activity", "timestamp", "", "");
+	symposium_alter_table("usermeta", "MODIFY", "last_activity", "datetime", "", "");
+	symposium_alter_table("usermeta", "ADD", "status", "varchar(32)", "NOT NULL", "''");
+	symposium_alter_table("usermeta", "ADD", "visible", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("usermeta", "ADD", "wall_share", "varchar(32)", "", "'Friends only'");
+	symposium_alter_table("usermeta", "ADD", "extended", "text", "NOT NULL", "''");
+	symposium_alter_table("usermeta", "ADD", "widget_voted", "varchar(2)", "", "''");
+	symposium_alter_table("usermeta", "ADD", "profile_photo", "varchar(64)", "", "''");
+	symposium_alter_table("usermeta", "ADD", "forum_favs", "TEXT", "", "");
+	symposium_alter_table("usermeta", "ADD", "profile_avatar", "mediumblob", "", "");
+
+	// Modify styles table
+	symposium_alter_table("styles", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("styles", "ADD", "main_background", "varchar(12)", "NOT NULL", "'#fff'");
+	symposium_alter_table("styles", "ADD", "closed_opacity", "varchar(6)", "NOT NULL", "'1.0'");
+	symposium_alter_table("styles", "ADD", "fontfamily", "varchar(128)", "NOT NULL", "'Georgia,Times'");
+	symposium_alter_table("styles", "ADD", "fontsize", "varchar(8)", "NOT NULL", "'13'");
+	symposium_alter_table("styles", "ADD", "headingsfamily", "varchar(128)", "NOT NULL", "'Georgia,Times'");
+	symposium_alter_table("styles", "ADD", "headingssize", "varchar(8)", "NOT NULL", "'20'");
+	
+	// Add moderation field to topics
+	symposium_alter_table("topics", "ADD", "allow_replies", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("topics", "ADD", "topic_approved", "varchar(2)", "NOT NULL", "'on'");
+						      	
+	// Update motd flag
+	$sql = "UPDATE ".$wpdb->prefix."symposium_config SET motd = ''";
+	$wpdb->query($sql); 
+
+	// Setup Notifications
+	symposium_notification_setoptions();
+	
+	// ***********************************************************************************************
+ 	// Update Versions *******************************************************************************
+	update_option("symposium_db_version", WPS_DBVER);
+	update_option("symposium_version", WPS_VER);
+		
+}
 
 // Any admin warnings
 function symposium_admin_warnings() {
@@ -196,142 +331,9 @@ function symposium_widget() {
 
 }
 
-function symposium_activate() {
-	
-   	global $wpdb, $current_user;
-	wp_get_current_user();
-
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-	// Create initial versions of tables *************************************************************************************
-
-	include('create_tables.php');
-
-  	// Update tables *************************************************************************************
-
-   	// Add option fields	
-	symposium_alter_table("config", "ADD", "allow_new_topics", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "preview1", "int(11)", "NOT NULL", "'45'");
-	symposium_alter_table("config", "ADD", "preview2", "int(11)", "NOT NULL", "'90'");
-	symposium_alter_table("config", "ADD", "viewer", "varchar(32)", "NOT NULL", "'Guest'");
-	symposium_alter_table("config", "ADD", "include_admin", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "oldest_first", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "wp_width", "varchar(6)", "NOT NULL", "'650px'");
-	symposium_alter_table("config", "ADD", "main_background", "varchar(12)", "NOT NULL", "'#fff'");
-	symposium_alter_table("config", "ADD", "closed_opacity", "varchar(6)", "NOT NULL", "'1.0'");
-	symposium_alter_table("config", "ADD", "closed_word", "varchar(32)", "NOT NULL", "'closed'");
-	symposium_alter_table("config", "ADD", "fontfamily", "varchar(64)", "NOT NULL", "'Georgia,Times'");
-	symposium_alter_table("config", "ADD", "fontsize", "varchar(16)", "NOT NULL", "'13'");
-	symposium_alter_table("config", "ADD", "headingsfamily", "varchar(64)", "NOT NULL", "'Arial,Helvetica'");
-	symposium_alter_table("config", "ADD", "headingssize", "varchar(16)", "NOT NULL", "'20'");
-	symposium_alter_table("config", "ADD", "jquery", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "jqueryui", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "emoticons", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "moderation", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "mail_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
-	symposium_alter_table("config", "ADD", "online", "int(11)", "NOT NULL", "'3'");
-	symposium_alter_table("config", "ADD", "offline", "int(11)", "NOT NULL", "'15'");
-	symposium_alter_table("config", "ADD", "wp_alignment", "varchar(16)", "NOT NULL", "'Center'");
-	symposium_alter_table("config", "ADD", "enable_password", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "use_wp_profile", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "members_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
-	symposium_alter_table("config", "ADD", "sharing", "varchar(32)", "", "''");
-	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "show_profile_menu", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "show_wall_extras", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
-	symposium_alter_table("config", "ADD", "use_chat", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "bar_polling", "int(11)", "NOT NULL", "'120'");
-	symposium_alter_table("config", "ADD", "chat_polling", "int(11)", "NOT NULL", "'10'");
-	symposium_alter_table("config", "ADD", "use_chatroom", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "chatroom_banned", "text", "", "''");
-	symposium_alter_table("config", "ADD", "profile_google_map", "int(11)", "NOT NULL", "'250'");
-	symposium_alter_table("config", "ADD", "use_poke", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "motd", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "profile_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
-	symposium_alter_table("config", "ADD", "groups_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
-	symposium_alter_table("config", "ADD", "group_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
-	symposium_alter_table("config", "ADD", "group_all_create", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "profile_avatars", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "img_db", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "img_path", "varchar(128)", "NOT NULL", "'".WP_CONTENT_DIR."/wps-content'");
-	symposium_alter_table("config", "ADD", "img_url", "varchar(128)", "NOT NULL", "'/wp-content/wps-content'");
-	symposium_alter_table("config", "ADD", "img_upload", "mediumblob", "", "");
-	symposium_alter_table("config", "ADD", "img_crop", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "forum_ranks", "varchar(128)", "NOT NULL", "'on;Emperor;Monarch;Lord;Duke;Count;Earl;Viscount;Bishop;Baron;Knight;Peasant'");
-	
-	// Modify Mail table
-	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
-
-	// Modify Forum Categories table
-	symposium_alter_table("cats", "ADD", "cat_parent", "int(11)", "NOT NULL", "0");
-
-	// Modify Comments table
-	symposium_alter_table("comments", "MODIFY", "comment_timestamp", "datetime", "", "");
-	symposium_alter_table("comments", "ADD", "is_group", "varchar(2)", "NOT NULL", "''");
-	
-	// Modify Friends table
-	symposium_alter_table("friends", "MODIFY", "friend_timestamp", "datetime", "", "");
-
-	// Modify Chat table
-	symposium_alter_table("chat", "ADD", "chat_room", "int(11)", "NOT NULL", "'0'");
-	symposium_alter_table("chat", "MODIFY", "chat_timestamp", "datetime", "", "");
-
-	// Modify Notification bar table
-	symposium_alter_table("notifications", "ADD", "notification_old", "varchar(2)", "NOT NULL", "''");
-
-	// Modify user meta table
-	symposium_alter_table("usermeta", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
-	symposium_alter_table("usermeta", "ADD", "soundchat", "varchar(32)", "NOT NULL", "'tap.mp3'");
-	symposium_alter_table("usermeta", "ADD", "notify_new_messages", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("usermeta", "ADD", "notify_new_wall", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("usermeta", "ADD", "timezone", "int(11)", "", "0");
-	symposium_alter_table("usermeta", "ADD", "city", "varchar(32)", "", "");
-	symposium_alter_table("usermeta", "ADD", "country", "varchar(32)", "", "");
-	symposium_alter_table("usermeta", "ADD", "dob_day", "int(11)", "", "");
-	symposium_alter_table("usermeta", "ADD", "dob_month", "int(11)", "", "");
-	symposium_alter_table("usermeta", "ADD", "dob_year", "int(11)", "", "");
-	symposium_alter_table("usermeta", "ADD", "share", "varchar(32)", "", "'Friends only'");
-	symposium_alter_table("usermeta", "ADD", "last_activity", "timestamp", "", "");
-	symposium_alter_table("usermeta", "MODIFY", "last_activity", "datetime", "", "");
-	symposium_alter_table("usermeta", "ADD", "status", "varchar(32)", "NOT NULL", "''");
-	symposium_alter_table("usermeta", "ADD", "visible", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("usermeta", "ADD", "wall_share", "varchar(32)", "", "'Friends only'");
-	symposium_alter_table("usermeta", "ADD", "extended", "text", "NOT NULL", "''");
-	symposium_alter_table("usermeta", "ADD", "widget_voted", "varchar(2)", "", "''");
-	symposium_alter_table("usermeta", "ADD", "profile_photo", "varchar(64)", "", "''");
-	symposium_alter_table("usermeta", "ADD", "forum_favs", "TEXT", "", "");
-	symposium_alter_table("usermeta", "ADD", "profile_avatar", "mediumblob", "", "");
-
-	// Modify styles table
-	symposium_alter_table("styles", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("styles", "ADD", "main_background", "varchar(12)", "NOT NULL", "'#fff'");
-	symposium_alter_table("styles", "ADD", "closed_opacity", "varchar(6)", "NOT NULL", "'1.0'");
-	symposium_alter_table("styles", "ADD", "fontfamily", "varchar(128)", "NOT NULL", "'Georgia,Times'");
-	symposium_alter_table("styles", "ADD", "fontsize", "varchar(8)", "NOT NULL", "'13'");
-	symposium_alter_table("styles", "ADD", "headingsfamily", "varchar(128)", "NOT NULL", "'Georgia,Times'");
-	symposium_alter_table("styles", "ADD", "headingssize", "varchar(8)", "NOT NULL", "'20'");
-	
-	// Add moderation field to topics
-	symposium_alter_table("topics", "ADD", "allow_replies", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("topics", "ADD", "topic_approved", "varchar(2)", "NOT NULL", "'on'");
-						      	
-	// Update motd flag
-	$sql = "UPDATE ".$wpdb->prefix."symposium_config SET motd = ''";
-	$wpdb->query($sql); 
-
-	// Setup Notifications
-	symposium_notification_setoptions();
-	
-	// ***********************************************************************************************
- 	// Update Versions *******************************************************************************
-	update_option("symposium_db_version", WPS_DBVER);
-	update_option("symposium_version", WPS_VER);
-	
+function symposium_activate() {	
 }
 /* End of Activation */
-
 
 function symposium_uninstall() {
    

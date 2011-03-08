@@ -8,7 +8,6 @@ Show no friends, no friends activity
 
 FORUM
 
-	Categories admin
 	Show no wall activity
 	Show no groups message
 	
