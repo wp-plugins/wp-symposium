@@ -961,11 +961,7 @@ jQuery(document).ready(function() {
 			success: function(str){
 				str = trim(str);
 				jQuery("#symposium-forum-div").html(str);
-<<<<<<< .mine
 				jQuery(".symposium_pleasewait").fadeOut("slow");		
-=======
-				jQuery(".symposium_pleasewait").fadeOut("slow");
->>>>>>> .r356920
 			},
 			error: function(err){
 				alert("getForum:"+err);
