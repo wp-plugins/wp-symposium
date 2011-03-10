@@ -341,7 +341,7 @@ if ($_POST['action'] == 'menu_extended') {
 	$meta = get_symposium_meta_row($uid1);					
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
 
-	$html .= "<div id='profile_left_column' style='";
+	$html = "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
 		$html .= " border-left:0px;";
 	}			
@@ -408,7 +408,7 @@ if ($_POST['action'] == 'menu_extended') {
 // Profile Avatar
 if ($_POST['action'] == 'menu_avatar') {
 
-	$html .= "<div id='profile_left_column'>";
+	$html = "<div id='profile_left_column'>";
 	
 		// Choose a new avatar
 		$html .= '<p>'.__('Choose an image...', 'wp-symposium').'</p>';
@@ -432,22 +432,37 @@ if ($_POST['action'] == 'menu_settings') {
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
 	$dbpage = $plugin.'/symposium_profile_db.php';
 	$meta = get_symposium_meta_row($uid);					
-	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'symposium_config'));
+	$user = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'users WHERE ID = '.$uid));
 
 	// get values
 	$sound = $config->sound;
-	$soundchat = $config->soundchat;
 	
 	if ($meta->sound != '') { $sound = $meta->sound; }
-	if ($meta->soundchat != '') { $soundchat = $meta->soundchat; }
+	if ($meta->soundchat != '') { $soundchat = $meta->soundchat; } else { $soundchat = ''; }
 		
+	$trusted = $meta->trusted;
 	$timezone = $meta->timezone;
 	$notify_new_messages = $meta->notify_new_messages;
 	$notify_new_wall = $meta->notify_new_wall;
 	
-	$html .= "<div id='profile_left_column'>";
+	$html = "<div id='profile_left_column'>";
 	
 		$html .= '<div id="symposium_settings_table">';
+
+			// Trusted member (for example, for support staff)
+			if (symposium_get_current_userlevel() == 5) {
+				$html .= '<div style="clear: right; margin-bottom:15px;">';
+					$html .= __('Is this member trusted?', 'wp-symposium');
+					$html .= '<div style="float:right;">';
+						$html .= '<input type="checkbox" name="trusted" id="trusted"';
+							if ($trusted == "on") { $html .= "CHECKED"; }
+							$html .= '/>';
+					$html .= '</div>';
+				$html .= '</div>';
+			} else {
+				$html .= '<input type="hidden" name="trusted_hidden" id="trusted_hidden" value="'.$trusted.'" />';
+			}
 		
 			// Time zone adjustment
 			$html .= '<div style="margin-bottom:15px;">';
@@ -561,7 +576,7 @@ if ($_POST['action'] == 'menu_settings') {
 			$html .= '<div style="clear:right; margin-bottom:15px;">';
 				$html .= __('Your name as shown', 'wp-symposium');
 				$html .= '<div style="float:right;">';
-					$html .= '<input type="text" class="input-field" id="display_name" name="display_name" value="'.$current_user->display_name.'">';
+					$html .= '<input type="text" class="input-field" id="display_name" name="display_name" value="'.$user->display_name.'">';
 				$html .= '</div>';
 			$html .= '</div>';
 			
@@ -569,7 +584,7 @@ if ($_POST['action'] == 'menu_settings') {
 			$html .= '<div style="clear: right; margin-bottom:15px;">';
 				$html .= __('Your email address', 'wp-symposium');
 				$html .= '<div style="float:right;">';
-					$html .= '<input type="text" class="input-field" id="user_email" name="user_email" style="width:300px" value="'.$current_user->user_email.'">';
+					$html .= '<input type="text" class="input-field" id="user_email" name="user_email" style="width:300px" value="'.$user->user_email.'">';
 				$html .= '</div>';
 			$html .= '</div>';
 			
@@ -646,7 +661,7 @@ if ($_POST['action'] == 'menu_personal') {
 	$share = $meta->share;
 	$wall_share = $meta->wall_share;
 	
-	$html .= "<div id='profile_left_column' style='";
+	$html = "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
 		$html .= " border-left:0px;";
 	}			
@@ -804,7 +819,7 @@ if ($_POST['action'] == 'menu_groups') {
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
 	
-	$html .= "<div id='profile_left_column' style='";
+	$html = "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
 		$html .= " border-left:0px;";
 	}			
@@ -844,6 +859,8 @@ if ($_POST['action'] == 'menu_groups') {
 				$html .= "</div>";
 				
 			}
+		} else {
+			$html .= __("Not a member of any groups.", "wp-symposium");
 		}
 
 	$html .= "</div>";
@@ -914,6 +931,7 @@ if ($_POST['action'] == 'updateSettings') {
 
 	if (is_user_logged_in()) {
 	
+		$uid = $_POST['uid'];
 		$notify_new_messages = $_POST['notify_new_messages'];
 		$notify_new_wall = $_POST['notify_new_wall'];
 		$timezone = $_POST['timezone'];
@@ -923,31 +941,34 @@ if ($_POST['action'] == 'updateSettings') {
 		$password2 = $_POST['xyz2'];
 		$display_name = $_POST['display_name'];
 		$user_email = $_POST['user_email'];
+		$trusted = $_POST['trusted'];
 		
-		update_symposium_meta($current_user->ID, 'timezone', $timezone);
-		update_symposium_meta($current_user->ID, 'notify_new_messages', "'".$notify_new_messages."'");
-		update_symposium_meta($current_user->ID, 'notify_new_wall', "'".$notify_new_wall."'");
-		update_symposium_meta($current_user->ID, 'sound', "'".$sound."'");
-		update_symposium_meta($current_user->ID, 'soundchat', "'".$soundchat."'");
+		update_symposium_meta($uid, 'timezone', $timezone);
+		update_symposium_meta($uid, 'notify_new_messages', "'".$notify_new_messages."'");
+		update_symposium_meta($uid, 'notify_new_wall', "'".$notify_new_wall."'");
+		update_symposium_meta($uid, 'sound', "'".$sound."'");
+		update_symposium_meta($uid, 'soundchat', "'".$soundchat."'");
+		update_symposium_meta($uid, 'trusted', "'".$trusted."'");
 		
 		$pwmsg = 'OK';
 	
 		$email_exists = $wpdb->get_row("SELECT ID, user_email FROM ".$wpdb->base_prefix."users WHERE lower(user_email) = '".strtolower($user_email)."'");
 		if ($email_exists->user_email == $user_email && $email_exists->ID != $current_user->ID) {
+			$rows_affected = $wpdb->update( $wpdb->base_prefix.'users', array( 'display_name' => $display_name ), array( 'ID' => $uid ), array( '%s' ), array( '%d' ) );			
 	    	$pwmsg = __("Email already exists, sorry.", "wp-symposium");				
 		} else {
-			$rows_affected = $wpdb->update( $wpdb->base_prefix.'users', array( 'display_name' => $display_name, 'user_email' => $user_email ), array( 'ID' => $current_user->ID ), array( '%s', '%s' ), array( '%d' ) );
+			$rows_affected = $wpdb->update( $wpdb->base_prefix.'users', array( 'display_name' => $display_name, 'user_email' => $user_email ), array( 'ID' => $uid ), array( '%s', '%s' ), array( '%d' ) );
 		}
 				
 		if ($password1 != '') {
 			if ($password1 == $password2) {
 				$pwd = wp_hash_password($password1);
-				$sql = "UPDATE ".$wpdb->base_prefix."users SET user_pass = '".$pwd."' WHERE ID = ".$current_user->ID;
+				$sql = "UPDATE ".$wpdb->base_prefix."users SET user_pass = '".$pwd."' WHERE ID = ".$uid;
 			    if ($wpdb->query( $wpdb->prepare($sql) ) ) {
 	
-					$sql = "SELECT user_login FROM ".$wpdb->base_prefix."users WHERE ID = ".$current_user->ID;
+					$sql = "SELECT user_login FROM ".$wpdb->base_prefix."users WHERE ID = ".$uid;
 					$username = $wpdb->get_var($sql);
-					$id = $current_user->ID;
+					$id = $uid;
 					$url = symposium_get_url('profile')."?view=settings&msg=".$pwmsg;
 	
 			    	wp_login($username, $pwd, true);
@@ -984,6 +1005,7 @@ if ($_POST['action'] == 'updatePersonal') {
 	
 	if (is_user_logged_in()) {
 
+		$uid = $_POST['uid'];
 		$dob_day = $_POST['dob_day'];
 		$dob_month = $_POST['dob_month'];
 		$dob_year = $_POST['dob_year'];
@@ -993,14 +1015,14 @@ if ($_POST['action'] == 'updatePersonal') {
 		$wall_share = $_POST['wall_share'];
 		$extended = $_POST['extended'];
 		
-		update_symposium_meta($current_user->ID, 'dob_day', $dob_day);
-		update_symposium_meta($current_user->ID, 'dob_month', $dob_month);
-		update_symposium_meta($current_user->ID, 'dob_year', $dob_year);
-		update_symposium_meta($current_user->ID, 'city', "'".$city."'");
-		update_symposium_meta($current_user->ID, 'country', "'".$country."'");
-		update_symposium_meta($current_user->ID, 'share', "'".$share."'");
-		update_symposium_meta($current_user->ID, 'wall_share', "'".$wall_share."'");
-		update_symposium_meta($current_user->ID, 'extended', "'".$extended."'");
+		update_symposium_meta($uid, 'dob_day', $dob_day);
+		update_symposium_meta($uid, 'dob_month', $dob_month);
+		update_symposium_meta($uid, 'dob_year', $dob_year);
+		update_symposium_meta($uid, 'city', "'".$city."'");
+		update_symposium_meta($uid, 'country', "'".$country."'");
+		update_symposium_meta($uid, 'share', "'".$share."'");
+		update_symposium_meta($uid, 'wall_share', "'".$wall_share."'");
+		update_symposium_meta($uid, 'extended', "'".$extended."'");
 			
 		echo "OK";
 		

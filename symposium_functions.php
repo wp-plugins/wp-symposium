@@ -86,7 +86,7 @@ function show_profile_menu($uid1, $uid2) {
 	
 	global $wpdb;
 
-	$html .= "<div id='profile_menu'>";
+	$html = "<div id='profile_menu'>";
 	
 		$meta = get_symposium_meta_row($uid1);					
 		$share = $meta->share;		
@@ -109,10 +109,10 @@ function show_profile_menu($uid1, $uid2) {
 			if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && $is_friend) ) {
 
 				if ($uid1 == $uid2) {
-					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('My Wall', 'wp-symposium').'</div>';
+					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('My Activity', 'wp-symposium').'</div>';
 					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('My Friends Activity', 'wp-symposium').'</div>';
 				} else {
-					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Wall', 'wp-symposium').'</div>';
+					$html .= '<div id="menu_wall" class="symposium_profile_menu">'.__('Activity', 'wp-symposium').'</div>';
 					$html .= '<div id="menu_activity" class="symposium_profile_menu">'.__('Friends Activity', 'wp-symposium').'</div>';
 				}
 				$html .= '<div id="menu_all" class="symposium_profile_menu">'.__('All Activity', 'wp-symposium').'</div>';
@@ -141,7 +141,7 @@ function show_profile_menu($uid1, $uid2) {
 				}
 			}
 		
-			if ($uid1 == $uid2) {
+			if ($uid1 == $uid2 || symposium_get_current_userlevel() == 5) {
 				$config = $wpdb->get_row($wpdb->prepare("SELECT profile_avatars FROM ".$wpdb->prefix . 'symposium_config'));
 				if ($config->profile_avatars == 'on') {
 					$html .= '<div id="menu_avatar" class="symposium_profile_menu">'.__('Profile Photo', 'wp-symposium').'</div>';
@@ -174,7 +174,6 @@ function symposium_profile_friends($uid) {
 	wp_get_current_user();
 
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
-	$dbpage = $plugin.'/symposium_profile_db.php';
 	$meta = get_symposium_meta_row($uid);					
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
 
@@ -182,7 +181,7 @@ function symposium_profile_friends($uid) {
 	if ($mailpage[strlen($mailpage)-1] != '/') { $mailpage .= '/'; }
 	$q = symposium_string_query($mailpage);		
 
-	$html .= "<div id='profile_left_column' style='";
+	$html = "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
 		$html .= " border-left:0px;";
 	}			
@@ -282,118 +281,126 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 	
 	global $wpdb;
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
-	$dbpage = $plugin.'/symposium_profile_db.php';
 	$meta = get_symposium_meta_row($uid1);					
 
 	if ($uid1 > 0) {
 		
 		$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
-
-		$html = "<div id='profile_header_div'>";
-	
-			$html .= "<div id='profile_header_panel'>";
-	
-				$privacy = $meta->share;
-	
-				$html .= "<div id='profile_details'>";
-						
-					$html .= "<div id='profile_name'>".$display_name."</div>";
-
-					if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
-
-						$city = $meta->city;
-						$country = $meta->country;
-
-						$html .= "<p>";
-						if ($city != '') { $html .= $city; }
-						if ($city != '' && $country != '') { $html .= ", "; }
-						if ($country != '') { $html .= $country; }
-
-						$day = (int)$meta->dob_day;
-						$month = $meta->dob_month;
-						$year = (int)$meta->dob_year;
-						if (($day == 1) && ($month == 1) && ($year >= 2010)) {
-						} else {
-							if ($year != '' && $month != '' && $day != '') {
-								if ($city != '' || $country != '') { $html .= ".<br />"; }
-								switch($month) {									
-									case 1:$monthname = __("January", "wp_symposim");break;
-									case 2:$monthname = __("February", "wp_symposim");break;
-									case 3:$monthname = __("March", "wp_symposim");break;
-									case 4:$monthname = __("April", "wp_symposim");break;
-									case 5:$monthname = __("May", "wp_symposim");break;
-									case 6:$monthname = __("June", "wp_symposim");break;
-									case 7:$monthname = __("July", "wp_symposim");break;
-									case 8:$monthname = __("August", "wp_symposim");break;
-									case 9:$monthname = __("September", "wp_symposim");break;
-									case 10:$monthname = __("October", "wp_symposim");break;
-									case 11:$monthname = __("November", "wp_symposim");break;
-									case 12:$monthname = __("December", "wp_symposim");break;
-								}
-								$html .= sprintf(__("Born %s %d, %d.", "wp-symposium"), $monthname, $day, $year);
-							}
-						}
-						$html .= "</p>";
-						
-					}
-					
-					if ( is_user_logged_in() ) {
-						
-						$html .= '<div style="padding: 0px;">';
-
-							if ($uid1 == $uid2) {
-	
-								// Status Input
-								$html .= '<input type="text" id="symposium_status" name="status" class="input-field" onblur="this.value=(this.value==\'\') ? \''.__("What\'s on your mind?", 'wp-symposium').'\' : this.value;" onfocus="this.value=(this.value==\''.__("What\'s on your mind?", 'wp-symposium').'\') ? \'\' : this.value;" value="'.__("What's on your mind?", 'wp-symposium').'" />';
-								$html .= '&nbsp;<input id="symposium_add_update" type="submit" class="symposium-button" value="'.__('Update', 'wp-symposium').'" /> ';
-								
-							} else {
-														
-								// Buttons									
-								if (symposium_friend_of($uid1)) {
-			
-									// A friend
-			
-									// Send mail
-									$html .='<input type="symposium-button" value="Send Mail" id="profile_send_mail_button" class="symposium-button" onclick="document.location = \''.$url.'?view=compose&to='.$uid1.'\';">';
-
-									// Poke
-									$poke = $config->poke;
-									if ($poke != '') {
-										//$html .='<input type="button" value="'.$poke.'" class="symposium-button">';
-									}
-									
-								} else {
-									
-									if (symposium_pending_friendship($uid1)) {
-										// Pending
-										$html .= '<input type="submit" title="'.$uid1.'" id="cancelfriendrequest" class="symposium-button" value="'.__('Cancel Friend Request', 'wp-symposium').'" /> ';
-										$html .= '<div id="cancelfriendrequest_done" class="hidden">'.__('Friend Request Cancelled', 'wp-symposium').'</div>';
-									} else {							
-										// Not a friend
-										$html .= '<div id="addasfriend_done1">';
-										$html .= '<span id="add_as_friend_title">'.__('Add as a Friend', 'wp-symposium').'...</span>';
-										$html .= '<div id="add_as_friend_message">';
-										$html .= '<input type="text" id="addfriend" class="input-field" onclick="this.value=\'\'" value="'.__('Add a personal message...', 'wp-symposium').'">';
-										$html .= '<input type="submit" title="'.$uid1.'" id="addasfriend" class="symposium-button" value="'.__('Add', 'wp-symposium').'" /> ';
-										$html .= '</div></div>';
-										$html .= '<div id="addasfriend_done2" class="hidden">'.__('Friend Request Sent', 'wp-symposium').'</div>';
-									}
-								}
-							}	
-						$html .= "</div>";					
-					}
-	
-				$html .= "</div>";
-					
-			$html .= "</div>";
 		
-			// Photo
-			$html .= "<div id='profile_photo' class='corners'>";
-			$html .= get_avatar($uid1, 200);
-			$html .= "</div>";
+		$html = str_replace("[]", "", stripslashes($config->template_profile_header));
+	
+		$privacy = $meta->share;
 
-		$html .= "</div>";
+		$html = str_replace("[display_name]", $display_name, $html);
+
+		$location = "";
+		$born = "";
+
+		if ( ($uid1 == $uid2) || (strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'friends only' && symposium_friend_of($uid1)) ) {
+
+			$city = $meta->city;
+			$country = $meta->country;
+
+			if ($city != '') { $location .= $city; }
+			if ($city != '' && $country != '') { $location .= ", "; }
+			if ($country != '') { $location .= $country; }
+
+			$day = (int)$meta->dob_day;
+			$month = $meta->dob_month;
+			$year = (int)$meta->dob_year;
+			if (($day == 1) && ($month == 1) && ($year >= 2010)) {
+				// Still default, so don't show
+				$html = str_replace("[born]", "", $html);						
+			} else {
+				if ($year != '' && $month != '' && $day != '') {
+					//if ($city != '' || $country != '') { $location .= ".<br />"; }
+					switch($month) {									
+						case 1:$monthname = __("January", "wp_symposim");break;
+						case 2:$monthname = __("February", "wp_symposim");break;
+						case 3:$monthname = __("March", "wp_symposim");break;
+						case 4:$monthname = __("April", "wp_symposim");break;
+						case 5:$monthname = __("May", "wp_symposim");break;
+						case 6:$monthname = __("June", "wp_symposim");break;
+						case 7:$monthname = __("July", "wp_symposim");break;
+						case 8:$monthname = __("August", "wp_symposim");break;
+						case 9:$monthname = __("September", "wp_symposim");break;
+						case 10:$monthname = __("October", "wp_symposim");break;
+						case 11:$monthname = __("November", "wp_symposim");break;
+						case 12:$monthname = __("December", "wp_symposim");break;
+					}
+					$born = sprintf(__("Born %s %d, %d.", "wp-symposium"), $monthname, $day, $year);
+					
+				}
+			}
+			
+		}
+
+		$html = str_replace("[location]", $location, $html);
+		$html = str_replace("[born]", $born, $html);
+		
+		if ( is_user_logged_in() ) {
+			
+			$actions = '';
+			
+			if ($uid1 == $uid2) {
+
+				// Status Input
+				$actions .= '<input type="text" id="symposium_status" name="status" class="input-field" onblur="this.value=(this.value==\'\') ? \''.__("What\'s on your mind?", 'wp-symposium').'\' : this.value;" onfocus="this.value=(this.value==\''.__("What\'s on your mind?", 'wp-symposium').'\') ? \'\' : this.value;" value="'.__("What's on your mind?", 'wp-symposium').'" />';
+				$actions .= '&nbsp;<input id="symposium_add_update" type="submit" class="symposium-button" value="'.__('Update', 'wp-symposium').'" /> ';
+				
+			} else {
+										
+				// Buttons									
+				if (symposium_friend_of($uid1)) {
+
+					// A friend
+
+					// Send mail
+					$actions .='<input type="symposium-button" value="Send Mail" id="profile_send_mail_button" class="symposium-button" onclick="document.location = \''.$url.'?view=compose&to='.$uid1.'\';">';
+
+					// Poke
+					if ($config->use_poke != '') {
+						//$actions .='<input type="button" value="'.$poke.'" class="symposium-button">';
+					}
+					
+				} else {
+					
+					if (symposium_pending_friendship($uid1)) {
+						// Pending
+						$actions .= '<input type="submit" title="'.$uid1.'" id="cancelfriendrequest" class="symposium-button" value="'.__('Cancel Friend Request', 'wp-symposium').'" /> ';
+						$actions .= '<div id="cancelfriendrequest_done" class="hidden">'.__('Friend Request Cancelled', 'wp-symposium').'</div>';
+					} else {							
+						// Not a friend
+						$actions .= '<div id="addasfriend_done1">';
+						$actions .= '<span id="add_as_friend_title">'.__('Add as a Friend', 'wp-symposium').'...</span>';
+						$actions .= '<div id="add_as_friend_message">';
+						$actions .= '<input type="text" id="addfriend" class="input-field" onclick="this.value=\'\'" value="'.__('Add a personal message...', 'wp-symposium').'">';
+						$actions .= '<input type="submit" title="'.$uid1.'" id="addasfriend" class="symposium-button" value="'.__('Add', 'wp-symposium').'" /> ';
+						$actions .= '</div></div>';
+						$actions .= '<div id="addasfriend_done2" class="hidden">'.__('Friend Request Sent', 'wp-symposium').'</div>';
+					}
+				}
+			}
+			$html = str_replace("[actions]", $actions, $html);						
+		} else {
+			$html = str_replace("[actions]", "", $html);												
+		}
+		
+		// Photo
+		if (strpos($html, '[avatar') !== FALSE) {
+			if (strpos($html, '[avatar]')) {
+				$html = str_replace("[avatar]", get_avatar($uid1, 200), $html);						
+			} else {
+				$x = strpos($html, '[avatar');
+				$avatar = substr($html, 0, $x);
+				$avatar2 = substr($html, $x+8, 3);
+				$avatar3 = substr($html, $x+12, strlen($html)-$x-12);
+								
+				$html = $avatar . get_avatar($uid1, $avatar2) . $avatar3;
+				
+				
+			}
+		}
 		
 		return $html;
 		
@@ -410,7 +417,6 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 	global $wpdb, $current_user;
 
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
-	$dbpage = $plugin.'/symposium_profile_db.php';
 	$meta = get_symposium_meta_row($uid1);					
 
 	if ($uid1 > 0) {
@@ -620,7 +626,7 @@ function symposium_profile_body($uid1, $uid2, $post, $version) {
 							
 						}
 					} else {
-						$html .= "no comments";
+						$html .= "<br />".__("Nothing to show, sorry.", "wp-symposium");
 					}
 				
 				$html .= "</div>";
@@ -879,7 +885,7 @@ function symposium_alter_table($table, $action, $field, $format, $null, $default
 
 }
 
-// Checks is user meta exists, and if not creates it
+// Updates user meta, and if not yet created, will create it
 function update_symposium_meta($uid, $meta, $value) {
    	global $wpdb;
 	
@@ -888,6 +894,8 @@ function update_symposium_meta($uid, $meta, $value) {
 	// check if exists, and create record if not
 	if ($wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
 	} else {
+		
+		// insert user meta
 		$wpdb->insert( $wpdb->base_prefix . "symposium_usermeta", array( 
 			'uid' => $uid, 
 			'sound' => 'chime.mp3',
@@ -898,6 +906,27 @@ function update_symposium_meta($uid, $meta, $value) {
 			'visible' => 'on',
 			'wall_share' => 'Friends only'
 			 ) );
+			
+		// insert initial friend if set
+		$initial_friend = $wpdb->get_var($wpdb->prepare("SELECT initial_friend FROM ".$wpdb->base_prefix."symposium_config"));
+		if ( $initial_friend > 0 ) {
+
+			$wpdb->query( $wpdb->prepare( "
+				INSERT INTO ".$wpdb->base_prefix."symposium_friends
+				( 	friend_from, 
+					friend_to,
+					friend_timestamp,
+					friend_message
+				)
+				VALUES ( %d, %d, %s, %s )", 
+		        array(
+		        	$initial_friend, 
+		        	$uid,
+		        	date("Y-m-d H:i:s"),
+		        	''
+		        	) 
+		        ) );
+		}
 	}
 
 	// now update value
@@ -909,13 +938,14 @@ function update_symposium_meta($uid, $meta, $value) {
   	return $r;
 }
 
-// Get user meta data
+// Get user meta data, and create if not yet available
 function get_symposium_meta($uid, $meta) {
    	global $wpdb;
 
 	// check if exists, and create record if not
 	if ($wpdb->get_var($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix.'symposium_usermeta'." WHERE uid = ".$uid))) {
 	} else {
+		// insert user meta
 		$wpdb->insert( $wpdb->base_prefix . "symposium_usermeta", array( 
 			'uid' => $uid, 
 			'sound' => 'chime.mp3',
@@ -926,6 +956,27 @@ function get_symposium_meta($uid, $meta) {
 			'visible' => 'on',
 			'wall_share' => 'Friends only'
 			 ) );
+
+		// insert initial friend if set
+		$initial_friend = $wpdb->get_var($wpdb->prepare("SELECT initial_friend FROM ".$wpdb->base_prefix."symposium_config"));
+		if ( $initial_friend > 0 ) {
+
+			$wpdb->query( $wpdb->prepare( "
+				INSERT INTO ".$wpdb->base_prefix."symposium_friends
+				( 	friend_from, 
+					friend_to,
+					friend_timestamp,
+					friend_message
+				)
+				VALUES ( %d, %d, %s, %s )", 
+		        array(
+		        	$initial_friend, 
+		        	$uid,
+		        	date("Y-m-d H:i:s"),
+		        	''
+		        	) 
+		        ) );
+		}
 			
 	}
 
@@ -1090,6 +1141,7 @@ function symposium_permalink($id, $type) {
 // How long ago as text
 function symposium_time_ago($date,$granularity=1) {
 	
+	$retval = '';
     $date = strtotime($date);
     $difference = (time() - $date) + 1;
     $periods = array(__('decade') => 315360000,
@@ -1188,7 +1240,7 @@ function convert_datetime($str) {
 
 function powered_by_wps() {
 
-	if (!function_exists('symposium_groups')) {
+	if (!function_exists('symposium_groups') || $_SERVER['HTTP_HOST'] == 'www.wpsymposium.com') {
 		return "<div id='powered_by_wps'><a href='http://www.wpsymposium.com' target='_blank'>".__('Powered by WP Symposium - Social Networking for WordPress', 'wp-symposium')." v".WPS_VER."</a></div>";
 	}
 	

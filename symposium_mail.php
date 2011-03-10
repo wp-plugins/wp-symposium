@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Mail
 Plugin URI: http://www.wpsymposium.com
 Description: Mail component for the Symposium suite of plug-ins. Put [symposium-mail] on any WordPress page.
-Version: 0.47.2
+Version: 0.48
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -34,7 +34,7 @@ function symposium_mail() {
 	if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
 	$mail_url = $wpdb->get_var($wpdb->prepare("SELECT mail_url FROM ".$wpdb->prefix . 'symposium_config'));
 
-	if (isset($_GET[page_id]) && $_GET[page_id] != '') {
+	if (isset($_GET['page_id']) && $_GET['page_id'] != '') {
 		// No Permalink
 		$thispage = $mail_url;
 		$q = "&";
@@ -63,7 +63,7 @@ function symposium_mail() {
 		$sent_active = 'inactive';
 		$compose_active = 'active';
 		$view = "compose";
-		if ($_GET['view'] == 'sent') {
+		if (isset($_GET['view']) && $_GET['view'] == 'sent') {
 			$inbox_active = 'inactive';
 			$sent_active = 'active';
 			$compose_active = 'inactive';
@@ -152,7 +152,13 @@ function symposium_mail() {
 		}
 
 		// Get mail id worked out with default message before tabs to include correct unread count
-		$show = $_GET['show'];
+		if (isset($_GET['show'])) {
+			$show = $_GET['show'];
+		} else {
+			$show = '';
+		}
+		
+		$message_html = '';
 		if (!isset($_GET['show'])) {
 			if ($view == "in" || $view == "result") {
 				$show = $wpdb->get_var("SELECT mail_mid FROM ".$wpdb->base_prefix."symposium_mail WHERE mail_in_deleted != 'on' AND mail_to = ".$current_user->ID." ORDER BY mail_mid DESC LIMIT 0,1");
@@ -282,9 +288,10 @@ function symposium_mail() {
 			// SENT BOX
 			if ($view == "sent") {
 				
-				$show = $_GET['show'];
 				if (!isset($_GET['show'])) {
 					$show = $wpdb->get_var("SELECT mail_mid FROM ".$wpdb->base_prefix."symposium_mail WHERE mail_sent_deleted != 'on' AND mail_from = ".$current_user->ID." ORDER BY mail_mid DESC LIMIT 0,1");
+				} else {
+					$show = $_GET['show'];					
 				}
 				
 				$html .= "<div class='style='width:100%; padding:0px; border: 0px;'>";

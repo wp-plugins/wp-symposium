@@ -8,7 +8,7 @@ global $wpdb, $current_user;
 wp_get_current_user();
 
 // Members list search
-if ($_GET['term'] != '') {
+if (isset($_GET['term']) && $_GET['term'] != '') {
 	
 	global $wpdb;	
 	$return_arr = array();

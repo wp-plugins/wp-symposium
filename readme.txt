@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.47.2
+Stable tag: 0.48
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -27,21 +27,21 @@ erm, sorry - only two steps.
 
 You get a number of plugins that each provide a set of functionality and features, that can be used individually or all together, to produce a social networking website built on WordPress.
 
-You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars); friends; a "notification bar" with friends status, mail alerts and live chat windows. You can also activate a forum; directory of members and internal (private) messaging.
+You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars); friends; a "notification bar" with friends status, mail alerts and live chat windows. You can also activate a forum; a directory of members and internal (private) messaging.
 
-The features of all these will continually improve, and more plugins are planned, including groups and photo albums.
+The features of all these will continually improve - and more plugins like Groups and Photo Albums are available at www.wpsymposium.com.
 
 Oh, and you also get widgets, with more to come, including latest new members and latest forum posts.
 
 *How is it configured?*
 
-WP Symposium plugins work with any WordPress theme! No complicated theme, and no complicated styles - you can pick the colour scheme in the admin area!
+WP Symposium plugins work with any WordPress theme! No complicated theme development, and no complicated styles - you can even pick the colour scheme in the WordPress admin area!
 
 Via crowdin website at www.crowdin.net/project/symposium, a growing number of translations are being maintained by an active user base, so running WP Symposium in a different language is easily set up.
 
 *What else is there?*
 
-Loads! Smilies, loves AJAX, a "health check" page, options for just about everything, SEO friendly links... the list goes on!
+Loads! Smilies, loves AJAX, a "health check" page, templates for changing the page layout, options for just about everything... the list goes on!
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
   
@@ -152,6 +152,16 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 
 == Changelog ==
+
+= 0.48 =
+
+* Core: Added Templates Admin page to allow customisation of various page areas (initially Profile Header)
+* Forum: Formatting of new topics corrected
+* Forum: Increased field length for member titles
+* Profile: Admin's can set "trusted" checkbox to highlight those members forum replies
+* Profile: Optional initial friend request to new users
+* Profile: Admin can change member personal settings and preferences
+* Core: Numerous PHP code changes to address PHP warnings
 
 = 0.47.2 = 
 

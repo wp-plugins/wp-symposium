@@ -133,18 +133,93 @@ function symposium_plugin_menu() {
 		$count1 = "<span class='update-plugins' title='".$count." comments to moderate'><span class='update-count'>".$count."</span></span>";
 		$count2 = " (".$count.")";
 	} else {
-		$count12 = "";
+		$count1 = "";
 		$count2 = "";
 	}
 	
 	add_menu_page(__('Symposium'), __('Symposium'.$count1), 'edit_themes', 'symposium_options', 'symposium_plugin_options', '', 7); 
 	add_submenu_page('symposium_options', __('Options', 'wp-symposium'), __('Options', 'wp-symposium'), 'edit_themes', 'symposium_options', 'symposium_plugin_options');
+	add_submenu_page('symposium_options', __('Templates BETA', 'wp-symposium'), __('Templates BETA', 'wp-symposium'), 'edit_themes', 'symposium_templates', 'symposium_plugin_templates');
 	add_submenu_page('symposium_options', __('Styles', 'wp-symposium'), __('Styles', 'wp-symposium'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
 	if (function_exists('symposium_forum')) {
 		add_submenu_page('symposium_options', __('Forum Categories', 'wp-symposium'), __('Forum Categories', 'wp-symposium'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
 		add_submenu_page('symposium_options', __('Forum Posts', 'wp-symposium'), sprintf(__('Forum Posts %s', 'wp-symposium'), $count2), 'edit_themes', 'symposium_moderation', 'symposium_plugin_moderation');
 	}
 	add_submenu_page('symposium_options', __('Health Check', 'wp-symposium'), __('Health Check', 'wp-symposium'), 'edit_themes', 'symposium_debug', 'symposium_plugin_debug');
+}
+
+function symposium_plugin_templates() {
+	
+	global $wpdb;
+	if (isset($_POST['profile_header_textarea'])) {
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_profile_header = '".addslashes(str_replace(chr(13), "[]", $_POST['profile_header_textarea']))."'") );
+	}
+	
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_config'));
+    $template_profile_header = str_replace("[]", chr(13), stripslashes($config->template_profile_header));
+
+  	echo '<div class="wrap">';
+  	
+	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
+	  	echo '<h2>Templates</h2>';
+	
+		echo '<p>Please note, the Profile Header template is available to all users of WP Symposium and always will be. However, when Templates is moved out of BETA testing, more page/area templates will be available on this screen to members who are at least Bronze level subscribers at <a href="http://www.wpsymposium.com" target="_blank">www.wpsymposium.com</a>.</p>';
+	
+		echo '<form action="" method="post">';
+		
+		echo '<br /><table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>'.__('Profile Header', 'wp-symposium').'</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+		echo '<tr>';
+		echo '<td>';
+			echo '<table class="widefat" style="float:right;width:39%">';
+			echo '<thead>';
+			echo '<tr>';
+			echo '<th>'.__('Code', 'wp-symposium').'</th>';
+			echo '<th>'.__('Output', 'wp-symposium').'</th>';
+			echo '</tr>';
+			echo '</thead>';
+			echo '<tbody>';
+			echo '<tr>';
+			echo '<td>[display_name]</td>';
+			echo '<td>'.__('Display Name', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[location]</td>';
+			echo '<td>'.__('City and/or Country', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[born]</td>';
+			echo '<td>'.__('Birthday', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[actions]</td>';
+			echo '<td>'.__('Friend Request/Send Mail/etc buttons', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[avatar,x]</td>';
+			echo '<td>'.__('Show avatar, size x in pixels (no spaces)', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '</tbody>';
+			echo '</table>';
+			echo '<textarea id="profile_header_textarea" name="profile_header_textarea" style="width:60%;height: 200px;">';
+			echo $template_profile_header;
+			echo '</textarea>';
+			echo '<br /><a id="reset_profile_header" href="javascript:void(0)">'.__('Reset to default', 'wp-symposium').'</a>';
+		echo '</td>';
+		echo '</tr>';
+		echo '</tbody>';
+		echo '</table>';
+		
+		echo '<p><input type="submit" class="button-primary" value="Save"></p>';
+		
+		echo '</form>';
+			  	
+	echo '</div>';
 }
 
 function symposium_plugin_moderation() {
@@ -179,7 +254,7 @@ function symposium_plugin_moderation() {
 		$pagesize = 20;
 		$numpages = floor($all / $pagesize);
 		if ($all % $pagesize > 0) { $numpages++; }
-	  	if ($_GET['showpage']) { $showpage = $_GET['showpage']-1; } else { $showpage = 0; }
+	  	if (isset($_GET['showpage']) && $_GET['showpage']) { $showpage = $_GET['showpage']-1; } else { $showpage = 0; }
 	  	if ($showpage >= $numpages) { $showpage = $numpages-1; }
 		$start = ($showpage * $pagesize);
 		  		
@@ -288,7 +363,7 @@ function symposium_plugin_debug() {
 	  	echo '<h2 style="clear:both">'.__('Database Purge Tool', 'wp-symposium').'</h2><p>';
 	
 		// Purge users
-		if ($_POST['purge_users'] != '' && $_POST['purge_users'] > 0 && is_numeric($_POST['purge_users']) ) {
+		if (isset($_POST['purge_users']) && $_POST['purge_users'] != '' && $_POST['purge_users'] > 0 && is_numeric($_POST['purge_users']) ) {
 			
 			$sql = "SELECT uid FROM ".$wpdb->prefix."symposium_usermeta WHERE last_activity <= '".date("Y-m-d H:i:s",strtotime('-'.$_POST['purge_users'].' days'))."'";	
 			$members = $wpdb->get_results($sql);
@@ -309,7 +384,7 @@ function symposium_plugin_debug() {
 		}
 
 		// Purge chat
-		if ($_POST['purge_chat'] != '' && is_numeric($_POST['purge_chat']) ) {
+		if (isset($_POST['purge_chat']) && $_POST['purge_chat'] != '' && is_numeric($_POST['purge_chat']) ) {
 			
 			$sql = "DELETE FROM ".$wpdb->prefix."symposium_chat WHERE chat_timestamp <= '".date("Y-m-d H:i:s",strtotime('-'.$_POST['purge_chat'].' days'))."'";	
 			$wpdb->query( $wpdb->prepare($sql) );
@@ -482,6 +557,8 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'img_crop')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'forum_ranks')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'forum_ajax')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'template_profile_header')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'initial_friend')) { $status = "X"; }	
 										
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
@@ -729,10 +806,11 @@ function symposium_plugin_debug() {
 		  	}
 	
 			$warning = false;
-			if ( ($urls->forum_url == "Important: Please update!") || ($urls->members_url == "Important: Please update!") || ($urls->mail_url == "Important: Please update!") || ($urls->profile_url == "Important: Please update!") ) {
+			
+			if ( ($config->forum_url == "Important: Please update!") || ($config->members_url == "Important: Please update!") || ($config->mail_url == "Important: Please update!") || ($config->profile_url == "Important: Please update!") ) {
 				$warning = true;
 			}
-			if ( (function_exists('symposium_group')) && ( ($urls->groups_url == "Important: Please update!") || ($urls->group_url == "Important: Please update!") ) ) {
+			if ( (function_exists('symposium_group')) && ( ($config->groups_url == "Important: Please update!") || ($config->group_url == "Important: Please update!") ) ) {
 				$warning = true;
 			}
 				
@@ -876,7 +954,11 @@ function symposium_plugin_debug() {
 				}
 			}
 			echo "<p>".$wpdb->last_query."</p></div>";
-	    }
+	    } else {
+			$table = '';
+			$field = '';
+			$value = '';
+		}
 		echo '<input type="hidden" name="symposium_test_viewer" value="Y">';
 		echo '<div style="width:200px; float: left;">Table (eg: config):</div>';
 	   	echo '<input type="text" name="symposium_testupdate_table" value="'.$table.'" class="regular-text"><br />';
@@ -910,7 +992,11 @@ function symposium_plugin_categories() {
     	wp_die( __('You do not have sufficient permissions to access this page.') );
   	}
   	
-  	$action = $_GET['action'];
+  	if (isset($_GET['action'])) {
+		$action = $_GET['action'];
+	} else {
+		$action = '';
+	}
 
 	// Update values
 	if (isset($_POST['title'])) {
@@ -940,7 +1026,7 @@ function symposium_plugin_categories() {
 	}
 		
   	// Add new category?
-  	if ( ($_POST['new_title'] != '') && ($_POST['new_title'] != 'Add New Category...') ) {
+  	if ( (isset($_POST['new_title']) && $_POST['new_title'] != '') && ($_POST['new_title'] != 'Add New Category...') ) {
 		$wpdb->query( $wpdb->prepare( "
 			INSERT INTO ".$wpdb->prefix.'symposium_cats'."
 			( 	title, 
@@ -1517,7 +1603,7 @@ function symposium_plugin_options() {
 	    }
 
 	    // See if the user has posted notification bar settings
-	    if( $_POST[ 'symposium_update' ] == 'B' ) {
+	    if( isset($_POST[ 'symposium_update' ]) && $_POST[ 'symposium_update' ] == 'B' ) {
 	        $sound = $_POST[ 'sound' ];
 	        $use_chat = $_POST[ 'use_chat' ];
 	        $use_chatroom = $_POST[ 'use_chatroom' ];
@@ -1540,15 +1626,16 @@ function symposium_plugin_options() {
 	    }
 	    	
 	    // See if the user has posted profile settings
-	    if( $_POST[ 'symposium_update' ] == 'U' ) {
-	        $online = $_POST[ 'online' ];
-	        $offline = $_POST[ 'offline' ];
-	        $use_poke = $_POST[ 'use_poke' ];
-		    $enable_password = $_POST['enable_password'];
-		    $show_profile_menu = $_POST['show_profile_menu'];
-		    $show_wall_extras = $_POST['show_wall_extras'];
-		    $profile_google_map = $_POST['profile_google_map'];
-		    $profile_avatars = $_POST['profile_avatars'];
+	    if( isset($_POST[ 'symposium_update' ]) && $_POST[ 'symposium_update' ] == 'U' ) {
+	        if (isset($_POST[ 'online' ])) 				{ $online = $_POST[ 'online' ]; } 						else { $online = ''; }
+	        if (isset($_POST[ 'offline' ])) 			{ $offline = $_POST[ 'offline' ]; } 					else { $offline = ''; }
+	        if (isset($_POST[ 'use_poke' ])) 			{ $use_poke = $_POST[ 'use_poke' ]; } 					else { $use_poke = ''; }
+		    if (isset($_POST[ 'enable_password' ])) 	{ $enable_password = $_POST['enable_password']; } 		else { $enable_password = ''; }
+		    if (isset($_POST[ 'show_profile_menu' ]))	{ $show_profile_menu = $_POST['show_profile_menu']; } 	else { $show_profile_menu = ''; }
+		    if (isset($_POST[ 'show_wall_extras' ])) 	{ $show_wall_extras = $_POST['show_wall_extras']; } 	else { $show_wall_extras = ''; }
+		    if (isset($_POST[ 'profile_google_map' ])) 	{ $profile_google_map = $_POST['profile_google_map']; } else { $profile_google_map = ''; }
+		    if (isset($_POST[ 'profile_avatars' ])) 	{ $profile_avatars = $_POST['profile_avatars']; } 		else { $profile_avatars = ''; }
+		    if (isset($_POST[ 'initial_friend' ])) 		{ $initial_friend = $_POST['initial_friend']; } 		else { $initial_friend = ''; }
 		    
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET online = '".$online."'") );					
@@ -1559,6 +1646,7 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_wall_extras = '".$show_wall_extras."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET profile_google_map = '".$profile_google_map."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET profile_avatars = '".$profile_avatars."'") );
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET initial_friend = '".$initial_friend."'") );
 			
 			// Update extended fields
 	   		if ($_POST['eid'] != '') {
@@ -1602,7 +1690,7 @@ function symposium_plugin_options() {
 	    }
 
 	    // See if the user has posted profile settings
-	    if( $_POST[ 'symposium_update' ] == 'G' ) {
+	    if( isset($_POST[ 'symposium_update' ]) && $_POST[ 'symposium_update' ] == 'G' ) {
 	        $group_all_create = $_POST[ 'group_all_create' ];
 
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET group_all_create = '".$group_all_create."'") );					
@@ -1613,7 +1701,7 @@ function symposium_plugin_options() {
 	    }
 
 		// Delete an extended field?
-   		if ($_GET['del_eid'] != '') {
+   		if ( isset($_GET['del_eid']) && $_GET['del_eid'] != '') {
 			$wpdb->query( $wpdb->prepare( "
 				DELETE FROM ".$wpdb->prefix.'symposium_extended'." WHERE eid = %d", 
 		        $_GET['del_eid']  ) );
@@ -1634,7 +1722,7 @@ function symposium_plugin_options() {
 		}						
 	    	
 	    // See if the user has posted general settings
-	    if( $_POST[ 'symposium_update' ] == 'S' ) {
+	    if( isset($_POST[ 'symposium_update' ]) && $_POST[ 'symposium_update' ] == 'S' ) {
 	        $footer = $_POST[ 'email_footer' ];
 	        $from_email = $_POST[ 'from_email' ];
 	        $jquery = $_POST[ 'jquery' ];
@@ -1692,7 +1780,7 @@ function symposium_plugin_options() {
 	    }
 
 	    // See if the user has posted forum settings
-	    if( $_POST[ 'symposium_update' ] == 'F' ) {
+	    if( isset($_POST[ 'symposium_update' ]) && $_POST[ 'symposium_update' ] == 'F' ) {
 	    	    	        
 	        $send_summary = $_POST[ 'send_summary' ];
 	        $include_admin = $_POST[ 'include_admin' ];
@@ -1825,7 +1913,7 @@ function symposium_plugin_options() {
 			$profile_active = 'inactive';
 			$view = "notes";
 		} 
-		if ($_GET['view'] == 'profile') {
+		if (isset($_GET['view']) && $_GET['view'] == 'profile') {
 			$notes_active = 'inactive';
 			$settings_active = 'inactive';
 			$forum_active = 'inactive';
@@ -1835,7 +1923,7 @@ function symposium_plugin_options() {
 			$profile_active = 'active';
 			$view = "profile";
 		} 
-		if ($_GET['view'] == 'forum') {
+		if (isset($_GET['view']) && $_GET['view'] == 'forum') {
 			$notes_active = 'inactive';
 			$settings_active = 'inactive';
 			$forum_active = 'active';
@@ -1845,7 +1933,7 @@ function symposium_plugin_options() {
 			$profile_active = 'inactive';
 			$view = "forum";
 		} 
-		if ($_GET['view'] == 'register') {
+		if (isset($_GET['view']) && $_GET['view'] == 'register') {
 			$notes_active = 'inactive';
 			$settings_active = 'inactive';
 			$forum_active = 'inactive';
@@ -1855,7 +1943,7 @@ function symposium_plugin_options() {
 			$profile_active = 'inactive';
 			$view = "register";
 		} 
-		if ($_GET['view'] == 'bar') {
+		if (isset($_GET['view']) && $_GET['view'] == 'bar') {
 			$notes_active = 'inactive';
 			$settings_active = 'inactive';
 			$forum_active = 'inactive';
@@ -1864,7 +1952,7 @@ function symposium_plugin_options() {
 			$bar_active = 'active';
 			$view = "bar";
 		} 
-		if ($_GET['view'] == "settings") {
+		if (isset($_GET['view']) && $_GET['view'] == "settings") {
 			$notes_active = 'inactive';
 			$settings_active = 'active';
 			$forum_active = 'inactive';
@@ -1874,7 +1962,7 @@ function symposium_plugin_options() {
 			$profile_active = 'inactive';
 			$view = "settings";
 		} 
-		if ($_GET['view'] == "groups") {
+		if (isset($_GET['view']) && $_GET['view'] == "groups") {
 			$notes_active = 'inactive';
 			$settings_active = 'inactive';
 			$forum_active = 'inactive';
@@ -1922,12 +2010,11 @@ function symposium_plugin_options() {
 				$goto = "-";
 				if (!$localhost || 1==1) {
 				
-					$admin_email = get_bloginfo('admin_email');
 					$version = get_option("symposium_version");
 					
 					$users = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->base_prefix."users"); 
 					
-					$goto = "http://www.wpsymposium.com/wp-content/symposium_activation.php?action=symposium_activationlog&url=".$url."&admin_email=".$admin_email."&version=".$version."&users=".$users;
+					$goto = "http://www.wpsymposium.com/wp-content/symposium_activation.php?action=symposium_activationlog&url=".$url."&version=".$version."&users=".$users;
 					
 				}
 				// End
@@ -2413,25 +2500,26 @@ function symposium_plugin_options() {
 					<?php
 					for ( $rank = 1; $rank <= 11; $rank ++) {
 						echo '<tr valign="top">';
-							if ($rank == 1) { ?>
+							if ($rank == 1) { 
 
-								<th scope="row">
-									Title and Posts Required
-								</th>
+								echo '<th scope="row">';
+									echo 'Title and Posts Required';
+								echo '</th>';
 
-							<? } else { ?>
+							} else {
 
-								<th scope="row"><label for="closed_word">
-									<?php 
+								echo '<th scope="row"><label for="closed_word">';
+									
 									if ($rank == 11) {
 										echo '<em>'.__('(blank ranks are not used)', 'wp-symposium').'</em>';
 									} else {
 										echo "&nbsp;";
 									}
-									?>
-								</label></th>
+									
+								echo '</label></th>';
 
-							<? } ?>
+							}
+							?>
 							<td>
 								<input name="rank<?php echo $rank; ?>" type="text" id="rank<?php echo $rank; ?>"  value="<?php echo $ranks[($rank*2-1)]; ?>" /> 
 								<?php if ($rank > 1) { ?>
@@ -2439,7 +2527,7 @@ function symposium_plugin_options() {
 								<? } ?>
 
 								<span class="description">
-									<?php 
+								<?php 
 								if ($rank == 1) {
 									echo __('Most posts', 'wp-symposium'); 
 								} else {
@@ -2515,6 +2603,7 @@ function symposium_plugin_options() {
 					$online = $config->online;
 					$offline = $config->offline;
 					$use_poke = $config->use_poke;
+					$initial_friend = $config->initial_friend;
 					$profile_avatars = $config->profile_avatars;
 					$enable_password = $config->enable_password;
 					$show_profile_menu = $config->show_profile_menu;
@@ -2528,6 +2617,12 @@ function symposium_plugin_options() {
 				
 					<table class="form-table"> 
 				
+					<tr valign="top"> 
+					<th scope="row"><label for="initial_friend"><?php _e('Default Friend', 'wp-symposium'); ?></label></th> 
+					<td><input name="initial_friend" type="text" id="initial_friend"  value="<?php echo $initial_friend; ?>" /> 
+					<span class="description"><?php echo __('The User ID that automatically becomes a friend of new users (enter 0 for no-one)'); ?></td> 
+					</tr> 
+
 					<tr valign="top"> 
 					<th scope="row"><label for="profile_avatars"><?php _e('Profile Photos', 'wp-symposium'); ?></label></th>
 					<td>

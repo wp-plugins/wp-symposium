@@ -4,6 +4,45 @@ include_once('../../../../wp-config.php');
 //include_once('../../../../wp-includes/wp-db.php');
 //include_once('../symposium_functions.php');
 
+// Compose - recipients list (autocomplete)
+if (isset($_GET['term']) && $_GET['term'] != '') {
+	
+	global $wpdb;	
+	$return_arr = array();
+	$term = $_GET['term'];
+
+	$list = $wpdb->get_results("SELECT u.ID, u.display_name, m.city, m.country FROM ".$wpdb->base_prefix."users u LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$term."%') OR (m.city LIKE '".$term."%') OR (m.country LIKE '".$term."%') OR (u.display_name LIKE '% %".$term."%') ORDER BY u.display_name");
+
+	if ($list) {
+		foreach ($list as $item) {
+			$row_array['id'] = $item->ID;
+			$row_array['value'] = $item->display_name;
+			$row_array['label'] = $item->display_name;
+			if ($item->city != '') {
+				$row_array['city'] = $item->city;
+			} else {
+				$row_array['city'] = '';
+			}
+			if ($item->country != '') {
+				if ($item->city != '') {
+					$row_array['country'] = ', '.$item->country;
+				} else {
+					$row_array['country'] = $item->country;
+				}
+			} else {
+				$row_array['country'] = '';
+			}
+			
+	        array_push($return_arr,$row_array);
+		}
+	}
+
+	echo json_encode($return_arr);
+	exit;
+
+}
+
+
 // Get mail messages
 if ($_POST['action'] == 'getBox') {
 	
@@ -67,43 +106,6 @@ if ($_POST['action'] == 'getMailMessage') {
 
 	echo $mail_mid."[split]".$unread."[split]".$tray."[split]".$message;
 	exit;
-}
-
-// Compose - recipients list
-if ($_GET['term'] != '') {
-	
-	global $wpdb;	
-	$return_arr = array();
-
-	$list = $wpdb->get_results("SELECT u.ID, u.display_name, m.city, m.country FROM ".$wpdb->base_prefix."users u LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$_GET['term']."%') OR (m.city LIKE '".$_GET['term']."%') OR (m.country LIKE '".$_GET['term']."%') OR (u.display_name LIKE '% %".$_GET['term']."%') ORDER BY u.display_name");
-
-	if ($list) {
-		foreach ($list as $item) {
-			$row_array['id'] = $item->ID;
-			$row_array['value'] = $item->display_name;
-			$row_array['label'] = $item->display_name;
-			if ($item->city != '') {
-				$row_array['city'] = $item->city;
-			} else {
-				$row_array['city'] = '';
-			}
-			if ($item->country != '') {
-				if ($item->city != '') {
-					$row_array['country'] = ', '.$item->country;
-				} else {
-					$row_array['country'] = $item->country;
-				}
-			} else {
-				$row_array['country'] = '';
-			}
-			
-	        array_push($return_arr,$row_array);
-		}
-	}
-
-	echo json_encode($return_arr);
-	exit;
-
 }
 
 

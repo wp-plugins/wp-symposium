@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.47.2
+Version: 0.48
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,8 +30,8 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.47.2');
-define('WPS_DBVER', '47');
+define('WPS_VER', '0.48');
+define('WPS_DBVER', '48');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -57,7 +57,7 @@ register_uninstall_hook(__FILE__, 'symposium_uninstall');
 /* ===================================================== ADMIN ====================================================== */
 
 // Check for updates
-if ( get_option("symposium_version") != WPS_VER && is_admin()) {
+if ( (false) || ( get_option("symposium_version") != WPS_VER && is_admin()) ) {
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -67,7 +67,7 @@ if ( get_option("symposium_version") != WPS_VER && is_admin()) {
 
   	// Update tables *************************************************************************************
 
-   	// Add option fields	
+   	// Modify config table
 	symposium_alter_table("config", "ADD", "allow_new_topics", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "preview1", "int(11)", "NOT NULL", "'45'");
@@ -118,9 +118,17 @@ if ( get_option("symposium_version") != WPS_VER && is_admin()) {
 	symposium_alter_table("config", "ADD", "img_upload", "mediumblob", "", "");
 	symposium_alter_table("config", "ADD", "img_crop", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "forum_ranks", "varchar(128)", "NOT NULL", "''");
+	symposium_alter_table("config", "MODIFY", "forum_ranks", "varchar(256)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "forum_ajax", "varchar(2)", "NOT NULL", "'on'");
+	symposium_alter_table("config", "ADD", "template_profile_header", "text", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "initial_friend", "int(11)", "NOT NULL", "'0'");
 
-	$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET forum_ranks = 'on;Emperor;0;Monarch;200;Lord;150;Duke;125;Count;100;Earl;75;Viscount;50;Bishop;25;Baron;10;Knight;5;Peasant;0'"); 
+	if ($wpdb->get_var("SELECT template_profile_header FROM ".$wpdb->prefix.'symposium_config') == '') {
+		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_profile_header = \"<div id='profile_header_div'>[]<div id='profile_header_panel'>[]<div id='profile_details'>[]<div id='profile_name'>[display_name]</div>[]<p>[location]<br />[born]</p>[]<div style='padding: 0px;'>[actions]</div>[]</div>[]</div>[]<div id='profile_photo' class='corners'>[avatar,200]</div>[]</div>\""); 
+	}
+	if ($wpdb->get_var("SELECT forum_ranks FROM ".$wpdb->prefix.'symposium_config') == '') {
+		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET forum_ranks = 'on;Emperor;0;Monarch;200;Lord;150;Duke;125;Count;100;Earl;75;Viscount;50;Bishop;25;Baron;10;Knight;5;Peasant;0'"); 
+	}
 
 	// Modify Mail table
 	symposium_alter_table("mail", "MODIFY", "mail_sent", "datetime", "", "");
@@ -164,6 +172,7 @@ if ( get_option("symposium_version") != WPS_VER && is_admin()) {
 	symposium_alter_table("usermeta", "ADD", "profile_photo", "varchar(64)", "", "''");
 	symposium_alter_table("usermeta", "ADD", "forum_favs", "TEXT", "", "");
 	symposium_alter_table("usermeta", "ADD", "profile_avatar", "mediumblob", "", "");
+	symposium_alter_table("usermeta", "ADD", "trusted", "varchar(2)", "", "''");
 
 	// Modify styles table
 	symposium_alter_table("styles", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
@@ -506,10 +515,12 @@ function symposium_notification_trigger_schedule() {
 
 // Replace get_avatar
 
-if ( !function_exists(get_avatar) ) {
+if ( !function_exists('get_avatar') ) {
 		
 	function get_avatar( $id_or_email, $size = '96', $default = '', $alt = false ) {
-	
+
+		global $wpdb;
+							
 		if ( false === $alt)
 			$safe_alt = '';
 		else
@@ -562,6 +573,27 @@ if ( !function_exists(get_avatar) ) {
 				$host = 'http://0.gravatar.com';
 		}
 	
+		// If on www.wpsymposium.com then change image size to include border if a subscriber
+		$member = "";
+		if ($_SERVER['HTTP_HOST'] == 'www.wpsymposium.com') {
+			$level = $wpdb->get_var("select meta_value from ".$wpdb->base_prefix."usermeta where meta_key = 'ym_user' and (meta_value like '%Bronze%' OR meta_value like '%Silver%') and meta_value like '%YourMember_User%' and user_id = ".$id);
+
+	        if ( strpos($level, "Bronze") ) {
+					$member = "Bronze";
+					$size = $size - 4;
+	        }
+
+	        if ( strpos($level, "Silver") ) {
+					$member = "Silver";
+					$size = $size - 4;
+	        }			
+
+	        if ( strpos($level, "Gold") ) {
+					$member = "Gold";
+					$size = $size - 4;
+	        }			
+		}
+			
 		if ( 'mystery' == $default )
 			$default = "$host/avatar/ad516503a11cd5ca435acc9bb6523536?s={$size}"; // ad516503a11cd5ca435acc9bb6523536 == md5('unknown@gravatar.com')
 		elseif ( 'blank' == $default )
@@ -592,10 +624,8 @@ if ( !function_exists(get_avatar) ) {
 	
 		$return = '';
 		
-		global $wpdb;
-				
 		$config = $wpdb->get_row($wpdb->prepare("SELECT img_db, img_url, profile_avatars FROM ".$wpdb->prefix . 'symposium_config'));
-	
+
 		if ($config->img_db == "on") {
 		
 			$profile_photo = get_symposium_meta($id, 'profile_avatar');
@@ -621,8 +651,26 @@ if ( !function_exists(get_avatar) ) {
 			}
 			
 		}
-	
+		
+		// Add border for subscribers
+		if ($member != '') {
+
+	        if ( $member == "Bronze" ) {
+	        	$return = str_replace("style='", "style='border:2px solid #8C7853;", $return);                          
+	        }
+
+	        if ( $member == "Silver" ) {
+	        	$return = str_replace("style='", "style='border:2px solid #C0C0C0;", $return);
+	        }
+			
+	        if ( $member == "Gold" ) {
+	        	$return = str_replace("style='", "style='border:2px solid #FFD700;", $return);                          
+	        }
+
+		}
+
 		return $return;
+
 		
 	}
 	
@@ -866,7 +914,7 @@ function symposium_languages() {
 		load_plugin_textdomain( 'wp-symposium', false, $plugin_path );		
 }
 
-// Add jQuery and jQuery scripts
+// Add jQuery and jQuery scripts (and TinyMCE)
 function js_init() {
 	global $wpdb;
 	$jquery = $wpdb->get_row($wpdb->prepare("SELECT jquery, jqueryui FROM ".$wpdb->prefix . 'symposium_config'));
@@ -911,8 +959,11 @@ function symposium_scriptsAction() {
 	if (!is_admin()) {
 
 		// Mail
-		$view = $_GET['view'];
-		if ( !isset($_GET['view']) ) { $view = "in"; } 
+		if ( !isset($_GET['view']) ) { 
+			$view = "in"; 
+		} else {
+			$view = $_GET['view'];
+		} 
 	
 		// Current User Page (eg. a profile page)
 		if (isset($_GET['uid'])) {
@@ -926,7 +977,7 @@ function symposium_scriptsAction() {
 			}
 		}
 		if ($page_uid == 0) {
-			if ($_POST['from'] == 'small_search') {
+			if (isset($_POST['from']) && $_POST['from'] == 'small_search') {
 				$search = $_POST['member_small'];
 				$get_uid = $wpdb->get_var("SELECT u.ID FROM ".$wpdb->prefix."base_users u LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON u.ID = m.uid WHERE (u.display_name LIKE '".$search."%') OR (m.city LIKE '".$search."%') OR (m.country LIKE '".$search."%') OR (u.display_name LIKE '% %".$search."%') ORDER BY u.display_name LIMIT 0,1");
 				if ($get_uid) { $page_uid = $get_uid; }
@@ -942,7 +993,6 @@ function symposium_scriptsAction() {
 				$page_gid = $_POST['gid']*1; 
 			}
 		}
-		
 				
 		// Forum
 		if (isset($_GET['show'])) {
@@ -992,76 +1042,118 @@ function symposium_scriptsAction() {
 		// Permalink in use?
 		$thispage = get_permalink();
 		if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
-		if (isset($_GET[page_id]) && $_GET[page_id] != '') {
+		if (isset($_GET['page_id']) && $_GET['page_id'] != '') {
 			// No Permalink
 			$q = "&";
 		} else {
 			$q = "?";
 		}
 		
-	}
-
-			
-	// Load Symposium JS supporting scrtipts		
+		// Get styles for JS
+		if ($config->use_styles == "on") {
+			$bg_color_2 = $config->bg_color_2;
+			$row_border_size = $config->row_border_size;
+			$row_border_style = $config->row_border_style;
+			$text_color_2 = $config->text_color_2;
+		} else {
+			$bg_color_2 = '';
+			$row_border_size = '';
+			$row_border_style = '';
+			$text_color_2 = '';
+		}
 	
-	wp_enqueue_script('jquery-swfobject', WP_PLUGIN_URL.'/wp-symposium/uploadify/swfobject.js', array('jquery'));
-	wp_enqueue_script('jquery-uploadify', WP_PLUGIN_URL.'/wp-symposium/uploadify/jquery.uploadify.v2.1.4.js', array('jquery'));
-	wp_enqueue_script('jquery-jcrop', WP_PLUGIN_URL.'/wp-symposium/js/jquery.Jcrop.js', array('jquery'));
-	wp_enqueue_script('jquery-elastic', WP_PLUGIN_URL.'/wp-symposium/js/jquery.elastic.source.js', array('jquery'));
-
-	// Load Symposium JS
- 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
+		// GET post?
+		if (isset($_GET['post'])) {
+			$GETpost = $_GET['post'];
+		} else {
+			$GETpost = '';
+		}
 	
-	// Get styles for JS
-	if ($config->use_styles == "on") {
-		$bg_color_2 = $config->bg_color_2;
-		$row_border_size = $config->row_border_size;
-		$row_border_style = $config->row_border_style;
-		$text_color_2 = $config->text_color_2;
+		// Display Name
+		if (isset($current_user->display_name)) {
+			$display_name = stripslashes($current_user->display_name);
+		} else {
+			$display_name = '';
+		}
+
+		// Load Symposium JS supporting scrtipts		
+
+		wp_enqueue_script('jquery-swfobject', WP_PLUGIN_URL.'/wp-symposium/uploadify/swfobject.js', array('jquery'));
+		wp_enqueue_script('jquery-uploadify', WP_PLUGIN_URL.'/wp-symposium/uploadify/jquery.uploadify.v2.1.4.js', array('jquery'));
+		wp_enqueue_script('jquery-jcrop', WP_PLUGIN_URL.'/wp-symposium/js/jquery.Jcrop.js', array('jquery'));
+		wp_enqueue_script('jquery-elastic', WP_PLUGIN_URL.'/wp-symposium/js/jquery.elastic.source.js', array('jquery'));
+
+		// Load Symposium JS
+	 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
+	
+		// Set JS variables
+		wp_localize_script( 'symposium', 'symposium', array(
+			'plugins' => WP_PLUGIN_URL, 
+			'plugin_url' => WP_PLUGIN_URL.'/wp-symposium/', 
+			'plugin_path' => $symposium_plugin_path,
+			'plugin_pro_url' => WP_PLUGIN_URL.'/wp-symposium-', 
+			'inactive' => $config->online,
+			'forum_url' => $config->forum_url,
+			'mail_url' => $config->mail_url,
+			'profile_url' => $config->profile_url,
+			'groups_url' => $config->groups_url,
+			'group_url' => $config->group_url,
+			'offline' => $config->offline,
+			'use_chat' => $config->use_chat,
+			'chat_polling' => $config->chat_polling,
+			'bar_polling' => $config->bar_polling,
+			'soundchat' => get_symposium_meta($current_user->ID, 'soundchat'),
+			'sound' => $config->sound,
+			'view' => $view,
+			'show_tid' => $show_tid,
+			'cat_id' => $cat_id,
+			'current_user_id' => $current_user->ID,
+			'current_user_display_name' => $display_name,
+			'current_user_page' => $page_uid,
+			'current_group' => $page_gid,
+			'widget_vote_yes' => $yes, 
+			'widget_vote_no' => $no,
+			'post' => $GETpost,
+			'please_wait' => __('Please Wait...', 'wp-symposium'),
+			'saving' => __('Saving...', 'wp-symposium'),
+			'site_title' => get_bloginfo('name'),
+			'q' => $q,
+			'bg_color_2' => $bg_color_2,
+			'row_border_size' => $row_border_size,
+			'row_border_style' => $row_border_style,
+			'text_color_2' => $text_color_2
+		));
+
 	} else {
-		$bg_color_2 = '';
-		$row_border_size = '';
-		$row_border_style = '';
-		$text_color_2 = '';
+		
+		// ADMIN JS load
+
+		// Load Symposium JS supporting scrtipts		
+		wp_enqueue_script('jquery-swfobject', WP_PLUGIN_URL.'/wp-symposium/uploadify/swfobject.js', array('jquery'));
+		wp_enqueue_script('jquery-uploadify', WP_PLUGIN_URL.'/wp-symposium/uploadify/jquery.uploadify.v2.1.4.js', array('jquery'));
+
+		// Load Symposium JS
+	 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
+
+		// Set JS variables
+		wp_localize_script( 'symposium', 'symposium', array(
+			'plugins' => WP_PLUGIN_URL, 
+			'plugin_url' => WP_PLUGIN_URL.'/wp-symposium/', 
+			'plugin_path' => $symposium_plugin_path,
+			'plugin_pro_url' => WP_PLUGIN_URL.'/wp-symposium-', 
+			'inactive' => $config->online,
+			'forum_url' => $config->forum_url,
+			'mail_url' => $config->mail_url,
+			'profile_url' => $config->profile_url,
+			'groups_url' => $config->groups_url,
+			'group_url' => $config->group_url,
+			'offline' => $config->offline,
+			'use_chat' => $config->use_chat,
+			'chat_polling' => $config->chat_polling,
+			'bar_polling' => $config->bar_polling
+		));
 	}
-	
-	// Set JS variables
-	wp_localize_script( 'symposium', 'symposium', array(
-		'plugins' => WP_PLUGIN_URL, 
-		'plugin_url' => WP_PLUGIN_URL.'/wp-symposium/', 
-		'plugin_path' => $symposium_plugin_path,
-		'plugin_pro_url' => WP_PLUGIN_URL.'/wp-symposium-', 
-		'inactive' => $config->online,
-		'forum_url' => $config->forum_url,
-		'mail_url' => $config->mail_url,
-		'profile_url' => $config->profile_url,
-		'groups_url' => $config->groups_url,
-		'group_url' => $config->group_url,
-		'offline' => $config->offline,
-		'use_chat' => $config->use_chat,
-		'chat_polling' => $config->chat_polling,
-		'bar_polling' => $config->bar_polling,
-		'soundchat' => $config->soundchat,
-		'sound' => $config->sound,
-		'view' => $view,
-		'show_tid' => $show_tid,
-		'cat_id' => $cat_id,
-		'current_user_id' => $current_user->ID,
-		'current_user_display_name' => stripslashes($current_user->display_name),
-		'current_user_page' => $page_uid,
-		'current_group' => $page_gid,
-		'widget_vote_yes' => $yes, 
-		'widget_vote_no' => $no,
-		'post' => $_GET['post'],
-		'please_wait' => __('Please Wait...', 'wp-symposium'),
-		'saving' => __('Saving...', 'wp-symposium'),
-		'site_title' => get_bloginfo('name'),
-		'q' => $q,
-		'bg_color_2' => $bg_color_2,
-		'row_border_size' => $row_border_size,
-		'row_border_style' => $row_border_style,
-		'text_color_2' => $text_color_2
-	));
+
 
 }
 
