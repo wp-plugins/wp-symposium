@@ -208,6 +208,7 @@ jQuery(document).ready(function() {
    	
    	// Load box on first page load
 	if (jQuery("#search_inbox").length) {
+
 	 	jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
 			type: "POST",
@@ -729,12 +730,24 @@ jQuery(document).ready(function() {
 		} else {
 			var notify_new_wall = '';
 		}
+
+		if (jQuery("#trusted").length) {
+			if (jQuery("#trusted").is(":checked")) {
+				var trusted = 'on';
+			} else {
+				var trusted = '';
+			}
+		} else {
+			var trusted = jQuery("#trusted_hidden").val();			
+		}
 		
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
 			type: "POST",
 			data: ({
 				action:"updateSettings",
+				uid:symposium.current_user_page,
+				trusted:trusted,
 				timezone:jQuery("#timezone").val(),
 				sound:jQuery("#sound").val(),
 				soundchat:jQuery("#soundchat").val(),
@@ -772,12 +785,13 @@ jQuery(document).ready(function() {
 		    extended += jQuery(this).attr("title") + '[]';
 		    extended += jQuery(this).val() + '[|]';
 		});
-		  		
+
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
 			type: "POST",
 			data: ({
 				action:"updatePersonal",
+				uid:symposium.current_user_page,
 				dob_day:jQuery("#dob_day").val(),
 				dob_month:jQuery("#dob_month").val(),
 				dob_year:jQuery("#dob_year").val(),
@@ -967,9 +981,13 @@ jQuery(document).ready(function() {
 <<<<<<< .mine
 				jQuery(".symposium_pleasewait").fadeOut("slow");						
 =======
+<<<<<<< .mine
+				jQuery(".symposium_pleasewait").fadeOut("slow");						
+=======
 				jQuery(".symposium_pleasewait").fadeOut("slow");		
 >>>>>>> .r357134
 >>>>>>> .r357139
+>>>>>>> .r358221
 			},
 			error: function(err){
 				alert("getForum:"+err);
@@ -2051,6 +2069,15 @@ jQuery(document).ready(function() {
 		jQuery("#jstest").hide();
 	}
 
+	// Templates
+ 	jQuery("#reset_profile_header").click(function() {
+		if (confirm("Are you sure?")) {
+			var reset = "<div id='profile_header_div'>[]<div id='profile_header_panel'>[]<div id='profile_details'>[]<div id='profile_name'>[display_name]</div>[]<p>[location]<br />[born]</p>[]<div style='padding: 0px;'>[actions]</div>[]</div>[]</div>[]<div id='profile_photo' class='corners'>[avatar,200]</div>[]</div>";
+			reset = reset.replace(/\[\]/g, String.fromCharCode(13));
+			jQuery("#profile_header_textarea").val(reset);
+		}
+	});
+	
 	// Uploadify
 	jQuery('#admin_file_upload').uploadify({
 	    'uploader'  : symposium.plugin_url+'uploadify/uploadify.swf',
