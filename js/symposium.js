@@ -984,10 +984,14 @@ jQuery(document).ready(function() {
 <<<<<<< .mine
 				jQuery(".symposium_pleasewait").fadeOut("slow");						
 =======
+<<<<<<< .mine
+				jQuery(".symposium_pleasewait").fadeOut("slow");						
+=======
 				jQuery(".symposium_pleasewait").fadeOut("slow");		
 >>>>>>> .r357134
 >>>>>>> .r357139
 >>>>>>> .r358221
+>>>>>>> .r358238
 			},
 			error: function(err){
 				alert("getForum:"+err);

@@ -1344,22 +1344,22 @@ function symposium_plugin_styles() {
 		<th scope="row"><label for="border_radius">Corners</label></th> 
 		<td>
 		<select name="border_radius" id="border_radius"> 
-			<option <?if ( $style->border_radius=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
-			<option <?if ( $style->border_radius=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
-			<option <?if ( $style->border_radius=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
-			<option <?if ( $style->border_radius=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
-			<option <?if ( $style->border_radius=='4') { echo "selected='selected'"; } ?> value='4'>4 pixels</option> 
-			<option <?if ( $style->border_radius=='5') { echo "selected='selected'"; } ?> value='5'>5 pixels</option> 
-			<option <?if ( $style->border_radius=='6') { echo "selected='selected'"; } ?> value='6'>6 pixels</option> 
-			<option <?if ( $style->border_radius=='7') { echo "selected='selected'"; } ?> value='7'>7 pixels</option> 
-			<option <?if ( $style->border_radius=='8') { echo "selected='selected'"; } ?> value='8'>8 pixels</option> 
-			<option <?if ( $style->border_radius=='9') { echo "selected='selected'"; } ?> value='9'>9 pixels</option> 
-			<option <?if ( $style->border_radius=='10') { echo "selected='selected'"; } ?> value='10'>10 pixels</option> 
-			<option <?if ( $style->border_radius=='11') { echo "selected='selected'"; } ?> value='11'>11 pixels</option> 
-			<option <?if ( $style->border_radius=='12') { echo "selected='selected'"; } ?> value='12'>12 pixels</option> 
-			<option <?if ( $style->border_radius=='13') { echo "selected='selected'"; } ?> value='13'>13 pixels</option> 
-			<option <?if ( $style->border_radius=='14') { echo "selected='selected'"; } ?> value='14'>14 pixels</option> 
-			<option <?if ( $style->border_radius=='15') { echo "selected='selected'"; } ?> value='15'>15 pixels</option> 
+			<option <?php if ( $style->border_radius=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
+			<option <?php if ( $style->border_radius=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
+			<option <?php if ( $style->border_radius=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
+			<option <?php if ( $style->border_radius=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
+			<option <?php if ( $style->border_radius=='4') { echo "selected='selected'"; } ?> value='4'>4 pixels</option> 
+			<option <?php if ( $style->border_radius=='5') { echo "selected='selected'"; } ?> value='5'>5 pixels</option> 
+			<option <?php if ( $style->border_radius=='6') { echo "selected='selected'"; } ?> value='6'>6 pixels</option> 
+			<option <?php if ( $style->border_radius=='7') { echo "selected='selected'"; } ?> value='7'>7 pixels</option> 
+			<option <?php if ( $style->border_radius=='8') { echo "selected='selected'"; } ?> value='8'>8 pixels</option> 
+			<option <?php if ( $style->border_radius=='9') { echo "selected='selected'"; } ?> value='9'>9 pixels</option> 
+			<option <?php if ( $style->border_radius=='10') { echo "selected='selected'"; } ?> value='10'>10 pixels</option> 
+			<option <?php if ( $style->border_radius=='11') { echo "selected='selected'"; } ?> value='11'>11 pixels</option> 
+			<option <?php if ( $style->border_radius=='12') { echo "selected='selected'"; } ?> value='12'>12 pixels</option> 
+			<option <?php if ( $style->border_radius=='13') { echo "selected='selected'"; } ?> value='13'>13 pixels</option> 
+			<option <?php if ( $style->border_radius=='14') { echo "selected='selected'"; } ?> value='14'>14 pixels</option> 
+			<option <?php if ( $style->border_radius=='15') { echo "selected='selected'"; } ?> value='15'>15 pixels</option> 
 		</select> 
 		<span class="description"><?php echo __('Rounded Corner radius (not supported in all browsers)', 'wp-symposium'); ?></span></td> 
 		</tr> 
@@ -1416,10 +1416,10 @@ function symposium_plugin_styles() {
 		<th scope="row"><label for="table_border"></label></th> 
 		<td>
 		<select name="table_border" id="table_border"> 
-			<option <?if ( $style->table_border=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
-			<option <?if ( $style->table_border=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
-			<option <?if ( $style->table_border=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
-			<option <?if ( $style->table_border=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
+			<option <?php if ( $style->table_border=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
+			<option <?php if ( $style->table_border=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
+			<option <?php if ( $style->table_border=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
+			<option <?php if ( $style->table_border=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
 		</select> 
 		<span class="description"><?php echo __('Border Size', 'wp-symposium'); ?></span></td> 
 		</tr> 
@@ -1428,9 +1428,9 @@ function symposium_plugin_styles() {
 		<th scope="row"><label for="row_border_style">Table/Rows</label></th> 
 		<td>
 		<select name="row_border_style" id="row_border_styledefault_role"> 
-			<option <?if ( $style->row_border_style=='dotted') { echo "selected='selected'"; } ?> value='dotted'>Dotted</option> 
-			<option <?if ( $style->row_border_style=='dashed') { echo "selected='selected'"; } ?> value='dashed'>Dashed</option> 
-			<option <?if ( $style->row_border_style=='solid') { echo "selected='selected'"; } ?> value='solid'>Solid</option> 
+			<option <?php if ( $style->row_border_style=='dotted') { echo "selected='selected'"; } ?> value='dotted'>Dotted</option> 
+			<option <?php if ( $style->row_border_style=='dashed') { echo "selected='selected'"; } ?> value='dashed'>Dashed</option> 
+			<option <?php if ( $style->row_border_style=='solid') { echo "selected='selected'"; } ?> value='solid'>Solid</option> 
 		</select> 
 		<span class="description"><?php echo __('Border style between rows', 'wp-symposium'); ?></span></td> 
 		</tr> 
@@ -1439,10 +1439,10 @@ function symposium_plugin_styles() {
 		<th scope="row"><label for="row_border_size"></label></th> 
 		<td>
 		<select name="row_border_size" id="row_border_size"> 
-			<option <?if ( $style->row_border_size=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
-			<option <?if ( $style->row_border_size=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
-			<option <?if ( $style->row_border_size=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
-			<option <?if ( $style->row_border_size=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
+			<option <?php if ( $style->row_border_size=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
+			<option <?php if ( $style->row_border_size=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
+			<option <?php if ( $style->row_border_size=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
+			<option <?php if ( $style->row_border_size=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
 		</select> 
 		<span class="description"><?php echo __('Border size between rows', 'wp-symposium'); ?></span></td> 
 		</tr> 
@@ -1451,10 +1451,10 @@ function symposium_plugin_styles() {
 		<th scope="row"><label for="replies_border_size">Other borders</label></th> 
 		<td>
 		<select name="replies_border_size" id="replies_border_size"> 
-			<option <?if ( $style->replies_border_size=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
-			<option <?if ( $style->replies_border_size=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
-			<option <?if ( $style->replies_border_size=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
-			<option <?if ( $style->replies_border_size=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
+			<option <?php if ( $style->replies_border_size=='0') { echo "selected='selected'"; } ?> value='0'>0 pixels</option> 
+			<option <?php if ( $style->replies_border_size=='1') { echo "selected='selected'"; } ?> value='1'>1 pixels</option> 
+			<option <?php if ( $style->replies_border_size=='2') { echo "selected='selected'"; } ?> value='2'>2 pixels</option> 
+			<option <?php if ( $style->replies_border_size=='3') { echo "selected='selected'"; } ?> value='3'>3 pixels</option> 
 		</select> 
 		<span class="description"><?php echo __('For new topics/replies and topic replies', 'wp-symposium'); ?></span></td> 
 		</tr> 
@@ -1499,8 +1499,8 @@ function symposium_plugin_styles() {
 		<th scope="row"><label for="underline">Underlined?</label></th> 
 		<td>
 		<select name="underline" id="underline"> 
-			<option <?if ( $style->underline=='') { echo "selected='selected'"; } ?> value=''>No</option> 
-			<option <?if ( $style->underline=='on') { echo "selected='selected'"; } ?> value='on'>Yes</option> 
+			<option <?php if ( $style->underline=='') { echo "selected='selected'"; } ?> value=''>No</option> 
+			<option <?php if ( $style->underline=='on') { echo "selected='selected'"; } ?> value='on'>Yes</option> 
 		</select> 
 		<span class="description"><?php echo __('Whether links are underlined or not', 'wp-symposium'); ?></span></td> 
 		</tr> 
@@ -2524,7 +2524,7 @@ function symposium_plugin_options() {
 								<input name="rank<?php echo $rank; ?>" type="text" id="rank<?php echo $rank; ?>"  value="<?php echo $ranks[($rank*2-1)]; ?>" /> 
 								<?php if ($rank > 1) { ?>
 									<input name="score<?php echo $rank; ?>" type="text" id="score<?php echo $rank; ?>" style="width:50px" value="<?php echo $ranks[($rank*2)]; ?>" /> 
-								<? } ?>
+								<?php } ?>
 
 								<span class="description">
 								<?php 
