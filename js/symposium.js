@@ -987,11 +987,15 @@ jQuery(document).ready(function() {
 <<<<<<< .mine
 				jQuery(".symposium_pleasewait").fadeOut("slow");						
 =======
+<<<<<<< .mine
+				jQuery(".symposium_pleasewait").fadeOut("slow");						
+=======
 				jQuery(".symposium_pleasewait").fadeOut("slow");		
 >>>>>>> .r357134
 >>>>>>> .r357139
 >>>>>>> .r358221
 >>>>>>> .r358238
+>>>>>>> .r358967
 			},
 			error: function(err){
 				alert("getForum:"+err);
@@ -1145,6 +1149,52 @@ jQuery(document).ready(function() {
 			type: "POST",
 			data: ({
 				action:"getActivity",
+				tid:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				jQuery("#activity-list-internal").hide().html(str).fadeIn("slow");
+			},
+			error: function(err){
+				//alert("13:"+err);
+			}		
+   		});
+   	});
+	// Show all activity list
+	jQuery("#show_all_activity").live('click', function() {
+		
+		jQuery("#activity-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+        jQuery("#symposium-activity-list").inmiddle().fadeIn();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getAllActivity",
+				tid:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				jQuery("#activity-list-internal").hide().html(str).fadeIn("slow");
+			},
+			error: function(err){
+				//alert("13:"+err);
+			}		
+   		});
+   	});
+	// Show all activity threads
+	jQuery("#show_threads_activity").live('click', function() {
+		
+		jQuery("#activity-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+        jQuery("#symposium-activity-list").inmiddle().fadeIn();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getThreadsActivity",
 				tid:jQuery(this).attr("title")
 			}),
 		    dataType: "html",

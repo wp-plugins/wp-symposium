@@ -7,10 +7,10 @@ Must do (fixes before next release)
 Should do (planned to do for next release, but might not happen)
 ------------------------------------------------------------------------
 
-- Forum 	Marked certain users as support (different colour)
+- Profile	Remove timezone field
 - Groups	The groups plugin has a issue with wp default permalink setting. It does not call pages correctly and
 			will not let you create or view groups. I had to change my site to numeric permalinks for plugin to work.
-
+			
 Could do (if development time allows)
 ------------------------------------------------------------------------
 

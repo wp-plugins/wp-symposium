@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.48.1
+Version: 0.48.2
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,7 +30,7 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.48.1');
+define('WPS_VER', '0.48.2');
 define('WPS_DBVER', '48');
 
 add_action('init', 'symposium_languages');
@@ -205,17 +205,6 @@ if ( (false) || ( get_option("symposium_version") != WPS_VER && is_admin()) ) {
 function symposium_admin_warnings() {
 
    	global $wpdb;
-
-	$parts = explode('.',get_option("symposium_version"));	
-	$major = $parts[0];
-	$db = $parts[1];
-	$db_ver = get_option("symposium_db_version");
-
-	if ($db != $db_ver) {
-		echo "<div class='updated'><p>";
-		_e("You need to update your WP Symposium database - please deactivate, then re-activate the WP Symposium core plugin.");
-		echo "</p></div>";
-	}
 
 	// CSS check
     $myStyleFile = WP_PLUGIN_DIR . '/wp-symposium/css/symposium.css';
