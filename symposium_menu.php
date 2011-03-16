@@ -1,7 +1,4 @@
 <?php
-// Includes
-//include_once('symposium_functions.php');
-
 /*  Copyright 2010,2011  Simon Goodchild  (info@wpsymposium.com)
 
 	License: GPL3
@@ -139,7 +136,7 @@ function symposium_plugin_menu() {
 	
 	add_menu_page(__('Symposium'), __('Symposium'.$count1), 'edit_themes', 'symposium_options', 'symposium_plugin_options', '', 7); 
 	add_submenu_page('symposium_options', __('Options', 'wp-symposium'), __('Options', 'wp-symposium'), 'edit_themes', 'symposium_options', 'symposium_plugin_options');
-	add_submenu_page('symposium_options', __('Templates BETA', 'wp-symposium'), __('Templates BETA', 'wp-symposium'), 'edit_themes', 'symposium_templates', 'symposium_plugin_templates');
+	add_submenu_page('symposium_options', __('Templates', 'wp-symposium'), __('Templates', 'wp-symposium'), 'edit_themes', 'symposium_templates', 'symposium_plugin_templates');
 	add_submenu_page('symposium_options', __('Styles', 'wp-symposium'), __('Styles', 'wp-symposium'), 'edit_themes', 'symposium_styles', 'symposium_plugin_styles');
 	if (function_exists('symposium_forum')) {
 		add_submenu_page('symposium_options', __('Forum Categories', 'wp-symposium'), __('Forum Categories', 'wp-symposium'), 'edit_themes', 'symposium_categories', 'symposium_plugin_categories');
@@ -154,35 +151,53 @@ function symposium_plugin_templates() {
 	if (isset($_POST['profile_header_textarea'])) {
 		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_profile_header = '".addslashes(str_replace(chr(13), "[]", $_POST['profile_header_textarea']))."'") );
 	}
+	if (isset($_POST['profile_body_textarea'])) {
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_profile_body = '".addslashes(str_replace(chr(13), "[]", $_POST['profile_body_textarea']))."'") );
+	}
+	if (isset($_POST['page_footer_textarea'])) {
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_page_footer = '".addslashes(str_replace(chr(13), "[]", $_POST['page_footer_textarea']))."'") );
+	}
+	if (isset($_POST['email_textarea'])) {
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_email = '".addslashes(str_replace(chr(13), "[]", $_POST['email_textarea']))."'") );
+	}
+	if (isset($_POST['template_forum_header_textarea'])) {
+		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_forum_header = '".addslashes(str_replace(chr(13), "[]", $_POST['template_forum_header_textarea']))."'") );
+	}
+	if (isset($_POST['template_mail_textarea'])) {
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_mail = '".addslashes(str_replace(chr(13), "[]", $_POST['template_mail_textarea']))."'") );
+	}
+	
 	
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_config'));
     $template_profile_header = str_replace("[]", chr(13), stripslashes($config->template_profile_header));
+    $template_profile_body = str_replace("[]", chr(13), stripslashes($config->template_profile_body));
+    $template_page_footer = str_replace("[]", chr(13), stripslashes($config->template_page_footer));
+    $template_email = str_replace("[]", chr(13), stripslashes($config->template_email));
+    $template_forum_header = str_replace("[]", chr(13), stripslashes($config->template_forum_header));
+    $template_mail = str_replace("[]", chr(13), stripslashes($config->template_mail));
 
   	echo '<div class="wrap">';
   	
 	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
 	  	echo '<h2>Templates</h2>';
 	
-		echo '<p>Please note, the Profile Header template is available to all users of WP Symposium and always will be. However, when Templates is moved out of BETA testing, more page/area templates will be available on this screen to members who are at least Bronze level subscribers at <a href="http://www.wpsymposium.com" target="_blank">www.wpsymposium.com</a>.</p>';
-	
 		echo '<form action="" method="post">';
 		
+		// Profile Page Header
 		echo '<br /><table class="widefat">';
 		echo '<thead>';
 		echo '<tr>';
-		echo '<th>'.__('Profile Header', 'wp-symposium').'</th>';
+		echo '<th>'.__('Profile Page Header', 'wp-symposium').'</th>';
 		echo '</tr>';
 		echo '</thead>';
 		echo '<tbody>';
 		echo '<tr>';
 		echo '<td>';
-			echo '<table class="widefat" style="float:right;width:39%">';
-			echo '<thead>';
+			echo '<table style="float:right;width:39%">';
 			echo '<tr>';
-			echo '<th>'.__('Code', 'wp-symposium').'</th>';
+			echo '<th width="33%">'.__('Codes available', 'wp-symposium').'</th>';
 			echo '<th>'.__('Output', 'wp-symposium').'</th>';
 			echo '</tr>';
-			echo '</thead>';
 			echo '<tbody>';
 			echo '<tr>';
 			echo '<td>[display_name]</td>';
@@ -214,7 +229,243 @@ function symposium_plugin_templates() {
 		echo '</tr>';
 		echo '</tbody>';
 		echo '</table>';
-		
+
+		// Profile Page Body
+		echo '<br /><table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>'.__('Profile Page Body', 'wp-symposium').'</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+		echo '<tr>';
+		echo '<td>';
+		if (function_exists('symposium_groups')) {
+			echo '<table style="float:right;width:39%">';
+			echo '<tr>';
+			echo '<th width="33%">'.__('Codes available', 'wp-symposium').'</th>';
+			echo '<th>'.__('Output', 'wp-symposium').'</th>';
+			echo '</tr>';
+			echo '<tbody>';
+			echo '<tr>';
+			echo '<td>[default]</td>';
+			echo '<td>'.__('Used to force page parameter (important)', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[page]</td>';
+			echo '<td>'.__('Where page content will be placed', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[menu]</td>';
+			echo '<td>'.__('Profile menu', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '</tbody>';
+			echo '</table>';
+			echo '<textarea id="profile_body_textarea" name="profile_body_textarea" style="width:60%;height: 200px;">';
+			echo $template_profile_body;
+			echo '</textarea>';
+			echo '<br /><a id="reset_profile_body" href="javascript:void(0)">'.__('Reset to default', 'wp-symposium').'</a>';
+		} else {
+			echo __('Only available to Bronze or higher members at <a href="http://www.wpsymposium.com">WP Symposium</a>.', 'wp-symposium');
+		}
+		echo '</td>';
+		echo '</tr>';
+		echo '</tbody>';
+		echo '</table>';
+
+		// WPS Page Footer
+		echo '<br /><table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>'.__('Page Footer', 'wp-symposium').'</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+		echo '<tr>';
+		echo '<td>';
+		if (function_exists('symposium_groups')) {
+			echo '<table style="float:right;width:39%">';
+			echo '<tr>';
+			echo '<th width="33%">'.__('Codes available', 'wp-symposium').'</th>';
+			echo '<th>'.__('Output', 'wp-symposium').'</th>';
+			echo '</tr>';
+			echo '<tbody>';
+			echo '<tr>';
+			echo '<td>[powered_by_message]</td>';
+			echo '<td>'.__('Default Powered By WPS message', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[version]</td>';
+			echo '<td>'.__('Version of WPS', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '</tbody>';
+			echo '</table>';
+			echo '<textarea id="page_footer_textarea" name="page_footer_textarea" style="width:60%;height: 200px;">';
+			echo $template_page_footer;
+			echo '</textarea>';
+			echo '<br /><a id="reset_page_footer" href="javascript:void(0)">'.__('Reset to default', 'wp-symposium').'</a>';
+		} else {
+			echo __('Only available to Bronze or higher members at <a href="http://www.wpsymposium.com">WP Symposium</a>.', 'wp-symposium');
+		}
+		echo '</td>';
+		echo '</tr>';
+		echo '</tbody>';
+		echo '</table>';
+
+		// Forum Header
+		echo '<br /><table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>'.__('Forum Header', 'wp-symposium').'</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+		echo '<tr>';
+		echo '<td>';
+		if (function_exists('symposium_groups')) {
+			echo '<table style="float:right;width:39%">';
+			echo '<tr>';
+			echo '<th width="33%">'.__('Codes available', 'wp-symposium').'</th>';
+			echo '<th>'.__('Output', 'wp-symposium').'</th>';
+			echo '</tr>';
+			echo '<tbody>';
+			echo '<tr>';
+			echo '<td>[breadcrumbs]</td>';
+			echo '<td>'.__('Breadcrumb trail', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[new_topic_button]</td>';
+			echo '<td>'.__('New Topic button', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[new_topic_form]</td>';
+			echo '<td>'.__('Form for new topic', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[digest]</td>';
+			echo '<td>'.__('Subscribe to daily digest', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[subscribe]</td>';
+			echo '<td>'.__('Receive email for new topics', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[forum_options]</td>';
+			echo '<td>'.__('Search, All Activity, etc', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[sharing]</td>';
+			echo '<td>'.__('Sharing icons', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '</tbody>';
+			echo '</table>';
+			echo '<textarea id="template_forum_header_textarea" name="template_forum_header_textarea" style="width:60%;height: 200px;">';
+			echo $template_forum_header;
+			echo '</textarea>';
+			echo '<br /><a id="reset_forum_header" href="javascript:void(0)">'.__('Reset to default', 'wp-symposium').'</a>';
+		} else {
+			echo __('Only available to Bronze or higher members at <a href="http://www.wpsymposium.com">WP Symposium</a>.', 'wp-symposium');
+		}
+		echo '</td>';
+		echo '</tr>';
+		echo '</tbody>';
+		echo '</table>';
+
+		// Mail
+		echo '<br /><table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>'.__('Mail Page', 'wp-symposium').'</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+		echo '<tr>';
+		echo '<td>';
+		if (function_exists('symposium_groups')) {
+			echo '<table style="float:right;width:39%">';
+			echo '<tr>';
+			echo '<th width="33%">'.__('Codes available', 'wp-symposium').'</th>';
+			echo '<th>'.__('Output', 'wp-symposium').'</th>';
+			echo '</tr>';
+			echo '<tbody>';
+			echo '<tr>';
+			echo '<td>[compose_form]</td>';
+			echo '<td>'.__('Compose new message form', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[compose]</td>';
+			echo '<td>'.__('Compose label, translated', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[inbox]</td>';
+			echo '<td>'.__('In Box label, translated', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[sent]</td>';
+			echo '<td>'.__('Sent label, translater', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '</tbody>';
+			echo '</table>';
+			echo '<textarea id="template_mail_textarea" name="template_mail_textarea" style="width:60%;height: 200px;">';
+			echo $template_mail;
+			echo '</textarea>';
+			echo '<br /><a id="reset_mail" href="javascript:void(0)">'.__('Reset to default', 'wp-symposium').'</a>';
+		} else {
+			echo __('Only available to Bronze or higher members at <a href="http://www.wpsymposium.com">WP Symposium</a>.', 'wp-symposium');
+		}
+		echo '</td>';
+		echo '</tr>';
+		echo '</tbody>';
+		echo '</table>';		
+
+		// WPS Email Notifications
+		echo '<br /><table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>'.__('WPS Emails', 'wp-symposium').'</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+		echo '<tr>';
+		echo '<td>';
+		if (function_exists('symposium_groups')) {
+			echo '<table style="float:right;width:39%">';
+			echo '<tr>';
+			echo '<th width="33%">'.__('Codes available', 'wp-symposium').'</th>';
+			echo '<th>'.__('Output', 'wp-symposium').'</th>';
+			echo '</tr>';
+			echo '<tbody>';
+			echo '<tr>';
+			echo '<td>[message]</td>';
+			echo '<td>'.__('The email message', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[footer]</td>';
+			echo '<td>'.__('Footer (as set in <a href="admin.php?page=symposium_options&view=settings">Options/Settings</a>)', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[powered_by_message]</td>';
+			echo '<td>'.__('Default Powered By WPS message', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[version]</td>';
+			echo '<td>'.__('Version of WPS', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '</tbody>';
+			echo '</table>';
+			echo '<textarea id="email_textarea" name="email_textarea" style="width:60%;height: 200px;">';
+			echo $template_email;
+			echo '</textarea>';
+			echo '<br /><a id="reset_email" href="javascript:void(0)">'.__('Reset to default', 'wp-symposium').'</a>';
+		} else {
+			echo __('Only available to Bronze or higher members at <a href="http://www.wpsymposium.com">WP Symposium</a>.', 'wp-symposium');
+		}
+		echo '</td>';
+		echo '</tr>';
+
+		echo '</tbody>';
+		echo '</table>';
+				
 		echo '<p><input type="submit" class="button-primary" value="Save"></p>';
 		
 		echo '</form>';
@@ -543,7 +794,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'enable_password')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'sharing')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'use_styles')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'show_profile_menu')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'show_wall_extras')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_google_map')) { $status = "X"; }			
 			if (!symposium_field_exists($table_name, 'use_poke')) { $status = "X"; }			
@@ -557,9 +807,12 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'img_crop')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'forum_ranks')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'forum_ajax')) { $status = "X"; }	
-			if (!symposium_field_exists($table_name, 'template_profile_header')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'initial_friend')) { $status = "X"; }	
-										
+			if (!symposium_field_exists($table_name, 'template_profile_header')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'template_profile_body')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'template_page_footer')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'template_email')) { $status = "X"; }	
+													
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -744,7 +997,6 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'soundchat')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'notify_new_messages')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'notify_new_wall')) { $status = "X"; }
-			if (!symposium_field_exists($table_name, 'timezone')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'city')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'country')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'dob_day')) { $status = "X"; }
@@ -759,6 +1011,8 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'widget_voted')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'profile_avatar')) { $status = "X"; }
 			if (!symposium_field_exists($table_name, 'forum_favs')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'trusted')) { $status = "X"; }
+			if (!symposium_field_exists($table_name, 'devicetoken')) { $status = "X"; }
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	
 	   	echo $status;
@@ -833,7 +1087,9 @@ function symposium_plugin_debug() {
 			  	if (function_exists('symposium_groups')) { 
 			  		echo "&nbsp;&middot;&nbsp;".__('the groups directory page is at', 'wp-symposium')." <a href='".$config->groups_url."'>$config->groups_url</a><br />";
 			  		echo "&nbsp;&middot;&nbsp;".__('the group profile page is at', 'wp-symposium')." <a href='".$config->group_url."'>$config->group_url</a><br />";
-			  	}
+			  	} else {
+			  		echo "&nbsp;&middot;&nbsp;<strong>".__('Groups are available to Bronze members at <a href="http://www.wpsymposium.com">WP Symposium</a>', 'wp-symposium')."</strong><br />";
+				}
 			  	echo __('Click the links above to check', 'wp-symposium');
 			}
 	  	echo "</p>";
@@ -867,7 +1123,7 @@ function symposium_plugin_debug() {
 	    } else {
 	    	echo "<p style='color:green; font-weight:bold;'>".__( sprintf("Javascript file (%s) found.", $myJSfile) )."</p>";
 	    }
-	    echo "<p>If you find that certain WPS things don't work, like buttons or uploading profile photos, it is probably because the Symposium Javascript file isn't loading and/or working. Usually, this is because of another WordPress plugin. Try deactivating all plugins apart from WPS plugins, and re-activate them one at a time until the error re-occurs, this will help you locate the plugin that is clashing. Also try using Firefox, with the Firebug add-in installed - this will show you where the Javascript error is occuring.</p>";
+	    echo "<p>If you find that certain WPS things don't work, like buttons or uploading profile photos, it is probably because the Symposium Javascript file isn't loading and/or working. Usually, this is because of another WordPress plugin. Try deactivating all plugins apart from WPS plugins. If WPS then works, re-activate them one at a time until the error re-occurs, this will help you locate the plugin that is clashing. Also try using Firefox, with the Firebug add-in installed - this will show you where the Javascript error is occuring.</p>";
 	    	  	
 	    echo "<div id='jstest'>".$fail.__( "You have problems with Javascript. This may be because a plugin is loading another version of jQuery or jQuery UI - try deactivating all plugins apart from WPS plugins, and re-activate them one at a time until the error re-occurs, this will help you locate the plugin that is clashing. It might also be because there is an error in a JS file, either the symposium.js or another plugin script. Always try re-activating the core WPS plugin.", "wp-symposium").$fail2."</div>";
 	    
@@ -1187,10 +1443,10 @@ function symposium_plugin_styles() {
   	echo '<h2>'.__('Styles', 'wp-symposium').'</h2>';
   	
     // See if the user has selected a template
-    if( isset($_POST[ 'symposium_apply' ]) && $_POST[ 'symposium_apply' ] == 'Y' ) {
+    if( isset($_POST[ 'sid' ]) ) {
 		$style = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix.'symposium_styles'." WHERE sid = ".$_POST['sid']);
 		if ($style) {
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET use_styles = '".$style->use_styles."'") );					
+			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET use_styles = 'on'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_background = '".$style->categories_background."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET categories_color = '".$style->categories_color."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix.'symposium_config'." SET border_radius = '".$style->border_radius."'") );					
@@ -1228,7 +1484,11 @@ function symposium_plugin_styles() {
     // See if the user has posted us some information
     if( isset($_POST[ 'symposium_update' ]) && $_POST[ 'symposium_update' ] == 'Y' ) {
         // Read their posted value
-        $use_styles = $_POST[ 'use_styles' ];
+		if (isset($_POST[ 'use_styles' ])) {
+	        $use_styles = $_POST[ 'use_styles' ];			
+		} else {
+	        $use_styles = '';						
+		}
         $categories_background = $_POST[ 'categories_background' ];
         $categories_color = $_POST[ 'categories_color' ];
         $border_radius = $_POST[ 'border_radius' ];
@@ -1339,7 +1599,41 @@ function symposium_plugin_styles() {
 		<td><input name="main_background" type="text" id="main_background" class="iColorPicker" value="<?php echo $style->main_background; ?>"  /> 
 		<span class="description"><?php echo __('Main background colour (for example, new/edit forum topic/post)', 'wp-symposium'); ?></span></td> 
 		</tr> 
-			
+
+		<tr valign="top"> 
+		<th scope="row"><label for="text_color">Text Colour</label></th> 
+		<td><input name="text_color" type="text" id="text_color" class="iColorPicker" value="<?php echo $style->text_color; ?>"  /> 
+		<span class="description"><?php echo __('Primary Text Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="text_color_2"></label></th> 
+		<td><input name="text_color_2" type="text" id="text_color_2" class="iColorPicker" value="<?php echo $style->text_color_2; ?>"  /> 
+		<span class="description"><?php echo __('Secondary Text Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+
+		<tr valign="top"> 
+		<th scope="row"><label for="link">Links</label></th> 
+		<td><input name="link" type="text" id="link" class="iColorPicker" value="<?php echo $style->link; ?>"  /> 
+		<span class="description"><?php echo __('Link Colour', 'wp-symposium'); ?></span></td> 
+		</tr> 
+	
+		<tr valign="top"> 
+		<th scope="row"><label for="link_hover"</label></th> 
+		<td><input name="link_hover" type="text" id="link_hover" class="iColorPicker" value="<?php echo $style->link_hover; ?>"  /> 
+		<span class="description"><?php echo __('Link Colour on mouse hover', 'wp-symposium'); ?></span></td> 
+		</tr> 
+
+		<tr valign="top"> 
+		<th scope="row"><label for="underline">Underlined?</label></th> 
+		<td>
+		<select name="underline" id="underline"> 
+			<option <?php if ( $style->underline=='') { echo "selected='selected'"; } ?> value=''>No</option> 
+			<option <?php if ( $style->underline=='on') { echo "selected='selected'"; } ?> value='on'>Yes</option> 
+		</select> 
+		<span class="description"><?php echo __('Whether links are underlined or not', 'wp-symposium'); ?></span></td> 
+		</tr> 
+				
 		<tr valign="top"> 
 		<th scope="row"><label for="border_radius">Corners</label></th> 
 		<td>
@@ -1460,8 +1754,8 @@ function symposium_plugin_styles() {
 		</tr> 
 
 		<tr valign="top"> 
-		<th scope="row"><label for="categories_background">In-Table Headings</label></th> 
-		<td><input name="categories_background" type="text" id="categories_background" class="iColorPicker" value="<?php echo $style->categories_background; ?>"  /> 
+		<th scope="row"><label for="categories_background">Tabs</label></th> 
+		<td><input name="categories_background" type="text" id="categorxies_background" class="iColorPicker" value="<?php echo $style->categories_background; ?>"  /> 
 		<span class="description"><?php echo __('Background colour of, for example, current category', 'wp-symposium'); ?></span></td> 
 		</tr> 
 	
@@ -1469,40 +1763,6 @@ function symposium_plugin_styles() {
 		<th scope="row"><label for="categories_color"></label></th> 
 		<td><input name="categories_color" type="text" id="categories_color" class="iColorPicker" value="<?php echo $style->categories_color; ?>"  /> 
 		<span class="description"><?php echo __('Text Colour', 'wp-symposium'); ?></span></td> 
-		</tr> 
-	
-		<tr valign="top"> 
-		<th scope="row"><label for="text_color">Text Colour</label></th> 
-		<td><input name="text_color" type="text" id="text_color" class="iColorPicker" value="<?php echo $style->text_color; ?>"  /> 
-		<span class="description"><?php echo __('Primary Text Colour', 'wp-symposium'); ?></span></td> 
-		</tr> 
-	
-		<tr valign="top"> 
-		<th scope="row"><label for="text_color_2"></label></th> 
-		<td><input name="text_color_2" type="text" id="text_color_2" class="iColorPicker" value="<?php echo $style->text_color_2; ?>"  /> 
-		<span class="description"><?php echo __('Alternative Text Colour / Border Colour between rows', 'wp-symposium'); ?></span></td> 
-		</tr> 
-
-		<tr valign="top"> 
-		<th scope="row"><label for="link">Topic Links</label></th> 
-		<td><input name="link" type="text" id="link" class="iColorPicker" value="<?php echo $style->link; ?>"  /> 
-		<span class="description"><?php echo __('Link Colour', 'wp-symposium'); ?></span></td> 
-		</tr> 
-	
-		<tr valign="top"> 
-		<th scope="row"><label for="link_hover"</label></th> 
-		<td><input name="link_hover" type="text" id="link_hover" class="iColorPicker" value="<?php echo $style->link_hover; ?>"  /> 
-		<span class="description"><?php echo __('Link Colour on mouse hover', 'wp-symposium'); ?></span></td> 
-		</tr> 
-
-		<tr valign="top"> 
-		<th scope="row"><label for="underline">Underlined?</label></th> 
-		<td>
-		<select name="underline" id="underline"> 
-			<option <?php if ( $style->underline=='') { echo "selected='selected'"; } ?> value=''>No</option> 
-			<option <?php if ( $style->underline=='on') { echo "selected='selected'"; } ?> value='on'>Yes</option> 
-		</select> 
-		<span class="description"><?php echo __('Whether links are underlined or not', 'wp-symposium'); ?></span></td> 
 		</tr> 
 	
 		<tr valign="top"> 
@@ -1534,33 +1794,29 @@ function symposium_plugin_styles() {
 
 		<h2><?php echo __('Style Templates', 'wp-symposium'); ?></h2>
 		
-		<form method="post" action=""> 
 		<input type="hidden" name="symposium_apply" value="Y">
 	
 		<table class="form-table"> 
 	
 		<tr valign="top"> 
-		<th scope="row"><label for="sid">Select Template</label></th> 
+		<th scope="row"><label for="sid">Apply Template</label></th> 
 		<td>
-		<select name="sid" id="sid"> 
 			<?php
 			$styles_lib = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'symposium_styles');
 			if ($styles_lib) {
 				foreach ($styles_lib as $style_lib)
 				{
-					echo "<option value='".$style_lib->sid."'>".$style_lib->title."</option>";
+					echo '<form method="post" action="" style="float: left; margin-right:10px;">';
+					echo "<input type='hidden' name='sid' value='".$style_lib->sid."' />";
+					echo "<input type='submit' class='button' value='".$style_lib->title."' />";
+					echo "</form>";
 				}
 			}
 			?>
-		</select> 
-		<span class="description">Changes are applied immediately when applied</span></td> 
 		</tr> 			
 
 		</table> 
 					
-		<p class="submit"> 
-		<input type="submit" name="Submit" class="button-primary" value="Apply Template" /> 
-		</p> 
 		</form> 
 		
 		<?php
@@ -1631,7 +1887,6 @@ function symposium_plugin_options() {
 	        if (isset($_POST[ 'offline' ])) 			{ $offline = $_POST[ 'offline' ]; } 					else { $offline = ''; }
 	        if (isset($_POST[ 'use_poke' ])) 			{ $use_poke = $_POST[ 'use_poke' ]; } 					else { $use_poke = ''; }
 		    if (isset($_POST[ 'enable_password' ])) 	{ $enable_password = $_POST['enable_password']; } 		else { $enable_password = ''; }
-		    if (isset($_POST[ 'show_profile_menu' ]))	{ $show_profile_menu = $_POST['show_profile_menu']; } 	else { $show_profile_menu = ''; }
 		    if (isset($_POST[ 'show_wall_extras' ])) 	{ $show_wall_extras = $_POST['show_wall_extras']; } 	else { $show_wall_extras = ''; }
 		    if (isset($_POST[ 'profile_google_map' ])) 	{ $profile_google_map = $_POST['profile_google_map']; } else { $profile_google_map = ''; }
 		    if (isset($_POST[ 'profile_avatars' ])) 	{ $profile_avatars = $_POST['profile_avatars']; } 		else { $profile_avatars = ''; }
@@ -1642,7 +1897,6 @@ function symposium_plugin_options() {
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET offline = '".$offline."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET use_poke = '".$use_poke."'") );					
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET enable_password = '".$enable_password."'") );
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_profile_menu = '".$show_profile_menu."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET show_wall_extras = '".$show_wall_extras."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET profile_google_map = '".$profile_google_map."'") );
 			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET profile_avatars = '".$profile_avatars."'") );
@@ -2168,7 +2422,6 @@ function symposium_plugin_options() {
 					<li><?php _e('The polling intervals occur in addition to an initial check on each page load.', 'wp-symposium'); ?></li>
 					<li><?php _e('The more frequent the polling intervals, the greater the load on your server.', 'wp-symposium'); ?></li>
 					<li><?php _e('Disabling chat windows will reduce the load on the server.', 'wp-symposium'); ?></li>
-					<li><?php _e('The default sound and bar position can be changed by members.', 'wp-symposium'); ?></li>
 					</ol>
 					
 					<?php
@@ -2301,7 +2554,7 @@ function symposium_plugin_options() {
 					<tr valign="top"> 
 					<th scope="row"><label for="wp_width">Width</label></th> 
 					<td><input name="wp_width" type="text" id="wp_width" value="<?php echo $wp_width; ?>"/> 
-					<span class="description"><?php echo __('Width of all WP Symposium plugins, eg: 600px or 85%', 'wp-symposium'); ?></span></td> 
+					<span class="description"><?php echo __('Width of all WP Symposium plugins, eg: 600px or 100%', 'wp-symposium'); ?></span></td> 
 					</tr> 
 
 					<tr valign="top">
@@ -2606,7 +2859,6 @@ function symposium_plugin_options() {
 					$initial_friend = $config->initial_friend;
 					$profile_avatars = $config->profile_avatars;
 					$enable_password = $config->enable_password;
-					$show_profile_menu = $config->show_profile_menu;
 					$show_wall_extras = $config->show_wall_extras;
 					$profile_google_map = $config->profile_google_map;
 
@@ -2635,13 +2887,6 @@ function symposium_plugin_options() {
 					<td>
 					<input type="checkbox" name="use_poke" id="use_poke" <?php if ($use_poke == "on") { echo "CHECKED"; } ?>/>
 					<span class="description"><?php echo __('Enable Poke feature (coming soon.....)', 'wp-symposium'); ?></span></td> 
-					</tr> 
-
-					<tr valign="top"> 
-					<th scope="row"><label for="show_profile_menu"><?php _e('Show Profile Menu', 'wp-symposium'); ?></label></th>
-					<td>
-					<input type="checkbox" name="show_profile_menu" id="show_profile_menu" <?php if ($show_profile_menu == "on") { echo "CHECKED"; } ?>/>
-					<span class="description"><?php echo __('Include the menu on the profile page', 'wp-symposium'); ?></span></td> 
 					</tr> 
 
 					<tr valign="top"> 

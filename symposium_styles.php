@@ -74,10 +74,30 @@
 					$headingsfamily = $styles->headingsfamily;
 					$headingssize = $styles->headingssize;
 									
-					echo ".symposium-wrapper {";
+					
+					echo ".symposium-wrapper,
+					.symposium-wrapper .symposium-button, .symposium-button, 
+					.symposium-wrapper input, .symposium-wrapper textarea,
+					.symposium-wrapper p, .symposium-wrapper li, .symposium-wrapper td, .symposium-wrapper div,
+					#symposium-search, #symposium-activity-list, #symposium-fav-list {
+					";
 					echo "	font-family: ".$fontfamily.";";
 					echo "	font-size: ".$fontsize."px;";
 					echo "	color: ".$text_color.";";
+					echo "  text-shadow: none; ";
+					echo "}";
+					
+					echo ".symposium-wrapper a:link, .symposium-wrapper a:visited, .symposium-wrapper a:active {";
+					echo "	color: ".$link.";";
+					if ($underline == "on") {
+						echo "	text-decoration: underline;";
+					} else {
+						echo "	text-decoration: none;";
+					}
+					echo "}";
+
+					echo ".symposium-wrapper a:hover {";
+					echo "	color: ".$link_hover.";";
 					echo "}";
 	
 					echo "body img, body input, .corners {";
@@ -111,10 +131,13 @@
 				 	echo "  border-top-right-radius:".($border_radius-5)."px;";
 					echo "  -moz-border-radius-topright:".($border_radius-5)."px;";
 					echo "}";
-			
-					echo ".symposium-wrapper .table_topic {";
+	
+					echo ".symposium-wrapper .table_topic, .symposium-wrapper #profile_name {";
 					echo "	font-family: ".$headingsfamily.";";
 					echo "	font-size: ".$headingssize.";";
+					echo "}";
+	
+					echo ".symposium-wrapper .table_topic {";
 					echo "	color: ".$categories_color.";";
 					echo "}";
 					

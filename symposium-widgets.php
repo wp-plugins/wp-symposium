@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Widgets
 Plugin URI: http://www.wpsymposium.com
 Description: Widgets for use with WP Symposium.
-Version: 0.48.2
+Version: 0.49
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,7 +30,6 @@ License: GPL3
 add_action( 'widgets_init', 'symposium_load_widgets' );
 
 function symposium_load_widgets() {
-	//include_once('symposium_functions.php');
 	register_widget( 'Forumrecentposts_Widget' );
 	register_widget( 'Symposium_members_Widget' );
 	register_widget( 'Symposium_vote_Widget' );
@@ -58,9 +57,6 @@ class Symposium_vote_Widget extends WP_Widget {
 			
 		extract( $args );
 
-		// Include Styles
-		//include_once('symposium_styles.php');
-		
 		// Get options
 		$symposium_vote_question = apply_filters('widget_symposium_vote_question', $instance['symposium_vote_question'] );
 		$symposium_vote_forum = apply_filters('widget_symposium_vote_forum', $instance['symposium_vote_forum'] );

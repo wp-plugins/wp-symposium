@@ -7,29 +7,23 @@ Must do (fixes before next release)
 Should do (planned to do for next release, but might not happen)
 ------------------------------------------------------------------------
 
-- Profile	Remove timezone field
-- Groups	The groups plugin has a issue with wp default permalink setting. It does not call pages correctly and
-			will not let you create or view groups. I had to change my site to numeric permalinks for plugin to work.
+- Wall emails author wrong 	"Simon Goodchild has replied to one of your posts:"... check!
+- Groups					The groups plugin has a issue with wp default permalink setting. It does not call pages correctly and
+							will not let you create or view groups. I had to change my site to numeric permalinks for plugin to work.
 			
 Could do (if development time allows)
 ------------------------------------------------------------------------
 
-- Forum		Users can vote for removal, and when x number of votes received, it is deleted
+- Forum						Users can vote for removal, and when x number of votes received, it is deleted
 
 Would do (if life allows!)
 ------------------------------------------------------------------------
 
-- template driven notifications
 - Implement poke (needs notifications)
-- optionally receive email on activity in wall post if I've replied or started it
+- Optionally receive email on activity in wall post if I've replied or started it
 - Codex
 - Mail: quote feature
 - Forum: Steven Tryon: linking blog to forum and vice versa
 - Minimum level for categories
 - 'clear my vote' link on vote widget
-
-
-
-
-
 

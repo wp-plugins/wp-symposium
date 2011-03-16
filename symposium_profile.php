@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Profile
 Plugin URI: http://www.wpsymposium.com
 Description: Member Profile component for the Symposium suite of plug-ins. Also enables Friends. Put [symposium-profile], [symposium-settings], [symposium-personal], [symposium-friends] or [symposium-extended] on any WordPress page to display relevant content.
-Version: 0.48.2
+Version: 0.49
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -26,8 +26,6 @@ License: GPL3
 */
 
 
-
-
 // [symposium-member-header] (just header)
 function symposium_profile_member_header()  
 {  
@@ -40,8 +38,10 @@ function symposium_profile_member_header()
 // [symposium-profile-menu] 
 function symposium_profile_member_menu()  
 {  
-   	global $current_user;
-	wp_get_current_user();
+
+	global $wpdb, $current_user;
+
+	$html = "";
 	
 	if (is_user_logged_in()) {
 		
@@ -51,11 +51,10 @@ function symposium_profile_member_menu()
 			$uid = $current_user->ID;
 		}	        			
 	
-		//include_once('symposium_styles.php');
-		//include_once('symposium_functions.php');
-		
-		$html = "<div class='symposium-wrapper'>";
+		$html .= "<div class='symposium-wrapper'>";
+		$html .= "<div id='profile_menu' style='margin-left: 0px'>";
 		$html .= show_profile_menu($uid, $current_user->ID);
+		$html .= "</div>";
 		$html .= "</div>";
 		
 	} else {
@@ -147,9 +146,8 @@ function symposium_profile_avatar()
 function symposium_show_profile($page)  
 {  
 
-   	global $wpdb, $current_user;
-	wp_get_current_user();
-	
+	global $wpdb, $current_user;
+
 	if (is_user_logged_in()) {
 
 		$uid = '';
@@ -183,10 +181,6 @@ function symposium_show_profile($page)
 			
 			$html = "";
 		
-			// Includes
-			//include_once('symposium_styles.php');
-			//include_once('symposium_functions.php');
-			
 			// Wrapper
 			$html .= "<div class='symposium-wrapper'>";
 		
@@ -194,9 +188,6 @@ function symposium_show_profile($page)
 
 				if ($page != 'header') {
 					
-					if ($show_profile_menu == "on") {
-						$html .= show_profile_menu($uid, $current_user->ID);
-					}		
 					if (isset($_GET['view']) && $_GET['view'] != '') {
 						$page = $_GET['view'];
 					}
@@ -205,9 +196,19 @@ function symposium_show_profile($page)
 					}
 					if ($page == '') { $page = "wall"; }
 					
-					$html .= "<div id='force_profile_page' style='display:none'>".$page."</div>";
-					$html .= "<div id='profile_body'><img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' /></div>";
-		
+					$template = $wpdb->get_var("SELECT template_profile_body FROM ".$wpdb->prefix."symposium_config");
+					$template = str_replace("[]", "", stripslashes($template));
+					
+					// Put in forced profile page
+					$template = str_replace("[default]", $page, stripslashes($template));
+
+					// Put in busy image
+					$template = str_replace("[page]", "<img src='".WP_PLUGIN_URL."/wp-symposium/images/busy.gif' />", stripslashes($template));
+
+					// Put in menu
+					$template = str_replace("[menu]", show_profile_menu($uid, $current_user->ID), stripslashes($template));
+
+					$html .= $template;
 					$html .= "<br class='clear' />";
 					
 				}

@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.48.2
+Version: 0.49
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,8 +30,8 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.48.2');
-define('WPS_DBVER', '48');
+define('WPS_VER', '0.49');
+define('WPS_DBVER', '49');
 
 add_action('init', 'symposium_languages');
 add_action('init', 'js_init');
@@ -75,7 +75,7 @@ if ( (false) || ( get_option("symposium_version") != WPS_VER && is_admin()) ) {
 	symposium_alter_table("config", "ADD", "viewer", "varchar(32)", "NOT NULL", "'Guest'");
 	symposium_alter_table("config", "ADD", "include_admin", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "oldest_first", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "wp_width", "varchar(6)", "NOT NULL", "'650px'");
+	symposium_alter_table("config", "ADD", "wp_width", "varchar(6)", "NOT NULL", "'100%'");
 	symposium_alter_table("config", "ADD", "main_background", "varchar(12)", "NOT NULL", "'#fff'");
 	symposium_alter_table("config", "ADD", "closed_opacity", "varchar(6)", "NOT NULL", "'1.0'");
 	symposium_alter_table("config", "ADD", "closed_word", "varchar(32)", "NOT NULL", "'closed'");
@@ -96,7 +96,6 @@ if ( (false) || ( get_option("symposium_version") != WPS_VER && is_admin()) ) {
 	symposium_alter_table("config", "ADD", "members_url", "varchar(128)", "NOT NULL", "'Important: Please update!'");
 	symposium_alter_table("config", "ADD", "sharing", "varchar(32)", "", "''");
 	symposium_alter_table("config", "ADD", "use_styles", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "show_profile_menu", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("config", "ADD", "show_wall_extras", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
 	symposium_alter_table("config", "ADD", "use_chat", "varchar(2)", "NOT NULL", "'on'");
@@ -120,12 +119,35 @@ if ( (false) || ( get_option("symposium_version") != WPS_VER && is_admin()) ) {
 	symposium_alter_table("config", "ADD", "forum_ranks", "varchar(128)", "NOT NULL", "''");
 	symposium_alter_table("config", "MODIFY", "forum_ranks", "varchar(256)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "forum_ajax", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("config", "ADD", "template_profile_header", "text", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "initial_friend", "int(11)", "NOT NULL", "'0'");
+	symposium_alter_table("config", "ADD", "template_profile_header", "text", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "template_profile_body", "text", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "template_page_footer", "text", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "template_email", "text", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "template_forum_header", "text", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "template_mail", "text", "NOT NULL", "''");
 
+	// Set default values for some config fields
 	if ($wpdb->get_var("SELECT template_profile_header FROM ".$wpdb->prefix.'symposium_config') == '') {
 		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_profile_header = \"<div id='profile_header_div'>[]<div id='profile_header_panel'>[]<div id='profile_details'>[]<div id='profile_name'>[display_name]</div>[]<p>[location]<br />[born]</p>[]<div style='padding: 0px;'>[actions]</div>[]</div>[]</div>[]<div id='profile_photo' class='corners'>[avatar,200]</div>[]</div>\""); 
 	}
+	if ($wpdb->get_var("SELECT template_profile_body FROM ".$wpdb->prefix.'symposium_config') == '') {
+		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_profile_body = \"<div id='profile_wrapper'>[]<div id='force_profile_page' style='display:none'>[default]</div>[]<div id='profile_body_wrapper'>[]<div id='profile_body'>[page]</div>[]</div>[]<div id='profile_menu'>[menu]</div>[]</div>\""); 
+	}
+	if ($wpdb->get_var("SELECT template_page_footer FROM ".$wpdb->prefix.'symposium_config') == '') {
+		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_page_footer = \"<div id='powered_by_wps'>[]<a href='http://www.wpsymposium.com' target='_blank'>[powered_by_message] v[version]</a>[]</div>\""); 
+	}
+	if ($wpdb->get_var("SELECT template_email FROM ".$wpdb->prefix.'symposium_config') == '') {
+		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_email = \"<style> body { background-color: #eee; } </style>[]<div style='margin: 20px; padding:20px; border-radius:10px; background-color: #fff;border:1px solid #000;'>[][message][]<br /><hr />[][footer]<br />[]<a href='http://www.wpsymposium.com' target='_blank'>[powered_by_message] v[version]</a>[]</div>\""); 
+	}
+	if ($wpdb->get_var("SELECT template_forum_header FROM ".$wpdb->prefix.'symposium_config') == '') {
+		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_forum_header = \"[breadcrumbs][new_topic_button][new_topic_form][][digest][subscribe][][forum_options][][sharing]\""); 
+	}
+	if ($wpdb->get_var("SELECT template_mail FROM ".$wpdb->prefix.'symposium_config') == '') {
+		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_mail = \"[compose_form][]<div id='mail_sent_message'></div>[]<div id='mail_office'>[]<div id='mail_toolbar'>[]<input id='compose_button' class='symposium-button' type='submit' value='[compose]'>[]<div id='trays'>[]<input type='radio' id='in' class='mail_tray' name='tray' checked> [inbox] <span id='in_unread'></span>&nbsp;&nbsp;[]<input type='radio' id='sent' class='mail_tray' name='tray'> [sent][]</div>[]<div id='search'>[]<input id='search_inbox' type='text' style='width: 160px'>[]<input id='search_inbox_go' class='symposium-button' type='submit' style='width: 70px; margin-left:10px;' value='Search'>[]</div>[]</div>[]<div id='mailbox'>[]<div id='mailbox_list'></div>[]</div>[]<div id='messagebox'></div>[]</div>\""); 
+	}
+	
+	// Default forum ranks
 	if ($wpdb->get_var("SELECT forum_ranks FROM ".$wpdb->prefix.'symposium_config') == '') {
 		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET forum_ranks = 'on;Emperor;0;Monarch;200;Lord;150;Duke;125;Count;100;Earl;75;Viscount;50;Bishop;25;Baron;10;Knight;5;Peasant;0'"); 
 	}
@@ -151,11 +173,8 @@ if ( (false) || ( get_option("symposium_version") != WPS_VER && is_admin()) ) {
 	symposium_alter_table("notifications", "ADD", "notification_old", "varchar(2)", "NOT NULL", "''");
 
 	// Modify user meta table
-	symposium_alter_table("usermeta", "ADD", "sound", "varchar(32)", "NOT NULL", "'chime.mp3'");
-	symposium_alter_table("usermeta", "ADD", "soundchat", "varchar(32)", "NOT NULL", "'tap.mp3'");
 	symposium_alter_table("usermeta", "ADD", "notify_new_messages", "varchar(2)", "NOT NULL", "'on'");
 	symposium_alter_table("usermeta", "ADD", "notify_new_wall", "varchar(2)", "NOT NULL", "'on'");
-	symposium_alter_table("usermeta", "ADD", "timezone", "int(11)", "", "0");
 	symposium_alter_table("usermeta", "ADD", "city", "varchar(32)", "", "");
 	symposium_alter_table("usermeta", "ADD", "country", "varchar(32)", "", "");
 	symposium_alter_table("usermeta", "ADD", "dob_day", "int(11)", "", "");
@@ -173,6 +192,7 @@ if ( (false) || ( get_option("symposium_version") != WPS_VER && is_admin()) ) {
 	symposium_alter_table("usermeta", "ADD", "forum_favs", "TEXT", "", "");
 	symposium_alter_table("usermeta", "ADD", "profile_avatar", "mediumblob", "", "");
 	symposium_alter_table("usermeta", "ADD", "trusted", "varchar(2)", "", "''");
+	symposium_alter_table("usermeta", "ADD", "devicetoken", "varchar(128)", "NOT NULL", "''");
 
 	// Modify styles table
 	symposium_alter_table("styles", "ADD", "underline", "varchar(2)", "NOT NULL", "'on'");
@@ -562,7 +582,7 @@ if ( !function_exists('get_avatar') ) {
 				$host = 'http://0.gravatar.com';
 		}
 	
-		// If on www.wpsymposium.com then change image size to include border if a subscriber
+		// If on www.wpsymposium.com then change image size to include border if a subscriber (this is only for use on www.wpsymposium.com)
 		$member = "";
 		if ($_SERVER['HTTP_HOST'] == 'www.wpsymposium.com') {
 			$level = $wpdb->get_var("select meta_value from ".$wpdb->base_prefix."usermeta where meta_key = 'ym_user' and (meta_value like '%Bronze%' OR meta_value like '%Silver%') and meta_value like '%YourMember_User%' and user_id = ".$id);
@@ -641,7 +661,7 @@ if ( !function_exists('get_avatar') ) {
 			
 		}
 		
-		// Add border for subscribers
+		// Add border for subscribers (this is only for use on www.wpsymposium.com)
 		if ($member != '') {
 
 	        if ( $member == "Bronze" ) {
@@ -1091,7 +1111,6 @@ function symposium_scriptsAction() {
 			'use_chat' => $config->use_chat,
 			'chat_polling' => $config->chat_polling,
 			'bar_polling' => $config->bar_polling,
-			'soundchat' => get_symposium_meta($current_user->ID, 'soundchat'),
 			'sound' => $config->sound,
 			'view' => $view,
 			'show_tid' => $show_tid,
@@ -1120,6 +1139,7 @@ function symposium_scriptsAction() {
 		// Load Symposium JS supporting scrtipts		
 		wp_enqueue_script('jquery-swfobject', WP_PLUGIN_URL.'/wp-symposium/uploadify/swfobject.js', array('jquery'));
 		wp_enqueue_script('jquery-uploadify', WP_PLUGIN_URL.'/wp-symposium/uploadify/jquery.uploadify.v2.1.4.js', array('jquery'));
+		wp_enqueue_script('jquery-jcrop', WP_PLUGIN_URL.'/wp-symposium/js/jquery.Jcrop.js', array('jquery'));
 
 		// Load Symposium JS
 	 	wp_enqueue_script('symposium', $symposium_plugin_url.'js/symposium.js', array('jquery'));
@@ -1139,7 +1159,8 @@ function symposium_scriptsAction() {
 			'offline' => $config->offline,
 			'use_chat' => $config->use_chat,
 			'chat_polling' => $config->chat_polling,
-			'bar_polling' => $config->bar_polling
+			'bar_polling' => $config->bar_polling,
+			'current_user_id' => $current_user->ID
 		));
 	}
 

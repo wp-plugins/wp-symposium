@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium Panel
 Plugin URI: http://www.wpsymposium.com
 Description: Panel bottom corner of screen to display notifications on new messages, mail, friend online, etc. Also controls live chat windows, chatroom and online status. Simply activate to add.
-Version: 0.48.2
+Version: 0.49
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -55,8 +55,6 @@ function add_notification_bar()
 		if ($config->use_styles == "on") {
 			$border_radius = $config->border_radius;
 		}
-
-		//include_once('symposium_functions.php');
 
 		// maximum number of chat windows
 		$maxChatWindows = 3;

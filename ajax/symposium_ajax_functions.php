@@ -17,11 +17,10 @@
 
 
 include_once('../../../../wp-config.php');
-//include_once('../../../../wp-includes/wp-db.php');
-//include_once('../symposium_functions.php');
 	
-
-$action = $_POST['action'].$_GET['action'];
+$action = "";
+if (isset($_POST['action'])) { $action .= $_POST['action']; }
+if (isset($_GET['action'])) { $action .= $_GET['action']; }
 
 // Update Admin Avatar
 if ($_POST['action'] == 'saveAdminAvatar') {

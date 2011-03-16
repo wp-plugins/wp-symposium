@@ -12,6 +12,7 @@
 */
 
 (function(jQuery){ 
+	
 	jQuery.fn.extend({  
 		elastic: function() {
 		

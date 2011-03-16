@@ -17,8 +17,6 @@
 
 
 include_once('../../../../wp-config.php');
-//include_once('../../../../wp-includes/wp-db.php');
-//include_once('../symposium_functions.php');
 	
 global $wpdb;
 
@@ -39,9 +37,16 @@ if ($_GET['action'] == 'profile') {
 	
 	$return_arr = array();		
 
-	$meta = get_symposium_meta_row($uid);					
-	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
-	
+	$meta = get_symposium_meta_row($uid);				
+	$user = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'users WHERE ID = '.$uid));
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'symposium_config'));
+
+	$avatar = get_avatar($uid, 32);
+	preg_match('/<img\s.*src=["\'](.*?)["\']/i', $avatar, $matches); 
+	$avatar = $matches[1];  
+
+	$row_array['display_name'] = $user->display_name;
+	$row_array['avatar'] = $avatar;	
 	$row_array['dob_day'] = $meta->dob_day;
 	$row_array['dob_month'] = $meta->dob_month;
 	$row_array['dob_year'] = $meta->dob_year;
@@ -71,7 +76,8 @@ if ($_GET['action'] == 'profile') {
 	
 	$row_array['extended_names'] = $names;
 	$row_array['extended_values'] = $values;
-    array_push($return_arr, $row_array);
+    
+	array_push($return_arr, $row_array);
 	
 	echo json_encode($return_arr);
 	
@@ -211,20 +217,25 @@ if ($_GET['action'] == 'reply') {
 }
 
 // Authenticate
-// eg: WPROOT_URL/wp-content/plugins/wp-symposium/ajax/symposium_api.php?action=authenticate&username=joe&password=xyz123
+// eg: WPROOT_URL/wp-content/plugins/wp-symposium/ajax/symposium_api.php?action=authenticate&username=joe&password=xyz123&devicetoken=12345678_123...
 if ($_GET['action'] == 'authenticate') {
 
 	global $wpdb,$wp_error;
 
 	$username = $_GET['username'];
 	$password = $_GET['password'];
-	
+	$devicetoken = $_GET['devicetoken'];
+	$devicetoken = str_replace("_", " ", $devicetoken);
+
 	$user = wp_authenticate($username, $password);
-    if(is_wp_error($user)) {
-        echo "FAIL";
-    } else {
-		echo "SUCCESS:".$user->ID;   	
-    }
+
+    	if(is_wp_error($user)) {
+        	echo "FAIL";
+    	} else {
+		$sql = "UPDATE ".$wpdb->base_prefix."symposium_usermeta SET devicetoken = '".$devicetoken."' WHERE uid = ".$user->ID;
+		$wpdb->query( $wpdb->prepare($sql) );
+		echo "SUCCESS:".$user->ID;
+    	}
 
 }
 
