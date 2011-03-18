@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.49
+Stable tag: 0.49.1
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -153,8 +153,14 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 == Changelog ==
 
+= 0.49.1 =
+
+* Small bug fix on alert in WP admin ("getBox" alert)
+* Small change to CSS to avoid horizontal scrollbar in some browsers on wall when hover to show Delete link
+
 = 0.49 =
 
+* Mail: New mail layout, also fully AJAX
 * Profile: Wall posts/reply notifications are more controlled! Less Spam about wall posts and replies...
 * Templates: Now include Profile Page Header, Profile Page Body, Page Footer, Forum Header, Mail Page, Email Notifications
 * Note: only profile page header template is available to all, others are for Bronze+ members

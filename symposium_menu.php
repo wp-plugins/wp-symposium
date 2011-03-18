@@ -149,22 +149,36 @@ function symposium_plugin_templates() {
 	
 	global $wpdb;
 	if (isset($_POST['profile_header_textarea'])) {
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_profile_header = '".addslashes(str_replace(chr(13), "[]", $_POST['profile_header_textarea']))."'") );
+		$sql = "UPDATE ".$wpdb->prefix."symposium_config SET template_profile_header = '".addslashes(str_replace(chr(13), "[]", $_POST['profile_header_textarea']))."'";
+		$wpdb->query( $wpdb->prepare($sql) );
 	}
 	if (isset($_POST['profile_body_textarea'])) {
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_profile_body = '".addslashes(str_replace(chr(13), "[]", $_POST['profile_body_textarea']))."'") );
+		$sql = "UPDATE ".$wpdb->prefix."symposium_config SET template_profile_body = '".addslashes(str_replace(chr(13), "[]", $_POST['profile_body_textarea']))."'";
+		$wpdb->query( $wpdb->prepare($sql) );
 	}
 	if (isset($_POST['page_footer_textarea'])) {
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_page_footer = '".addslashes(str_replace(chr(13), "[]", $_POST['page_footer_textarea']))."'") );
+		$sql = "UPDATE ".$wpdb->prefix."symposium_config SET template_page_footer = '".addslashes(str_replace(chr(13), "[]", $_POST['page_footer_textarea']))."'";
+		$wpdb->query( $wpdb->prepare($sql) );
 	}
 	if (isset($_POST['email_textarea'])) {
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_email = '".addslashes(str_replace(chr(13), "[]", $_POST['email_textarea']))."'") );
+		$sql = "UPDATE ".$wpdb->prefix."symposium_config SET template_email = '".addslashes(str_replace(chr(13), "[]", $_POST['email_textarea']))."'";
+		$wpdb->query( $wpdb->prepare($sql) );
 	}
 	if (isset($_POST['template_forum_header_textarea'])) {
-		$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_forum_header = '".addslashes(str_replace(chr(13), "[]", $_POST['template_forum_header_textarea']))."'") );
+		$sql = "UPDATE ".$wpdb->prefix."symposium_config SET template_forum_header = '".addslashes(str_replace(chr(13), "[]", $_POST['template_forum_header_textarea']))."'";
+		$wpdb->query( $wpdb->prepare($sql) );
 	}
 	if (isset($_POST['template_mail_textarea'])) {
-			$wpdb->query( $wpdb->prepare("UPDATE ".$wpdb->prefix."symposium_config SET template_mail = '".addslashes(str_replace(chr(13), "[]", $_POST['template_mail_textarea']))."'") );
+		$sql = "UPDATE ".$wpdb->prefix."symposium_config SET template_mail = '".addslashes(str_replace(chr(13), "[]", $_POST['template_mail_textarea']))."'";
+		$wpdb->query( $wpdb->prepare($sql) );
+	}
+	if (isset($_POST['template_mail_tray_textarea'])) {
+		$sql = "UPDATE ".$wpdb->prefix."symposium_config SET template_mail_tray = '".addslashes(str_replace(chr(13), "[]", $_POST['template_mail_tray_textarea']))."'";
+		$wpdb->query( $wpdb->prepare($sql) );
+	}
+	if (isset($_POST['template_mail_message_textarea'])) {
+		$sql = "UPDATE ".$wpdb->prefix."symposium_config SET template_mail_message = '".addslashes(str_replace(chr(13), "[]", $_POST['template_mail_message_textarea']))."'";
+		$wpdb->query( $wpdb->prepare($sql) );
 	}
 	
 	
@@ -175,6 +189,8 @@ function symposium_plugin_templates() {
     $template_email = str_replace("[]", chr(13), stripslashes($config->template_email));
     $template_forum_header = str_replace("[]", chr(13), stripslashes($config->template_forum_header));
     $template_mail = str_replace("[]", chr(13), stripslashes($config->template_mail));
+    $template_mail_tray = str_replace("[]", chr(13), stripslashes($config->template_mail_tray));
+    $template_mail_message = str_replace("[]", chr(13), stripslashes($config->template_mail_message));
 
   	echo '<div class="wrap">';
   	
@@ -417,6 +433,112 @@ function symposium_plugin_templates() {
 		echo '</tr>';
 		echo '</tbody>';
 		echo '</table>';		
+
+		// Mail Tray Item
+		echo '<br /><table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>'.__('Mail Page: Tray Item', 'wp-symposium').'</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+		echo '<tr>';
+		echo '<td>';
+		if (function_exists('symposium_groups')) {
+			echo '<table style="float:right;width:39%">';
+			echo '<tr>';
+			echo '<th width="33%">'.__('Codes available', 'wp-symposium').'</th>';
+			echo '<th>'.__('Output', 'wp-symposium').'</th>';
+			echo '</tr>';
+			echo '<tbody>';
+			echo '<tr>';
+			echo '<td>[mail_sent]</td>';
+			echo '<td>'.__('When the message was sent', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[mail_from]</td>';
+			echo '<td>'.__('Sender/recipient of the message', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[mail_subject]</td>';
+			echo '<td>'.__('Subject of the message', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[mail_message]</td>';
+			echo '<td>'.__('A snippet of the mail message', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '</tbody>';
+			echo '</table>';
+			echo '<textarea id="template_mail_tray_textarea" name="template_mail_tray_textarea" style="width:60%;height: 200px;">';
+			echo $template_mail_tray;
+			echo '</textarea>';
+			echo '<br /><a id="reset_mail_tray" href="javascript:void(0)">'.__('Reset to default', 'wp-symposium').'</a>';
+		} else {
+			echo __('Only available to Bronze or higher members at <a href="http://www.wpsymposium.com">WP Symposium</a>.', 'wp-symposium');
+		}
+		echo '</td>';
+		echo '</tr>';
+		echo '</tbody>';
+		echo '</table>';
+		
+		// Mail Message
+		echo '<br /><table class="widefat">';
+		echo '<thead>';
+		echo '<tr>';
+		echo '<th>'.__('Mail Page: Message', 'wp-symposium').'</th>';
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+		echo '<tr>';
+		echo '<td>';
+		if (function_exists('symposium_groups')) {
+			echo '<table style="float:right;width:39%">';
+			echo '<tr>';
+			echo '<th width="33%">'.__('Codes available', 'wp-symposium').'</th>';
+			echo '<th>'.__('Output', 'wp-symposium').'</th>';
+			echo '</tr>';
+			echo '<tbody>';
+			echo '<tr>';
+			echo '<td>[avatar,x]</td>';
+			echo '<td>'.__('Show avatar, size x in pixels (no spaces)', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[mail_subject]</td>';
+			echo '<td>'.__('Subject of the message', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[mail_recipient]</td>';
+			echo '<td>'.__('Sender/recipient of the message', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[mail_sent]</td>';
+			echo '<td>'.__('When the message was sent', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[delete_button]</td>';
+			echo '<td>'.__('Delete mail button', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[reply_button]</td>';
+			echo '<td>'.__('Reply to mail button', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td>[message]</td>';
+			echo '<td>'.__('The mail message', 'wp-symposium').'</td>';
+			echo '</tr>';
+			echo '</tbody>';
+			echo '</table>';
+			echo '<textarea id="template_mail_message_textarea" name="template_mail_message_textarea" style="width:60%;height: 200px;">';
+			echo $template_mail_message;
+			echo '</textarea>';
+			echo '<br /><a id="reset_mail_message" href="javascript:void(0)">'.__('Reset to default', 'wp-symposium').'</a>';
+		} else {
+			echo __('Only available to Bronze or higher members at <a href="http://www.wpsymposium.com">WP Symposium</a>.', 'wp-symposium');
+		}
+		echo '</td>';
+		echo '</tr>';
+		echo '</tbody>';
+		echo '</table>';
 
 		// WPS Email Notifications
 		echo '<br /><table class="widefat">';
@@ -812,6 +934,11 @@ function symposium_plugin_debug() {
 			if (!symposium_field_exists($table_name, 'template_profile_body')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'template_page_footer')) { $status = "X"; }	
 			if (!symposium_field_exists($table_name, 'template_email')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'template_forum_header')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'template_mail')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'template_mail_tray')) { $status = "X"; }	
+			if (!symposium_field_exists($table_name, 'template_mail_message')) { $status = "X"; }	
+
 													
 			if ($status == "X") { $status = $fail.__('Incomplete Table', 'wp-symposium').$fail2; $overall = "X"; }
 	   	}   	

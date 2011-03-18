@@ -238,6 +238,22 @@ if ($_POST['action'] == 'addComment') {
 		        		        
 		    // Subject's name for use below
 			$subject_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM ".$wpdb->base_prefix."users WHERE ID = %d", $uid));
+<<<<<<< .mine
+
+			// Email the subject of the parent (ie. first post) and want to be notified
+			$sql = "SELECT * FROM ".$wpdb->base_prefix."symposium_comments WHERE cid = ".$parent;
+			$parent_post = $wpdb->get_row($sql);
+			
+			$sql = "SELECT u.user_email, m.notify_new_wall
+				FROM ".$wpdb->base_prefix."users u 
+				LEFT JOIN ".$wpdb->base_prefix."symposium_usermeta m ON u.ID = m.uid 
+				WHERE ID = ".$parent_post->author_uid;
+			
+			$parent_post_recipient = $wpdb->get_row($sql);
+
+			if ($parent_post_recipient->notify_new_wall == 'on') {
+				$body = "<p>".$current_user->display_name." ".__('has replied to one of your posts', 'wp-symposium').":</p>";
+=======
 
 			// Email the subject of the parent (ie. first post) and want to be notified
 			$sql = "SELECT * FROM ".$wpdb->base_prefix."symposium_comments WHERE cid = ".$parent;
@@ -252,6 +268,7 @@ if ($_POST['action'] == 'addComment') {
 
 			if ($parent_post_recipient->notify_new_wall == 'on') {
 				$body = "<p>".$subject_name." ".__('has replied to one of your posts', 'wp-symposium').":</p>";
+>>>>>>> .r361577
 				$body .= "<p>".stripslashes($text)."</p>";
 				$body .= "<p><a href='".symposium_get_url('profile')."?uid=".$uid."&post=".$parent_post->cid."'>".__('Go to the post', 'wp-symposium')."...</a></p>";
 				symposium_sendmail($parent_post_recipient->user_email, __('Profile Reply', 'wp-symposium'), $body);				
@@ -354,12 +371,15 @@ if ($_POST['action'] == 'menu_extended') {
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix . 'symposium_config'));
 <<<<<<< .mine
 =======
+<<<<<<< .mine
+=======
 
 	$html = "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
 		$html .= " border-left:0px;";
 	}			
 	$html .= "'>";
+>>>>>>> .r361577
 >>>>>>> .r360907
 	
 	$html = "";
@@ -426,8 +446,12 @@ if ($_POST['action'] == 'menu_avatar') {
 <<<<<<< .mine
 	$html = "";
 =======
+<<<<<<< .mine
+	$html = "";
+=======
 	$html = "<div id='profile_left_column'>";
 >>>>>>> .r360907
+>>>>>>> .r361577
 	
 		// Choose a new avatar
 		$html .= '<p>'.__('Choose an image...', 'wp-symposium').'</p>';
@@ -457,13 +481,29 @@ if ($_POST['action'] == 'menu_settings') {
 		$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'symposium_config'));
 		$user = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'users WHERE ID = '.$uid));
 =======
+<<<<<<< .mine
+	if ($uid == $current_user->ID || symposium_get_current_userlevel($current_user->ID) == 5) {
+		
+		$plugin = WP_PLUGIN_URL.'/wp-symposium';
+		$dbpage = $plugin.'/symposium_profile_db.php';
+		$meta = get_symposium_meta_row($uid);					
+		$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'symposium_config'));
+		$user = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'users WHERE ID = '.$uid));
+=======
 	$plugin = WP_PLUGIN_URL.'/wp-symposium';
 	$dbpage = $plugin.'/symposium_profile_db.php';
 	$meta = get_symposium_meta_row($uid);					
 	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'symposium_config'));
 	$user = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->base_prefix . 'users WHERE ID = '.$uid));
 >>>>>>> .r360907
+>>>>>>> .r361577
 
+<<<<<<< .mine
+		// get values
+		$trusted = $meta->trusted;
+		$notify_new_messages = $meta->notify_new_messages;
+		$notify_new_wall = $meta->notify_new_wall;
+=======
 <<<<<<< .mine
 		// get values
 		$trusted = $meta->trusted;
@@ -473,7 +513,10 @@ if ($_POST['action'] == 'menu_settings') {
 	// get values
 	$sound = $config->sound;
 >>>>>>> .r360907
+>>>>>>> .r361577
 	
+<<<<<<< .mine
+=======
 <<<<<<< .mine
 =======
 	if ($meta->sound != '') { $sound = $meta->sound; }
@@ -486,8 +529,11 @@ if ($_POST['action'] == 'menu_settings') {
 	
 	$html = "<div id='profile_left_column'>";
 	
+>>>>>>> .r361577
 >>>>>>> .r360907
 		$html .= '<div id="symposium_settings_table">';
+<<<<<<< .mine
+=======
 <<<<<<< .mine
 =======
 
@@ -518,6 +564,7 @@ if ($_POST['action'] == 'menu_settings') {
 					$html .= '</select>';									
 				$html .= '</div>';
 			$html .= '</div>';
+>>>>>>> .r361577
 >>>>>>> .r360907
 
 			// Trusted member (for example, for support staff)
@@ -629,18 +676,30 @@ if ($_POST['action'] == 'menu_personal') {
 	
 <<<<<<< .mine
 =======
+<<<<<<< .mine
+=======
 	$html = "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
 		$html .= " border-left:0px;";
 	}			
 	$html .= "'>";
 
+>>>>>>> .r361577
 >>>>>>> .r360907
 		$html .= '<input type="hidden" name="symposium_update" value="P">';
 		$html .= '<input type="hidden" name="uid" value="'.$uid.'">';
+<<<<<<< .mine
+
+=======
 
 		$html .= '<div id="symposium_settings_table">';
 	
+>>>>>>> .r361577
+<<<<<<< .mine
+		$html .= '<div id="symposium_settings_table">';
+	
+=======
+>>>>>>> .r361577
 			// Sharing personal information
 			$html .= '<div style="clear:right; margin-bottom:15px;">';
 				$html .= __('Who do you want to share personal information with?', 'wp-symposium');
@@ -769,8 +828,15 @@ if ($_POST['action'] == 'menu_personal') {
 	 
 		$html .= '<p style="clear:right" class="submit"> ';
 			$html .= '<input type="submit" id="updatePersonalButton" name="Submit" class="symposium-button" value="'.__('Save', 'wp-symposium').'" /> ';
+<<<<<<< .mine
 		$html .= '</p>';
 		
+=======
+		$html .= '</p>';
+		
+	}
+	
+>>>>>>> .r361577
 	}
 	
 	echo $html;
@@ -790,12 +856,15 @@ if ($_POST['action'] == 'menu_groups') {
 	
 <<<<<<< .mine
 =======
+<<<<<<< .mine
+=======
 	$html = "<div id='profile_left_column' style='";
 	if ($config->show_profile_menu != 'on') {
 		$html .= " border-left:0px;";
 	}			
 	$html .= "'>";
 	
+>>>>>>> .r361577
 >>>>>>> .r360907
 		$sql = "SELECT m.*, g.*, (SELECT COUNT(*) FROM ".$wpdb->prefix."symposium_group_members WHERE group_id = g.gid) AS member_count  
 		FROM ".$wpdb->prefix."symposium_group_members m 
@@ -918,6 +987,12 @@ if ($_POST['action'] == 'updateSettings') {
 		update_symposium_meta($uid, 'notify_new_wall', "'".$notify_new_wall."'");
 		update_symposium_meta($uid, 'trusted', "'".$trusted."'");
 =======
+<<<<<<< .mine
+
+		update_symposium_meta($uid, 'notify_new_messages', "'".$notify_new_messages."'");
+		update_symposium_meta($uid, 'notify_new_wall', "'".$notify_new_wall."'");
+		update_symposium_meta($uid, 'trusted', "'".$trusted."'");
+=======
 		update_symposium_meta($uid, 'timezone', $timezone);
 		update_symposium_meta($uid, 'notify_new_messages', "'".$notify_new_messages."'");
 		update_symposium_meta($uid, 'notify_new_wall', "'".$notify_new_wall."'");
@@ -925,6 +1000,7 @@ if ($_POST['action'] == 'updateSettings') {
 		update_symposium_meta($uid, 'soundchat', "'".$soundchat."'");
 		update_symposium_meta($uid, 'trusted', "'".$trusted."'");
 >>>>>>> .r360907
+>>>>>>> .r361577
 		
 		$pwmsg = 'OK';
 	
@@ -934,9 +1010,15 @@ if ($_POST['action'] == 'updateSettings') {
 			$rows_affected = $wpdb->update( $wpdb->base_prefix.'users', array( 'display_name' => $display_name ), array( 'ID' => $uid ), array( '%s' ), array( '%d' ) );			
 	    	$pwmsg = __("Email already exists, sorry.".$email_exists->ID, "wp-symposium");				
 =======
+<<<<<<< .mine
+		if ($email_exists && $email_exists->user_email == $user_email && $email_exists->ID != $current_user->ID && symposium_get_current_userlevel($current_user->ID) < 5) {
+			$rows_affected = $wpdb->update( $wpdb->base_prefix.'users', array( 'display_name' => $display_name ), array( 'ID' => $uid ), array( '%s' ), array( '%d' ) );			
+	    	$pwmsg = __("Email already exists, sorry.".$email_exists->ID, "wp-symposium");				
+=======
 		if ($email_exists->user_email == $user_email && $email_exists->ID != $current_user->ID) {
 			$rows_affected = $wpdb->update( $wpdb->base_prefix.'users', array( 'display_name' => $display_name ), array( 'ID' => $uid ), array( '%s' ), array( '%d' ) );			
 	    	$pwmsg = __("Email already exists, sorry.", "wp-symposium");				
+>>>>>>> .r361577
 >>>>>>> .r360907
 		} else {
 			$rows_affected = $wpdb->update( $wpdb->base_prefix.'users', array( 'display_name' => $display_name, 'user_email' => $user_email ), array( 'ID' => $uid ), array( '%s', '%s' ), array( '%d' ) );

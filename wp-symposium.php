@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.49
+Version: 0.49.1
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,7 +30,7 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb;
-define('WPS_VER', '0.49');
+define('WPS_VER', '0.49.1');
 define('WPS_DBVER', '49');
 
 add_action('init', 'symposium_languages');
@@ -126,6 +126,8 @@ if ( (false) || ( get_option("symposium_version") != WPS_VER && is_admin()) ) {
 	symposium_alter_table("config", "ADD", "template_email", "text", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "template_forum_header", "text", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "template_mail", "text", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "template_mail_tray", "text", "NOT NULL", "''");
+	symposium_alter_table("config", "ADD", "template_mail_message", "text", "NOT NULL", "''");
 
 	// Set default values for some config fields
 	if ($wpdb->get_var("SELECT template_profile_header FROM ".$wpdb->prefix.'symposium_config') == '') {
@@ -145,6 +147,12 @@ if ( (false) || ( get_option("symposium_version") != WPS_VER && is_admin()) ) {
 	}
 	if ($wpdb->get_var("SELECT template_mail FROM ".$wpdb->prefix.'symposium_config') == '') {
 		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_mail = \"[compose_form][]<div id='mail_sent_message'></div>[]<div id='mail_office'>[]<div id='mail_toolbar'>[]<input id='compose_button' class='symposium-button' type='submit' value='[compose]'>[]<div id='trays'>[]<input type='radio' id='in' class='mail_tray' name='tray' checked> [inbox] <span id='in_unread'></span>&nbsp;&nbsp;[]<input type='radio' id='sent' class='mail_tray' name='tray'> [sent][]</div>[]<div id='search'>[]<input id='search_inbox' type='text' style='width: 160px'>[]<input id='search_inbox_go' class='symposium-button' type='submit' style='width: 70px; margin-left:10px;' value='Search'>[]</div>[]</div>[]<div id='mailbox'>[]<div id='mailbox_list'></div>[]</div>[]<div id='messagebox'></div>[]</div>\""); 
+	}
+	if ($wpdb->get_var("SELECT template_mail_tray FROM ".$wpdb->prefix.'symposium_config') == '') {
+		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_mail_tray = \"<div id='mail_mid' class='mail_item mail_read'>[]<div class='mailbox_message_from'>[mail_from]</div>[]<div class='mail_item_age'>[mail_sent]</div>[]<div class='mailbox_message_subject'>[mail_subject]</div>[]<div class='mailbox_message'>[mail_message]</div>[]</div>\""); 
+	}
+	if ($wpdb->get_var("SELECT template_mail_message FROM ".$wpdb->prefix.'symposium_config') == '') {
+		$wpdb->query("UPDATE ".$wpdb->prefix."symposium_config SET template_mail_message = \"<div id='message_header'>[]<div id='message_header_avatar'>[avatar,44]</div>[mail_subject]<br />[mail_recipient] [mail_sent]</div>[]<div id='message_header_delete'>[delete_button]</div><div id='message_header_reply'>[reply_button]</div>[]<div id='message_mail_message'>[message]</div>\""); 
 	}
 	
 	// Default forum ranks
@@ -1129,7 +1137,8 @@ function symposium_scriptsAction() {
 			'bg_color_2' => $bg_color_2,
 			'row_border_size' => $row_border_size,
 			'row_border_style' => $row_border_style,
-			'text_color_2' => $text_color_2
+			'text_color_2' => $text_color_2,
+			'template_mail_tray' => $config->template_mail_tray
 		));
 
 	} else {

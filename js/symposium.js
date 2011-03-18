@@ -192,6 +192,14 @@ jQuery(document).ready(function() {
 	   +------------------------------------------------------------------------------------------+
 	*/
 	
+<<<<<<< .mine
+	if (jQuery("#compose_form").length) {
+
+	   	// Load box on first page load
+		jQuery('#mailbox_list').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+		jQuery('#messagebox').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+
+=======
    	// Load box on first page load
 	jQuery('#mailbox_list').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
 	jQuery('#messagebox').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
@@ -348,9 +356,177 @@ jQuery(document).ready(function() {
    	
    	// Load box on first page load
 	if (jQuery("#search_inbox").length) {
+>>>>>>> .r361577
 
 	 	jQuery.ajax({
 >>>>>>> .r360906
+			url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getReply",
+				mail_id:mail_id,
+				recipient_id:mail_from
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+<<<<<<< .mine
+				var html = "";
+			
+				var template = symposium.template_mail_tray;
+				template = template.replace(/&lt;/g, '<');
+				template = template.replace(/&gt;/g, '>');
+				template = template.replace(/\[\]/g, '');
+			
+				var rows = jQuery.parseJSON(str);
+	            jQuery.each(rows, function(i,row){
+	
+					if (html == "") {
+						// Show first message as default message
+						jQuery.ajax({
+							url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
+							type: "POST",
+							data: ({
+								action:"getMailMessage",
+								tray:"in",
+								mid:row.mail_mid
+							}),
+						    dataType: "html",
+							async: true,
+							success: function(str){
+								var details = str.split("[split]");
+								if (details[2] == "in") {
+									jQuery("#"+details[0]).removeClass("row");
+									jQuery("#"+details[0]).addClass("row_odd");
+								}
+								jQuery("#messagebox").html(details[3]);
+								if (details[1] > 0) {
+									jQuery("#in_unread").html('('+details[1]+')');
+								} else {
+									jQuery("#in_unread").html('');
+								}
+								jQuery(".symposium_pleasewait").fadeOut("slow");
+							},
+							error: function(err){
+								//alert("getMailMessage:"+err);
+							}		
+				   		});
+					}
+				
+					var new_item = template;
+					new_item = new_item.replace(/mail_mid/, row.mail_mid);
+					new_item = new_item.replace(/mail_read/, row.mail_read);
+					new_item = new_item.replace(/\[mail_sent\]/, row.mail_sent);
+					new_item = new_item.replace(/\[mail_from\]/, row.mail_from);
+					new_item = new_item.replace(/\[mail_subject\]/, row.mail_subject);
+					new_item = new_item.replace(/\[mail_message\]/, row.message);
+					html += new_item;
+
+				});
+				jQuery('#mailbox_list').html(html);
+=======
+				var detail = jQuery.parseJSON(str);
+				jQuery("#compose_recipient").val(detail[0].recipient);
+				jQuery("#compose_subject").val(detail[0].subject);
+				jQuery("#compose_text").val(detail[0].message);
+
+				jQuery(".symposium_pleasewait").fadeOut("slow");
+
+>>>>>>> .r361577
+
+			},
+			error: function(err){
+				alert("getReply:"+err);
+			}		
+<<<<<<< .mine
+	  	});	
+		
+	}
+	
+	// Send
+	jQuery("#mail_send_button").live('click', function() {
+	
+		jQuery("#compose_form").hide();
+		jQuery('#mail_sent_message').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+	  	jQuery("#mail_office").show();
+
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
+			type: "POST",
+			data: ({
+				action:"sendMail",
+				compose_recipient:jQuery('#compose_recipient').val(),
+				compose_subject:jQuery('#compose_subject').val(),
+				compose_text:jQuery('#compose_text').val(),
+				compose_previous:jQuery('#compose_previous').val()
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				jQuery("#mail_sent_message").html(str);
+				jQuery("#mail_sent_message").effect("highlight", {}, 4000).slideUp("slow");
+
+			},
+			error: function(err){
+				alert("sendMail:"+err);
+			}		
+   		});	
+
+   	});
+
+	// Delete message
+	jQuery(".message_delete").live('click', function() {
+	
+		if (confirm("Are you sure?")) {
+
+			var tray = 'in';
+			if (jQuery("#sent").is(":checked")) {
+				var tray = 'sent';
+			};
+			
+			var mail_id = jQuery(this).attr("id");
+
+			jQuery.ajax({
+				url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
+				type: "POST",
+				data: ({
+					action:"deleteMail",
+					mid:mail_id,
+					tray:tray
+				}),
+			    dataType: "html",
+				async: true,
+				success: function(str){
+					jQuery("#messagebox").html(str);
+					jQuery("#"+mail_id).slideUp("slow");
+				},
+				error: function(err){
+					alert("deleteMail:"+err);
+				}		
+	   		});
+		
+		}
+			
+	});
+	
+	// Reply
+	jQuery(".message_reply").live('click', function() {
+
+		var mail_id = jQuery(this).attr("title");
+		var mail_from = jQuery(this).attr("id");
+
+		jQuery('#compose_recipient').val('');
+		jQuery('#compose_subject').val('');
+		jQuery('#compose_text').val('');
+		jQuery('#compose_previous').val('');
+		jQuery("#mail_sent_message").hide();
+		
+		jQuery("#compose_form").show();
+	  	jQuery("#mail_office").hide();
+
+		jQuery(".symposium_pleasewait").inmiddle().show();
+
+		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
 			type: "POST",
 			data: ({
@@ -376,6 +552,12 @@ jQuery(document).ready(function() {
 
 	});
 	
+=======
+   		});
+
+	});
+	
+>>>>>>> .r361577
    	// Search
 	jQuery("#search_inbox_go").live('click', function() {
 		
@@ -421,6 +603,93 @@ jQuery(document).ready(function() {
    	});
    
 
+<<<<<<< .mine
+	// Change tray
+	jQuery(".mail_tray").live('click', function() {
+		
+		jQuery("#search_inbox").val('');
+
+		var tray = 'in';
+		if (jQuery("#sent").is(":checked")) {
+			var tray = 'sent';
+		};
+		
+		jQuery('#mailbox_list').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+		jQuery('#messagebox').html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+
+		var template = symposium.template_mail_tray;
+		template = template.replace(/&lt;/g, '<');
+		template = template.replace(/&gt;/g, '>');
+		template = template.replace(/\[\]/g, '');
+							
+	 	jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getBox",
+				tray:jQuery(this).attr("id"),
+				term:""
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				var html = "";
+				var rows = jQuery.parseJSON(str);
+	            jQuery.each(rows, function(i,row){
+
+					if (html == "") {
+						// Show first message as default message
+						jQuery.ajax({
+							url: symposium.plugin_url+"ajax/symposium_mail_functions.php", 
+							type: "POST",
+							data: ({
+								action:"getMailMessage",
+								tray:tray,
+								mid:row.mail_mid
+							}),
+						    dataType: "html",
+							async: true,
+							success: function(str){
+								var details = str.split("[split]");
+								if (details[2] == "in") {
+									jQuery("#"+details[0]).removeClass("row");
+									jQuery("#"+details[0]).addClass("row_odd");
+									if (details[1] > 0) {
+										jQuery("#in_unread").html('('+details[1]+')');
+									} else {
+										jQuery("#in_unread").html('');
+									}
+								}
+								jQuery("#messagebox").html(details[3]);
+								jQuery(".symposium_pleasewait").fadeOut("slow");
+							},
+							error: function(err){
+								//alert("1:"+err);
+							}		
+				   		});
+					}
+
+					var new_item = template;
+					new_item = new_item.replace(/mail_mid/, row.mail_mid);
+					new_item = new_item.replace(/mail_read/, row.mail_read);
+					new_item = new_item.replace(/\[mail_sent\]/, row.mail_sent);
+					new_item = new_item.replace(/\[mail_from\]/, row.mail_from);
+					new_item = new_item.replace(/\[mail_subject\]/, row.mail_subject);
+					new_item = new_item.replace(/\[mail_message\]/, row.message);
+					html += new_item;
+					
+				});
+				jQuery('#mailbox_list').html(html);
+			},
+			error: function(err){
+				alert("getBox:"+err);
+			}		
+	  	});
+	
+	
+	});
+
+=======
 	// Change tray
 	jQuery(".mail_tray").live('click', function() {
 		
@@ -498,6 +767,7 @@ jQuery(document).ready(function() {
 	
 	});
 
+>>>>>>> .r361577
 	// React to click on message list
 	jQuery(".mail_item").live('click', function() {
    		
@@ -1236,6 +1506,15 @@ jQuery(document).ready(function() {
 									
 =======
 <<<<<<< .mine
+				jQuery(".symposium_pleasewait").fadeOut("slow");	
+
+				// Set up auto-expanding textboxes
+				if (jQuery(".elastic").length) {	
+					jQuery('.elastic').elastic();
+				}
+									
+=======
+<<<<<<< .mine
 				jQuery(".symposium_pleasewait").fadeOut("slow");						
 =======
 <<<<<<< .mine
@@ -1257,6 +1536,7 @@ jQuery(document).ready(function() {
 >>>>>>> .r358238
 >>>>>>> .r358967
 >>>>>>> .r360906
+>>>>>>> .r361577
 			},
 			error: function(err){
 				alert("getForum:"+err);
@@ -1297,6 +1577,33 @@ jQuery(document).ready(function() {
    		});
 
 =======
+<<<<<<< .mine
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getForum",
+				cat_id:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				str = trim(str);
+				jQuery("#symposium-forum-div").html(str);
+				jQuery(".symposium_pleasewait").fadeOut("slow");
+
+				// Set up auto-expanding textboxes
+				if (jQuery(".elastic").length) {	
+					jQuery('.elastic').elastic();
+				}
+									
+			},
+			error: function(err){
+				alert("getForum:"+err);
+			}		
+   		});
+
+=======
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
 			type: "POST",
@@ -1317,8 +1624,43 @@ jQuery(document).ready(function() {
    		});
 
 >>>>>>> .r360906
+>>>>>>> .r361577
 	});
 	
+<<<<<<< .mine
+	// Click on topic subject title
+	jQuery(".topic_subject").live('click', function() {
+
+		jQuery(".symposium_pleasewait").inmiddle().show();
+		
+		jQuery.ajax({
+			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
+			type: "POST",
+			data: ({
+				action:"getTopic",
+				topic_id:jQuery(this).attr("title")
+			}),
+		    dataType: "html",
+			async: true,
+			success: function(str){
+				str = trim(str);
+				jQuery("#symposium-forum-div").html(str);
+				jQuery(".symposium_pleasewait").fadeOut("slow");
+
+				// Set up auto-expanding textboxes
+				if (jQuery(".elastic").length) {	
+					jQuery('.elastic').elastic();
+				}
+									
+			},
+			error: function(err){
+				alert("getTopic:"+err);
+			}		
+   		});
+		
+	});
+	
+=======
 <<<<<<< .mine
 	// Click on topic subject title
 	jQuery(".topic_subject").live('click', function() {
@@ -1380,6 +1722,7 @@ jQuery(document).ready(function() {
 	});
 	
 >>>>>>> .r360906
+>>>>>>> .r361577
 	// Fav Icon
 	jQuery("#fav_link").live('click', function() {
    		
@@ -2491,6 +2834,66 @@ jQuery(document).ready(function() {
 			jQuery("#template_mail_textarea").val(reset);
 		}
 	});
+ 	jQuery("#reset_mail_tray").click(function() {
+		if (confirm("Are you sure?")) {
+			var reset = "<div id='mail_mid' class='mail_item mail_read'>[]<div class='mailbox_message_from'>[mail_from]</div>[]<div class='mail_item_age'>[mail_sent]</div>[]<div class='mailbox_message_subject'>[mail_subject]</div>[]<div class='mailbox_message'>[mail_message]</div>[]</div>";
+			reset = reset.replace(/\[\]/g, String.fromCharCode(13));
+			jQuery("#template_mail_tray_textarea").val(reset);
+		}
+	});
+ 	jQuery("#reset_mail_message").click(function() {
+		if (confirm("Are you sure?")) {
+			var reset = "<div id='message_header'>[]<div id='message_header_avatar'>[avatar,44]</div>[mail_subject]<br />[mail_recipient] [mail_sent]</div>[]<div id='message_header_delete'>[delete_button]</div><div id='message_header_reply'>[reply_button]</div>[]<div id='message_mail_message'>[message]</div>";
+			reset = reset.replace(/\[\]/g, String.fromCharCode(13));
+			jQuery("#template_mail_message_textarea").val(reset);
+		}
+	});
+	
+=======
+<<<<<<< .mine
+	// Templates
+ 	jQuery("#reset_profile_header").click(function() {
+		if (confirm("Are you sure?")) {
+			var reset = "<div id='profile_header_div'>[]<div id='profile_header_panel'>[]<div id='profile_details'>[]<div id='profile_name'>[display_name]</div>[]<p>[location]<br />[born]</p>[]<div style='padding: 0px;'>[actions]</div>[]</div>[]</div>[]<div id='profile_photo' class='corners'>[avatar,200]</div>[]</div>";
+			reset = reset.replace(/\[\]/g, String.fromCharCode(13));
+			jQuery("#profile_header_textarea").val(reset);
+		}
+	});
+ 	jQuery("#reset_profile_body").click(function() {
+		if (confirm("Are you sure?")) {
+			var reset = "<div id='profile_wrapper'>[]<div id='force_profile_page' style='display:none'>[default]</div>[]<div id='profile_body_wrapper'>[]<div id='profile_body'>[page]</div>[]</div>[]<div id='profile_menu'>[menu]</div>[]</div>";
+			reset = reset.replace(/\[\]/g, String.fromCharCode(13));
+			jQuery("#profile_body_textarea").val(reset);
+		}
+	});
+ 	jQuery("#reset_page_footer").click(function() {
+		if (confirm("Are you sure?")) {
+			var reset = "<div id='powered_by_wps'>[]<a href='http://www.wpsymposium.com' target='_blank'>[powered_by_message] v[version]</a>[]</div>";
+			reset = reset.replace(/\[\]/g, String.fromCharCode(13));
+			jQuery("#page_footer_textarea").val(reset);
+		}
+	});
+ 	jQuery("#reset_email").click(function() {
+		if (confirm("Are you sure?")) {
+			var reset = "<style> body { background-color: #eee; } </style>[]<div style='margin: 20px; padding:20px; border-radius:10px; background-color: #fff;border:1px solid #000;'>[][message][]<br /><hr />[][footer]<br />[]<a href='http://www.wpsymposium.com' target='_blank'>[powered_by_message] v[version]</a>[]</div>";
+			reset = reset.replace(/\[\]/g, String.fromCharCode(13));
+			jQuery("#email_textarea").val(reset);
+		}
+	});
+ 	jQuery("#reset_forum_header").click(function() {
+		if (confirm("Are you sure?")) {
+			var reset = "[breadcrumbs][new_topic_button][new_topic_form][][digest][subscribe][][forum_options][][sharing]";
+			reset = reset.replace(/\[\]/g, String.fromCharCode(13));
+			jQuery("#template_forum_header_textarea").val(reset);
+		}
+	});
+ 	jQuery("#reset_mail").click(function() {
+		if (confirm("Are you sure?")) {
+			var reset = "[compose_form][]<div id='mail_sent_message'></div>[]<div id='mail_office'>[]<div id='mail_toolbar'>[]<input id='compose_button' class='symposium-button' type='submit' value='[compose]'>[]<div id='trays'>[]<input type='radio' id='in' class='mail_tray' name='tray' checked> [inbox] <span id='in_unread'></span>&nbsp;&nbsp;[]<input type='radio' id='sent' class='mail_tray' name='tray'> [sent][]</div>[]<div id='search'>[]<input id='search_inbox' type='text' style='width: 160px'>[]<input id='search_inbox_go' class='symposium-button' type='submit' style='width: 70px; margin-left:10px;' value='Search'>[]</div>[]</div>[]<div id='mailbox'>[]<div id='mailbox_list'></div>[]</div>[]<div id='messagebox'></div>[]</div>";
+			reset = reset.replace(/\[\]/g, String.fromCharCode(13));
+			jQuery("#template_mail_textarea").val(reset);
+		}
+	});
 	
 =======
 	// Templates
@@ -2503,6 +2906,7 @@ jQuery(document).ready(function() {
 	});
 	
 >>>>>>> .r360906
+>>>>>>> .r361577
 	// Uploadify
 	jQuery('#admin_file_upload').uploadify({
 	    'uploader'  : symposium.plugin_url+'uploadify/uploadify.swf',
