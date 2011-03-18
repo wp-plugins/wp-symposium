@@ -87,6 +87,11 @@
 .symposium-wrapper p, .symposium-wrapper li, .symposium-wrapper td, .symposium-wrapper div,
 #symposium-search, #symposium-activity-list, #symposium-fav-list {
 =======
+<<<<<<< .mine
+.symposium-wrapper input, .symposium-wrapper textarea,
+.symposium-wrapper p, .symposium-wrapper li, .symposium-wrapper td, .symposium-wrapper div,
+#symposium-search, #symposium-activity-list, #symposium-fav-list {
+=======
 input, textarea,
 p, li, td, div {
 >>>>>>> .r357134
@@ -96,6 +101,7 @@ p, li, td, div {
 >>>>>>> .r358967
 >>>>>>> .r360907
 >>>>>>> .r361577
+>>>>>>> .r361684
 	font-family: "Lucida Grande","Lucida Sans Unicode",Tahoma,Verdana,sans-serif;
 	font-size: 14px;
 	line-height: 22px;
@@ -293,6 +299,10 @@ p, li, td, div {
 =======
 <<<<<<< .mine
 .symposium-wrapper .delete_forum_reply, .symposium-wrapper .edit_forum_reply, .symposium-wrapper .delete, .symposium-wrapper .delete_post, .symposium-wrapper .delete_topic,  .symposium-wrapper .delete_reply, .symposium-delete-fav, .symposium-wrapper .edit {
+	display:none;
+=======
+<<<<<<< .mine
+.symposium-wrapper .delete_forum_reply, .symposium-wrapper .edit_forum_reply, .symposium-wrapper .delete, .symposium-wrapper .delete_post, .symposium-wrapper .delete_topic,  .symposium-wrapper .delete_reply, .symposium-delete-fav, .symposium-wrapper .edit {
 =======
 <<<<<<< .mine
 .symposium-wrapper .delete_forum_reply, .symposium-wrapper .edit_forum_reply, .symposium-wrapper .delete, .symposium-wrapper .delete_post, .symposium-wrapper .delete_topic,  .symposium-wrapper .delete_reply, .symposium-delete-fav, .symposium-wrapper .edit {
@@ -318,7 +328,12 @@ p, li, td, div {
 >>>>>>> .r358967
 >>>>>>> .r360907
 >>>>>>> .r361577
+>>>>>>> .r361684
 	float: right;
+<<<<<<< .mine
+	font-size: 11px;
+	color: #f00 !important;
+=======
 <<<<<<< .mine
 	font-size: 11px;
 	color: #f00 !important;
@@ -330,6 +345,7 @@ p, li, td, div {
 	display:none;
 	color: #f00 !important;
 	font-size: 12px;
+>>>>>>> .r361684
 >>>>>>> .r361577
 >>>>>>> .r360907
 	font-style: normal;
@@ -1029,6 +1045,13 @@ p, li, td, div {
 }
 
 =======
+<<<<<<< .mine
+.symposium-wrapper #forum_options {
+	float: left;
+	margin-bottom: 10px;
+}
+
+=======
 .symposium-wrapper #forum_options {
 	float: left;
 }
@@ -1038,6 +1061,7 @@ p, li, td, div {
 >>>>>>> .r358967
 >>>>>>> .r360907
 >>>>>>> .r361577
+>>>>>>> .r361684
 .symposium-wrapper #share_link div {
 	margin-left: 5px;
 }
@@ -1340,6 +1364,12 @@ p, li, td, div {
 }
 
 =======
+<<<<<<< .mine
+.symposium-wrapper .trusted {
+	background-color: #ccf;
+}
+
+=======
 .symposium-wrapper .forum_rank {
 	color: #333;
 }
@@ -1349,6 +1379,7 @@ p, li, td, div {
 >>>>>>> .r358967
 >>>>>>> .r360907
 >>>>>>> .r361577
+>>>>>>> .r361684
 /* Post and Thread */
 
 .symposium-wrapper #starting-post, .symposium-wrapper #child-posts
@@ -1574,6 +1605,11 @@ p, li, td, div {
 <<<<<<< .mine
 .symposium-wrapper .mailbox_message_from {
 	font-weight:bold;
+=======
+<<<<<<< .mine
+.symposium-wrapper .mailbox_message_from {
+	font-weight:bold;
+>>>>>>> .r361684
 }
 
 =======
