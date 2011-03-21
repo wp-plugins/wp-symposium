@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Core code for Symposium, this plugin must always be activated, before any other Symposium plugins/widgets (they rely upon it).
-Version: 0.49.6
+Version: 0.49.7
 Author: WP Symposium
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -30,7 +30,7 @@ License: GPL3
 include_once('symposium_functions.php');
 
 global $wpdb, $current_user;
-define('WPS_VER', '0.49.6');
+define('WPS_VER', '0.49.7');
 define('WPS_DBVER', '49');
 
 add_action('init', 'symposium_languages');
