@@ -1,0 +1,34 @@
+todo.txt (MoSCoW)
+-----------------
+
+Must do (essential fixes/patches before next release)
+------------------------------------------------------------------------
+
+- None
+
+Should do (if bug fixing allows - planned to do for next release, but might not happen)
+------------------------------------------------------------------------
+
+- Wall emails author wrong 	"Simon Goodchild has replied to one of your posts:"... check!
+- Groups					Last activity of groups
+- Members					Base search on wp_users not usermeta
+			
+Could do (if development time allows)
+------------------------------------------------------------------------
+
+- Facebook Status Plugin	Gives members the option of posting activity posts to their Facebook wall (development started)
+- Latest Activity Widget 	Shows members latest activity posts
+- Forum						Users can vote for removal, and when x number of votes received, it is deleted
+- Media Albums				Starting with photos, but scoped to eventually allow a Video (YouTube) library
+
+Would do (if life allows!)
+------------------------------------------------------------------------
+
+- Implement poke (needs notifications)
+- Optionally receive email on activity in wall post if I've replied or started it
+- Codex
+- Mail: quote feature
+- Forum: Steven Tryon: linking blog to forum and vice versa
+- Minimum level for categories
+- 'clear my vote' link on vote widget
+
