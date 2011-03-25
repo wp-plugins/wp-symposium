@@ -19,13 +19,13 @@
    Every time you upgrade WP Symposium, this file will be upgraded and all
    changes you have made will be LOST!
    
-   INSTEAD, create a file called my-symposium.css and save it in your active
-   theme's folder, eg: wp-content/themes/my-current-theme/my-symposium.css, and
-   copy the styles that you want to change into that file.
-   
-   A good starting point is the global section below.
+   INSTEAD, use WP Symposium->Styles->CSS to enter your own styles that will
+   replace styles here.
 
-   View the WPS Health Check page to verify that it is being used.
+   Note that your theme CSS may over-ride plugin styles such as WP Symposium
+   styles. If you want a CSS to not be changed, put !important after it.
+
+   Search this document for !important to see an example.
    
    ************************************************************************ 
 */
