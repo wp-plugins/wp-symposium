@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.49.9
+Stable tag: 0.50
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -152,6 +152,16 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 
 == Changelog ==
+
+= 0.50 =
+
+* New Widget: Latest member posts, observes privacy settings. Excludes group posts, and replies/posts to other members
+* Moved use of my-symposium.css into Admin->Symposium->Styles (copy contents here if using my-symposium.css)
+* Upgraded jQueryUI to v1.8.11 (full set, smoothness theme)
+* Forum: Added option to show/hide login prompt if not logged in
+* Profile: Added Textarea option to extended profile fields
+* Profile: Improved the layout of personal/preferences
+* Profile: Reduced default size of Google map to 150px for new installs
 
 = 0.49.9 =
 
