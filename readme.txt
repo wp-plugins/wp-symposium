@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.50
+Stable tag: 0.51
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -150,8 +150,21 @@ Q. How can I get rid of the Powered By message?
 A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. However, if you subscribe at www.wpsymposium.com and activate the Groups plugin, it is automatically removed.
 
 
-
 == Changelog ==
+
+= 0.51 =
+
+* Group: Added support for forums (activate via Group Settings)
+* Group: Added link to menu to go to Groups page
+* Mail: Hide reply button in message header for 'sent' tray
+* Profile/Group: Don't show 'Show more' if there is nothing more to show
+* Core: Change to new_post DIV ID to avoid clash in p2 theme
+* Forum: Added Permalink 'share' icon
+* Forum: Minimum level now works
+* Widget: Latest Forum Posts (follows group security)
+* Profile: Fix for large profile photo appearing after wall post for some sites
+* Core: Added Daily Digest to Health Check
+* Core: Sends summary to admin when sending Daily Digests
 
 = 0.50 =
 
