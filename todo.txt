@@ -1,0 +1,35 @@
+todo.txt (MoSCoW)
+-----------------
+
+Must do (essential fixes/patches before next release)
+------------------------------------------------------------------------
+
+Should do (if bug fixing allows - planned to do for next release, but might not happen)
+------------------------------------------------------------------------
+
+- Theme						Fix small user search for autocomplete
+- Profile					Add delete icon to jQuery posts (deletes latest post for that user)
+- Friends					Add Show more...
+- Pop-up DIVs				Change to jQuery Dialog (activity, search, etc)
+- Templates					Activity/Group Activity posts/replies
+- Members					Base search on wp_users not usermeta
+			
+Could do (if development time allows)
+------------------------------------------------------------------------
+
+- Shoutbox					Widget for chatroom
+- Photo Albums				Starting with photos, but scoped to eventually allow a Video (YouTube) library
+- Hooks/Filters				For extensions and add-on plugins
+
+Would do (if life allows!)
+------------------------------------------------------------------------
+
+- Poke						Implement (needs notifications)
+- Profile					Optionally receive email on activity in wall post if I've replied or started it
+- Mail						Quote feature
+- Forum						Steven Tryon: linking blog to forum and vice versa
+- Forum						Minimum level for categories
+- Forum						U can vote for removal, and when x number of votes received, it is deleted
+- Widget					'clear my vote' link on vote widget
+- Documentation				Codex
+
