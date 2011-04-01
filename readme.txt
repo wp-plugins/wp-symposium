@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.51.1
+Stable tag: 0.51.2
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -47,7 +47,7 @@ Find out more, and try it out on our own social network at www.wpsymposium.com.
   
 == Installation ==
 
-An admin guide is available at www.wpsymposium.com/downloadinstall.
+An admin guide and more information is available at www.wpswiki.com.
 
 Important - after activating for the first time, make sure you go to the Options page and set up the pages on which
 you're going to use the WP Symposium plugins.
@@ -64,7 +64,7 @@ Tested with PHP 5.
 
 *Manual installation*
 
-* download from http://wordpress.org/extend/plugins/wp-symposium/
+* download from wordpress.org/extend/plugins/wp-symposium/
 * unzip the contents of the ZIP file in your /wp-content/plugins folder
 * activate the plugins you want via Plugins on the WordPress admin dashboard (including the core plugin)
 * important - go to the Options page to configure
@@ -73,9 +73,9 @@ When upgrading manually, make sure you deactivate and re-activate the core plugi
 
 *Adding WP Symposium plugins to your site*
 
-Create a new page in WordPress (Pages->Add New). Then put a short-code in the WordPress page (it's a hyphen, not an underscore). There are many more short-codes which you can use, please refer to the admin guide available on the download page at www.wpsymposium.com. 
+Create a new page in WordPress (Pages->Add New). Then put a short-code in the WordPress page (it's a hyphen, not an underscore). There are many more short-codes which you can use, please refer to the admin guide at www.wpswiki.com. 
 
-However, for example:
+For example:
 
 For the Forum:
 
@@ -114,16 +114,16 @@ IMPORTANT: Update settings on the Options page.
 == Frequently Asked Questions ==
 
 Q. Where can I find more information?
-A. Go to www.wpsymposium.com
+A. Go to www.wpsymposium.com for a demo and an active community of users. Visit www.wpswiki.com for further information and an admin guide.
 
 Q. Can I try it out?
 A. Yep, go to www.wpsymposium.com
 
 Q. Is WP Symposium covered by the GPL license?
-A. Yes, for sure. Everything listed on the WordPress directory is covered by the GPL v3 licence. There may be other plugins that are compatible with WP Symposium that are sold commercially, but what is listed here will always be covered by the GPL licence.
+A. Yes, for sure. Everything listed on the WordPress directory is covered by the GPL v3 licence. There may be other plugins that are compatible with WP Symposium that are sold commercially, but what is provided via the download at www.wordpress.org will always be covered by the GPL licence.
 
 Q. What's the one thing I probably haven't done?
-A. Set up your page URL's in the admin Options -> Settings page...
+A. Set up your page URL's properly in the admin Options -> Settings page. Check out www.wpswiki.com, in particular the "Try this first" page.
 
 Q. The admin side works, but the forum (or another plugin) doesn't appear?
 A. Check you have `[symposium-forum]` on your page, with a hyphen, not an underscore. Replace [symposium-forum] with the shortcode of the plugin.
@@ -131,26 +131,37 @@ A. Check you have `[symposium-forum]` on your page, with a hyphen, not an unders
 Q. I've done that, but the forum (or another plugin) still doesn't appear?
 A. Have you put `[symposium-forum]` on a WordPress page, not an HTML file? 
 
+Q. It all looks okay, but I just get a spinning "please wait" symbol?
+A. Read the "Try this first" page at www.wpswiki.com, if that still doesn't help visit www.wpsymposium.com. 
+
 Q. Can I use other languages?
 A. There are a growing number of translations available to use at www.crowdin.net (see www.wpsymposium.com for further instructions).
 
 Q. Are there images other than the usual smilies?
-A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Smilies page at http://www.wpsymposium.com.
+A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Smilies page at www.wpsymposium.com.
 
 Q. Will WP Symposium work on WPMU/WPMS?
 A. As from v0.37, yes, WordPress Multi-site is supported.
 
 Q. I don't see friends when they're online, can't edit forum posts or read all mail in my inbox. I see stuff, but not much works...
-A. Sounds like AJAX isn't working, probably due to a Javascript error. Check on the admin Health Check page, and try using Firefox with the Firebug add-in to check for javascript errors. Always try de-activating and re-activating the core WPS plugin.
+A. Sounds like AJAX isn't working, probably due to a Javascript error. Check out the "Try this first" page at www.wpswiki.com.
 
 Q. There used to be a login and registration plugin, where did they go?
 A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login.
 
 Q. How can I get rid of the Powered By message?
-A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. However, if you subscribe at www.wpsymposium.com and activate the Groups plugin, it is automatically removed.
+A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. However, if you subscribe at www.wpsymposium.com and activate the Groups plugin, you can edit it through the admin area.
 
 
 == Changelog ==
+
+= 0.51.2 =
+
+* Panel: Fix to URLs from Panel in some circumstances
+* Forum: Font size of Topic Subject
+* Forum: Last Activity/etc is in context with Forum (ie. in a group or not)
+* Forum: Search works on main forum and only groups you are a member of
+* Forum: Verified links work to group forums and non-group forums from search, etc
 
 = 0.51.1 =
 
@@ -203,10 +214,6 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 * Groups: support for Group page template
 * Groups: improved layout for Group page
 * Admin: Quick setup (adds pages and shortcodes in one click)
-
-= 0.49.3 = 
-
-* Error in WP copy, re-uploading
 
 = 0.49.1 =
 
