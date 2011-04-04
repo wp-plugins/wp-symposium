@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.51.2
+Stable tag: 0.52
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
@@ -154,6 +154,15 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 
 
 == Changelog ==
+
+= 0.52 =
+
+* New plugin: Support for Mobile/SEO/Accessibility plugin (BETA)
+* Profile: Logged out version of Profile page now displays a message or content if set to 'Everyone'
+* Profile: Fixed Show more on All Activity only showing current members activity
+* Group: Fixed Join Group button shows even if not logged in
+* Group: Login link on Group page if not logged in now shown 
+* Core: * Links "in" the Daily Digest now have complete URLs
 
 = 0.51.2 =
 
