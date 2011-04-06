@@ -5,14 +5,16 @@ Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
-Tested up to: 3.1
-Stable tag: 0.52
+Tested up to: 3.1.1
+Stable tag: 0.52.1
 
 Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, chat room, profile page, widgets, and support for other plugins such as Groups! You simply choose which you want to activate! 
+WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, chat room, profile page, widgets, and support for other plugins such as Groups, Facebook Connect and Mobile support! You simply choose which you want to activate! 
+
+Note: The WP Symposium plugin from WordPress.org is free - additional plugins such as Groups may require a subscription fee.
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
 
@@ -152,8 +154,16 @@ A. After consultation with users, the majority voted to leave authentication to 
 Q. How can I get rid of the Powered By message?
 A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. However, if you subscribe at www.wpsymposium.com and activate the Groups plugin, you can edit it through the admin area.
 
+Q. Because of all the nice AJAX, how can I get content submitted to search engines?
+A. Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
 
 == Changelog ==
+
+= 0.52.1 =
+
+* Profile: Post to other members walls, fixed rogue variable name (error in v0.52)
+* Profile: Fixed email notification for friend requests
+* Profile: Fixed extended information showing when clicking on Show more...
 
 = 0.52 =
 
@@ -162,7 +172,7 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 * Profile: Fixed Show more on All Activity only showing current members activity
 * Group: Fixed Join Group button shows even if not logged in
 * Group: Login link on Group page if not logged in now shown 
-* Core: * Links "in" the Daily Digest now have complete URLs
+* Core: Links "in" the Daily Digest now have complete URLs
 
 = 0.51.2 =
 
