@@ -159,6 +159,10 @@ A. Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
 
 == Changelog ==
 
+= 0.52.2 =
+
+* Widget: Added category select and hide preview (set length to 0) for Latest Forum Posts
+
 = 0.52.1 =
 
 * Profile: Post to other members walls, fixed rogue variable name (error in v0.52)

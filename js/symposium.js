@@ -1501,9 +1501,13 @@ jQuery(document).ready(function() {
 
 	// Show favourites list
 	jQuery("#show_favs").live('click', function() {
-        
-		jQuery("#fav-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
-        jQuery("#symposium-fav-list").inmiddle().fadeIn();
+    
+// xxx    
+		//jQuery("#fav-list-internal").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+        //jQuery("#symposium-fav-list").inmiddle().fadeIn();
+
+		jQuery("#dialog").html("<img src='"+symposium.plugin_url+"/images/busy.gif' />");
+		jQuery("#dialog").dialog({ title: 'Favorites' });
 		
 		jQuery.ajax({
 			url: symposium.plugin_url+"ajax/symposium_forum_functions.php", 
@@ -1515,7 +1519,8 @@ jQuery(document).ready(function() {
 		    dataType: "html",
 			async: true,
 			success: function(str){
-				jQuery("#fav-list-internal").hide().html(str).fadeIn("slow");
+				//jQuery("#fav-list-internal").hide().html(str).fadeIn("slow");
+				jQuery("#dialog").html(str);
 			},
 			error: function(err){
 				//alert("13:"+err);
