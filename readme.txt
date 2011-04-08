@@ -6,9 +6,9 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1.1
-Stable tag: 0.52.2
+Stable tag: 0.52.1
 
-Social Networking for WordPress - forum, wall, member directory, private mail, chat windows/room, profile page, groups, Facebook connect, mobile version, and more! 
+Social Networking for WordPress - forum, wall, member directory, private mail, notification bar, chat windows/room, profile page, widgets, and more! 
 
 == Description ==
 
@@ -157,26 +157,11 @@ A. Because WP Symposium is covered by the GPL licence, you can edit and change t
 Q. Because of all the nice AJAX, how can I get content submitted to search engines?
 A. Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
 
-Q. Which plugins may require a subscription fee?
-A. Currently the Groups and Facebook Connect require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
-
-Q. If I take out a Bronze membership and I decide I don't want WP Symposium, can I get a refund?
-A. If the plugins don't work on your server, with TwentyTen theme and all non-WPS plugins de-activated, then you will get a full refund, less any PayPal fees.
-
-Q. How much does Bronze membership cost?
-A. $39 a year
-
-Q. What is Silver membership?
-A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees).
-
 == Changelog ==
 
 = 0.52.2 =
 
 * Widget: Added category select and hide preview (set length to 0) for Latest Forum Posts
-* WPS "Pop-up" DIVs replaced with jQueryUI dialog()
-* Core: Changed mail functions to use symposium_get_siteURL() for correct path
-* Health Check: Added to Health Check
 
 = 0.52.1 =
 
@@ -826,4 +811,4 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Upgrade Notice ==
 
-Latest news and information on www.wpsymposium.com, also posted on WP Symposium Facebook Group.
+Latest news and information on www.wpsymposium.com
