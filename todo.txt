@@ -1,0 +1,50 @@
+The following development plan (to-do list) is ordered in MoSCoW priority.
+
+==Must do (essential fixes/patches before next release)==
+
+These items are stopping the product functioning for everyone. Individual installations may have problems, 
+but these items are effecting everyone and so are core issues or new features.
+
+* None
+
+==Should do (if bug fixing allows - planned to do for next release, but might not happen)==
+
+This is the realistic list of what is coming soon.
+
+* Add parameter for [symposium-forum GROUP=x CATEGORY=x]
+* Friends activity still including posts between members, should just be status posts and posts to that member
+* Layout for forum replies should be same as initial post (ie. no text wrap)
+* When posting a reply, the quick addition is showing full size avatar (probably on new topic too?). Check on Mac.
+* Profile: Menu colour on WPS not following Styles, should it?
+* Theme: Small user search seems very slow, check it
+* Friends: Add Show more...
+* Members: Base search on wp_users not usermeta
+* Templates: initial forum post and forum replies
+* Templates: latest forum posts
+* Templates: Activity/Group Activity posts/replies
+
+==Could do (if development time allows)==
+
+If there were more hours in the day, then these items would move up to "Should do" items.
+
+* Videos: Setting URLs and checking permissions
+* Alternative FB-like layout for profile page.
+* Forum: Voting system
+* Shoutbox: Widget for chatroom
+* Photo Albums: Starting with photos, but scoped to eventually allow a Video (YouTube) library
+* Hooks/Filters: For extensions and add-on plugins, including profile menu
+
+==Would do (if life allows!)==
+
+These are items that realistically won't get developed in the short term, but they are identified
+as features that would improve the product and so will happen at some point.
+
+* Profile: Add delete icon to jQuery posts (deletes latest post for that user)
+* Poke: Implement (needs notifications)
+* Profile: Optionally receive email on activity in wall post if I've replied or started it
+* Mail: Quote feature
+* Forum: Steven Tryon: linking blog to forum and vice versa
+* Forum: Minimum level for categories
+* Forum: U can vote for removal, and when x number of votes received, it is deleted
+* Widget: 'clear my vote' link on vote widget
+* Documentation: Provide technical documentation for developers to extend WP Symposium
