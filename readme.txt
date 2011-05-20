@@ -6,15 +6,15 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1.1
-Stable tag: 0.52.5
+Stable tag: 0.53.3
 
-Social Networking for WordPress - forum, wall, member directory, private mail, chat windows/room, profile page, groups, Facebook connect, mobile version, and more! 
+Social Networking for WordPress - forum, wall, member directory, mail, chat windows, profile page, groups, Facebook connect, mobile version, and more!
 
 == Description ==
 
 WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, chat room, profile page, widgets, and support for other plugins such as Groups, Facebook Connect and Mobile support! You simply choose which you want to activate! 
 
-Note: The WP Symposium plugin from WordPress.org is free - additional plugins such as Groups may require a subscription fee.
+**Note: The WP Symposium plugin from WordPress.org is free - additional plugins such as Groups may require a subscription fee.**
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
 
@@ -167,13 +167,20 @@ Q. How much does Bronze membership cost?
 A. $39 a year
 
 Q. What is Silver membership?
-A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees).
+A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Support for Silver members takes priority over Bronze members.
 
 == Changelog ==
 
-= 0.52.5 =
+= 0.53.1 =
 
+* Core: Changed Health Check to new Installation page (removes awkward manual setting)
+* Core: Update to Daily Digest
+* Core: Fixed POT parameter for months
+* Facebook Plugin: Added additional check to ensure function not previously loaded
+* Friends: Added Show more... link
+* Gallery: Added core support demonstrating hooks/filters (gallery plugin an example)
 * Profile: Fix if no extended fields, PHP warning is not shown
+* Profile: Admin can now view activity, irrespective of sharing setting
 
 = 0.52.4 =
 
