@@ -19,13 +19,13 @@ jQuery(document).ready(function() {
 		var answer = confirm('Are you sure?\n\nAll topics in the category will become un-categorised.');
 		return answer // answer is a boolean
 	});
-
+	
     // Check if really want to delete	    
 	jQuery(".delete").click(function(){
 	  var answer = confirm("Are you sure?");
 	  return answer // answer is a boolean
 	});
-	jQuery(".deletebutton").click(function(){
+	jQuery(".deletebutton").live('click', function() {
 	  var answer = confirm("Are you sure?");
 	  return answer // answer is a boolean
 	});
@@ -618,7 +618,7 @@ jQuery(document).ready(function() {
 	*/
 	
 	// Act on "view" parameter on first page load
-	if (jQuery("#profile_body").length) {
+	if ( (jQuery("#profile_body").length) && (symposium.embed != 'on') ) {
 		
 		var menu_id = 'menu_'+symposium.view;
 		
@@ -788,9 +788,28 @@ jQuery(document).ready(function() {
 			window.location.href=symposium.profile_url+symposium.q.substring(0, 1)+'view='+view;
 			exit;			
 		}
-				
+		
+		if ( (menu_id == 'menu_extended') || 
+      		(menu_id == 'menu_wall') || 
+      		(menu_id == 'menu_activity') || 
+      		(menu_id == 'menu_all') || 
+      		(menu_id == 'menu_groups') || 
+      		(menu_id == 'menu_friends') || 
+      		(menu_id == 'menu_avatar') || 
+      		(menu_id == 'menu_personal') || 
+      		(menu_id == 'menu_settings') ) {
+      	
+            var ajax_path = symposium.plugin_url+"ajax/symposium_profile_functions.php";
+             	
+      	} else {
+      	
+            var ajax_part = menu_id.replace(/menu_/g, "");
+            var ajax_path = symposium.plugin_pro_url+ajax_part+"/ajax/symposium_"+ajax_part+"_functions.php";
+      	
+      	}
+      	
 		jQuery.ajax({
-			url: symposium.plugin_url+"ajax/symposium_profile_functions.php", 
+			url: ajax_path, 
 			type: "POST",
 			data: ({
 				action:menu_id,
@@ -2609,6 +2628,17 @@ jQuery(document).ready(function() {
 		jQuery("#jstest").hide();
 	}
 
+	// Help Dialog
+ 	jQuery(".symposium_help").click(function() {
+		alert(jQuery(this).attr("title"));
+	});
+	
+	// Hidden column on installation page
+	jQuery(".symposium_url").hide();
+ 	jQuery("#symposium_url").click(function() {
+		jQuery(".symposium_url").toggle();
+ 	});
+	
 	// Templates
  	jQuery("#reset_profile_header").click(function() {
 		if (confirm("Are you sure?")) {

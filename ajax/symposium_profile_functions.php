@@ -217,7 +217,9 @@ if ($_POST['action'] == 'addStatus') {
 				if ($facebook_id != '') {
 					$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix.'symposium_config'));
 
-					require_once '../../wp-symposium-facebook/library/facebook.php';
+					if (!class_exists('FacebookApiException')) {
+						require_once '../../wp-symposium-facebook/library/facebook.php';
+					}
 					$app_id = $config->facebook_api;
 					$app_secret = $config->facebook_secret;
 					$facebook = new Facebook(array(
@@ -840,8 +842,9 @@ if ($_POST['action'] == 'menu_groups') {
 if ($_POST['action'] == 'menu_friends') {
 
 	$uid1 = $_POST['uid1'];
+	$limit_from = $_POST['limit_from'];
 
-	$html = symposium_profile_friends($uid1);
+	$html = symposium_profile_friends($uid1, $limit_from);
 	
 	echo $html;
 	exit;
