@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1.1
-Stable tag: 0.53.3
+Stable tag: 0.53.4
 
 Social Networking for WordPress - forum, wall, member directory, mail, chat windows, profile page, groups, Facebook connect, mobile version, and more!
 
@@ -171,7 +171,12 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
-= 0.53.1 =
+= 0.53.4 =
+
+* Core: Fix to URLs in Widgets paths
+* Core: Fix to meu filter
+
+= 0.53.3 =
 
 * Core: Changed Health Check to new Installation page (removes awkward manual setting)
 * Core: Update to Daily Digest
@@ -179,8 +184,11 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 * Facebook Plugin: Added additional check to ensure function not previously loaded
 * Friends: Added Show more... link
 * Gallery: Added core support demonstrating hooks/filters (gallery plugin an example)
-* Profile: Fix if no extended fields, PHP warning is not shown
 * Profile: Admin can now view activity, irrespective of sharing setting
+
+= 0.52.5 =
+
+* Profile: Fix if no extended fields, PHP warning is not shown
 
 = 0.52.4 =
 
