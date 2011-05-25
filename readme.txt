@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1.1
-Stable tag: 0.53.5
+Stable tag: 0.53.6
 
 Social Networking for WordPress - forum, wall, member directory, mail, chat windows, profile page, groups, Facebook connect, mobile version, and more!
 
@@ -149,7 +149,7 @@ Q. I don't see friends when they're online, can't edit forum posts or read all m
 A. Sounds like AJAX isn't working, probably due to a Javascript error. Check out the "Try this first" page at www.wpswiki.com.
 
 Q. There used to be a login and registration plugin, where did they go?
-A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login.
+A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login, however in hindsight it can be introduced in a more strategic manner. There is now a sidebar widget that allows members to login, or links to the register/forgotten password WordPress pages. Once logged in, the user can see how any messages (including those unread) and friends (including new friend requests), etc.
 
 Q. How can I get rid of the Powered By message?
 A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. However, if you subscribe at www.wpsymposium.com and activate the Groups plugin, you can edit it through the admin area.
@@ -170,6 +170,10 @@ Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Support for Silver members takes priority over Bronze members.
 
 == Changelog ==
+
+= 0.53.6 =
+
+* Widgets: Addition of Login/Summary Widget
 
 = 0.53.5 = 
 
