@@ -6,13 +6,13 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1.1
-Stable tag: 0.53.6
+Stable tag: 0.53.7
 
 Social Networking for WordPress - forum, wall, member directory, mail, chat windows, profile page, groups, Facebook connect, mobile version, and more!
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, chat room, profile page, widgets, and support for other plugins such as Groups, Facebook Connect and Mobile support! You simply choose which you want to activate! 
+WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, and support for other plugins such as Groups, Facebook Connect and Mobile support! You simply choose which you want to activate! 
 
 **Note: The WP Symposium plugin from WordPress.org is free - additional plugins such as Groups may require a subscription fee.**
 
@@ -170,6 +170,11 @@ Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Support for Silver members takes priority over Bronze members.
 
 == Changelog ==
+
+= 0.53.7 =
+
+* Admin: Fixed bug saving CSS with % within the text
+* Plugins: Added Lounge plugin as a demonstrator for plugin developers
 
 = 0.53.6 =
 
