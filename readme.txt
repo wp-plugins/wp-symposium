@@ -5,16 +5,18 @@ Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
-Tested up to: 3.1.2
-Stable tag: 0.53.10
+Tested up to: 3.1.3
+Stable tag: 0.54
 
-Social Networking for WordPress - forum, wall, member directory, mail, chat windows, profile page, groups, Facebook connect, mobile version, and more!
+Social Networking for WordPress - forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile version, and more!
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, wall, member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, and support for other plugins such as Groups, Facebook Connect and Mobile support! You simply choose which you want to activate! 
+WP Symposium is a new suite of social networking plugins - forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, activity alerts and support for other plugins such as Groups, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! 
 
-**Note: The WP Symposium plugin from WordPress.org is free - additional plugins such as Groups may require a subscription fee.**
+For developers there are a growing number of WordPress hooks and filters, along with WP Symposium functions and Javascript variables. More information on the WPS Wiki at www.wpsiki.com.
+
+**Note: The WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, chat, panel, mail, member directory and widgets) - additional WPS compatible plugins may require a subscription fee.**
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
 
@@ -75,25 +77,7 @@ When upgrading manually, make sure you deactivate and re-activate the core plugi
 
 *Adding WP Symposium plugins to your site*
 
-Create a new page in WordPress (Pages->Add New). Then put a short-code in the WordPress page (it's a hyphen, not an underscore). There are many more short-codes which you can use, please refer to the admin guide at www.wpswiki.com. 
-
-For example:
-
-For the Forum:
-
-  `[symposium-forum]`
-  
-For the Member Profile:
-  
-  `[symposium-profile]`
-  
-For the Mail/Private Messaging:
-  
-  `[symposium-mail]`
-  
-Installation of the notification bar is just a matter of activating it.
-
-IMPORTANT: Update settings on the Options page.
+Full instructions are available on the WPS Wiki at www.wpswiki.com
 
 == Screenshots ==
 
@@ -158,18 +142,29 @@ Q. Because of all the nice AJAX, how can I get content submitted to search engin
 A. Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
 
 Q. Which plugins may require a subscription fee?
-A. Currently the Groups and Facebook Connect require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
+A. Currently the Groups, Facebook Connect and Mobile/SEO require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
 
 Q. If I take out a Bronze membership and I decide I don't want WP Symposium, can I get a refund?
 A. If the plugins don't work on your server, with TwentyTen theme and all non-WPS plugins de-activated, then you will get a full refund, less any PayPal fees.
 
 Q. How much does Bronze membership cost?
-A. $39 a year
+A. $39 a year - if you don't want to continue your membership please cancel your PayPal subscription. You may want to want until the end of your year to benefit from membership for as long as possible.
 
 Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Support for Silver members takes priority over Bronze members.
 
 == Changelog ==
+
+= 0.54 =
+
+* Removed unnecessary buttons on profile page
+* Message shown if extended info is empty, but choosing to show it as a site option
+* Removed all references to symposium_notifications table as no longer used (alerts will replace)
+* Profile: Option to show/hide date of birth
+
+= 0.53.11 =
+
+* Profile: Added hide option to each part of date of birth
 
 = 0.53.10 =
 
