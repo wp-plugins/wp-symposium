@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1.3
-Stable tag: 0.54
+Stable tag: 0.54.1
 
 Social Networking for WordPress - forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile version, and more!
 
@@ -109,7 +109,7 @@ Q. Is WP Symposium covered by the GPL license?
 A. Yes, for sure. Everything listed on the WordPress directory is covered by the GPL v3 licence. There may be other plugins that are compatible with WP Symposium that are sold commercially, but what is provided via the download at www.wordpress.org will always be covered by the GPL licence.
 
 Q. What's the one thing I probably haven't done?
-A. Set up your page URL's properly in the admin Options -> Settings page. Check out www.wpswiki.com, in particular the "Try this first" page.
+A. Visited the Installation page to update WP Symposium's internal paths. Check out www.wpswiki.com, in particular the "Try this first" page.
 
 Q. The admin side works, but the forum (or another plugin) doesn't appear?
 A. Check you have `[symposium-forum]` on your page, with a hyphen, not an underscore. Replace [symposium-forum] with the shortcode of the plugin.
@@ -118,7 +118,7 @@ Q. I've done that, but the forum (or another plugin) still doesn't appear?
 A. Have you put `[symposium-forum]` on a WordPress page, not an HTML file? 
 
 Q. It all looks okay, but I just get a spinning "please wait" symbol?
-A. Read the "Try this first" page at www.wpswiki.com, if that still doesn't help visit www.wpsymposium.com. 
+A. Read the "Try this first" page at www.wpswiki.com, if that still doesn't help visit www.wpsymposium.com. You almost certainly have a Javascript problem.
 
 Q. Can I use other languages?
 A. There are a growing number of translations available to use at www.crowdin.net (see www.wpsymposium.com for further instructions).
@@ -133,27 +133,38 @@ Q. I don't see friends when they're online, can't edit forum posts or read all m
 A. Sounds like AJAX isn't working, probably due to a Javascript error. Check out the "Try this first" page at www.wpswiki.com.
 
 Q. There used to be a login and registration plugin, where did they go?
-A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login, however in hindsight it can be introduced in a more strategic manner. There is now a sidebar widget that allows members to login, or links to the register/forgotten password WordPress pages. Once logged in, the user can see how any messages (including those unread) and friends (including new friend requests), etc.
+A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login, however in hindsight it can be introduced in a more strategic manner. There is now a sidebar widget that allows members to login, or show links to the register/forgotten password WordPress pages. Once logged in, the user can see how any messages (including those unread) and friends (including new friend requests), etc.
 
 Q. How can I get rid of the Powered By message?
-A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. However, if you subscribe at www.wpsymposium.com and activate the Groups plugin, you can edit it through the admin area.
+A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. However, if you subscribe at www.wpsymposium.com and activate the Groups plugin (ie. get Bronze membership), you can edit/remove the message through the admin area.
 
 Q. Because of all the nice AJAX, how can I get content submitted to search engines?
 A. Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
 
 Q. Which plugins may require a subscription fee?
-A. Currently the Groups, Facebook Connect and Mobile/SEO require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
+A. Currently the Groups, Facebook Connect, Gallery and Mobile/SEO require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
 
 Q. If I take out a Bronze membership and I decide I don't want WP Symposium, can I get a refund?
 A. If the plugins don't work on your server, with TwentyTen theme and all non-WPS plugins de-activated, then you will get a full refund, less any PayPal fees.
 
+Q. What happens if I cancel my Bronze membership?
+A. After cancellation, you will no longer be able to download upgrades/patches or new plugins (that are provided to Bronze members) from www.wpsymposium.com. You can continue to use those plugins you have on your site, and upgrade the core WP Symposium plugin for www.wordpress.org. You may want to wait until the end of your year to benefit from membership for as long as possible.
+
 Q. How much does Bronze membership cost?
-A. $39 a year - if you don't want to continue your membership please cancel your PayPal subscription. You may want to want until the end of your year to benefit from membership for as long as possible.
+A. $39 a year - if you don't want to continue your membership please cancel your PayPal subscription. You may want to wait until the end of your year to benefit from membership for as long as possible. You can continue to use those plugins purchased on your site.
 
 Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Support for Silver members takes priority over Bronze members.
 
 == Changelog ==
+
+= 0.54.1 =
+
+* Core (Security): Added protection against SQL injection attacks
+* Core (Security): AJAX no longer passed current user ID when not necessary
+* Core (Security): Added more checks in AJAX functions that user is logged in
+* Added more accurate message when viewing member profiles when not logged in
+* Added more accurate message when viewing group page when not logged in
 
 = 0.54 =
 
@@ -161,9 +172,6 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 * Message shown if extended info is empty, but choosing to show it as a site option
 * Removed all references to symposium_notifications table as no longer used (alerts will replace)
 * Profile: Option to show/hide date of birth
-
-= 0.53.11 =
-
 * Profile: Added hide option to each part of date of birth
 
 = 0.53.10 =
