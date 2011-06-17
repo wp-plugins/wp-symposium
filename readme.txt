@@ -158,6 +158,12 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
+= 0.55 =
+
+* Profile: Added symposium_profile_wall_header_filter filter
+* Core: Added support for :-) smiley
+* Core: If user not logged in since WPS installed, last active shows 'a while ago' instead of '4 decades'
+
 = 0.54.1 =
 
 * Core (Security): Added protection against SQL injection attacks
@@ -165,6 +171,7 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 * Core (Security): Added more checks in AJAX functions that user is logged in
 * Added more accurate message when viewing member profiles when not logged in
 * Added more accurate message when viewing group page when not logged in
+* Profile: Fixed: if not using date of birth, location shows
 
 = 0.54 =
 
