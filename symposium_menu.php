@@ -2751,7 +2751,7 @@ function symposium_plugin_options() {
 									
 									<p>Y is a development release, with changes made to the database tables and/or the code.</p>
 									
-									<p>Z is a patch, containing only bug fixes.</p>
+									<p>Z is a patch, containing only bug fixes or minor code changes.</p>
 									
 									<p>Installed version: <?php echo get_option("symposium_version"); ?></p>
 									

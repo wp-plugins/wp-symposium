@@ -503,7 +503,10 @@ function symposium_profile_body($uid1, $uid2, $post, $version, $limit_from) {
 				// Wall
 
 				// Filter for additional buttons
-				$html .= apply_filters ( 'symposium_profile_wall_header_filter', $html, $uid1, $uid2, $privacy, $is_friend, $meta->extended, $share );
+				if ($version == "wall") {
+					$content .= apply_filters ( 'symposium_profile_wall_header_filter', $uid1, $uid2, $privacy, $is_friend, $meta->extended, $share );
+					if ($content != $uid1) { $html .= $content; }
+				}
 					
 				$html .= "<div id='symposium_wall'>";
 

@@ -748,19 +748,23 @@ if ($_POST['action'] == 'menu_personal') {
 				$html .= '</div>';
 
 				// Publish RSS feed?
-				$html .= '<div class="symposium_settings_row">';
-					$html .= __('Publish your activity via RSS (only your initial posts)?', 'wp-symposium');
-					$html .= '<div>';
-						$html .= '<select id="rss_share" name="rss_share">';
-							$html .= "<option value=''";
-								if ($rss_share == '') { $html .= ' SELECTED'; }
-								$html .= '>'.__('No', 'wp-symposium').'</option>';
-							$html .= "<option value='on'";
-								if ($rss_share == 'on') { $html .= ' SELECTED'; }
-								$html .= '>'.__('Yes', 'wp-symposium').'</option>';
-						$html .= '</select>';
+				if (function_exists('symposium_rss_main')) {
+					$html .= '<div class="symposium_settings_row">';
+						$html .= __('Publish your activity via RSS (only your initial posts)?', 'wp-symposium');
+						$html .= '<div>';
+							$html .= '<select id="rss_share" name="rss_share">';
+								$html .= "<option value=''";
+									if ($rss_share == '') { $html .= ' SELECTED'; }
+									$html .= '>'.__('No', 'wp-symposium').'</option>';
+								$html .= "<option value='on'";
+									if ($rss_share == 'on') { $html .= ' SELECTED'; }
+									$html .= '>'.__('Yes', 'wp-symposium').'</option>';
+							$html .= '</select>';
+						$html .= '</div>';
 					$html .= '</div>';
-				$html .= '</div>';
+				} else {
+					$html .= '<input type="hidden" id="rss_share" value="">';
+				}
 						
 				// Birthday
 				if ($config->show_dob == 'on') {
