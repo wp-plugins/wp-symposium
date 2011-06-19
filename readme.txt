@@ -6,13 +6,13 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1.3
-Stable tag: 0.55.1
+Stable tag: 0.56
 
-Social Networking for WordPress - forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile version, and more!
+Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile, RSS, and more!
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, activity alerts and support for other plugins such as Groups, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! 
+WP Symposium is a new suite of social networking plugins - forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, activity alerts, RSS activity feeds and support for other plugins such as Groups, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.
 
 For developers there are a growing number of WordPress hooks and filters, along with WP Symposium functions and Javascript variables. More information on the WPS Wiki at www.wpsiki.com.
 
@@ -158,12 +158,19 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
+= 0.56 =
+
+* Forum: Added forum category descriptions
+* Forum: Added minimum level to post/reply on the forum
+* Forum: Added support for Group Forum alerts
+
 = 0.55.1 =
 
 * Fixed typo in symposium_time_ago function
 
 = 0.55 =
 
+* Bonus Plugin: RSS Feed of members activity feed (enabled via Personal settings)
 * Profile: Added symposium_profile_wall_header_filter filter (used with RSS Feed Plugin)
 * Core: Added support for :-) smiley
 * Core: If user not logged in since WPS installed, last active shows 'a while ago' instead of '4 decades'
