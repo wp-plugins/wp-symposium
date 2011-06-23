@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.1.3
-Stable tag: 0.56
+Stable tag: 0.56.1
 
 Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile, RSS, and more!
 
@@ -14,7 +14,7 @@ Social Networking for WordPress: forum, wall, member directory, mail, chat, prof
 
 WP Symposium is a new suite of social networking plugins - forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, activity alerts, RSS activity feeds and support for other plugins such as Groups, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.
 
-For developers there are a growing number of WordPress hooks and filters, along with WP Symposium functions and Javascript variables. More information on the WPS Wiki at www.wpsiki.com.
+For developers, there are a growing number of WordPress hooks and filters, along with WP Symposium functions and Javascript variables. More information on the WPS Wiki at www.wpsiki.com.
 
 **Note: The WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, chat, panel, mail, member directory and widgets) - additional WPS compatible plugins may require a subscription fee.**
 
@@ -64,14 +64,14 @@ Tested with PHP 5.
 * go to Plugins->Add New and search for "Symposium"
 * click on Install below WP-Symposium
 * activate the plugins you want to use (core plugin MUST remain activated, and be activated first)
-* important - go to the Options page to configure settings
+* important - go to the Settings page to configure settings
 
 *Manual installation*
 
 * download from wordpress.org/extend/plugins/wp-symposium/
 * unzip the contents of the ZIP file in your /wp-content/plugins folder
 * activate the plugins you want via Plugins on the WordPress admin dashboard (including the core plugin)
-* important - go to the Options page to configure
+* important - go to the Settings page to configure
 
 When upgrading manually, make sure you deactivate and re-activate the core plugin.
 
@@ -136,13 +136,13 @@ Q. There used to be a login and registration plugin, where did they go?
 A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login, however in hindsight it can be introduced in a more strategic manner. There is now a sidebar widget that allows members to login, or show links to the register/forgotten password WordPress pages. Once logged in, the user can see how any messages (including those unread) and friends (including new friend requests), etc.
 
 Q. How can I get rid of the Powered By message?
-A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. However, if you subscribe at www.wpsymposium.com and activate the Groups plugin (ie. get Bronze membership), you can edit/remove the message through the admin area.
+A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. An easier way is to use the Templates via WP Admin -> WP Symposium -> Templates.
 
 Q. Because of all the nice AJAX, how can I get content submitted to search engines?
 A. Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
 
 Q. Which plugins may require a subscription fee?
-A. Currently the Groups, Facebook Connect, Gallery and Mobile/SEO require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
+A. Currently the Groups, Facebook Connect, Gallery, Mobile/SEO and RSS Activity Feed require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
 
 Q. If I take out a Bronze membership and I decide I don't want WP Symposium, can I get a refund?
 A. If the plugins don't work on your server, with TwentyTen theme and all non-WPS plugins de-activated, then you will get a full refund, less any PayPal fees.
@@ -151,12 +151,19 @@ Q. What happens if I cancel my Bronze membership?
 A. After cancellation, you will no longer be able to download upgrades/patches or new plugins (that are provided to Bronze members) from www.wpsymposium.com. You can continue to use those plugins you have on your site, and upgrade the core WP Symposium plugin for www.wordpress.org. You may want to wait until the end of your year to benefit from membership for as long as possible.
 
 Q. How much does Bronze membership cost?
-A. $39 a year - if you don't want to continue your membership please cancel your PayPal subscription. You may want to wait until the end of your year to benefit from membership for as long as possible. You can continue to use those plugins purchased on your site.
+A. $39 a year - if you don't want to continue your membership please cancel your PayPal subscription. You may want to wait until the end of your year to benefit from membership for as long as possible. You can continue to use those plugins installed on your site.
 
 Q. What is Silver membership?
-A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Support for Silver members takes priority over Bronze members.
+A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
 
 == Changelog ==
+
+= 0.56.1 =
+
+* Forum: Added option votes on posts (set via admin Forum Settings)
+* Core: Opened up Templates to all members
+* Core: Removed symposium_get_siteURL() as not necessary
+* Activity Widget: changed to use activity share level, not personal info share level
 
 = 0.56 =
 
