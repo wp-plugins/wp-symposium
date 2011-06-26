@@ -1,0 +1,41 @@
+The following development plan (to-do list) is ordered in MoSCoW priority. Because development is reactive to member requests on the forum, this list is not set in stone.
+
+==Must do (essential fixes/patches before next release)==
+
+These items are stopping the product functioning for everyone. Individual installations may have problems, 
+but these items are effecting everyone and so are core issues or new features.
+
+* None.
+
+==Should do (if bug fixing allows)==
+
+Planned to do for next release, but might not happen due to reactive nature of development to user requests.
+
+* Show less mail in in/sent boxes, with Show More to reduce page length
+
+==Could do (if development time allows)==
+
+If there were more hours in the day, then these items would move up to "Should do" items.
+
+* Interpret BBcode on forums in javascript
+* Option to hide city and/or country from members profile.
+* Option to exclude admin from members list.
+* Add parameter for [symposium-forum GROUP=x CATEGORY=x]
+* Layout for forum replies should be same as initial post (ie. no text wrap)
+* Members: Base search on wp_users not usermeta
+* Theme: Small user search seems very slow, check it
+* Forum: Voting system + and -
+
+==Would do (if life allows!)==
+
+These are items that realistically won't get developed in the short term, but they are identified
+as features that would improve the product and so will happen at some point.
+
+* Wiki Videos: Setting URLs and checking permissions
+* Poke: Implement (needs notifications)
+* Profile: Optionally receive email on activity in wall post if I've replied or started it
+* Mail: Quote feature
+* Forum: Steven Tryon: linking blog to forum and vice versa
+* Forum: Minimum level for categories
+* Forum: You can vote for removal, and when x number of votes received, it is deleted
+* Widget: 'clear my vote' link on vote widget
