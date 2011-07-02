@@ -5,8 +5,8 @@ Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
-Tested up to: 3.1.3
-Stable tag: 0.57
+Tested up to: 3.1.4
+Stable tag: 0.57.1
 
 Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile, RSS, and more!
 
@@ -127,7 +127,7 @@ Q. Are there images other than the usual smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Smilies page at www.wpsymposium.com.
 
 Q. Will WP Symposium work on WPMU/WPMS?
-A. As from v0.37, yes, WordPress Multi-site is supported.
+A. As from v0.37, yes, WordPress Multi-site is supported, although it is not as widely used as the single site installation, and hence may not be as stable (due to less user tests in a live environment).
 
 Q. I don't see friends when they're online, can't edit forum posts or read all mail in my inbox. I see stuff, but not much works...
 A. Sounds like AJAX isn't working, probably due to a Javascript error. Check out the "Try this first" page at www.wpswiki.com.
@@ -148,15 +148,22 @@ Q. If I take out a Bronze membership and I decide I don't want WP Symposium, can
 A. If the plugins don't work on your server, with TwentyTen theme and all non-WPS plugins de-activated, then you will get a full refund, less any PayPal fees.
 
 Q. What happens if I cancel my Bronze membership?
-A. After cancellation, you will no longer be able to download upgrades/patches or new plugins (that are provided to Bronze members) from www.wpsymposium.com. You can continue to use those plugins you have on your site, and upgrade the core WP Symposium plugin for www.wordpress.org. You may want to wait until the end of your year to benefit from membership for as long as possible.
+A. After cancellation, you will no longer be able to download upgrades/patches or new plugins (that are provided to Bronze members) from www.wpsymposium.com. You can continue to use those plugins you have on your site, and upgrade the core WP Symposium plugins from www.wordpress.org. You may want to wait until the end of your year to benefit from membership for as long as possible. You will not be able to access your helpdesk account after cancelling.
 
 Q. How much does Bronze membership cost?
-A. $39 a year - if you don't want to continue your membership please cancel your PayPal subscription. You may want to wait until the end of your year to benefit from membership for as long as possible. You can continue to use those plugins installed on your site.
+A. $39 a year - if you don't want to continue your membership please cancel your PayPal subscription. You may want to wait until the end of your year to benefit from membership for as long as possible. You can continue to use Bronze plugins installed on your site even after you cancel (you just can't upgrade or get new ones).
 
 Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
 
 == Changelog ==
+
+= 0.57.1 =
+
+* Profile: Fixed links in WPS on sites that are not installed on root of site
+* Forum: New setting that will hide forums posts with a given score (- and + value accepted)
+* Widgets (Vote): Added option to show/hide vote counts
+* Widgets (Vote): Can now change options without resetting (this is an option too)
 
 = 0.57 =
 
