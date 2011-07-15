@@ -168,6 +168,7 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 * Member Directory: Search now includes extended profile fields
 * Profile: Can now add multiple default friend requests
 * Profile (Extended Fields): Can use checkboxes as a format option
+* Profile: Option to include Poke (or your equivalent) on profile
 
 = 0.58.1 =
 
