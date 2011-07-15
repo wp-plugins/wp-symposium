@@ -1775,7 +1775,7 @@ function symposium_plugin_profile() {
 					<th scope="row"><label for="use_poke"><?php _e('Poke/Nudge/Wink/etc', 'wp-symposium'); ?></label></th>
 					<td>
 					<input type="checkbox" name="use_poke" id="use_poke" <?php if ($use_poke == "on") { echo "CHECKED"; } ?>/>
-					<span class="description"><?php echo __('Enable this feature', 'wp-symposium'); ?></span></td> 
+					<span class="description"><?php echo __('Enable this feature, add [poke] to <a href="admin.php?page=symposium_templates">templates</a> (see <a href="http://www.wpswiki.com/index.php?title=Profile_Page_Header" target="_blank">WPS Wiki</a>)', 'wp-symposium'); ?></span></td> 
 					</tr> 
 
 					<tr valign="top"> 
