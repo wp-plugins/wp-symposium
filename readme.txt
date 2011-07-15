@@ -5,8 +5,8 @@ Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
-Tested up to: 3.2
-Stable tag: 0.58.1
+Tested up to: 3.2.1
+Stable tag: 0.59
 
 Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile, RSS, and more!
 
@@ -33,9 +33,13 @@ You get a number of plugins that each provide a set of functionality and feature
 
 You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars); friends; a "notification bar" with friends status, mail alerts and live chat windows. You can also activate a forum; a directory of members and internal (private) messaging.
 
-The features of all these will continually improve - and more plugins like Groups and Photo Albums are available at www.wpsymposium.com.
+The features of all these will continually improve - and more plugins like Groups, Facebook Shared Status, Photo Albums and Mobile Access are available at www.wpsymposium.com.
 
 Oh, and you also get widgets, with more to come, including latest new members and latest forum posts.
+
+*Can I change the layout and styles?*
+
+Certainly can! Templates are provided for you to change the layout, and an easy-to-use style configuration (or way to enter CSS if you prefer) is provided to change the styles.
 
 *How is it configured?*
 
@@ -45,7 +49,7 @@ Via crowdin website at www.crowdin.net/project/symposium, a growing number of tr
 
 *What else is there?*
 
-Loads! Smilies, loves AJAX, a "health check" page, templates for changing the page layout, options for just about everything... the list goes on!
+Loads! Smilies, loves AJAX, an installation "health check" page, templates for changing the page layout, options for just about everything... the list goes on!
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
   
@@ -53,8 +57,7 @@ Find out more, and try it out on our own social network at www.wpsymposium.com.
 
 An admin guide and more information is available at www.wpswiki.com.
 
-Important - after activating for the first time, make sure you go to the Options page and set up the pages on which
-you're going to use the WP Symposium plugins.
+Important - after activating for the first time, and after changing any WP Symposium shortcodes, make sure you visit the WP Symposium -> Installation page that updates internal paths.
 
 As with all upgrades to any system, it is recommended that you take a backup of the database and website first.
 Tested with PHP 5.
@@ -64,16 +67,14 @@ Tested with PHP 5.
 * go to Plugins->Add New and search for "Symposium"
 * click on Install below WP-Symposium
 * activate the plugins you want to use (core plugin MUST remain activated, and be activated first)
-* important - go to the Settings page to configure settings
+* important - go to the Installation page to complete the setup
 
 *Manual installation*
 
 * download from wordpress.org/extend/plugins/wp-symposium/
 * unzip the contents of the ZIP file in your /wp-content/plugins folder
 * activate the plugins you want via Plugins on the WordPress admin dashboard (including the core plugin)
-* important - go to the Settings page to configure
-
-When upgrading manually, make sure you deactivate and re-activate the core plugin.
+* important - go to the Installation page to complete the setup
 
 *Adding WP Symposium plugins to your site*
 
@@ -121,7 +122,7 @@ Q. It all looks okay, but I just get a spinning "please wait" symbol?
 A. Read the "Try this first" page at www.wpswiki.com, if that still doesn't help visit www.wpsymposium.com. You almost certainly have a Javascript problem.
 
 Q. Can I use other languages?
-A. There are a growing number of translations available to use at www.crowdin.net (see www.wpsymposium.com for further instructions).
+A. There are a growing number of translations available to use at www.crowdin.net (see www.wpsymposium.com for further instructions). From v0.58 support for non-Western character sets was introduced (needs a fresh v0.58+ installation).
 
 Q. Are there images other than the usual smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Smilies page at www.wpsymposium.com.
@@ -133,7 +134,7 @@ Q. I don't see friends when they're online, can't edit forum posts or read all m
 A. Sounds like AJAX isn't working, probably due to a Javascript error. Check out the "Try this first" page at www.wpswiki.com.
 
 Q. There used to be a login and registration plugin, where did they go?
-A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login, however in hindsight it can be introduced in a more strategic manner. There is now a sidebar widget that allows members to login, or show links to the register/forgotten password WordPress pages. Once logged in, the user can see how any messages (including those unread) and friends (including new friend requests), etc.
+A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login, however in hindsight it can be introduced in a more strategic manner. There is now a sidebar widget that allows members to login, or show links to the register/forgotten password WordPress pages. Once logged in, the user can see how any messages (including those unread) and friends (including new friend requests), etc with the same widget.
 
 Q. How can I get rid of the Powered By message?
 A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. An easier way is to use the Templates via WP Admin -> WP Symposium -> Templates.
@@ -158,6 +159,16 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
+= 0.59 =
+
+* Tested up to WordPress 3.2.1
+* Admin: changed structure of WPS admin menus to operate like standard WordPress admin menus (so consistent with WP and WPS plugins)
+* Admin: consistent UI for WPS admin screens
+* Member Directory: Added option to hide admin from member directory
+* Member Directory: Search now includes extended profile fields
+* Profile: Can now add multiple default friend requests
+* Profile (Extended Fields): Can use checkboxes as a format option
+
 = 0.58.1 =
 
 * Fix: Sorted out internal version numbers to reflect current version (sorry!)
@@ -166,16 +177,16 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 = 0.58 =
 
-* Compatible with WordPress 3.2
+* Tested up to, and compatible with, WordPress 3.2
 * Support for non-Western characters (UTF8). Note this will only apply to new installations.
 * New message notifications now link straight to new mail item, not just in box
 
 = 0.57.2 =
 
-* Compatible with WordPress 3.1.4
+* Tested up to WordPress 3.1.4
 * Forum: Small fix to voting system (so 0 is ignored)
 * Members: Minor bug fix on searching
-* Widgets (Vote): upgraded to v3 for IE9 compatibility, sorry - this might mean you need to purchase a licence for www.jscharts.com, see widget settings :(
+* Widgets (Vote): upgraded to v3 for IE9 compatibility, sorry - this might mean you need to purchase a licence from www.jscharts.com, see widget settings :(
 
 = 0.57.1 =
 
@@ -296,7 +307,7 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 * Profile: Line breaks are shown for extended textarea fields
 * Profile: Order works on extended fields
-* Profile: If Googlemap is 0, it is not shown
+* Profile: If Googlemap size is 0, it is not shown
 * Widgets: Added "Show replies" option to Latest Forum Posts
 * Panel: Added locks to AJAX calls to help reduce load on servers
 
