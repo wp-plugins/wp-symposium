@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 0.59
+Stable tag: 0.59.1
 
 Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile, RSS, and more!
 
@@ -159,6 +159,15 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
+= 0.59.1 =
+
+* Forum Categories: Added "Delete All" option to delete category and contents
+* Forum Categories: Fixed bug in "Allow new topics" option
+* Forum Categories: Add Topic count column
+* Forum: Simplified headings on "My Activity"
+* Profile: "Poke" feature supports Alerts plugin and mail sent includes link to the member who sent it
+* Forum: Banned word list in panel settings is now shared with Forum (and can be set from either)
+
 = 0.59 =
 
 * Tested up to WordPress 3.2.1
@@ -168,7 +177,6 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 * Member Directory: Search now includes extended profile fields
 * Profile: Can now add multiple default friend requests
 * Profile (Extended Fields): Can use checkboxes as a format option
-* Profile: Option to include Poke (or your equivalent) on profile
 
 = 0.58.1 =
 
