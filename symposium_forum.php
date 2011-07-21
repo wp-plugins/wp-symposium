@@ -69,7 +69,7 @@ function symposium_forum_latestposts() {
 	$html .= symposium_forum_latestposts_showThreadChildren(0, 0, 0);	
 	$html .= '</div>';
 
-	echo $html;
+	return $html;
 
 }
 function symposium_forum_latestposts_showThreadChildren($parent, $level, $gid) {
