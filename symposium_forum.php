@@ -61,6 +61,90 @@ function symposium_forum() {
 
 }
 
+function symposium_forum_latestposts() {
+	
+	global $wpdb;
+
+	$html = '<div id="forum_activity_div">';
+	$html .= symposium_forum_latestposts_showThreadChildren(0, 0, 0);	
+	$html .= '</div>';
+
+	echo $html;
+
+}
+function symposium_forum_latestposts_showThreadChildren($parent, $level, $gid) {
+	
+	global $wpdb;
+
+	$config = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_config"));
+
+	// Work out link to this page, dealing with permalinks or not
+	if ($gid == 0) {
+		$thispage = symposium_get_url('forum');
+		if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
+		$q = symposium_string_query($thispage);		
+	} else {
+		$thispage = symposium_get_url('group');
+		if ($thispage[strlen($thispage)-1] != '/') { $thispage .= '/'; }
+		$q = symposium_string_query($thispage);		
+		$q .= "gid=".$gid."&";
+	}
+	
+	$html = "";
+	
+	$preview = 100;	
+	$postcount = 100; // Tries to retrieve last 7 days, but this will be a maximum number of posts or replies
+	
+	if ($level == 0) {
+		$avatar_size = 30;
+		$margin_top = 10;
+		$desc = "DESC";
+	} else {
+		$avatar_size = 20;
+		$margin_top = 0;
+		$desc = "";
+	}
+
+	$include = strtotime("now") - (86400 * 7); // 1 week
+	$include = date("Y-m-d H:i:s", $include);
+
+	// All topics started
+	$posts = $wpdb->get_results("
+		SELECT tid, topic_subject, topic_owner, topic_post, topic_category, topic_date, display_name, topic_parent 
+		FROM ".$wpdb->prefix.'symposium_topics'." t INNER JOIN ".$wpdb->base_prefix.'users'." u ON t.topic_owner = u.ID 
+		WHERE topic_parent = ".$parent." AND topic_group = ".$gid." AND topic_date > '".$include."' ORDER BY tid ".$desc." LIMIT 0,".$postcount); 
+
+	if ($posts) {
+
+		foreach ($posts as $post)
+		{
+			$html .= "<div style='clear:both; padding-left: ".($level*40)."px; margin-top:".$margin_top."px;'>";		
+				$html .= "<div class='symposium_latest_forum_row_avatar'>";
+					$html .= get_avatar($post->topic_owner, $avatar_size);
+				$html .= "</div>";
+				$html .= "<div>";
+					if ($post->topic_parent > 0) {
+						$text = stripslashes($post->topic_post);
+						if ( strlen($text) > $preview ) { $text = substr($text, 0, $preview)."..."; }
+						$html .= symposium_profile_link($post->topic_owner)." ".__('replied', 'wp-symposium')." ";
+						$html .= "<a href='".$thispage.symposium_permalink($post->topic_parent, "topic").$q."cid=".$post->topic_category."&show=".$post->topic_parent."'>";
+						$html .= $text."</a> ".symposium_time_ago($post->topic_date).".<br>";
+					} else {
+						$text = stripslashes($post->topic_subject);
+						if ( strlen($text) > $preview ) { $text = substr($text, 0, $preview)."..."; }
+						$html .= symposium_profile_link($post->topic_owner)." ".__('started', 'wp-symposium')." <a href='".$thispage.symposium_permalink($post->tid, "topic").$q."cid=".$post->topic_category."&show=".$post->tid."'>".$text."</a> ".symposium_time_ago($post->topic_date).".<br>";
+					}
+				$html .= "</div>";
+			$html .= "</div>";
+			
+			$html .= symposium_forum_latestposts_showThreadChildren($post->tid, $level+1, $gid);
+			
+		}
+	}	
+	
+	return $html;
+}
+
 /* ====================================================== SET SHORTCODE ====================================================== */
 
 if (!is_admin()) {
