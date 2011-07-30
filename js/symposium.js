@@ -769,7 +769,7 @@ jQuery(document).ready(function() {
 												jQuery("#in_unread").html('('+details[1]+')');
 											} else {
 												jQuery("#in_unread").html('');
-											}
+												}
 										}
 										jQuery("#messagebox").html(details[3]);
 										jQuery(".symposium_pleasewait").fadeOut("slow");
