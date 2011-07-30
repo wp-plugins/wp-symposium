@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 0.61.1
+Stable tag: 0.62
 
 Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile, RSS, and more!
 
@@ -158,6 +158,14 @@ Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
 
 == Changelog ==
+
+= 0.62 =
+
+* Mail: carriage returns in emails sent for new Mail messages now shown
+* Mail: header now uses PHP_EOL constant to support Windows and Unix (and Mac) web servers
+* Core: Fixed Installation page to update page URL correctly on multi-site
+* Forum: No longer allows a topic with blank subject or post
+* Templates: Blank footer allowed (places an HTML comment so that default version doesn't get re-inserted when upgrading)
 
 = 0.61.1 =
 
