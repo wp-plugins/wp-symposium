@@ -162,7 +162,7 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 = 0.61.2 =
 
 * Mail: carriage returns in emails sent for new Mail messages now shown
-  
+
 = 0.61.1 =
 
 * Mail: When searching, top item in results is shown in message area
