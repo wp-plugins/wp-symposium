@@ -351,7 +351,7 @@ function symposium_profile_header($uid1, $uid2, $url, $display_name) {
 
 				// A friend
 				// Send mail
-				$actions .= '<input type="button" class="symposium-button" id="profile_send_mail_button" onclick="document.location = \''.$url.'?view=compose&to='.$uid1.'\';" value="'.__('Send Mail', 'wp-symposium').'">';
+				$actions .= '<input type="button" class="symposium-button" id="profile_send_mail_button" onclick="document.location = \''.$url.symposium_string_query($url).'view=compose&to='.$uid1.'\';" value="'.__('Send Mail', 'wp-symposium').'">';
 				
 			} else {
 				
@@ -1124,15 +1124,17 @@ function symposium_sendmail($email, $subject, $msg)
 {
 	global $wpdb;
 	
-	// first get ID of recipient
-	$uid = $wpdb->get_var($wpdb->prepare("SELECT ID FROM ".$wpdb->base_prefix."users WHERE lower(user_email) = '".strtolower($email)."'"));
-
 	// get footer
 	$footer = $wpdb->get_var($wpdb->prepare("SELECT footer FROM ".$wpdb->prefix.'symposium_config'));
 
 	// get template
 	$template = $wpdb->get_var($wpdb->prepare("SELECT template_email FROM ".$wpdb->prefix . "symposium_config"));
 	$template = str_replace("[]", "", stripslashes($template));
+
+	// Body Filter
+	$msg = apply_filters ( 'symposium_email_body_filter', $msg );
+	
+	$msg = str_replace(chr(10), "<br />", $msg);
 	
 	$template =  str_replace('[message]', $msg, $template);
 	$template =  str_replace('[footer]', $footer, $template);
@@ -1146,6 +1148,9 @@ function symposium_sendmail($email, $subject, $msg)
 	if ($from_email == '') { $from_email = "noreply@".get_bloginfo('url'); }
 	$headers .= 'From: '.$from_email."\r\n";
 	
+	// Header Filter
+	$headers = apply_filters ( 'symposium_email_header_filter', $headers );
+
 	// finally send mail
 	if (mail($email, $subject, $template, $headers))
 	{

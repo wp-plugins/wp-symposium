@@ -166,7 +166,7 @@ if ($_POST['action'] == 'sendMail') {
 			'mail_subject' => $subject,
 			'mail_message' => $message
 			 ) ) ) ) {
-				$return = __('Message sent to', 'wp-symposium').' '.$recipient_name.'.';
+				$return = __('Message sent to', 'wp-symposium').' '.$recipient_name;
 			 } else {
 				$return = '<p><strong>'.__('There was a problem sending your mail to', 'wp-symposium').' '.$recipient_name.'.</strong></p>';
 			 }
@@ -193,7 +193,7 @@ if ($_POST['action'] == 'sendMail') {
 				$body = str_replace(chr(13), "<br />", $body);
 				$body = str_replace("\\r\\n", "<br />", $body);
 				$body = str_replace("\\", "", $body);
-			
+
 				if ( symposium_sendmail($recipient->user_email, __('New Mail Message', 'wp-symposium'), $body) ) {
 					// email sent ok.
 				} else {
