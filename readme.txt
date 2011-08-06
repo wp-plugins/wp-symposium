@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 0.62
+Stable tag: 0.62.1
 
 Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile, RSS, and more!
 
@@ -158,6 +158,14 @@ Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
 
 == Changelog ==
+
+= 0.62.1 =
+
+* Templates: Added [poke] to 'reset to default'
+* Profile: Profile redirect won't happen if profile plugin not activated
+* Mail: added 'Send Mail' button to messages in Sent box (to send another mail to same person)
+* Profile: added addslashes() to fix rogue apostrophe error
+* Profile: fixed rogue error regarding show_profile_menu field
 
 = 0.62 =
 
