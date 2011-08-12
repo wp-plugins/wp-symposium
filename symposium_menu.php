@@ -1488,7 +1488,11 @@ function install_row($name, $shortcode, $function, $config_url, $plugin_dir, $se
 
 	global $wpdb;
 	$install_help = str_replace('\\', '/', $install_help);
-	list($name, $ver) = explode(" ",$name);
+	if (strpos($name, " ") ) {
+		list($name, $ver) = explode(" ",$name);
+	} else {
+		$ver = '';
+	}
 	$name = str_replace('_', ' ', $name);
 
 	echo '<tr>';
