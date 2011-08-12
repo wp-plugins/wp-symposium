@@ -1,0 +1,35 @@
+The following development plan (to-do list) is ordered in MoSCoW priority. Because development is reactive to member requests on the forum, this list is not set in stone.
+
+==Must do (essential fixes/patches before next release)==
+
+These items are stopping the product functioning for everyone. Individual installations may have problems, 
+but these items are effecting everyone and so are core issues or new features.
+
+* None.
+
+==Should do (if bug fixing allows)==
+
+Planned to do for next release, but might not happen due to reactive nature of development to user requests.
+
+* get rid of function symposium_permalink()
+
+==Could do (if development time allows)==
+
+If there were more hours in the day, then these items would move up to "Should do" items.
+
+* Bulk WPS mail to all members
+* Interpret BBcode on forums in javascript
+* Add parameter for [symposium-forum GROUP=x CATEGORY=x]
+* Layout for forum replies should be same as initial post (ie. no text wrap)
+* Theme: Small user search seems very slow, check it
+
+==Would do (if life allows!)==
+
+These are items that realistically won't get developed in the short term, but they are identified
+as features that would improve the product and so will happen at some point.
+
+* Wiki Videos: Setting URLs and checking permissions
+* Mail: Quote feature
+* Forum: Steven Tryon: linking blog to forum and vice versa
+* Forum: Minimum level for categories
+* Look at replacing login to store previous last_activity value
