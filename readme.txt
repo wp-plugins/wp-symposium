@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 0.63
+Stable tag: 0.63.1
 
 Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile, RSS, and more!
 
@@ -159,11 +159,15 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
+= 0.63.1 =
+
+* Forum: Added check to avoid PHP warnings appearing when no attachments
+
 = 0.63 =
 
 * Core: Fixed security risk in image/file upload routines
 * Forum: Added option to attach files to forum posts (images shown with colorbox if gallery plugin installed)
-* Forum: Added option to strip tags or replace < and > with &lt; and &gt; (depends if you want to allow code to be posted)
+* Settings: Added option to strip tags or replace < and > with &lt; and &gt; (depends if you want to allow code to be posted)
 * Forum admin: Fixed bug that was resetting order of replies
 * Various: changed /wp-content to WP_CONTENT_URL where hardcoded by mistake
 
