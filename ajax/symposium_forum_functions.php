@@ -590,7 +590,7 @@ if ($_POST['action'] == 'getTopic') {
 									$html .= "<a href='".WP_CONTENT_URL."/plugins/wp-symposium/get_attachment.php?tid=".$post->tid."&filename=".$file->filename."'";
 									$ext = explode('.', $file->filename);
 									if ($ext[sizeof($ext)-1]=='gif' || $ext[sizeof($ext)-1]=='jpg' || $ext[sizeof($ext)-1]=='png' || $ext[sizeof($ext)-1]=='jpeg') {
-										$html .= " rel='symposium_forum_images-".$post->tid."'";
+										$html .= " target='_blank' rel='symposium_forum_images-".$post->tid."'";
 									} else {
 										$html .= " target='_blank'";
 									}
@@ -618,7 +618,7 @@ if ($_POST['action'] == 'getTopic') {
 											$html .= '<a href="'.$url.'"';
 											$ext = explode('.', $file);
 											if ($ext[sizeof($ext)-1]=='gif' || $ext[sizeof($ext)-1]=='jpg' || $ext[sizeof($ext)-1]=='png' || $ext[sizeof($ext)-1]=='jpeg') {
-												$html .= ' rel="symposium_forum_images-'.$post->tid.'"';
+												$html .= ' target="_blank" rel="symposium_forum_images-'.$post->tid.'"';
 											} else {
 												$html .= ' target="_blank"';
 											}
@@ -732,7 +732,7 @@ if ($_POST['action'] == 'getTopic') {
 									$html .= "<a href='".WP_CONTENT_URL."/plugins/wp-symposium/get_attachment.php?tid=".$child->tid."&filename=".$file->filename."'";
 									$ext = explode('.', $file->filename);
 									if ($ext[sizeof($ext)-1]=='gif' || $ext[sizeof($ext)-1]=='jpg' || $ext[sizeof($ext)-1]=='png' || $ext[sizeof($ext)-1]=='jpeg') {
-										$html .= " rel='symposium_forum_images-".$post->tid."'";
+										$html .= " target='_blank' rel='symposium_forum_images-".$post->tid."'";
 									} else {
 										$html .= " target='_blank'";
 									}
@@ -753,7 +753,7 @@ if ($_POST['action'] == 'getTopic') {
 											$html .= '<a href="'.$url.'"';
 											$ext = explode('.', $file);
 											if ($ext[sizeof($ext)-1]=='gif' || $ext[sizeof($ext)-1]=='jpg' || $ext[sizeof($ext)-1]=='png' || $ext[sizeof($ext)-1]=='jpeg') {
-												$html .= ' rel="symposium_forum_images-'.$post->tid.'"';
+												$html .= ' target="_blank" rel="symposium_forum_images-'.$post->tid.'"';
 											} else {
 												$html .= ' target="_blank"';
 											}
@@ -813,7 +813,7 @@ if ($_POST['action'] == 'getTopic') {
 								$html .= '<a href=""';
 								$ext = explode('.', $file->filename);
 								if ($ext[sizeof($ext)-1]=='gif' || $ext[sizeof($ext)-1]=='jpg' || $ext[sizeof($ext)-1]=='png' || $ext[sizeof($ext)-1]=='jpeg') {
-									$html .= ' rel="symposium_forum_images-'.$tid.'"';
+									$html .= ' target="_blank" rel="symposium_forum_images-'.$tid.'"';
 								} else {
 									$html .= ' target="_blank"';
 								}
@@ -834,7 +834,7 @@ if ($_POST['action'] == 'getTopic') {
 										$html .= '<a href="'.WP_CONTENT_URL.'/wps-content/forum/'.$post->tid.'_'.$current_user->ID.'_tmp/'.$file.'"';
 										$ext = explode('.', $file);
 										if ($ext[sizeof($ext)-1]=='gif' || $ext[sizeof($ext)-1]=='jpg' || $ext[sizeof($ext)-1]=='png' || $ext[sizeof($ext)-1]=='jpeg') {
-											$html .= ' rel="symposium_forum_images-'.$post->tid.'"';
+											$html .= ' target="_blank" rel="symposium_forum_images-'.$post->tid.'"';
 										} else {
 											$html .= ' target="_blank"';
 										}
