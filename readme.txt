@@ -3,16 +3,16 @@ Author: WP Symposium
 Contributors: Simon Goodchild
 Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
-Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, foreign language, french, german, italian, dutch, spanish
+Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 0.64
+Stable tag: 11.8.18
 
-Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, Facebook connect, gallery, mobile, RSS, and more!
+Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS, and more!
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, activity alerts, RSS activity feeds and support for other plugins such as Groups, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.
+WP Symposium is a new suite of social networking plugins - forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, activity alerts, RSS activity feeds and support for other plugins such as Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.
 
 For developers, there are a growing number of WordPress hooks and filters, along with WP Symposium functions and Javascript variables. More information on the WPS Wiki at www.wpsiki.com.
 
@@ -33,7 +33,7 @@ You get a number of plugins that each provide a set of functionality and feature
 
 You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars); friends; a "notification bar" with friends status, mail alerts and live chat windows. You can also activate a forum; a directory of members and internal (private) messaging.
 
-The features of all these will continually improve - and more plugins like Groups, Facebook Shared Status, Photo Albums and Mobile Access are available at www.wpsymposium.com.
+The features of all these will continually improve - and more plugins like Groups, Events, Facebook Shared Status, Photo Albums and Mobile Access are available at www.wpsymposium.com.
 
 Oh, and you also get widgets, with more to come, including latest new members and latest forum posts.
 
@@ -158,6 +158,12 @@ Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
 
 == Changelog ==
+
+= 11.8.18 =
+
+* Forum: Added "answered" feature
+* Admin: Cleaned up PHP Warnings
+* Changed format of version to a build instead, Year.Month.Day.Release (release only if required)
 
 = 0.64 =
 
