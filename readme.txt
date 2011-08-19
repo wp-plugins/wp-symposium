@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 11.8.18
+Stable tag: 11.8.19
 
 Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS, and more!
 
@@ -159,11 +159,20 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
+= 11.8.19 =
+
+* Forum: New widget to display top "experts". A member gets an expert point when one of their answers is accepted.
+* Forum: New widget to display topics without an accepted answer. Members who start a topic, and site admins, can accept answers.
+* Forum: Topics can be set as "for information only", so no answer expected (when owner or admin viewing a topic)
+* Forum: Accepted answer icon (green tick by default) shown on pop-up boxes and [symposium-forumlatestposts] shortcode
+* Admin: Further cleaning up of PHP Warnings/Notices, in particular management of forum ranks
+
 = 11.8.18 =
 
-* Forum: Added "answered" feature
+* Forum: Added "Accept answer" feature to forum. Green 'tick' shown against topics with an accepted answer.
 * Admin: Cleaned up PHP Warnings
 * Changed format of version to a build instead, Year.Month.Day.Release (release only if required)
+* Core: Fixed security vulnerability when viewing profile from database
 
 = 0.64 =
 
