@@ -1,0 +1,3491 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: \n"
+"X-Poedit-Country: \n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: ajax/symposium_bar_functions.php:241
+#@ wp-symposium
+msgid "You"
+msgstr ""
+
+#: ajax/symposium_bar_functions.php:250
+#@ wp-symposium
+msgid "Last message"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:31
+#@ wp-symposium
+msgid "You have accepted this answer. If a better answer is posted, you can change your selection."
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:32
+#: ajax/symposium_forum_functions.php:1811
+#@ wp-symposium
+msgid "Answer accepted"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:57
+#@ wp-symposium
+msgid "Failed to remove image from database"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:72
+#@ wp-symposium
+msgid "Failed to remove image"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:75
+#@ wp-symposium
+msgid "Image to remove is not there..."
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:104
+#@ wp-symposium
+msgid "Thank you for voting. You can only have one vote per post, so your previous vote has been replaced."
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:214
+#@ wp-symposium
+msgid "No subject"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:215
+#@ wp-symposium
+msgid "No message"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:354
+#@ wp-symposium
+msgid "has started a new topic"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:356
+#@ wp-symposium
+msgid "in"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:384
+#@ wp-symposium
+msgid "New Forum Topic"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:389
+#: ajax/symposium_forum_functions.php:390
+#@ wp-symposium
+msgid "Moderation Required"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:408
+#@ wp-symposium
+msgid "started forum topic in"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:502
+#: ajax/symposium_forum_functions.php:909
+#@ wp-symposium
+msgid "This post has been voted off the forum"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:515
+#: ajax/symposium_forum_functions.php:518
+#: ajax/symposium_forum_functions.php:527
+#: ajax/symposium_forum_functions.php:529
+#: ajax/symposium_forum_functions.php:534
+#: ajax/symposium_forum_functions.php:537
+#: ajax/symposium_forum_functions.php:551
+#: ajax/symposium_forum_functions.php:553
+#: ajax/symposium_forum_functions.php:1233
+#: ajax/symposium_forum_functions.php:1236
+#: ajax/symposium_forum_functions.php:1245
+#: ajax/symposium_forum_functions.php:1247
+#: ajax/symposium_forum_functions.php:1252
+#: ajax/symposium_forum_functions.php:1255
+#@ wp-symposium
+msgid "Forum Home"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:564
+#@ wp-symposium
+msgid "Tell me about replies"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:568
+#@ wp-symposium
+msgid "Sticky"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:572
+#@ wp-symposium
+msgid "Replies allowed"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:580
+#: ajax/symposium_forum_functions.php:1412
+#@ wp-symposium
+msgid "Search"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:581
+#: ajax/symposium_forum_functions.php:1413
+#: wp-symposium.php:867
+#@ wp-symposium
+msgid "Activity"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:582
+#: ajax/symposium_forum_functions.php:1414
+#@ wp-symposium
+msgid "Latest Topics"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:585
+#: ajax/symposium_forum_functions.php:1417
+#: wp-symposium.php:860
+#@ wp-symposium
+msgid "My Activity"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:586
+#: ajax/symposium_forum_functions.php:1418
+#@ wp-symposium
+msgid "Favorites"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:599
+#: ajax/symposium_forum_functions.php:1302
+#@ wp-symposium
+msgid "Topic Subject"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:603
+#@ wp-symposium
+msgid "Topic Text"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:606
+#@ wp-symposium
+msgid "Move Category"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:607
+#@ wp-symposium
+msgid "Select"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:639
+#: ajax/symposium_forum_functions.php:871
+#@ wp-symposium
+msgid "Posts:"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:666
+#: ajax/symposium_forum_functions.php:891
+#@ wp-symposium
+msgid "Rating:"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:691
+#: ajax/symposium_forum_functions.php:974
+#: ajax/symposium_forum_functions.php:1519
+#: ajax/symposium_forum_functions.php:1741
+#: ajax/symposium_forum_functions.php:1817
+#@ wp-symposium
+msgid "pending approval"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:696
+#@ wp-symposium
+msgid "Click to add to favorites"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:698
+#@ wp-symposium
+msgid "Click to remove to favorites"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:706
+#: ajax/symposium_forum_functions.php:1764
+#: ajax/symposium_forum_functions.php:2089
+#@ wp-symposium
+msgid "Started by"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:724
+#: ajax/symposium_forum_functions.php:727
+#: ajax/symposium_forum_functions.php:1352
+#@ wp-symposium
+msgid "This topic is for information only, no answer will be selected."
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:846
+#@ wp-symposium
+msgid "Spam Protection"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:849
+#, php-format
+#@ wp-symposium
+msgid "Sorry, you can't vote until you have made %d posts."
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:913
+#@ wp-symposium
+msgid "This post has been voted off the forum (only visible to site admins) with a score of"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:949
+#@ wp-symposium
+msgid "Accept answer"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:966
+#: ajax/symposium_forum_functions.php:2019
+#: ajax/symposium_forum_functions.php:2276
+#: ajax/symposium_forum_functions.php:2388
+#: symposium-widgets.php:322
+#: symposium_forum.php:124
+#: symposium_menu.php:92
+#@ wp-symposium
+msgid "replied"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1068
+#@ wp-symposium
+msgid "No replies posted yet."
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1083
+#@ wp-symposium
+msgid "Reply to this Topic"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1085
+#: ajax/symposium_mail_functions.php:346
+#@ wp-symposium
+msgid "Reply"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1147
+#@ wp-symposium
+msgid "The minimum level to reply on this forum is"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1298
+#: symposium_menu.php:1099
+#@ wp-symposium
+msgid "New Topic"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1304
+#@ wp-symposium
+msgid "First Post in Topic"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1311
+#@ wp-symposium
+msgid "Select a Category"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1351
+#@ wp-symposium
+msgid "Tell me when I get any replies"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1355
+#: symposium_functions.php:542
+#@ wp-symposium
+msgid "Post"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1356
+#: symposium_functions.php:347
+#: symposium_mail.php:60
+#@ wp-symposium
+msgid "Cancel"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1366
+#@ wp-symposium
+msgid "The minimum level to start a topic is"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1378
+#@ wp-symposium
+msgid "Until you login, you can only view the forum."
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1379
+#: symposium-widgets.php:539
+#@ wp-symposium
+msgid "Login"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1395
+#@ wp-symposium
+msgid "Receive digests via email"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1403
+#@ wp-symposium
+msgid "Tell me when there are new topics posted"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1512
+#@ wp-symposium
+msgid "replied to"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1523
+#: ajax/symposium_forum_functions.php:2286
+#: ajax/symposium_forum_functions.php:2398
+#: symposium-widgets.php:344
+#: symposium-widgets.php:691
+#: symposium_forum.php:134
+#@ wp-symposium
+msgid "started"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1561
+#@ wp-symposium
+msgid "POSTS"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1563
+#@ wp-symposium
+msgid "POST"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1578
+#@ wp-symposium
+msgid "TOPICS"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1580
+#@ wp-symposium
+msgid "TOPIC"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1623
+#@ wp-symposium
+msgid "Subscribed"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1736
+#@ wp-symposium
+msgid "Last reply by"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1772
+#@ wp-symposium
+msgid "VIEWS"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1774
+#@ wp-symposium
+msgid "VIEW"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1782
+#@ wp-symposium
+msgid "REPLIES"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1784
+#@ wp-symposium
+msgid "REPLY"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:1844
+#: symposium_functions.php:235
+#: symposium_functions.php:675
+#@ wp-symposium
+msgid "Show more..."
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2040
+#@ wp-symposium
+msgid "New Forum Reply"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2045
+#: ajax/symposium_forum_functions.php:2046
+#@ wp-symposium
+msgid "Moderation required for a reply"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2076
+#@ wp-symposium
+msgid "Recent Topics"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2105
+#: ajax/symposium_forum_functions.php:2154
+#: ajax/symposium_forum_functions.php:2477
+#: symposium-widgets.php:701
+#@ wp-symposium
+msgid "reply"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2108
+#: ajax/symposium_forum_functions.php:2157
+#: ajax/symposium_forum_functions.php:2480
+#: symposium-widgets.php:699
+#@ wp-symposium
+msgid "replies"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2109
+#: ajax/symposium_forum_functions.php:2158
+#: ajax/symposium_forum_functions.php:2481
+#@ wp-symposium
+msgid "last one"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2119
+#: ajax/symposium_forum_functions.php:2299
+#@ wp-symposium
+msgid "No topics started yet"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2126
+#@ wp-symposium
+msgid "You recently started"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2163
+#@ wp-symposium
+msgid "No replies"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2168
+#@ wp-symposium
+msgid "<p>You have not started any forum topics.</p>"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2175
+#@ wp-symposium
+msgid "Your recent replies"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2192
+#: ajax/symposium_forum_functions.php:2280
+#: ajax/symposium_forum_functions.php:2392
+#: symposium_forum.php:128
+#@ wp-symposium
+msgid "Answer Accepted"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2196
+#@ wp-symposium
+msgid "You replied"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2199
+#@ wp-symposium
+msgid "last reply by"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2209
+#@ wp-symposium
+msgid "<p>You have not replied to any forum topics.</p>"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2499
+#@ wp-symposium
+msgid "You can add your favourite forum topics by clicking on the heart beside any forum topic title."
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2556
+#@ wp-symposium
+msgid "Problem retrieving topic information[split]Passed Topic ID = "
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2827
+#@ wp-symposium
+msgid "In reply to"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2835
+#: ajax/symposium_forum_functions.php:2844
+#@ wp-symposium
+msgid "by"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2871
+#@ wp-symposium
+msgid "Posted by"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2883
+#@ wp-symposium
+msgid "Results found:"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2934
+#@ wp-symposium
+msgid "Share on MySpace"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2941
+#@ wp-symposium
+msgid "Share on LinkedIn"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2948
+#@ wp-symposium
+msgid "Share on Bebo"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2955
+#@ wp-symposium
+msgid "Share on Twitter"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2962
+#@ wp-symposium
+msgid "Share on Facebook"
+msgstr ""
+
+#: ajax/symposium_forum_functions.php:2969
+#@ wp-symposium
+msgid "Share via email"
+msgstr ""
+
+#: ajax/symposium_mail_functions.php:123
+#: ajax/symposium_mail_functions.php:130
+#@ wp-symposium
+msgid "Message deleted."
+msgstr ""
+
+#: ajax/symposium_mail_functions.php:169
+#@ wp-symposium
+msgid "Message sent to"
+msgstr ""
+
+#: ajax/symposium_mail_functions.php:171
+#@ wp-symposium
+msgid "There was a problem sending your mail to"
+msgstr ""
+
+#: ajax/symposium_mail_functions.php:197
+#@ wp-symposium
+msgid "New Mail Message"
+msgstr ""
+
+#: ajax/symposium_mail_functions.php:200
+#@ wp-symposium
+msgid "There was a problem sending an email notification to"
+msgstr ""
+
+#: ajax/symposium_mail_functions.php:334
+#@ wp-symposium
+msgid "From"
+msgstr ""
+
+#: ajax/symposium_mail_functions.php:336
+#@ wp-symposium
+msgid "To"
+msgstr ""
+
+#: ajax/symposium_mail_functions.php:343
+#: symposium_menu.php:2032
+#: symposium_menu.php:3690
+#@ wp-symposium
+msgid "Delete"
+msgstr ""
+
+#: ajax/symposium_members_functions.php:127
+#: ajax/symposium_profile_functions.php:999
+#: symposium_members.php:132
+#@ wp-symposium
+msgid "last active"
+msgstr ""
+
+#: ajax/symposium_members_functions.php:146
+#@ wp-symposium
+msgid "No members...."
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:21
+#@ wp-symposium
+msgid "You have been sent a "
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:23
+#@ wp-symposium
+msgid " has sent you a "
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:251
+#@ wp-symposium
+msgid "has added a new post on your profile"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:253
+#: ajax/symposium_profile_functions.php:358
+#: ajax/symposium_profile_functions.php:378
+#: ajax/symposium_profile_functions.php:402
+#@ wp-symposium
+msgid "Go to the post"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:254
+#@ wp-symposium
+msgid "New Profile Post"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:356
+#@ wp-symposium
+msgid "has replied to a post you started"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:359
+#: ajax/symposium_profile_functions.php:379
+#@ wp-symposium
+msgid "Profile Reply"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:376
+#@ wp-symposium
+msgid "has replied to a post started on your profile"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:400
+#@ wp-symposium
+msgid "has replied to a post you are involved in"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:403
+#@ wp-symposium
+msgid "New Post Reply"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:567
+#@ wp-symposium
+msgid "This member has no personal information to show."
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:573
+#@ wp-symposium
+msgid "Sorry, this member has chosen not to share their personal information."
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:595
+#@ wp-symposium
+msgid "Choose an image..."
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:637
+#@ wp-symposium
+msgid "Is this member trusted?"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:645
+#@ wp-symposium
+msgid "Your name as shown"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:653
+#@ wp-symposium
+msgid "Your email address"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:664
+#@ wp-symposium
+msgid "Receive an email when you get new mail messages?"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:672
+#@ wp-symposium
+msgid "Receive an email when a friend adds a post?"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:680
+#@ wp-symposium
+msgid "Change your password"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:686
+#@ wp-symposium
+msgid "Re-enter to confirm"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:696
+#: ajax/symposium_profile_functions.php:943
+#: symposium_menu.php:3666
+#@ wp-symposium
+msgid "Save"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:746
+#@ wp-symposium
+msgid "Who do you want to share personal information with?"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:751
+#: ajax/symposium_profile_functions.php:772
+#@ wp-symposium
+msgid "Nobody"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:754
+#: ajax/symposium_profile_functions.php:775
+#@ wp-symposium
+msgid "Friends Only"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:757
+#: ajax/symposium_profile_functions.php:778
+#@ wp-symposium
+msgid "Everyone"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:760
+#: ajax/symposium_profile_functions.php:781
+#@ wp-symposium
+msgid "Public"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:767
+#@ wp-symposium
+msgid "Who do you want to share your activity with?"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:789
+#@ wp-symposium
+msgid "Publish your activity via RSS (only your initial posts)?"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:794
+#: symposium_menu.php:2969
+#: symposium_menu.php:3083
+#@ wp-symposium
+msgid "No"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:797
+#: symposium_menu.php:2966
+#: symposium_menu.php:3080
+#@ wp-symposium
+msgid "Yes"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:809
+#@ wp-symposium
+msgid "Your date of birth"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:827
+#: symposium_functions.php:289
+#@ wp-symposium
+msgid "January"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:828
+#: symposium_functions.php:290
+#@ wp-symposium
+msgid "February"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:829
+#: symposium_functions.php:291
+#@ wp-symposium
+msgid "March"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:830
+#: symposium_functions.php:292
+#@ wp-symposium
+msgid "April"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:831
+#: symposium_functions.php:293
+#@ wp-symposium
+msgid "May"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:832
+#: symposium_functions.php:294
+#@ wp-symposium
+msgid "June"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:833
+#: symposium_functions.php:295
+#@ wp-symposium
+msgid "July"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:834
+#: symposium_functions.php:296
+#@ wp-symposium
+msgid "August"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:835
+#: symposium_functions.php:297
+#@ wp-symposium
+msgid "September"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:836
+#: symposium_functions.php:298
+#@ wp-symposium
+msgid "October"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:837
+#: symposium_functions.php:299
+#@ wp-symposium
+msgid "November"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:838
+#: symposium_functions.php:300
+#@ wp-symposium
+msgid "December"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:868
+#@ wp-symposium
+msgid "Which town/city are you in?"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:876
+#@ wp-symposium
+msgid "Which country are you in?"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:997
+#@ wp-symposium
+msgid "Member Count:"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:1009
+#@ wp-symposium
+msgid "Not a member of any groups."
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:1016
+#@ wp-symposium
+msgid "Please login to view this member's groups."
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:1135
+#@ wp-symposium
+msgid "Failed to update password, sorry."
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:1138
+#@ wp-symposium
+msgid "Passwords different, please try again."
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:1146
+#@ wp-symposium
+msgid "Invalid email address, please re-enter"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:1260
+#, php-format
+#@ wp-symposium
+msgid "You have received a friend request from %s"
+msgstr ""
+
+#: ajax/symposium_profile_functions.php:1262
+#@ wp-symposium
+msgid "Friend Request"
+msgstr ""
+
+#: symposium-widgets.php:52
+#@ wp-symposium
+msgid "Recent Activity"
+msgstr ""
+
+#: symposium-widgets.php:147
+#: symposium-widgets.php:240
+#: symposium-widgets.php:394
+#: symposium-widgets.php:574
+#: symposium-widgets.php:749
+#: symposium-widgets.php:886
+#@ wp-symposium
+msgid "Widget Title"
+msgstr ""
+
+#: symposium-widgets.php:150
+#: symposium-widgets.php:402
+#@ wp-symposium
+msgid "Max number of posts"
+msgstr ""
+
+#: symposium-widgets.php:153
+#: symposium-widgets.php:408
+#: symposium-widgets.php:767
+#@ wp-symposium
+msgid "Max length of preview"
+msgstr ""
+
+#: symposium-widgets.php:172
+#@ wp-symposium
+msgid "Latest New Members"
+msgstr ""
+
+#: symposium-widgets.php:207
+#@ wp-symposium
+msgid "joined"
+msgstr ""
+
+#: symposium-widgets.php:243
+#@ wp-symposium
+msgid "Max number shown"
+msgstr ""
+
+#: symposium-widgets.php:262
+#@ wp-symposium
+msgid "Latest Forum Posts"
+msgstr ""
+
+#: symposium-widgets.php:397
+#@ wp-symposium
+msgid "Show replies"
+msgstr ""
+
+#: symposium-widgets.php:405
+#@ wp-symposium
+msgid "Category ID (0 for all)"
+msgstr ""
+
+#: symposium-widgets.php:427
+#@ wp-symposium
+msgid "Summary"
+msgstr ""
+
+#: symposium-widgets.php:466
+#@ wp-symposium
+msgid "Messages:"
+msgstr ""
+
+#: symposium-widgets.php:469
+#@ wp-symposium
+msgid "unread"
+msgstr ""
+
+#: symposium-widgets.php:488
+#@ wp-symposium
+msgid "Friends:"
+msgstr ""
+
+#: symposium-widgets.php:493
+#@ wp-symposium
+msgid "request"
+msgstr ""
+
+#: symposium-widgets.php:496
+#@ wp-symposium
+msgid "requests"
+msgstr ""
+
+#: symposium-widgets.php:527
+#: symposium-widgets.php:541
+#@ wp-symposium
+msgid "Forgot Password?"
+msgstr ""
+
+#: symposium-widgets.php:535
+#: symposium_invite.php:37
+#: symposium_invite.php:41
+#@ wp-symposium
+msgid "Username"
+msgstr ""
+
+#: symposium-widgets.php:537
+#@ wp-symposium
+msgid "Password"
+msgstr ""
+
+#: symposium-widgets.php:580
+#@ wp-symposium
+msgid "Show Login/Logout links"
+msgstr ""
+
+#: symposium-widgets.php:588
+#@ wp-symposium
+msgid "Show Login Form"
+msgstr ""
+
+#: symposium-widgets.php:590
+#@ wp-symposium
+msgid "Login URL (if using login form)"
+msgstr ""
+
+#: symposium-widgets.php:610
+#@ wp-symposium
+msgid "Topics without an accepted answer"
+msgstr ""
+
+#: symposium-widgets.php:752
+#: symposium-widgets.php:889
+#@ wp-symposium
+msgid "<strong>Categories to include</strong><br />List IDs, comma separated. (0 for all)"
+msgstr ""
+
+#: symposium-widgets.php:755
+#: symposium-widgets.php:892
+#@ wp-symposium
+msgid "<strong>Categories to exclude</strong><br />List IDs, comma separated. (0 for none)"
+msgstr ""
+
+#: symposium-widgets.php:764
+#: symposium-widgets.php:901
+#@ wp-symposium
+msgid "Include groups"
+msgstr ""
+
+#: symposium-widgets.php:770
+#: symposium-widgets.php:904
+#@ wp-symposium
+msgid "Time period (days)"
+msgstr ""
+
+#: symposium-widgets.php:773
+#@ wp-symposium
+msgid "Maximum number of posts"
+msgstr ""
+
+#: symposium-widgets.php:792
+#@ wp-symposium
+msgid "Top Experts"
+msgstr ""
+
+#: symposium-widgets.php:907
+#@ wp-symposium
+msgid "Maximum number of experts"
+msgstr ""
+
+#: symposium_bar.php:142
+#: symposium_bar.php:155
+#@ wp-symposium
+msgid "Close"
+msgstr ""
+
+#: symposium_bar.php:143
+#@ wp-symposium
+msgid "Friends Status"
+msgstr ""
+
+#: symposium_bar.php:159
+#@ wp-symposium
+msgid "Clear all"
+msgstr ""
+
+#: symposium_bar.php:161
+#@ wp-symposium
+msgid "Chat Room (visible to all)"
+msgstr ""
+
+#: symposium_bar.php:166
+#: symposium_bar.php:252
+#@ wp-symposium
+msgid "Type here..."
+msgstr ""
+
+#: symposium_bar.php:186
+#@ wp-symposium
+msgid "Appear offline?"
+msgstr ""
+
+#: symposium_bar.php:189
+#: symposium_bar.php:190
+#@ wp-symposium
+msgid "Logout"
+msgstr ""
+
+#: symposium_bar.php:206
+#@ wp-symposium
+msgid "Go to Friends"
+msgstr ""
+
+#: symposium_bar.php:214
+#: wp-symposium.php:381
+#@ wp-symposium
+msgid "Go to Mail"
+msgstr ""
+
+#: symposium_forum.php:50
+#@ wp-symposium
+msgid "The minimum level for this forum is"
+msgstr ""
+
+#: symposium_functions.php:108
+#@ wp-symposium
+msgid "Profile Photo"
+msgstr ""
+
+#: symposium_functions.php:110
+#@ wp-symposium
+msgid "Personal"
+msgstr ""
+
+#: symposium_functions.php:111
+#@ wp-symposium
+msgid "Preferences"
+msgstr ""
+
+#: symposium_functions.php:155
+#@ wp-symposium
+msgid "Friend Requests"
+msgstr ""
+
+#: symposium_functions.php:169
+#@ wp-symposium
+msgid "Reject"
+msgstr ""
+
+#: symposium_functions.php:172
+#@ wp-symposium
+msgid "Accept"
+msgstr ""
+
+#: symposium_functions.php:208
+#@ wp-symposium
+msgid "Logged out"
+msgstr ""
+
+#: symposium_functions.php:208
+#: symposium_functions.php:211
+#: symposium_functions.php:213
+#: symposium_functions.php:505
+#@ wp-symposium
+msgid "Last active"
+msgstr ""
+
+#: symposium_functions.php:211
+#@ wp-symposium
+msgid "Offline"
+msgstr ""
+
+#: symposium_functions.php:221
+#@ wp-symposium
+msgid "Remove"
+msgstr ""
+
+#: symposium_functions.php:226
+#: symposium_functions.php:362
+#@ wp-symposium
+msgid "Send Mail"
+msgstr ""
+
+#: symposium_functions.php:239
+#: symposium_functions.php:678
+#@ wp-symposium
+msgid "Nothing to show, sorry."
+msgstr ""
+
+#: symposium_functions.php:304
+#, php-format
+#@ wp-symposium
+msgid "Born %s %s %s"
+msgstr ""
+
+#: symposium_functions.php:311
+#@ wp-symposium
+msgid "Personal information only for friends."
+msgstr ""
+
+#: symposium_functions.php:315
+#@ wp-symposium
+msgid "Personal information is private."
+msgstr ""
+
+#: symposium_functions.php:334
+#@ wp-symposium
+msgid "What\\'s up?"
+msgstr ""
+
+#: symposium_functions.php:334
+#@ wp-symposium
+msgid "What's up?"
+msgstr ""
+
+#: symposium_functions.php:340
+#@ wp-symposium
+msgid "Update"
+msgstr ""
+
+#: symposium_functions.php:346
+#@ wp-symposium
+msgid "Post to Facebook"
+msgstr ""
+
+#: symposium_functions.php:350
+#@ wp-symposium
+msgid "Connect to Facebook"
+msgstr ""
+
+#: symposium_functions.php:368
+#@ wp-symposium
+msgid "Cancel Friend Request"
+msgstr ""
+
+#: symposium_functions.php:369
+#@ wp-symposium
+msgid "Friend Request Cancelled"
+msgstr ""
+
+#: symposium_functions.php:373
+#@ wp-symposium
+msgid "Add as a Friend"
+msgstr ""
+
+#: symposium_functions.php:375
+#@ wp-symposium
+msgid "Add a personal message..."
+msgstr ""
+
+#: symposium_functions.php:376
+#: symposium_functions.php:661
+#@ wp-symposium
+msgid "Add"
+msgstr ""
+
+#: symposium_functions.php:378
+#@ wp-symposium
+msgid "Friend Request Sent"
+msgstr ""
+
+#: symposium_functions.php:492
+#@ wp-symposium
+msgid "Recently Active Friends"
+msgstr ""
+
+#: symposium_functions.php:517
+#@ wp-symposium
+msgid "Make friends and they will be listed here..."
+msgstr ""
+
+#: symposium_functions.php:536
+#: symposium_functions.php:655
+#@ wp-symposium
+msgid "Write a comment..."
+msgstr ""
+
+#: symposium_functions.php:686
+#: symposium_functions.php:690
+#@ wp-symposium
+msgid "Sorry, this member has chosen not to share their activity."
+msgstr ""
+
+#: symposium_functions.php:698
+#: symposium_profile.php:232
+#@ wp-symposium
+msgid "Please login to view this member's profile."
+msgstr ""
+
+#: symposium_functions.php:1069
+#@ wp-symposium
+msgid "decade"
+msgstr ""
+
+#: symposium_functions.php:1080
+#@ wp-symposium
+msgid "a while ago"
+msgstr ""
+
+#: symposium_functions.php:1086
+#@ wp-symposium
+msgid "just now"
+msgstr ""
+
+#: symposium_functions.php:1096
+#@ wp-symposium
+msgid "year"
+msgstr ""
+
+#: symposium_functions.php:1097
+#@ wp-symposium
+msgid "years"
+msgstr ""
+
+#: symposium_functions.php:1098
+#@ wp-symposium
+msgid "month"
+msgstr ""
+
+#: symposium_functions.php:1099
+#@ wp-symposium
+msgid "months"
+msgstr ""
+
+#: symposium_functions.php:1100
+#@ wp-symposium
+msgid "week"
+msgstr ""
+
+#: symposium_functions.php:1101
+#@ wp-symposium
+msgid "weeks"
+msgstr ""
+
+#: symposium_functions.php:1102
+#@ wp-symposium
+msgid "day"
+msgstr ""
+
+#: symposium_functions.php:1103
+#: symposium_menu.php:1320
+#: symposium_menu.php:1323
+#@ wp-symposium
+msgid "days"
+msgstr ""
+
+#: symposium_functions.php:1104
+#@ wp-symposium
+msgid "hour"
+msgstr ""
+
+#: symposium_functions.php:1105
+#@ wp-symposium
+msgid "hours"
+msgstr ""
+
+#: symposium_functions.php:1106
+#@ wp-symposium
+msgid "minute"
+msgstr ""
+
+#: symposium_functions.php:1107
+#@ wp-symposium
+msgid "minutes"
+msgstr ""
+
+#: symposium_functions.php:1108
+#@ wp-symposium
+msgid "second"
+msgstr ""
+
+#: symposium_functions.php:1109
+#@ wp-symposium
+msgid "seconds"
+msgstr ""
+
+#: symposium_functions.php:1116
+#, php-format
+#@ wp-symposium
+msgid "%s ago"
+msgstr ""
+
+#: symposium_functions.php:1148
+#: symposium_functions.php:1194
+#@ wp-symposium
+msgid "Powered by WP Symposium - Social Networking for WordPress"
+msgstr ""
+
+#: symposium_invite.php:35
+#@ wp-symposium
+msgid "To continue, please log in or register."
+msgstr ""
+
+#: symposium_invite.php:44
+#@ wp-symposium
+msgid "Remember Me"
+msgstr ""
+
+#: symposium_invite.php:46
+#@ wp-symposium
+msgid "Log In"
+msgstr ""
+
+#: symposium_invite.php:55
+#@ wp-symposium
+msgid "Register"
+msgstr ""
+
+#: symposium_invite.php:56
+#: symposium_invite.php:58
+#@ wp-symposium
+msgid "Password Lost and Found"
+msgstr ""
+
+#: symposium_invite.php:56
+#: symposium_invite.php:58
+#@ wp-symposium
+msgid "Lost your password?"
+msgstr ""
+
+#: symposium_mail.php:59
+#@ wp-symposium
+msgid "Send"
+msgstr ""
+
+#: symposium_mail.php:64
+#@ wp-symposium
+msgid "Start typing a friend's name..."
+msgstr ""
+
+#: symposium_mail.php:69
+#@ wp-symposium
+msgid "Subject"
+msgstr ""
+
+#: symposium_mail.php:74
+#@ wp-symposium
+msgid "Message"
+msgstr ""
+
+#: symposium_mail.php:84
+#@ wp-symposium
+msgid "Compose"
+msgstr ""
+
+#: symposium_mail.php:85
+#@ wp-symposium
+msgid "Inbox"
+msgstr ""
+
+#: symposium_mail.php:86
+#@ wp-symposium
+msgid "Sent"
+msgstr ""
+
+#: symposium_mail.php:91
+#@ wp-symposium
+msgid "You have to login to access your mail."
+msgstr ""
+
+#: symposium_members.php:57
+#: symposium_members.php:159
+#: symposium_members.php:181
+#@ wp-symposium
+msgid "Go"
+msgstr ""
+
+#: symposium_members.php:151
+#@ wp-symposium
+msgid "No members found"
+msgstr ""
+
+#: symposium_members.php:184
+#@ wp-symposium
+msgid "Member search..."
+msgstr ""
+
+#: symposium_menu.php:39
+#@ wp-symposium
+msgid "Your forum post has been rejected by the moderator"
+msgstr ""
+
+#: symposium_menu.php:47
+#@ wp-symposium
+msgid "Forum Post Rejected"
+msgstr ""
+
+#: symposium_menu.php:73
+#@ wp-symposium
+msgid "Your forum post has been approved by the moderator"
+msgstr ""
+
+#: symposium_menu.php:82
+#@ wp-symposium
+msgid "Forum Post Approved"
+msgstr ""
+
+#: symposium_menu.php:113
+#@ wp-symposium
+msgid "New Forum Post"
+msgstr ""
+
+#: symposium_menu.php:139
+#@ wp-symposium
+msgid "Installation"
+msgstr ""
+
+#: symposium_menu.php:140
+#@ wp-symposium
+msgid "Settings"
+msgstr ""
+
+#: symposium_menu.php:141
+#@ wp-symposium
+msgid "Templates"
+msgstr ""
+
+#: symposium_menu.php:142
+#: symposium_menu.php:3112
+#: symposium_menu.php:3366
+#@ wp-symposium
+msgid "Styles"
+msgstr ""
+
+#: symposium_menu.php:145
+#@ wp-symposium
+msgid "Forum Profile"
+msgstr ""
+
+#: symposium_menu.php:145
+#: wp-symposium.php:852
+#@ wp-symposium
+msgid "Profile"
+msgstr ""
+
+#: symposium_menu.php:148
+#: wp-symposium.php:340
+#@ wp-symposium
+msgid "Forum"
+msgstr ""
+
+#: symposium_menu.php:149
+#: symposium_menu.php:2904
+#@ wp-symposium
+msgid "Forum Categories"
+msgstr ""
+
+#: symposium_menu.php:150
+#@ wp-symposium
+msgid "Forum Posts"
+msgstr ""
+
+#: symposium_menu.php:150
+#, php-format
+#@ wp-symposium
+msgid "Forum Posts %s"
+msgstr ""
+
+#: symposium_menu.php:153
+#@ wp-symposium
+msgid "Panel"
+msgstr ""
+
+#: symposium_menu.php:156
+#@ wp-symposium
+msgid "Member Directory"
+msgstr ""
+
+#: symposium_menu.php:159
+#: symposium_menu.php:2717
+#@ wp-symposium
+msgid "Release Notes"
+msgstr ""
+
+#: symposium_menu.php:247
+#@ wp-symposium
+msgid "Paste previous exported templates into the text area below."
+msgstr ""
+
+#: symposium_menu.php:251
+#@ wp-symposium
+msgid "Import Template"
+msgstr ""
+
+#: symposium_menu.php:269
+#@ wp-symposium
+msgid "Copy and paste the following into a text editor to backup or share with others. Do not change the comments!"
+msgstr ""
+
+#: symposium_menu.php:273
+#@ wp-symposium
+msgid "Export Template"
+msgstr ""
+
+#: symposium_menu.php:358
+#@ wp-symposium
+msgid "Profile Page Header"
+msgstr ""
+
+#: symposium_menu.php:366
+#: symposium_menu.php:417
+#: symposium_menu.php:456
+#: symposium_menu.php:491
+#: symposium_menu.php:546
+#: symposium_menu.php:605
+#: symposium_menu.php:661
+#: symposium_menu.php:721
+#: symposium_menu.php:777
+#: symposium_menu.php:832
+#: symposium_menu.php:875
+#: symposium_menu.php:918
+#: symposium_menu.php:973
+#@ wp-symposium
+msgid "Codes available"
+msgstr ""
+
+#: symposium_menu.php:367
+#: symposium_menu.php:418
+#: symposium_menu.php:457
+#: symposium_menu.php:492
+#: symposium_menu.php:547
+#: symposium_menu.php:606
+#: symposium_menu.php:662
+#: symposium_menu.php:722
+#: symposium_menu.php:778
+#: symposium_menu.php:833
+#: symposium_menu.php:876
+#: symposium_menu.php:919
+#: symposium_menu.php:974
+#@ wp-symposium
+msgid "Output"
+msgstr ""
+
+#: symposium_menu.php:372
+#@ wp-symposium
+msgid "Show 'poke' button as defined in <a href='admin.php?page=symposium_profile'>Profile settings</a>"
+msgstr ""
+
+#: symposium_menu.php:376
+#@ wp-symposium
+msgid "Display Name"
+msgstr ""
+
+#: symposium_menu.php:380
+#@ wp-symposium
+msgid "City and/or Country"
+msgstr ""
+
+#: symposium_menu.php:384
+#@ wp-symposium
+msgid "Birthday"
+msgstr ""
+
+#: symposium_menu.php:388
+#@ wp-symposium
+msgid "Friend Request/Send Mail/etc buttons"
+msgstr ""
+
+#: symposium_menu.php:392
+#: symposium_menu.php:552
+#: symposium_menu.php:611
+#: symposium_menu.php:679
+#: symposium_menu.php:727
+#: symposium_menu.php:783
+#: symposium_menu.php:924
+#@ wp-symposium
+msgid "Show avatar, size x in pixels (no spaces)"
+msgstr ""
+
+#: symposium_menu.php:399
+#: symposium_menu.php:438
+#: symposium_menu.php:473
+#: symposium_menu.php:528
+#: symposium_menu.php:587
+#: symposium_menu.php:642
+#: symposium_menu.php:698
+#: symposium_menu.php:758
+#: symposium_menu.php:814
+#: symposium_menu.php:857
+#: symposium_menu.php:900
+#: symposium_menu.php:955
+#: symposium_menu.php:998
+#@ wp-symposium
+msgid "Reset to default"
+msgstr ""
+
+#: symposium_menu.php:409
+#@ wp-symposium
+msgid "Profile Page Body"
+msgstr ""
+
+#: symposium_menu.php:423
+#: symposium_menu.php:683
+#@ wp-symposium
+msgid "Used to force page parameter (important)"
+msgstr ""
+
+#: symposium_menu.php:427
+#: symposium_menu.php:687
+#@ wp-symposium
+msgid "Where page content will be placed"
+msgstr ""
+
+#: symposium_menu.php:431
+#@ wp-symposium
+msgid "Profile menu"
+msgstr ""
+
+#: symposium_menu.php:448
+#@ wp-symposium
+msgid "Page Footer"
+msgstr ""
+
+#: symposium_menu.php:462
+#: symposium_menu.php:987
+#@ wp-symposium
+msgid "Default Powered By WPS message"
+msgstr ""
+
+#: symposium_menu.php:466
+#: symposium_menu.php:991
+#@ wp-symposium
+msgid "Version of WPS"
+msgstr ""
+
+#: symposium_menu.php:483
+#@ wp-symposium
+msgid "Forum Header"
+msgstr ""
+
+#: symposium_menu.php:497
+#@ wp-symposium
+msgid "Breadcrumb trail"
+msgstr ""
+
+#: symposium_menu.php:501
+#@ wp-symposium
+msgid "New Topic button"
+msgstr ""
+
+#: symposium_menu.php:505
+#@ wp-symposium
+msgid "Form for new topic"
+msgstr ""
+
+#: symposium_menu.php:509
+#@ wp-symposium
+msgid "Subscribe to daily digest"
+msgstr ""
+
+#: symposium_menu.php:513
+#@ wp-symposium
+msgid "Receive email for new topics"
+msgstr ""
+
+#: symposium_menu.php:517
+#@ wp-symposium
+msgid "Search, All Activity, etc"
+msgstr ""
+
+#: symposium_menu.php:521
+#@ wp-symposium
+msgid "Sharing icons"
+msgstr ""
+
+#: symposium_menu.php:538
+#@ wp-symposium
+msgid "Forum Categories (list)"
+msgstr ""
+
+#: symposium_menu.php:556
+#: symposium_menu.php:615
+#: symposium_menu.php:731
+#: symposium_menu.php:787
+#@ wp-symposium
+msgid "replied or started text"
+msgstr ""
+
+#: symposium_menu.php:560
+#: symposium_menu.php:735
+#@ wp-symposium
+msgid "Subject of last post/reply"
+msgstr ""
+
+#: symposium_menu.php:564
+#: symposium_menu.php:739
+#@ wp-symposium
+msgid "Age of last post/reply"
+msgstr ""
+
+#: symposium_menu.php:568
+#: symposium_menu.php:743
+#@ wp-symposium
+msgid "How many posts in next level of this category"
+msgstr ""
+
+#: symposium_menu.php:572
+#: symposium_menu.php:747
+#@ wp-symposium
+msgid "How many topics in next level of this category"
+msgstr ""
+
+#: symposium_menu.php:576
+#: symposium_menu.php:751
+#@ wp-symposium
+msgid "Title of the category"
+msgstr ""
+
+#: symposium_menu.php:580
+#@ wp-symposium
+msgid "Description of the category"
+msgstr ""
+
+#: symposium_menu.php:597
+#@ wp-symposium
+msgid "Forum Topics (list)"
+msgstr ""
+
+#: symposium_menu.php:619
+#: symposium_menu.php:791
+#@ wp-symposium
+msgid "Subject of topic/last reply"
+msgstr ""
+
+#: symposium_menu.php:623
+#: symposium_menu.php:795
+#@ wp-symposium
+msgid "Age of topic/last reply"
+msgstr ""
+
+#: symposium_menu.php:627
+#: symposium_menu.php:799
+#@ wp-symposium
+msgid "View count for this topic"
+msgstr ""
+
+#: symposium_menu.php:631
+#: symposium_menu.php:803
+#@ wp-symposium
+msgid "Reply count for this topic"
+msgstr ""
+
+#: symposium_menu.php:635
+#: symposium_menu.php:807
+#@ wp-symposium
+msgid "Title of the topic"
+msgstr ""
+
+#: symposium_menu.php:652
+#@ wp-symposium
+msgid "Group Page"
+msgstr ""
+
+#: symposium_menu.php:667
+#@ wp-symposium
+msgid "Group name"
+msgstr ""
+
+#: symposium_menu.php:671
+#@ wp-symposium
+msgid "Group description"
+msgstr ""
+
+#: symposium_menu.php:675
+#@ wp-symposium
+msgid "Join/delete/etc buttons"
+msgstr ""
+
+#: symposium_menu.php:691
+#@ wp-symposium
+msgid "Group menu"
+msgstr ""
+
+#: symposium_menu.php:700
+#@ wp-symposium
+msgid "Only available to Bronze or higher members at <a href=\"http://www.wpsymposium.com\">WP Symposium</a>."
+msgstr ""
+
+#: symposium_menu.php:713
+#@ wp-symposium
+msgid "Group Forum Categories (list)"
+msgstr ""
+
+#: symposium_menu.php:769
+#@ wp-symposium
+msgid "Group Forum Topics (list)"
+msgstr ""
+
+#: symposium_menu.php:824
+#@ wp-symposium
+msgid "Mail Page"
+msgstr ""
+
+#: symposium_menu.php:838
+#@ wp-symposium
+msgid "Compose new message form"
+msgstr ""
+
+#: symposium_menu.php:842
+#@ wp-symposium
+msgid "Compose label, translated"
+msgstr ""
+
+#: symposium_menu.php:846
+#@ wp-symposium
+msgid "In Box label, translated"
+msgstr ""
+
+#: symposium_menu.php:850
+#@ wp-symposium
+msgid "Sent label, translater"
+msgstr ""
+
+#: symposium_menu.php:867
+#@ wp-symposium
+msgid "Mail Page: Tray Item"
+msgstr ""
+
+#: symposium_menu.php:881
+#: symposium_menu.php:936
+#@ wp-symposium
+msgid "When the message was sent"
+msgstr ""
+
+#: symposium_menu.php:885
+#: symposium_menu.php:932
+#@ wp-symposium
+msgid "Sender/recipient of the message"
+msgstr ""
+
+#: symposium_menu.php:889
+#: symposium_menu.php:928
+#@ wp-symposium
+msgid "Subject of the message"
+msgstr ""
+
+#: symposium_menu.php:893
+#@ wp-symposium
+msgid "A snippet of the mail message"
+msgstr ""
+
+#: symposium_menu.php:910
+#@ wp-symposium
+msgid "Mail Page: Message"
+msgstr ""
+
+#: symposium_menu.php:940
+#@ wp-symposium
+msgid "Delete mail button"
+msgstr ""
+
+#: symposium_menu.php:944
+#@ wp-symposium
+msgid "Reply to mail button"
+msgstr ""
+
+#: symposium_menu.php:948
+#@ wp-symposium
+msgid "The mail message"
+msgstr ""
+
+#: symposium_menu.php:965
+#@ wp-symposium
+msgid "WPS Emails"
+msgstr ""
+
+#: symposium_menu.php:979
+#@ wp-symposium
+msgid "The email message"
+msgstr ""
+
+#: symposium_menu.php:983
+#@ wp-symposium
+msgid "Footer Message)"
+msgstr ""
+
+#: symposium_menu.php:1034
+#@ wp-symposium
+msgid "All"
+msgstr ""
+
+#: symposium_menu.php:1035
+#@ wp-symposium
+msgid "Approved"
+msgstr ""
+
+#: symposium_menu.php:1036
+#@ wp-symposium
+msgid "Unapproved"
+msgstr ""
+
+#: symposium_menu.php:1064
+#: symposium_menu.php:1074
+#: symposium_menu.php:1434
+#@ wp-symposium
+msgid "Author"
+msgstr ""
+
+#: symposium_menu.php:1065
+#: symposium_menu.php:1075
+#: symposium_menu.php:1186
+#@ wp-symposium
+msgid "Status"
+msgstr ""
+
+#: symposium_menu.php:1066
+#: symposium_menu.php:1076
+#@ wp-symposium
+msgid "Preview"
+msgstr ""
+
+#: symposium_menu.php:1067
+#: symposium_menu.php:1077
+#@ wp-symposium
+msgid "Time"
+msgstr ""
+
+#: symposium_menu.php:1068
+#: symposium_menu.php:1078
+#@ wp-symposium
+msgid "Action"
+msgstr ""
+
+#: symposium_menu.php:1101
+#@ wp-symposium
+msgid "New Reply"
+msgstr ""
+
+#: symposium_menu.php:1107
+#@ wp-symposium
+msgid "View"
+msgstr ""
+
+#: symposium_menu.php:1115
+#@ wp-symposium
+msgid "Approve"
+msgstr ""
+
+#: symposium_menu.php:1117
+#@ wp-symposium
+msgid "Trash"
+msgstr ""
+
+#: symposium_menu.php:1158
+#@ wp-symposium
+msgid "Visit this page to complete installation; after you add a WP Symposium shortcode to a page; change pages with WP Symposium shortcodes; if you change WordPress Permalinks; or if you experience problems."
+msgstr ""
+
+#: symposium_menu.php:1164
+#@ wp-symposium
+msgid "For information, other WPS Plugins available"
+msgstr ""
+
+#: symposium_menu.php:1182
+#@ wp-symposium
+msgid "Installed"
+msgstr ""
+
+#: symposium_menu.php:1183
+#@ wp-symposium
+msgid "Activated"
+msgstr ""
+
+#: symposium_menu.php:1184
+#@ wp-symposium
+msgid "Plugin"
+msgstr ""
+
+#: symposium_menu.php:1185
+#@ wp-symposium
+msgid "WordPress page/URL Found"
+msgstr ""
+
+#: symposium_menu.php:1187
+#@ wp-symposium
+msgid "WPS Setting"
+msgstr ""
+
+#: symposium_menu.php:1194
+#@ wp-symposium
+msgid "Core"
+msgstr ""
+
+#: symposium_menu.php:1204
+#@ wp-symposium
+msgid "The forum plugin must be installed in "
+msgstr ""
+
+#: symposium_menu.php:1205
+#@ wp-symposium
+msgid "The profile plugin must be installed in "
+msgstr ""
+
+#: symposium_menu.php:1206
+#@ wp-symposium
+msgid "The mail plugin must be installed in "
+msgstr ""
+
+#: symposium_menu.php:1207
+#@ wp-symposium
+msgid "The members directory plugin must be installed in "
+msgstr ""
+
+#: symposium_menu.php:1208
+#@ wp-symposium
+msgid "The panel plugin must be installed in "
+msgstr ""
+
+#: symposium_menu.php:1223
+#@ wp-symposium
+msgid "Site domain name"
+msgstr ""
+
+#: symposium_menu.php:1225
+#@ wp-symposium
+msgid "Permalinks: Enabled"
+msgstr ""
+
+#: symposium_menu.php:1227
+#@ wp-symposium
+msgid "Permalinks: Disabled"
+msgstr ""
+
+#: symposium_menu.php:1234
+#@ wp-symposium
+msgid "WordPress site ID:"
+msgstr ""
+
+#: symposium_menu.php:1235
+#@ wp-symposium
+msgid "WordPress site name:"
+msgstr ""
+
+#: symposium_menu.php:1237
+#@ wp-symposium
+msgid "WP Symposium internal code version:"
+msgstr ""
+
+#: symposium_menu.php:1240
+#@ wp-symposium
+msgid "No code version set. Try <a href=\"admin.php?page=symposium_debug&force_create_wps=yes\">re-creating/modifying</a> the database tables."
+msgstr ""
+
+#: symposium_menu.php:1267
+#@ wp-symposium
+msgid "The following sections provide a 'health check' of your installation, and allows you to test/check various WP Symposium features."
+msgstr ""
+
+#: symposium_menu.php:1272
+#@ wp-symposium
+msgid "Database Purge Tool"
+msgstr ""
+
+#: symposium_menu.php:1316
+#@ wp-symposium
+msgid "Users and chat purged are <strong>deleted</strong> - you cannot undo this! I recommend you take a backup first."
+msgstr ""
+
+#: symposium_menu.php:1318
+#@ wp-symposium
+msgid "Users who have not logged in for at least"
+msgstr ""
+
+#: symposium_menu.php:1321
+#@ wp-symposium
+msgid "Chat older than"
+msgstr ""
+
+#: symposium_menu.php:1327
+#@ wp-symposium
+msgid "Image Uploading"
+msgstr ""
+
+#: symposium_menu.php:1332
+#@ wp-symposium
+msgid "<p>You are storing images in the database.</p>"
+msgstr ""
+
+#: symposium_menu.php:1337
+#@ wp-symposium
+msgid "<p>You are storing images in the file system.</p>"
+msgstr ""
+
+#: symposium_menu.php:1356
+#@ wp-symposium
+msgid "You must update the URL for your images on the <a href=\"admin.php?page=symposium_settings\">Settings</a>."
+msgstr ""
+
+#: symposium_menu.php:1369
+#@ wp-symposium
+msgid "Re-apply database upgrades"
+msgstr ""
+
+#: symposium_menu.php:1370
+#@ wp-symposium
+msgid "To re-run the database table creation/modifications, <a href=\"admin.php?page=symposium_debug&force_create_wps=yes\">click here</a>. This will not destroy any existing tables or data."
+msgstr ""
+
+#: symposium_menu.php:1374
+#@ wp-symposium
+msgid "Anindya AJAX test"
+msgstr ""
+
+#: symposium_menu.php:1375
+#@ wp-symposium
+msgid "An AJAX function will be called, passing a random number as a parameter. If the AJAX call is successful, that value will be returned multipled by 100, and shown below on screen"
+msgstr ""
+
+#: symposium_menu.php:1376
+#@ wp-symposium
+msgid "Result will be posted here"
+msgstr ""
+
+#: symposium_menu.php:1377
+#@ wp-symposium
+msgid "Click to test"
+msgstr ""
+
+#: symposium_menu.php:1407
+#@ wp-symposium
+msgid "You have problems with Javascript. This may be because a plugin is loading another version of jQuery or jQuery UI - try deactivating all plugins apart from WPS plugins, and re-activate them one at a time until the error re-occurs, this will help you locate the plugin that is clashing. It might also be because there is an error in a JS file, either the symposium.js or another plugin script. Always try re-activating the core WPS plugin."
+msgstr ""
+
+#: symposium_menu.php:1411
+#@ wp-symposium
+msgid "User Level Test"
+msgstr ""
+
+#: symposium_menu.php:1422
+#@ wp-symposium
+msgid "Visitor"
+msgstr ""
+
+#: symposium_menu.php:1426
+#: symposium_menu.php:2530
+#: symposium_menu.php:2543
+#@ wp-symposium
+msgid "Subscriber"
+msgstr ""
+
+#: symposium_menu.php:1430
+#: symposium_menu.php:2531
+#: symposium_menu.php:2544
+#@ wp-symposium
+msgid "Contributor"
+msgstr ""
+
+#: symposium_menu.php:1438
+#: symposium_menu.php:2532
+#: symposium_menu.php:2545
+#@ wp-symposium
+msgid "Editor"
+msgstr ""
+
+#: symposium_menu.php:1442
+#: symposium_menu.php:2533
+#: symposium_menu.php:2546
+#@ wp-symposium
+msgid "Administrator"
+msgstr ""
+
+#: symposium_menu.php:1447
+#@ wp-symposium
+msgid "Using the WP Symposium user level function, your user level is"
+msgstr ""
+
+#: symposium_menu.php:1453
+#@ wp-symposium
+msgid "This is a test email sent from"
+msgstr ""
+
+#: symposium_menu.php:1456
+#, php-format
+#@ wp-symposium
+msgid "Email sent to %s from"
+msgstr ""
+
+#: symposium_menu.php:1460
+#@ wp-symposium
+msgid "Email failed to send"
+msgstr ""
+
+#: symposium_menu.php:1463
+#@ wp-symposium
+msgid "Send a test email"
+msgstr ""
+
+#: symposium_menu.php:1464
+#@ wp-symposium
+msgid "Enter a valid email address to test sending an email from the server"
+msgstr ""
+
+#: symposium_menu.php:1468
+#@ wp-symposium
+msgid "Send email"
+msgstr ""
+
+#: symposium_menu.php:1473
+#: symposium_menu.php:2432
+#@ wp-symposium
+msgid "Daily Digest"
+msgstr ""
+
+#: symposium_menu.php:1492
+#@ wp-symposium
+msgid "The Daily Digest also performs some basic database cleanup operations, which can be run at any time"
+msgstr ""
+
+#: symposium_menu.php:1493
+#@ wp-symposium
+msgid "It will also email an admin summary report. Choose below to optionally send Daily Digest immediately to all subscribed users"
+msgstr ""
+
+#: symposium_menu.php:1496
+#@ wp-symposium
+msgid "Also send Daily Digest to users"
+msgstr ""
+
+#: symposium_menu.php:1497
+#@ wp-symposium
+msgid "Send Daily Digest"
+msgstr ""
+
+#: symposium_menu.php:1554
+#@ wp-symposium
+msgid "Edit"
+msgstr ""
+
+#: symposium_menu.php:1557
+#: symposium_menu.php:1585
+#@ wp-symposium
+msgid "Configure"
+msgstr ""
+
+#: symposium_menu.php:1569
+#, php-format
+#@ wp-symposium
+msgid "Add [%s] to:"
+msgstr ""
+
+#: symposium_menu.php:1570
+#@ wp-symposium
+msgid "New Page"
+msgstr ""
+
+#: symposium_menu.php:1571
+#@ wp-symposium
+msgid "or"
+msgstr ""
+
+#: symposium_menu.php:1581
+#@ wp-symposium
+msgid "Apply"
+msgstr ""
+
+#: symposium_menu.php:1589
+#@ wp-symposium
+msgid "Read this!"
+msgstr ""
+
+#: symposium_menu.php:1600
+#@ wp-symposium
+msgid "Install"
+msgstr ""
+
+#: symposium_menu.php:1602
+#@ wp-symposium
+msgid "Coming soon"
+msgstr ""
+
+#: symposium_menu.php:1609
+#@ wp-symposium
+msgid "Activate"
+msgstr ""
+
+#: symposium_menu.php:1618
+#@ wp-symposium
+msgid "URL updated successfully. It is important to visit this page to complete installation; after you add a WP Symposium shortcode to a page; change pages with WP Symposium shortcodes; if you change WordPress Permalinks; or if you experience problems."
+msgstr ""
+
+#: symposium_menu.php:1618
+#@ wp-symposium
+msgid "Updated ok!"
+msgstr ""
+
+#: symposium_menu.php:1657
+#@ wp-symposium
+msgid "Missing Field"
+msgstr ""
+
+#: symposium_menu.php:1668
+#@ wp-symposium
+msgid "Panel Options"
+msgstr ""
+
+#: symposium_menu.php:1689
+#: symposium_menu.php:1887
+#: symposium_menu.php:2132
+#: symposium_menu.php:2364
+#: symposium_menu.php:3726
+#@ wp-symposium
+msgid "Saved"
+msgstr ""
+
+#: symposium_menu.php:1729
+#@ wp-symposium
+msgid "Plays for new mail, chat message, subscribed forum topic post made, etc"
+msgstr ""
+
+#: symposium_menu.php:1739
+#@ wp-symposium
+msgid "Real-time chat windows"
+msgstr ""
+
+#: symposium_menu.php:1746
+#@ wp-symposium
+msgid "Real-time chatroom (chat seen by all members)"
+msgstr ""
+
+#: symposium_menu.php:1752
+#@ wp-symposium
+msgid "Comma separated list of words not allowed in the chatroom"
+msgstr ""
+
+#: symposium_menu.php:1758
+#@ wp-symposium
+msgid "Frequency of checks for new mail, friends online, etc, in seconds"
+msgstr ""
+
+#: symposium_menu.php:1764
+#@ wp-symposium
+msgid "Frequency of chat window updates in seconds"
+msgstr ""
+
+#: symposium_menu.php:1770
+#@ wp-symposium
+msgid "Link to WordPress user profile page?"
+msgstr ""
+
+#: symposium_menu.php:1777
+#: symposium_menu.php:2069
+#: symposium_menu.php:2278
+#: symposium_menu.php:2704
+#: symposium_menu.php:3030
+#: symposium_menu.php:3757
+#@ wp-symposium
+msgid "Save Changes"
+msgstr ""
+
+#: symposium_menu.php:1782
+#@ wp-symposium
+msgid "Notes:"
+msgstr ""
+
+#: symposium_menu.php:1784
+#@ wp-symposium
+msgid "The polling intervals occur in addition to an initial check on each page load."
+msgstr ""
+
+#: symposium_menu.php:1785
+#@ wp-symposium
+msgid "The more frequent the polling intervals, the greater the load on your server."
+msgstr ""
+
+#: symposium_menu.php:1786
+#@ wp-symposium
+msgid "Disabling chat windows will reduce the load on the server."
+msgstr ""
+
+#: symposium_menu.php:1799
+#@ wp-symposium
+msgid "Profile Options"
+msgstr ""
+
+#: symposium_menu.php:1916
+#@ wp-symposium
+msgid "Redirect profile page"
+msgstr ""
+
+#: symposium_menu.php:1919
+#@ wp-symposium
+msgid "If activated, WordPress profile page will be redirected to WPS profile page"
+msgstr ""
+
+#: symposium_menu.php:1923
+#@ wp-symposium
+msgid "Default Friend"
+msgstr ""
+
+#: symposium_menu.php:1925
+#@ wp-symposium
+msgid "Comma separated list of user ID's that automatically become friends of new users (leave blank for no-one)"
+msgstr ""
+
+#: symposium_menu.php:1929
+#@ wp-symposium
+msgid "Profile Photos"
+msgstr ""
+
+#: symposium_menu.php:1932
+#@ wp-symposium
+msgid "Allow members to upload their own profile photos, over-riding the internal WordPress avatars"
+msgstr ""
+
+#: symposium_menu.php:1936
+#@ wp-symposium
+msgid "Poke/Nudge/Wink/etc"
+msgstr ""
+
+#: symposium_menu.php:1939
+#@ wp-symposium
+msgid "Enable this feature"
+msgstr ""
+
+#: symposium_menu.php:1943
+#@ wp-symposium
+msgid "Poke label"
+msgstr ""
+
+#: symposium_menu.php:1945
+#@ wp-symposium
+msgid "The \"poke\" button label for your site, beware of trademarked words (includes Poke and Nudge for example)"
+msgstr ""
+
+#: symposium_menu.php:1949
+#@ wp-symposium
+msgid "Use Date of Birth"
+msgstr ""
+
+#: symposium_menu.php:1952
+#@ wp-symposium
+msgid "Use date of birth on profile"
+msgstr ""
+
+#: symposium_menu.php:1956
+#@ wp-symposium
+msgid "Profile Info On Wall"
+msgstr ""
+
+#: symposium_menu.php:1959
+#@ wp-symposium
+msgid "Show summary of profile information on wall"
+msgstr ""
+
+#: symposium_menu.php:1963
+#@ wp-symposium
+msgid "Google Map"
+msgstr ""
+
+#: symposium_menu.php:1965
+#@ wp-symposium
+msgid "Size of location map, in pixels. eg: 250. Set to 0 to hide."
+msgstr ""
+
+#: symposium_menu.php:1969
+#@ wp-symposium
+msgid "Enable Password Change"
+msgstr ""
+
+#: symposium_menu.php:1972
+#@ wp-symposium
+msgid "Allow members to change their password"
+msgstr ""
+
+#: symposium_menu.php:1976
+#@ wp-symposium
+msgid "Inactivity period"
+msgstr ""
+
+#: symposium_menu.php:1978
+#@ wp-symposium
+msgid "How many minutes before a member is assumed off-line"
+msgstr ""
+
+#: symposium_menu.php:1984
+#@ wp-symposium
+msgid "How many minutes before a member is assumed logged out"
+msgstr ""
+
+#: symposium_menu.php:1988
+#@ wp-symposium
+msgid "Extended Fields"
+msgstr ""
+
+#: symposium_menu.php:2082
+#@ wp-symposium
+msgid "Setting"
+msgstr ""
+
+#: symposium_menu.php:2168
+#@ wp-symposium
+msgid "Off by default to save to the file system. Select to upload to database - <span style='font-weight:bold; text-decoration: underline'>if you change, images will have to be reloaded, they remain in their storage 'state'.</span>"
+msgstr ""
+
+#: symposium_menu.php:2176
+#@ wp-symposium
+msgid "All images are stored here, in folder hierarchy"
+msgstr ""
+
+#: symposium_menu.php:2190
+#@ wp-symposium
+msgid "URL to the images folder, eg: "
+msgstr ""
+
+#: symposium_menu.php:2204
+#@ wp-symposium
+msgid "Allow uploaded images to be cropped</span>"
+msgstr ""
+
+#: symposium_menu.php:2210
+#@ wp-symposium
+msgid "Footer appended to notification emails"
+msgstr ""
+
+#: symposium_menu.php:2216
+#@ wp-symposium
+msgid "Email address used for email notifications"
+msgstr ""
+
+#: symposium_menu.php:2222
+#@ wp-symposium
+msgid "Width of all WP Symposium plugins, eg: 600px or 100%"
+msgstr ""
+
+#: symposium_menu.php:2233
+#@ wp-symposium
+msgid "Alignment of all WP Symposium plugins"
+msgstr ""
+
+#: symposium_menu.php:2240
+#@ wp-symposium
+msgid "Pressing return submits a post/comment, select this option to also show submit buttons.</span>"
+msgstr ""
+
+#: symposium_menu.php:2247
+#@ wp-symposium
+msgid "Completely remove HTML/script tags. If unchecked &lt; and &gt; will be replaced with &amp;lt; and &amp;gt;.</span>"
+msgstr ""
+
+#: symposium_menu.php:2251
+#@ wp-symposium
+msgid "The following can be disabled if clashes with other WordPress plugins are occuring"
+msgstr ""
+
+#: symposium_menu.php:2258
+#@ wp-symposium
+msgid "Load jQuery on non-admin pages, disable if causing problems"
+msgstr ""
+
+#: symposium_menu.php:2265
+#@ wp-symposium
+msgid "Load jQuery UI on non-admin pages, disable if causing problems"
+msgstr ""
+
+#: symposium_menu.php:2272
+#@ wp-symposium
+msgid "Automatically replace smilies/emoticons with graphical images"
+msgstr ""
+
+#: symposium_menu.php:2291
+#@ wp-symposium
+msgid "Forum Options"
+msgstr ""
+
+#: symposium_menu.php:2411
+#@ wp-symposium
+msgid "Login Link"
+msgstr ""
+
+#: symposium_menu.php:2414
+#@ wp-symposium
+msgid "Show login link on forum when not logged in?"
+msgstr ""
+
+#: symposium_menu.php:2418
+#@ wp-symposium
+msgid "Use AJAX"
+msgstr ""
+
+#: symposium_menu.php:2421
+#@ wp-symposium
+msgid "Use AJAX, or hyperlinks and page re-loading?"
+msgstr ""
+
+#: symposium_menu.php:2425
+#@ wp-symposium
+msgid "Moderation"
+msgstr ""
+
+#: symposium_menu.php:2428
+#@ wp-symposium
+msgid "New topics and posts require admin approval"
+msgstr ""
+
+#: symposium_menu.php:2435
+#@ wp-symposium
+msgid "Enable daily summaries to all members via email"
+msgstr ""
+
+#: symposium_menu.php:2439
+#@ wp-symposium
+msgid "Admin views"
+msgstr ""
+
+#: symposium_menu.php:2442
+#@ wp-symposium
+msgid "Include administrator viewing a topic in the total view count"
+msgstr ""
+
+#: symposium_menu.php:2446
+#@ wp-symposium
+msgid "Bump topics"
+msgstr ""
+
+#: symposium_menu.php:2449
+#@ wp-symposium
+msgid "Bumps topics to top of forum when new replies are posted"
+msgstr ""
+
+#: symposium_menu.php:2453
+#@ wp-symposium
+msgid "Order of replies"
+msgstr ""
+
+#: symposium_menu.php:2456
+#@ wp-symposium
+msgid "Show oldest replies first (uncheck to reverse order)"
+msgstr ""
+
+#: symposium_menu.php:2460
+#@ wp-symposium
+msgid "Allow uploads"
+msgstr ""
+
+#: symposium_menu.php:2463
+#@ wp-symposium
+msgid "Allow members to upload files with forum posts"
+msgstr ""
+
+#: symposium_menu.php:2467
+#@ wp-symposium
+msgid "Member Info"
+msgstr ""
+
+#: symposium_menu.php:2470
+#@ wp-symposium
+msgid "Show member info underneath avatar on forum"
+msgstr ""
+
+#: symposium_menu.php:2474
+#@ wp-symposium
+msgid "Inline attachments"
+msgstr ""
+
+#: symposium_menu.php:2477
+#@ wp-symposium
+msgid "Show uploaded forum attachments as images (not links)"
+msgstr ""
+
+#: symposium_menu.php:2481
+#@ wp-symposium
+msgid "Thumbnail size"
+msgstr ""
+
+#: symposium_menu.php:2483
+#@ wp-symposium
+msgid "If using inline attachments, maximum width"
+msgstr ""
+
+#: symposium_menu.php:2487
+#@ wp-symposium
+msgid "Use Votes"
+msgstr ""
+
+#: symposium_menu.php:2490
+#@ wp-symposium
+msgid "Allow members to vote (plus or minus) on forum posts"
+msgstr ""
+
+#: symposium_menu.php:2494
+#@ wp-symposium
+msgid "Votes (minimum posts)"
+msgstr ""
+
+#: symposium_menu.php:2496
+#@ wp-symposium
+msgid "How many posts a member must have made in order to vote"
+msgstr ""
+
+#: symposium_menu.php:2501
+#@ wp-symposium
+msgid "Votes (removal point)"
+msgstr ""
+
+#: symposium_menu.php:2503
+#@ wp-symposium
+msgid "When a forum post gets this many votes, it is removed. Can be + or -. Leave as 0 to ignore."
+msgstr ""
+
+#: symposium_menu.php:2507
+#@ wp-symposium
+msgid "Votes (answers)"
+msgstr ""
+
+#: symposium_menu.php:2510
+#@ wp-symposium
+msgid "Allows topic owners and administrators to mark a reply as an answer (one per topic)"
+msgstr ""
+
+#: symposium_menu.php:2514
+#@ wp-symposium
+msgid "Preview length"
+msgstr ""
+
+#: symposium_menu.php:2516
+#@ wp-symposium
+msgid "Maximum number of characters to show in topic preview"
+msgstr ""
+
+#: symposium_menu.php:2522
+#@ wp-symposium
+msgid "Maximum number of characters to show in reply preview"
+msgstr ""
+
+#: symposium_menu.php:2526
+#@ wp-symposium
+msgid "View forum level"
+msgstr ""
+
+#: symposium_menu.php:2529
+#: symposium_menu.php:2542
+#@ wp-symposium
+msgid "Guest"
+msgstr ""
+
+#: symposium_menu.php:2535
+#@ wp-symposium
+msgid "The minimum level a visitor has to be to view the forum"
+msgstr ""
+
+#: symposium_menu.php:2539
+#@ wp-symposium
+msgid "Forum post level"
+msgstr ""
+
+#: symposium_menu.php:2548
+#@ wp-symposium
+msgid "The minimum level a visitor has to be to be able to post/reply on the forum"
+msgstr ""
+
+#: symposium_menu.php:2554
+#@ wp-symposium
+msgid "Comma separated list of words not allowed in the forum"
+msgstr ""
+
+#: symposium_menu.php:2558
+#@ wp-symposium
+msgid "Closed word"
+msgstr ""
+
+#: symposium_menu.php:2560
+#@ wp-symposium
+msgid "Word used to denote a topic that is closed (see also Styles)"
+msgstr ""
+
+#: symposium_menu.php:2564
+#@ wp-symposium
+msgid "Sharing icons included"
+msgstr ""
+
+#: symposium_menu.php:2567
+#@ wp-symposium
+msgid "Permalink (to copy)"
+msgstr ""
+
+#: symposium_menu.php:2574
+#@ wp-symposium
+msgid "Email"
+msgstr ""
+
+#: symposium_menu.php:2581
+#@ wp-symposium
+msgid "Facebook"
+msgstr ""
+
+#: symposium_menu.php:2588
+#@ wp-symposium
+msgid "Twitter"
+msgstr ""
+
+#: symposium_menu.php:2595
+#@ wp-symposium
+msgid "MySpace"
+msgstr ""
+
+#: symposium_menu.php:2602
+#@ wp-symposium
+msgid "Bebo"
+msgstr ""
+
+#: symposium_menu.php:2609
+#@ wp-symposium
+msgid "LinkedIn"
+msgstr ""
+
+#: symposium_menu.php:2616
+#@ wp-symposium
+msgid "Forum ranks"
+msgstr ""
+
+#: symposium_menu.php:2619
+#@ wp-symposium
+msgid "Use ranks on the forum?"
+msgstr ""
+
+#: symposium_menu.php:2636
+#@ wp-symposium
+msgid "(blank ranks are not used)"
+msgstr ""
+
+#: symposium_menu.php:2669
+#@ wp-symposium
+msgid "Most posts"
+msgstr ""
+
+#: symposium_menu.php:2671
+#@ wp-symposium
+msgid "Rank "
+msgstr ""
+
+#: symposium_menu.php:2686
+#@ wp-symposium
+msgid "Daily summaries (if there is anything to send) are sent when the first visitor comes to the site after midnight, local time."
+msgstr ""
+
+#: symposium_menu.php:2687
+#@ wp-symposium
+msgid "Be aware of any limits set by your hosting provider for sending out bulk emails, they may suspend your website."
+msgstr ""
+
+#: symposium_menu.php:2691
+#@ wp-symposium
+msgid "Shortcode options"
+msgstr ""
+
+#: symposium_menu.php:2695
+#@ wp-symposium
+msgid "[symposium-forumlatestposts]"
+msgstr ""
+
+#: symposium_menu.php:2697
+#@ wp-symposium
+msgid "Default number of topics to show, can be changed overridden, eg: [symposium-forumlatestposts count=10]"
+msgstr ""
+
+#: symposium_menu.php:2742
+#@ wp-symposium
+msgid "<strong>Important!</strong><br />Visit the WP Symposium <a href='admin.php?page=symposium_debug'>Installation page</a> to complete installation; after you add a WP Symposium shortcode to a page; change pages with WP Symposium shortcodes; if you change WordPress Permalinks; or if you experience problems."
+msgstr ""
+
+#: symposium_menu.php:2754
+#@ wp-symposium
+msgid "View this page after each upgrade for a complete list of new features."
+msgstr ""
+
+#: symposium_menu.php:2810
+#: symposium_menu.php:3106
+#@ wp-symposium
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: symposium_menu.php:2881
+#@ wp-symposium
+msgid "You must have at least one category"
+msgstr ""
+
+#: symposium_menu.php:2897
+#@ wp-symposium
+msgid "Categories saved"
+msgstr ""
+
+#: symposium_menu.php:2914
+#: symposium_menu.php:2987
+#@ wp-symposium
+msgid "Parent ID"
+msgstr ""
+
+#: symposium_menu.php:2915
+#@ wp-symposium
+msgid "Category Title and Description"
+msgstr ""
+
+#: symposium_menu.php:2916
+#: wp-symposium.php:343
+#@ wp-symposium
+msgid "Topics"
+msgstr ""
+
+#: symposium_menu.php:2917
+#: symposium_menu.php:2990
+#@ wp-symposium
+msgid "Order"
+msgstr ""
+
+#: symposium_menu.php:2918
+#: symposium_menu.php:2991
+#@ wp-symposium
+msgid "Allow new topics"
+msgstr ""
+
+#: symposium_menu.php:2941
+#@ wp-symposium
+msgid "The following will not be displayed due to Parent ID (update or delete)"
+msgstr ""
+
+#: symposium_menu.php:2973
+#: symposium_menu.php:3088
+#@ wp-symposium
+msgid "Delete category"
+msgstr ""
+
+#: symposium_menu.php:2974
+#: symposium_menu.php:3089
+#@ wp-symposium
+msgid "Delete all"
+msgstr ""
+
+#: symposium_menu.php:2988
+#: symposium_menu.php:3000
+#@ wp-symposium
+msgid "Add New Category"
+msgstr ""
+
+#: symposium_menu.php:3001
+#@ wp-symposium
+msgid "Optional Description"
+msgstr ""
+
+#: symposium_menu.php:3014
+#@ wp-symposium
+msgid "Default Category"
+msgstr ""
+
+#: symposium_menu.php:3035
+#@ wp-symposium
+msgid "Note:"
+msgstr ""
+
+#: symposium_menu.php:3036
+#@ wp-symposium
+msgid "if you \"Delete category\" any topics will be placed at the top level of the forum."
+msgstr ""
+
+#: symposium_menu.php:3037
+#@ wp-symposium
+msgid "choose \"Delete all\" to delete a category and all topics in that category."
+msgstr ""
+
+#: symposium_menu.php:3038
+#@ wp-symposium
+msgid "if category descriptions are not showing, check that [category_desc] is in your <a href=\"admin.php?page=symposium_templates\">Forum Categories (list)</a> template."
+msgstr ""
+
+#: symposium_menu.php:3124
+#@ wp-symposium
+msgid "Template Deleted"
+msgstr ""
+
+#: symposium_menu.php:3163
+#@ wp-symposium
+msgid "Template Applied"
+msgstr ""
+
+#: symposium_menu.php:3165
+#@ wp-symposium
+msgid "Template Not Found"
+msgstr ""
+
+#: symposium_menu.php:3274
+#@ wp-symposium
+msgid "Template Saved"
+msgstr ""
+
+#: symposium_menu.php:3367
+#: symposium_menu.php:3384
+#@ wp-symposium
+msgid "CSS"
+msgstr ""
+
+#: symposium_menu.php:3392
+#@ wp-symposium
+msgid "Notes"
+msgstr ""
+
+#: symposium_menu.php:3436
+#@ wp-symposium
+msgid "Use Styles?"
+msgstr ""
+
+#: symposium_menu.php:3439
+#@ wp-symposium
+msgid "Enable to use styles on this page, disable to rely on stylesheet"
+msgstr ""
+
+#: symposium_menu.php:3445
+#@ wp-symposium
+msgid "Font family for body text"
+msgstr ""
+
+#: symposium_menu.php:3451
+#@ wp-symposium
+msgid "Font size in pixels for body text"
+msgstr ""
+
+#: symposium_menu.php:3457
+#@ wp-symposium
+msgid "Font family for headings and large text"
+msgstr ""
+
+#: symposium_menu.php:3463
+#@ wp-symposium
+msgid "Font size in pixels for headings and large text"
+msgstr ""
+
+#: symposium_menu.php:3469
+#@ wp-symposium
+msgid "Main background colour (for example, new/edit forum topic/post)"
+msgstr ""
+
+#: symposium_menu.php:3475
+#@ wp-symposium
+msgid "Colour of text labels outside forum areas"
+msgstr ""
+
+#: symposium_menu.php:3481
+#@ wp-symposium
+msgid "Primary Text Colour"
+msgstr ""
+
+#: symposium_menu.php:3487
+#@ wp-symposium
+msgid "Secondary Text Colour"
+msgstr ""
+
+#: symposium_menu.php:3493
+#@ wp-symposium
+msgid "Link Colour"
+msgstr ""
+
+#: symposium_menu.php:3499
+#@ wp-symposium
+msgid "Link Colour on mouse hover"
+msgstr ""
+
+#: symposium_menu.php:3509
+#@ wp-symposium
+msgid "Whether links are underlined or not"
+msgstr ""
+
+#: symposium_menu.php:3533
+#@ wp-symposium
+msgid "Rounded Corner radius (not supported in all browsers)"
+msgstr ""
+
+#: symposium_menu.php:3539
+#@ wp-symposium
+msgid "Background Colour"
+msgstr ""
+
+#: symposium_menu.php:3545
+#@ wp-symposium
+msgid "Background Colour on mouse hover"
+msgstr ""
+
+#: symposium_menu.php:3551
+#: symposium_menu.php:3640
+#@ wp-symposium
+msgid "Text Colour"
+msgstr ""
+
+#: symposium_menu.php:3557
+#@ wp-symposium
+msgid "Text Colour on mouse hover"
+msgstr ""
+
+#: symposium_menu.php:3563
+#@ wp-symposium
+msgid "Primary Colour"
+msgstr ""
+
+#: symposium_menu.php:3569
+#@ wp-symposium
+msgid "Row Colour"
+msgstr ""
+
+#: symposium_menu.php:3575
+#@ wp-symposium
+msgid "Alternative Row Colour"
+msgstr ""
+
+#: symposium_menu.php:3581
+#@ wp-symposium
+msgid "Row colour on mouse hover"
+msgstr ""
+
+#: symposium_menu.php:3593
+#@ wp-symposium
+msgid "Border Size"
+msgstr ""
+
+#: symposium_menu.php:3604
+#@ wp-symposium
+msgid "Border style between rows"
+msgstr ""
+
+#: symposium_menu.php:3616
+#@ wp-symposium
+msgid "Border size between rows"
+msgstr ""
+
+#: symposium_menu.php:3628
+#@ wp-symposium
+msgid "For new topics/replies and topic replies"
+msgstr ""
+
+#: symposium_menu.php:3634
+#@ wp-symposium
+msgid "Background colour of, for example, current category"
+msgstr ""
+
+#: symposium_menu.php:3653
+#@ wp-symposium
+msgid "Opacity of topics"
+msgstr ""
+
+#: symposium_menu.php:3659
+#@ wp-symposium
+msgid "Style Templates"
+msgstr ""
+
+#: symposium_menu.php:3661
+#@ wp-symposium
+msgid "To save as a new style template, enter a name below, otherwise leave blank."
+msgstr ""
+
+#: symposium_menu.php:3664
+#@ wp-symposium
+msgid "Save as:"
+msgstr ""
+
+#: symposium_menu.php:3677
+#@ wp-symposium
+msgid "Load Style Template"
+msgstr ""
+
+#: symposium_menu.php:3689
+#@ wp-symposium
+msgid "Load"
+msgstr ""
+
+#: symposium_menu.php:3751
+#@ wp-symposium
+msgid "Whether to show site administrators in the member directory"
+msgstr ""
+
+#: symposium_profile.php:227
+#@ wp-symposium
+msgid "Member not found, sorry"
+msgstr ""
+
+#: uploadify/upload_admin_avatar.php:205
+#: uploadify/upload_forum_file.php:189
+#: uploadify/upload_profile_avatar.php:171
+#@ wp-symposium
+msgid "Failed to upload the file."
+msgstr ""
+
+#: uploadify/upload_forum_file.php:179
+#@ wp-symposium
+msgid "Invalid file extension:"
+msgstr ""
+
+#: uploadify/upload_profile_avatar.php:149
+#@ wp-symposium
+msgid "Select an area above..."
+msgstr ""
+
+#: wp-symposium.php:312
+#@ wp-symposium
+msgid "WP Symposium"
+msgstr ""
+
+#: wp-symposium.php:315
+#@ wp-symposium
+msgid "OK (and hide this message)"
+msgstr ""
+
+#: wp-symposium.php:318
+#@ wp-symposium
+msgid "Please visit the WP Symposium Installation page to complete your installation/upgrade."
+msgstr ""
+
+#: wp-symposium.php:341
+#@ wp-symposium
+msgid "Categories"
+msgstr ""
+
+#: wp-symposium.php:345
+#@ wp-symposium
+msgid "Replies"
+msgstr ""
+
+#: wp-symposium.php:347
+#@ wp-symposium
+msgid "Views"
+msgstr ""
+
+#: wp-symposium.php:349
+#@ wp-symposium
+msgid "Mail"
+msgstr ""
+
+#: wp-symposium.php:353
+#, php-format
+#@ wp-symposium
+msgid "(%s unread)"
+msgstr ""
+
+#: wp-symposium.php:361
+#@ wp-symposium
+msgid "Plugins"
+msgstr ""
+
+#: wp-symposium.php:364
+#@ wp-symposium
+msgid "Go to Forum"
+msgstr ""
+
+#: wp-symposium.php:373
+#@ wp-symposium
+msgid "Go to Profile"
+msgstr ""
+
+#: wp-symposium.php:389
+#@ wp-symposium
+msgid "Go to Member Directory"
+msgstr ""
+
+#: wp-symposium.php:397
+#@ wp-symposium
+msgid "Go to Group Directory"
+msgstr ""
+
+#: wp-symposium.php:479
+#@ wp-symposium
+msgid "Website Title"
+msgstr ""
+
+#: wp-symposium.php:480
+#@ wp-symposium
+msgid "Website URL"
+msgstr ""
+
+#: wp-symposium.php:481
+#@ wp-symposium
+msgid "Admin Email"
+msgstr ""
+
+#: wp-symposium.php:482
+#@ wp-symposium
+msgid "WordPress version"
+msgstr ""
+
+#: wp-symposium.php:483
+#@ wp-symposium
+msgid "WP Symposium version"
+msgstr ""
+
+#: wp-symposium.php:484
+#@ wp-symposium
+msgid "Daily Digest mode"
+msgstr ""
+
+#: wp-symposium.php:503
+#@ wp-symposium
+msgid "Database cleanup"
+msgstr ""
+
+#: wp-symposium.php:549
+#@ wp-symposium
+msgid "New Topics"
+msgstr ""
+
+#: wp-symposium.php:570
+#@ wp-symposium
+msgid "Replies in"
+msgstr ""
+
+#: wp-symposium.php:582
+#@ wp-symposium
+msgid "View topic"
+msgstr ""
+
+#: wp-symposium.php:590
+#@ wp-symposium
+msgid "You can stop receiving these emails at"
+msgstr ""
+
+#: wp-symposium.php:599
+#@ wp-symposium
+msgid "Daily Forum Digest"
+msgstr ""
+
+#: wp-symposium.php:613
+#@ wp-symposium
+msgid "Forum topic count for previous day (midnight to midnight)"
+msgstr ""
+
+#: wp-symposium.php:614
+#@ wp-symposium
+msgid "Daily Digest sent count"
+msgstr ""
+
+#: wp-symposium.php:628
+#@ wp-symposium
+msgid "Daily Digest Summary Report"
+msgstr ""
+
+#: wp-symposium.php:850
+#@ wp-symposium
+msgid "My Profile"
+msgstr ""
+
+#: wp-symposium.php:864
+#@ wp-symposium
+msgid "My Friends Activity"
+msgstr ""
+
+#: wp-symposium.php:871
+#@ wp-symposium
+msgid "Friends Activity"
+msgstr ""
+
+#: wp-symposium.php:877
+#@ wp-symposium
+msgid "All Activity"
+msgstr ""
+
+#: wp-symposium.php:881
+#@ wp-symposium
+msgid "My Groups"
+msgstr ""
+
+#: wp-symposium.php:883
+#@ wp-symposium
+msgid "Groups"
+msgstr ""
+
+#: wp-symposium.php:898
+#@ wp-symposium
+msgid "My Friends"
+msgstr ""
+
+#: wp-symposium.php:900
+#@ wp-symposium
+msgid "Friends"
+msgstr ""
+
+#: wp-symposium.php:1105
+#: wp-symposium.php:1322
+#@ wp-symposium
+msgid "Saving..."
+msgstr ""
+
+#: wp-symposium.php:1106
+#: wp-symposium.php:1321
+#@ wp-symposium
+msgid "Please Wait..."
+msgstr ""
+
