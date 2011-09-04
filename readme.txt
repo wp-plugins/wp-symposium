@@ -6,9 +6,9 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 11.9.1
+Stable tag: 11.9.4
 
-Social Networking for WordPress: forum, wall, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS, and more!
+Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
 == Description ==
 
@@ -158,6 +158,12 @@ Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
 
 == Changelog ==
+
+= 11.9.4 =
+
+* Admin: Can set permitted upload file types (extensions, eg: *.jpg.*.gif,*.png)
+* Forum: Video attachments now work on forum (optionally). MP4 are the best way to upload due to compatibility!
+* Forum: File attachments now work on forum (optionally).
 
 = 11.9.1 =
 
