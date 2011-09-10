@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 11.9.4
+Stable tag: 11.9.10
 
 Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
@@ -158,6 +158,20 @@ Q. What is Silver membership?
 A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
 
 == Changelog ==
+
+= 11.9.10 =
+
+* Profile: Show or hide individual profile menu items
+* Profile: Add text/HTML to the end of the profile menu items
+* Core: Database changes when upgrading WPS and WPS plugins avoids PHP notices (if enabled), done in a better way!
+* Core: No need to de-activate and re-activate WPS plugins when upgrading any more
+* Core: Added Mail admin menu, on which admin's can send bulk mail to all site members, with option to inform via email
+* Members Directory: removed autocomplete to reduce jQueryUI clashing issues and improve performance
+* Members Directory: Improved small member search [put symposium_members('small') in your PHP theme files]
+* Mail: removed autocomplete for recipient to reduce jQueryUI clashing issues and improve performance - this may need more improvement...
+* Gallery Plugin: Set thumbnail size (Bronze members only)
+* Groups Plugin: Group and Site admins can now remove members from group (Bronze members only)
+* Groups Plugin: Group admins can now choose whether group members can create new topics (Bronze members only)
 
 = 11.9.4 =
 
