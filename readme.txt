@@ -6,17 +6,17 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 11.09.13
+Stable tag: 11.9.14
 
 Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
 == Description ==
 
-WP Symposium is a new suite of social networking plugins - forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, activity alerts, RSS activity feeds and support for other plugins such as Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.
+**WP Symposium turns a WordPress website into a Social Network! It is a suite of WordPress plugins including forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, activity alerts, RSS activity feeds and support for other plugins such as Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.**
 
 For developers, there are a growing number of WordPress hooks and filters, along with WP Symposium functions and Javascript variables. More information on the WPS Wiki at www.wpsiki.com.
 
-**Note: The WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, chat, panel, mail, member directory and widgets) - additional WPS compatible plugins may require a subscription fee.**
+Note: The WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, chat, panel, mail, member directory and widgets) - additional WPS compatible plugins may require a subscription fee.
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
 
@@ -159,12 +159,13 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
-= 11.09.13 =
+= 11.9.14 =
 
-* Added support for back/forward/reload browser buttons in the forum
+* Added support for back/forward/reload browser buttons in the forum when using AJAX
 * New Widget: Your Friends (as list of block of avatars)
 * Members can reset their avatars (via Profile Photo link on Profile)
 * Fixed IE compatibility with jCrop (removed aspectRatio parameter)
+* Fixed IE alignment issue on Forum topic page
 * Updated jCrop to v0.9.9
 
 = 11.9.10 =
