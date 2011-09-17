@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 11.9.14
+Stable tag: 11.9.17
 
 Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
@@ -53,6 +53,14 @@ Loads! Smilies, loves AJAX, an installation "health check" page, templates for c
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
   
+*Can I see what features are coming next?*
+
+Using the same software as WordPress, we have a Trac website at https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac
+
+*Where can I get support?*
+
+At www.wpsymposium.com or the WPS Wiki at www.wpswiki.com.
+
 == Installation ==
 
 An admin guide and more information is available at www.wpswiki.com.
@@ -159,10 +167,31 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
+WP Symposium Trac site provides reports on:
+
+* [https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/6 Roadmap of releases]
+* [https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/11 Future enhancements, features and fixes]
+* [https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/2 Current and previous release information]
+
+From 11.9.17 the Trac Ticket number are included.
+
+= 11.9.17 =
+
+* #10	New forum posts/replies appear immediately as an alert, if Moderation is on	(Bug/defect, Alerts)
+* #38	Provide option to disable elastic feature	(Bug/defect)
+* #31	Format of topic posts not preserving carriage returns when editing	(Bug/defect,Forum)
+* #44	Replying to mail defaults recipient to yourself not sender	(Bug/defect, Mail)
+* #13	Can mail friends who haven't accepted yet	(Bug/defect, Mail)
+* #3	Add personal setting to know about all new topics and replies	(Suggested enhancement, Forum)
+* #12	Select if members are restricted to mailing just friends, or everyone on the site	(Suggested enhancement, Mail)
+* #11	Add selection for just friends	(Suggested enhancement, Member Directory)
+* #9	Recently Online Members	(Suggested enhancement, New Component)
+* #35	Change youtube links on profile to icon	(Suggested enhancement, Profile)
+
 = 11.9.14 =
 
 * Added support for back/forward/reload browser buttons in the forum when using AJAX
-* New Widget: Your Friends (as list of block of avatars)
+* New Widget: Your Friends (as list or block of avatars)
 * Members can reset their avatars (via Profile Photo link on Profile)
 * Fixed IE compatibility with jCrop (removed aspectRatio parameter)
 * Fixed IE alignment issue on Forum topic page
@@ -175,9 +204,9 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 * Core: Database changes when upgrading WPS and WPS plugins avoids PHP notices (if enabled), done in a better way!
 * Core: No need to de-activate and re-activate WPS plugins when upgrading any more
 * Core: Added Mail admin menu, on which admin's can send bulk mail to all site members, with option to inform via email
-* Members Directory: removed autocomplete to reduce jQueryUI clashing issues and improve performance
+* Members Directory: Removed autocomplete to reduce jQueryUI clashing issues and improve performance
 * Members Directory: Improved small member search [put symposium_members('small') in your PHP theme files]
-* Mail: removed autocomplete for recipient to reduce jQueryUI clashing issues and improve performance - this may need more improvement...
+* Mail: Removed autocomplete for recipient to reduce jQueryUI clashing issues and improve performance - this may need more improvement...
 * Gallery Plugin: Set thumbnail size (Bronze members only)
 * Groups Plugin: Group and Site admins can now remove members from group (Bronze members only)
 * Groups Plugin: Group admins can now choose whether group members can create new topics (Bronze members only)
