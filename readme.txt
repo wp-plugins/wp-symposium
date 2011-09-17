@@ -169,11 +169,11 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 WP Symposium Trac site provides reports on:
 
-* [https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/6 Roadmap of releases]
-* [https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/11 Future enhancements, features and fixes]
-* [https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/2 Current and previous release information]
+* https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/6 Roadmap of releases
+* https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/11 Future enhancements, features and fixes
+* https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/2 Current and previous release information
 
-From 11.9.17 the Trac Ticket number are included.
+From 11.9.17 the Trac Ticket number are included below.
 
 = 11.9.17 =
 
@@ -186,7 +186,7 @@ From 11.9.17 the Trac Ticket number are included.
 * #12	Select if members are restricted to mailing just friends, or everyone on the site	(Suggested enhancement, Mail)
 * #11	Add selection for just friends	(Suggested enhancement, Member Directory)
 * #9	Recently Online Members	(Suggested enhancement, New Component)
-* #35	Change youtube links on profile to icon	(Suggested enhancement, Profile)
+* #35	Change YouTube links on profile to icon	(Suggested enhancement, Profile)
 
 = 11.9.14 =
 
