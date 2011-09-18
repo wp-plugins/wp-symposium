@@ -1231,10 +1231,12 @@ jQuery(document).ready(function() {
 		comment = comment + "</div>";
 		
 		var facebook_post = 0;
-		if (jQuery("#post_to_facebook").is(":checked")) {
-			facebook_post = 1;
+		if (jQuery("#post_to_facebook").length) {
+			if (jQuery("#post_to_facebook").is(":checked")) {
+				facebook_post = 1;
+			}
 		}
-		
+
 		jQuery("#symposium_status").val('');
 		jQuery(comment).prependTo('#symposium_wall');
 					
@@ -1306,7 +1308,8 @@ jQuery(document).ready(function() {
 				action:"addStatus",
 				subject_uid:symposium.current_user_page,
 				parent:0,
-				text:comment_text
+				text:comment_text,
+				facebook:0
 			}),
 		    dataType: "html",
 			async: true,
