@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 11.9.17
+Stable tag: 11.9.24
 
 Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
@@ -169,47 +169,14 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 WP Symposium Trac site provides reports on:
 
+From 11.9.10 (10th September 2011) the change log can be seen on the WPS Trac:
+
+* https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/2 Change log
 * https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/6 Roadmap of releases
 * https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/11 Future enhancements, features and fixes
 * https://wpsymposium-trac.sourcerepo.com/wpsymposium_trac/report/2 Current and previous release information
 
-From 11.9.17 the Trac Ticket number are included below.
-
-= 11.9.17 =
-
-* #10	New forum posts/replies appear immediately as an alert, if Moderation is on	(Bug/defect, Alerts)
-* #38	Provide option to disable elastic feature	(Bug/defect)
-* #31	Format of topic posts not preserving carriage returns when editing	(Bug/defect,Forum)
-* #44	Replying to mail defaults recipient to yourself not sender	(Bug/defect, Mail)
-* #13	Can mail friends who haven't accepted yet	(Bug/defect, Mail)
-* #3	Add personal setting to know about all new topics and replies	(Suggested enhancement, Forum)
-* #12	Select if members are restricted to mailing just friends, or everyone on the site	(Suggested enhancement, Mail)
-* #11	Add selection for just friends	(Suggested enhancement, Member Directory)
-* #9	Recently Online Members	(Suggested enhancement, New Component)
-* #35	Change YouTube links on profile to icon	(Suggested enhancement, Profile)
-
-= 11.9.14 =
-
-* Added support for back/forward/reload browser buttons in the forum when using AJAX
-* New Widget: Your Friends (as list or block of avatars)
-* Members can reset their avatars (via Profile Photo link on Profile)
-* Fixed IE compatibility with jCrop (removed aspectRatio parameter)
-* Fixed IE alignment issue on Forum topic page
-* Updated jCrop to v0.9.9
-
-= 11.9.10 =
-
-* Profile: Show or hide individual profile menu items
-* Profile: Add text/HTML to the end of the profile menu items
-* Core: Database changes when upgrading WPS and WPS plugins avoids PHP notices (if enabled), done in a better way!
-* Core: No need to de-activate and re-activate WPS plugins when upgrading any more
-* Core: Added Mail admin menu, on which admin's can send bulk mail to all site members, with option to inform via email
-* Members Directory: Removed autocomplete to reduce jQueryUI clashing issues and improve performance
-* Members Directory: Improved small member search [put symposium_members('small') in your PHP theme files]
-* Mail: Removed autocomplete for recipient to reduce jQueryUI clashing issues and improve performance - this may need more improvement...
-* Gallery Plugin: Set thumbnail size (Bronze members only)
-* Groups Plugin: Group and Site admins can now remove members from group (Bronze members only)
-* Groups Plugin: Group admins can now choose whether group members can create new topics (Bronze members only)
+Previous change log:
 
 = 11.9.4 =
 
