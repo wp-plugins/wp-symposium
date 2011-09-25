@@ -400,8 +400,6 @@ if ($_POST['action'] == 'forumNewPost') {
 							// Send mail
 							symposium_sendmail($user->user_email, __('New Forum Topic', 'wp-symposium'), $body);							
 						}
-					} else {
-						echo 'No global recipients';
 					}	
 			
 			} else {
@@ -2216,8 +2214,6 @@ if ($_POST['action'] == 'reply') {
 							// Send mail
 							symposium_sendmail($user->user_email, __('New Forum Reply', 'wp-symposium'), $body);							
 						}
-					} else {
-						echo 'No global recipients';
 					}					
 						
 				echo $sql;
