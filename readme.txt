@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 11.9.24
+Stable tag: 11.10.1
 
 Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
@@ -167,7 +167,7 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
-WP Symposium Trac site provides reports on:
+**WP Symposium Trac**
 
 From 11.9.10 (10th September 2011) the change log can be seen on the WPS Trac:
 
