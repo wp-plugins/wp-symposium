@@ -1232,7 +1232,7 @@ function symposium_plugin_debug() {
   	$fail2 = "</span><br /><br />";
  	
   	echo '<div class="wrap">';
-	  	
+
 	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
 	  	echo '<h2>WP Symposium Installation</h2>';
 	  	
@@ -2346,7 +2346,7 @@ function symposium_plugin_settings() {
 						<tr valign="top" style='background-color: #ccc;'> 
 						<td scope="row"><label for="img_url">Images URL</label></td> 
 						<td><input name="img_url" type="text" id="img_url"  value="<?php echo $img_url; ?>" class="regular-text" /> 
-						<?php $url = WP_CONTENT_URL.'/wps-content'; $url = str_replace(get_bloginfo('url'), '', $url); ?>
+						<?php $url = WP_CONTENT_URL.'/wps-content'; $url = str_replace(siteURL(), '', $url); ?>
 						<span class="description"><?php echo __('URL to the images folder, eg: ', 'wp-symposium').$url; ?></td> 
 						</tr> 					
 

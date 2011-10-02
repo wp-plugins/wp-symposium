@@ -1384,6 +1384,13 @@ function symposium_group_admin($gid) {
 	
 }
 
+/* Get site URL with protocol */
+function siteURL()
+{
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    $domainName = $_SERVER['HTTP_HOST'];
+    return $protocol.$domainName;
+}
 
 /* Function to sort multi-dimensional arrays */
 /* For sort use asort or arsort              */

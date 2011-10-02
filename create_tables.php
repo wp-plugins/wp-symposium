@@ -257,7 +257,9 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
 }
 // Add index
-$wpdb->query("CREATE UNIQUE INDEX uid_index ON ".$wpdb->prefix . "symposium_usermeta(uid)");
+if(!($wpdb->get_row("SHOW INDEX FROM ".$table_name." WHERE Key_name = 'uid_index'"))) {
+	$wpdb->query("CREATE UNIQUE INDEX uid_index ON ".$wpdb->prefix . "symposium_usermeta(uid)");
+}
  	
 
 // Create extended usermeta table
