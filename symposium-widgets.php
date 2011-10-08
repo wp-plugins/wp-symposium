@@ -262,6 +262,7 @@ class Recentactivity_Widget extends WP_Widget {
 									echo "</div>";
 									echo "<div class='symposium_recent_activity_row_post'>";
 										$text = stripslashes($post->comment);
+										$text = strip_tags($text);
 										if ( strlen($text) > $preview ) { $text = substr($text, 0, $preview)."..."; }
 										echo "<a href='".$profile_url.$q."uid=".$post->author_uid."&post=".$post->cid."'>".$post->display_name."</a> ".$text." ".symposium_time_ago($post->comment_timestamp).".<br>";
 									echo "</div>";
