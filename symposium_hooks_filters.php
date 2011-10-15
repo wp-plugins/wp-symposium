@@ -2,17 +2,20 @@
 
 // *************************************** HOOKS AND FILTERS ***************************************
 
+// Add meta box to posts for forum link
 add_action( 'add_meta_boxes', 'wps_add_custom_post_box' );
 add_action( 'save_post', 'wps_save_postdata' );
 
 /* Adds a box to the main column on the Post and Page edit screens */
 function wps_add_custom_post_box() {
-    add_meta_box( 
-        'myplugin_sectionid',
-        __( 'Link to Forum', 'myplugin_textdomain' ),
-        'wps_inner_custom_box',
-        'post' 
-    );
+	if (function_exists('symposium_forum')) {
+	    add_meta_box( 
+	        'myplugin_sectionid',
+	        __( 'Link to Forum', 'myplugin_textdomain' ),
+	        'wps_inner_custom_box',
+	        'post' 
+	    );
+	}
 }
 
 /* Prints the box content */
@@ -29,6 +32,9 @@ global $wpdb;
   echo '<select id="myplugin_new_field" name="myplugin_new_field">';
   $sql = "SELECT tid, topic_subject FROM ".$wpdb->prefix."symposium_topics WHERE topic_parent = 0 AND topic_group = 0 ORDER BY topic_subject";
   $topics = $wpdb->get_results($sql);
+  echo '<option value=0';
+  if ($value == 0 || $value == '') { echo " SELECTED"; }
+  echo '>'.__('None', 'wp-symposium').'</option>';  
   if ($topics) {
 	  foreach ($topics AS $topic) {
 	      echo '<option value='.$topic->tid;
@@ -37,7 +43,6 @@ global $wpdb;
 	  }
   }
   echo '</select>';
-  //echo '<input type="text" id="myplugin_new_field" name="myplugin_new_field" value="'.$value.'" size="25" />';
 }
 
 /* When the post is saved, saves our custom data */
@@ -83,19 +88,6 @@ function wps_post_content_filter( $content ) {
     }
 
     return $content;
-}
-// ******
-
-//add_action('wp_insert_post', 'mk_set_default_custom_fields');
-function mk_set_default_custom_fields($post_id)
-{
-    if ( !isset($_GET['post_type']) || $_GET['post_type'] != 'page' ) {
- 
-        add_post_meta($post_id, __('URL to forum', 'wp-symposium'), '', true);
- 
-    }
- 
-    return true;
 }
 
 // Profile Menu hook
