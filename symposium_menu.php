@@ -2453,7 +2453,7 @@ function symposium_plugin_settings() {
 					<tr valign="top"> 
 					<td scope="row"><label for="wps_time_out">Script time out</label></td> 
 					<td><input name="wps_time_out" type="text" id="wps_time_out" style="width:50px" value="<?php echo $wps_time_out; ?>"/> 
-					<span class="description"><?php echo __('Maximum PHP script time out value.', 'wp-symposium'); ?></span></td> 
+					<span class="description"><?php echo __('Maximum PHP script time out value, set to 0 to disable this setting.', 'wp-symposium'); ?></span></td> 
 					</tr> 
 
 					<tr valign="top">

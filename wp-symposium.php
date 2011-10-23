@@ -188,7 +188,7 @@ if ( ( get_option("symposium_version") != WPS_VER && is_admin()) || (isset($_GET
 	symposium_alter_table("config", "ADD", "wps_panel_all", "varchar(2)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "wps_default_forum", "varchar(128)", "NOT NULL", "''");
 	symposium_alter_table("config", "ADD", "wps_use_gravatar", "varchar(2)", "NOT NULL", "''");
-	symposium_alter_table("config", "ADD", "wps_time_out", "int(11)", "NOT NULL", "'30'");
+	symposium_alter_table("config", "ADD", "wps_time_out", "int(11)", "NOT NULL", "'0'");
 	symposium_alter_table("config", "ADD", "wps_js_file", "varchar(20)", "NOT NULL", "'wps.min.js'");
 	symposium_alter_table("config", "ADD", "wps_css_file", "varchar(20)", "NOT NULL", "'wps.min.css'");
 	
@@ -1251,7 +1251,9 @@ function symposium_scriptsAction() {
 	define('WPS_CSS_FILE', $config->wps_css_file);
 
 	// Set script timeout
-	set_time_limit($config->wps_time_out);
+	if ($config->wps_time_out > 0) {
+		set_time_limit($config->wps_time_out);
+	}
 
 	
 	// Non-core
