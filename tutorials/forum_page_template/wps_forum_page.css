@@ -1,0 +1,83 @@
+/* WordPress style changes */
+
+.entry-header, .hentry, .entry-content { /* Force content to fit top and width */
+	margin:0px !important;
+	padding:0px !important;
+	width:100% !important;
+}
+
+.singular .entry-meta .edit-link a { /* Move edit button */
+    position: absolute;
+    bottom: auto;
+    right: 0px;
+    left: auto;
+    top: 25px;
+}
+
+/* General styles */
+
+.my-input-box {
+	background-color:#eee !important;
+	height:22px;
+	width:196px;
+}
+.my-submit-button {
+	background-color:#ccc;
+	height:30px;
+	width:70px;
+	font-size:12px;
+}
+
+/* Categories table */
+
+#my-forum-table {
+	clear: both;
+	border: 1px solid #333;
+	margin-bottom:20px;
+}
+
+.my-forum-title, .my-forum-title-topic {
+	width:30%;
+	font-weight: bold;
+	float: left;
+	padding: 6px;
+}
+.my-forum-title-topic {
+	width:60%;
+}
+
+.my-forum-row {
+	clear: both;
+	overflow: auto;
+	border-bottom: 1px solid #999;
+}
+
+.my-forum-row-title {
+	width:30%;
+	font-weight: bold;
+	float: left;
+	padding: 6px;
+	font-size:28px;
+	letter-spacing: -1px;
+}
+
+.my-forum-row-last-topic {
+	width:60%;
+	float: right;
+	padding: 6px;
+}
+
+.my-forum-row-last-topic-owner {
+	font-style: italic;
+	color: #999;
+}
+
+.my-forum-row-last-topic-started {
+	font-style: italic;
+	color: #aaa;
+}
+
+.my-forum-row-last-topic-avatar {
+	float:left;
+	margin-right:10px;
+}
