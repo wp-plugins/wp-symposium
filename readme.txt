@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 12.03.10
+Stable tag: 12.03.24 RC2.15
 
 Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
@@ -145,16 +145,16 @@ Q. There used to be a login and registration plugin, where did they go?
 A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login, however in hindsight it can be introduced in a more strategic manner. There is now a sidebar widget that allows members to login, or show links to the register/forgotten password WordPress pages. Once logged in, the user can see how any messages (including those unread) and friends (including new friend requests), etc with the same widget.
 
 Q. How can I get rid of the Powered By message?
-A. Because WP Symposium is covered by the GPL licence, you can edit and change the code - but remember you'll have to do it each time you upgrade. An easier way is to use the Templates via WP Admin -> WP Symposium -> Templates.
+A. Use the Templates via WP Admin -> WP Symposium -> Templates.
 
 Q. Because of all the nice AJAX, how can I get content submitted to search engines?
 A. Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
 
 Q. Which plugins may require a subscription fee?
-A. Currently the Groups, Facebook Connect, Gallery, Mobile/SEO and RSS Activity Feed require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
+A. Currently the Groups, Facebook Connect, Gallery, Mobile/SEO, Profile Plus and RSS Activity Feed require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
 
 Q. If I take out a Bronze membership and I decide I don't want WP Symposium, can I get a refund?
-A. If the plugins don't work on your server, with TwentyTen theme and all non-WPS plugins de-activated, then you will get a full refund, less any PayPal fees.
+A. If the plugins don't work on your server, with TwentyEleven theme and all non-WPS plugins de-activated, then you will get a full refund, less any PayPal fees.
 
 Q. What happens if I cancel my Bronze membership?
 A. After cancellation, you will no longer be able to download upgrades/patches or new plugins (that are provided to Bronze members) from www.wpsymposium.com. You can continue to use those plugins you have on your site, and upgrade the core WP Symposium plugins from www.wordpress.org. You may want to wait until the end of your year to benefit from membership for as long as possible. You will not be able to access your helpdesk account after cancelling.
