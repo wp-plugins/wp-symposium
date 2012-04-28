@@ -1449,9 +1449,13 @@ jQuery(document).ready(function() {
 				menu_id = menu_id.replace(/->/g, "_");
 			} else {
 				ajax_part = ajax_part.replace(/_me/g, "");
-	            var ajax_path = symposium.plugin_url+"ajax/symposium_"+ajax_part+"_functions.php";
+				if ( (ajax_part == 'gallery') || (ajax_part == 'plus') || (ajax_part == 'events') || (ajax_part == 'lounge') ) {
+		            var ajax_path = symposium.plugin_url+"ajax/symposium_"+ajax_part+"_functions.php";
+				} else {
+		            var ajax_path = symposium.plugin_url+"../wp-symposium-"+ajax_part+"/ajax/symposium_"+ajax_part+"_functions.php";
+				}
 			}
-      	
+
       	}
 
 		jQuery.ajax({
