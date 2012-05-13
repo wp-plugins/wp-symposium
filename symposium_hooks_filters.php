@@ -1,32 +1,5 @@
 <?php
 
-add_filter( 'symposium_directory_member_filter', 'wps_extra_info', 10, 2 );
-
-function wps_extra_info( $html, $uid ) {
-
- global $wpdb;
-
- // Include the WPS User class
- require_once(WP_PLUGIN_DIR.'/wp-symposium/class.wps_user.php');
- $wps_user = new wps_user($uid);
-
- // Start the additional content (in a DIV)
- $add = '<div>';
-
- // Membership level (example of a WP Sympoium extended field, with a slug of 'membership')
- $membership = $wps_user->get_user_meta($uid, 'membership');
- if ($membership == '') $membership = 'None';
- $add .= 'Membership: '.$membership.'<br />'; 
-
- // End the additional content (the DIV)
- $add .= '</div>';
- 
-
- // Return the sent content, plus the additional content
- return $html.$add;
- 
-}
-
 
 // *************************************** HOOKS AND FILTERS ***************************************
 
