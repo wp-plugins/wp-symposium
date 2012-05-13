@@ -1248,7 +1248,7 @@ function get_symposium_meta($uid, $meta, $legacy=false) {
 		// create if not yet there
 		if ($wpdb->get_var($wpdb->prepare("SELECT meta_key FROM ".$wpdb->base_prefix."usermeta WHERE meta_key = 'symposium_extended_city' AND user_id = ".$uid)) != 'symposium_extended_city') create_wps_usermeta($uid);
 
-		if ($meta == 'extended_city') $meta = 'city';
+		if ($meta == 'extended_city') $meta = 'extended_city';
 		if ($meta == 'extended_country') $meta = 'country';
 		if ($value = $wpdb->get_var($wpdb->prepare("SELECT ".$meta." FROM ".$wpdb->base_prefix.'symposium_usermeta'." WHERE uid = ".$uid)) ) {
 			return $value;

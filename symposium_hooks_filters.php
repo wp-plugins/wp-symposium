@@ -1,35 +1,57 @@
 <?php
 
+/*
+city
+country
+description
+display_name
+dob_day
+dob_month
+dob_year
+last_activity
+last_login
+previous_login
+signature
+user_email
+user_login
+*/
+
 add_filter( 'symposium_directory_member_filter', 'wps_extra_info', 10, 2 );
+
 function wps_extra_info( $html, $uid ) {
 
-	global $wpdb;
-	
-	// Include the WPS User class
-	require_once(WP_PLUGIN_DIR.'/wp-symposium/class.wps_user.php');
-	$wps_user = new wps_user($uid);
-	
-	// Start the additional content (in a DIV)
-	$add = '<div>';
-	
-/* JUST IN CASE I FORGET TO DELETE FROM RELEASE!
-		// Email (example of core user information)
-		$add .= 'Email: '.$wps_user->get_user_email().'<br />';
-		
-		// Membership level (example of a WP Sympoium extended field, with a sug of 'membership')
-		$membership = $wps_user->get_user_meta($uid, 'membership');
-		if ($membership == '') $membership = 'None';
-		$add .= 'Membership: '.$membership.'<br />';
+ global $wpdb;
 
-*/
-		
-	
-	// End the additional content (the DIV)
-	$add .= '</div>';
+ // Include the WPS User class
+ require_once(WP_PLUGIN_DIR.'/wp-symposium/class.wps_user.php');
+ $wps_user = new wps_user($uid);
 
-	// Return the sent content, plus the additional content
-    return $html.$add;
+ // Start the additional content (in a DIV)
+ $add = '<div>';
+
+ // Email (example of core user information)
+ $add .= 'Date of birth: '.$wps_user->get_dob_day().'/'.$wps_user->get_dob_month().'/'.$wps_user->get_dob_year().'<br />';
+ $add .= 'City: '.$wps_user->get_city().'<br />';
+ $add .= 'Country: '.$wps_user->get_country().'<br />';
+ $add .= 'Email: '.$wps_user->get_user_email().'<br />';
+ $add .= 'Display name: '.$wps_user->get_display_name().'<br />';
+ $add .= 'User login: '.$wps_user->get_user_login().'<br />';
+ $add .= 'Latest activity: '.$wps_user->get_latest_activity().'<br />';
+
+ // Membership level (example of a WP Sympoium extended field, with a sug of 'membership')
+ $membership = $wps_user->get_user_meta($uid, 'membership');
+ if ($membership == '') $membership = 'None';
+ $add .= 'Membership: '.$membership.'<br />'; 
+
+ // End the additional content (the DIV)
+ $add .= '</div>';
+ 
+
+ // Return the sent content, plus the additional content
+ return $html.$add;
+ 
 }
+
 
 // *************************************** HOOKS AND FILTERS ***************************************
 

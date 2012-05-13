@@ -15,8 +15,8 @@ class wps_user {
 		$this->last_name = $user_info->last_name;							// WordPress last name
 		$this->user_login = $user_info->user_login;							// WordPress user login
 		$this->user_email = $user_info->user_email;							// WordPress user email address
-		$this->city = get_symposium_meta($id, 'city');						// City
-		$this->country = get_symposium_meta($id, 'country');				// Country
+		$this->city = get_symposium_meta($id, 'extended_city');				// City
+		$this->country = get_symposium_meta($id, 'extended_country');		// Country
 		$this->avatar = '';													// Avatar (readonly)
 		$this->latest_activity = '';										// Most recent activity post
 		$this->activity_privacy = get_symposium_meta($id, 'wall_share');	// Privacy for sharing activity
