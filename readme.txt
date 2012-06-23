@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.3.2
-Stable tag: 12.06.16
+Stable tag: 12.06.23
 
 Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
@@ -75,7 +75,7 @@ Tested with PHP 5.
 
 * go to Plugins->Add New and search for "Symposium"
 * click on Install below WP-Symposium
-* activate the plugins you want to use (core plugin MUST remain activated, and be activated first)
+* activate the plugins you want to use (core plugin MUST remain activated)
 * important - go to the Installation page to complete the setup
 
 *Manual installation*
@@ -122,7 +122,7 @@ Q. What's the one thing I probably haven't done?
 A. Visited the Installation page to update WP Symposium's internal paths. Check out www.wpswiki.com, in particular the "Try this first" page.
 
 Q. The admin side works, but the forum (or another plugin) doesn't appear?
-A. Check you have `[symposium-forum]` on your page, with a hyphen, not an underscore. Replace [symposium-forum] with the shortcode of the plugin.
+A. Check you have `[symposium-forum]` on your page, with a hyphen, not an underscore. Replace `[symposium-forum]` with the shortcode of the plugin.
 
 Q. I've done that, but the forum (or another plugin) still doesn't appear?
 A. Have you put `[symposium-forum]` on a WordPress page, not an HTML file? 
@@ -137,7 +137,7 @@ Q. Are there images other than the usual smilies?
 A. Yes, if you look in the smilies folder you can use any of the images there by putting {{xxx}} around the first part of the filename, eg: {{rofl}} would show rofl.png - to see the full list, go to the Smilies page at www.wpsymposium.com.
 
 Q. Will WP Symposium work on WPMU/WPMS?
-A. As from v0.37, yes, WordPress Multi-site is supported, although it is not as widely used as the single site installation, and hence may not be as stable (due to less user tests in a live environment).
+A. Yes, WordPress Multi-site is supported, although it is not as widely used as the single site installation.
 
 Q. I don't see friends when they're online, can't edit forum posts or read all mail in my inbox. I see stuff, but not much works...
 A. Sounds like AJAX isn't working, probably due to a Javascript error. Check out the "Try this first" page at www.wpswiki.com.
@@ -149,10 +149,10 @@ Q. How can I get rid of the Powered By message?
 A. Use the Templates via WP Admin -> WP Symposium -> Templates.
 
 Q. Because of all the nice AJAX, how can I get content submitted to search engines?
-A. Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
+A. There is a BETA (installation page) to use permalinks, all feedback welcome! Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
 
 Q. Which plugins may require a subscription fee?
-A. Currently the Groups, Facebook Connect, Gallery, Mobile/SEO, Profile Plus and RSS Activity Feed require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
+A. Currently the Groups, Facebook Connect, Events, Gallery, Mobile/SEO, Profile Plus and RSS Activity Feed require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
 
 Q. If I take out a Bronze membership and I decide I don't want WP Symposium, can I get a refund?
 A. If the plugins don't work on your server, with TwentyEleven theme and all non-WPS plugins de-activated, then you will get a full refund, less any PayPal fees.
@@ -173,4 +173,4 @@ To see what's coming next (Bronze members can vote!) take a look at http://www.w
 
 == Upgrade Notice ==
 
-Latest news and information on http://www.wpsymposium.com/blog, also posted on WP Symposium Facebook Group and Twitter account.
+Latest news and information on http://www.wpsymposium.com/blog, also posted on WP Symposium Facebook Group, Twitter account and LinkedIn.
