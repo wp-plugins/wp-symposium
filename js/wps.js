@@ -1,68 +1,71 @@
 function symposium_plupload() {
 
-//             runtimes : 'html5,flash,silverlight,gears,html4', 
+// runtimes : 'html5,flash,silverlight,gears,html4', 
+
+	if (jQuery('#symposium_activity_uploader').length) {
 	
-	// Upload Form
-    jQuery(function() {
-        // Settings ////////////////////////////////////////////////
-        var uploader = new plupload.Uploader({
-            runtimes : 'html5', 
-            flash_swf_url : '/wp-includes/js/plupload/plupload.flash.swf',
-            silverlight_xap_url : '/wp-includes/js/plupload/plupload.silverlight.xap',
-            browse_button : 'pickfiles', 
-            max_file_size : '1mb', 
-            urlstream_upload : true, 
-        	multipart : true,
-            multi_selection: false, 
-			resize : {width : 300, height : 300, quality : 90}, 
-            container : 'symposium_activity_uploader', 
-            url : '/wp-content/plugins/wp-symposium/ajax/plupload_activity_image.php', 
-            filters : [ {title : "Image files", extensions : "jpg,gif,png"} ] 
-        });
+		// Upload Form
+	    jQuery(function() {
+	        // Settings ////////////////////////////////////////////////
+	        var uploader = new plupload.Uploader({
+	            runtimes : 'html5', 
+	            flash_swf_url : '/wp-includes/js/plupload/plupload.flash.swf',
+	            silverlight_xap_url : '/wp-includes/js/plupload/plupload.silverlight.xap',
+	            browse_button : 'pickfiles', 
+	            max_file_size : '1mb', 
+	            urlstream_upload : true, 
+	        	multipart : true,
+	            multi_selection: false, 
+				resize : {width : 300, height : 300, quality : 90}, 
+	            container : 'symposium_activity_uploader', 
+	            url : '/wp-content/plugins/wp-symposium/ajax/plupload_activity_image.php', 
+	            filters : [ {title : "Image files", extensions : "jpeg,jpg,gif,png"} ] 
+	        });
+	
+			uploader.bind('Init', function(up, params) {
+				if (symposium.debug != 'on') {
+		        	jQuery('#symposium_filelist').html("");
+				} else {
+		        	jQuery('#symposium_filelist').html("<div>Current runtime: " + params.runtime + "</div>");
+				}
+				jQuery('#symposium_activity_uploader').show();
+	    	});
+	    	 
+	        // Init ////////////////////////////////////////////////////
+	        uploader.init(); 
+	 
+	        // Selected Files //////////////////////////////////////////
+	        uploader.bind('FilesAdded', function(up, files) {
+	            jQuery.each(files, function(i, file) {
+	                jQuery('#symposium_filelist').append('<div class="addedFile" id="' + file.id + '">' + file.name + '</div>');
+	            });
+	            up.refresh(); 
+	            uploader.start();
+	        });
+	 
+	        // Error Alert /////////////////////////////////////////////
+	        uploader.bind('Error', function(up, err) {
+	            alert("Error: " + err.code + ", Message: " + err.message + (err.file ? ", File: " + err.file.name : "") + "");
+	            up.refresh(); 
+	        });
+	  
+	        // Progress bar ////////////////////////////////////////////
+	        uploader.bind('UploadProgress', function(up, file) {
+	            var progressBarValue = up.total.percent;
+	            jQuery('#progressbar').fadeIn().progressbar({
+	                value: progressBarValue
+	            });
+	            jQuery('#progressbar .ui-progressbar-value').html('<span class="progressTooltip" style="padding:4px;font-size:10px">' + up.total.percent + '%</span>');
+	        });
+	 
+	        // Close window after upload ///////////////////////////////
+	        uploader.bind('UploadComplete', function() {
+	            jQuery('.uploader').fadeOut('slow');
+	        });
+	  
+	    }); // end of the upload form configuration
 
-		uploader.bind('Init', function(up, params) {
-			if (symposium.debug != 'on') {
-	        	jQuery('#symposium_filelist').html("");
-			} else {
-	        	jQuery('#symposium_filelist').html("<div>Current runtime: " + params.runtime + "</div>");
-			}
-			jQuery('#symposium_activity_uploader').show();
-    	});
-    	 
-        // Init ////////////////////////////////////////////////////
-        uploader.init(); 
- 
-        // Selected Files //////////////////////////////////////////
-        uploader.bind('FilesAdded', function(up, files) {
-            jQuery.each(files, function(i, file) {
-                jQuery('#symposium_filelist').append('<div class="addedFile" id="' + file.id + '">' + file.name + '</div>');
-            });
-            up.refresh(); 
-            uploader.start();
-        });
- 
-        // Error Alert /////////////////////////////////////////////
-        uploader.bind('Error', function(up, err) {
-            alert("Error: " + err.code + ", Message: " + err.message + (err.file ? ", File: " + err.file.name : "") + "");
-            up.refresh(); 
-        });
-  
-        // Progress bar ////////////////////////////////////////////
-        uploader.bind('UploadProgress', function(up, file) {
-            var progressBarValue = up.total.percent;
-            jQuery('#progressbar').fadeIn().progressbar({
-                value: progressBarValue
-            });
-            jQuery('#progressbar .ui-progressbar-value').html('<span class="progressTooltip" style="padding:4px;font-size:10px">' + up.total.percent + '%</span>');
-        });
- 
-        // Close window after upload ///////////////////////////////
-        uploader.bind('UploadComplete', function() {
-            jQuery('.uploader').fadeOut('slow');
-        });
-  
-    }); // end of the upload form configuration
-
+	}
 }
   
 jQuery(document).ready(function() { 	
@@ -1411,7 +1414,7 @@ jQuery(document).ready(function() {
 		
 	// Act on "view" parameter on first page load
 	if ( (jQuery("#profile_body").length) && (symposium.embed != 'on') ) {
-
+		
 			var menu_id = 'menu_'+symposium.view;
 
 			if (menu_id == 'menu_in') { menu_id = 'menu_friends'; }
