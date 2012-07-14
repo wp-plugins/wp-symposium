@@ -236,18 +236,4 @@ if ($action == "symposium_test_ajax") {
 	exit;
 }
 
-if ($action == "symposium_motd") {
-
-	global $wpdb;
-
-	// Update motd flag
-	if (get_option('symposium_motd') == 'on') {
-		update_option('symposium_motd', '');
-	} else {
-		update_option('symposium_motd', 'on');
-	}
-	
-	exit;	
-}
-
 ?>
