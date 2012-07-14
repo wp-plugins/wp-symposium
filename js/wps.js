@@ -5411,42 +5411,6 @@ jQuery(document).ready(function() {
  		
 	});
 
-	// MOTD
-	if (jQuery(".hide_motd").length) {	
-		jQuery('.hide_motd').click(function(){
-			jQuery("#wps-welcome-panel").slideUp("slow");
-			jQuery.ajax({
-				url: symposium.plugin_url+"ajax/symposium_ajax_functions.php", 
-				type: "POST",
-				data: ({
-					action:"symposium_motd"
-					}),
-			    dataType: "html",
-				async: true,
-				success: function(str){
-					window.location.href="admin.php?page="+symposium.wps_admin_page;
-				}				
-				
-	   		});	
-		});
-	}	
-	if (jQuery("#show_motd").length) {	
-		jQuery('#show_motd').click(function(){
-			jQuery.ajax({
-				url: symposium.plugin_url+"ajax/symposium_ajax_functions.php", 
-				type: "POST",
-				data: ({
-					action:"symposium_motd"
-					}),
-			    dataType: "html",
-				async: true,
-				success: function(str){
-					window.location.href="index.php";
-				}				
-				
-	   		});	
-		});
-	}				
 
 // For Notification Bar (chat windows)
 function do_chat_check() {
