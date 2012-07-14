@@ -386,31 +386,37 @@ function symposium_admin_warnings() {
     if (get_option('symposium_motd') != 'on' && (!(isset($_GET['page']) && $_GET['page'] == 'symposium_welcome'))) {
 
 		if ( current_user_can( 'edit_theme_options' ) ) {   
-			symposium_plugin_welcome();
-		}
-		
-		// Check for legacy plugin folders	    
-		$list = '';
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-alerts')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-alerts<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-events')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-events<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-facebook')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-facebook<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-gallery')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-gallery<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-groups')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-groups<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-lounge')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-lounge<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-mobile')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-mobile<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-plus')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-plus<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-mailinglist')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-mailinglist<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-rss')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-rss<br />'; }
-		if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-yesno')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-yesno<br />'; }
-		if ($list != '') {
-			echo '<div class="updated" style="margin-top:15px">';
-			echo "<strong>".__("WP Symposium", "wp-symposium")."</strong><br /><div style='padding:4px;'>";
-			echo __('Please remove the following folders via FTP.<br />Do <strong>NOT</strong> remove them via the plugins admin page as this could delete data from your database:', 'wp-symposium').'<br /><br />';
-			echo $list;
-			echo '</div></div>';
+			if (isset($_POST['symposium_hide_motd']) && $_POST['symposium_hide_motd'] == 'Y') {
+				if (wp_verify_nonce($_POST['symposium_hide_motd_nonce'],'symposium_hide_motd_nonce')) {
+					update_option('symposium_motd', 'on');
+				}
+			} else {
+				symposium_plugin_welcome();
+			}
 		}
 		
     }
+		
+	// Check for legacy plugin folders	    
+	$list = '';
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-alerts')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-alerts<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-events')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-events<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-facebook')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-facebook<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-gallery')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-gallery<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-groups')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-groups<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-lounge')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-lounge<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-mobile')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-mobile<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-plus')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-plus<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-mailinglist')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-mailinglist<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-rss')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-rss<br />'; }
+	if (file_exists(WP_PLUGIN_DIR.'/wp-symposium-yesno')) { $list .= WP_PLUGIN_DIR.'/wp-symposium-yesno<br />'; }
+	if ($list != '') {
+		echo '<div class="updated" style="margin-top:15px">';
+		echo "<strong>".__("WP Symposium", "wp-symposium")."</strong><br /><div style='padding:4px;'>";
+		echo __('Please remove the following folders via FTP.<br />Do <strong>NOT</strong> remove them via the plugins admin page as this could delete data from your database:', 'wp-symposium').'<br /><br />';
+		echo $list;
+		echo '</div></div>';
+	}
     
 }
 
@@ -446,7 +452,6 @@ function symposium_widget() {
 		
 	echo "</td><td valign='top'>";
 
-	
 		echo '<table>';
 			echo '<tr><td colspan="2" style="padding:4px"><strong>'.__('Plugins', 'wp-symposium').'</strong></td></tr>';
 			echo '<tr><td colspan="2" style="padding:4px">';
@@ -465,7 +470,7 @@ function symposium_widget() {
 				echo __('Profile not activated', 'wp-symposium');
 			}
 			echo "</td></tr>";
-
+	
 			echo '<tr><td colspan="2" style="padding:4px">';
 			if (function_exists('symposium_mail')) {
 				echo '<a href="'.symposium_get_url('mail').'">'.__('Go to Mail', 'wp-symposium').'</a>';
@@ -494,9 +499,6 @@ function symposium_widget() {
 
 	echo "</td></tr></table>";
 
-	if (get_option('symposium_motd')) {
-		echo '<a id="show_motd" href="javascript:void(0)">'.__('Show the WP Symposium welcome message', 'wp-symposium').'</a>';
-	}	
 }
 
 function symposium_deactivate() {

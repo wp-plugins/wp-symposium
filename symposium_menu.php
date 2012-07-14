@@ -464,7 +464,13 @@ function symposium_plugin_welcome() {
 			<div id="wps-welcome-panel" class="welcome-panel" style="margin-top:40px">
 				<div id="motd" class="welcome-panel-content">
 	
-				<a class="hide_motd welcome-panel-close" href="javascript:void(0)"><?php _e('Dismiss'); ?></a>
+				<form action="index.php" method="post">
+				<div style="float:right;margin:-20px 0 0 -15px">
+					<input type="submit" class="button-primary" value="<?php _e("Dismiss"); ?>" />
+					<input type="hidden" name="symposium_hide_motd" value="Y" />
+					<?php wp_nonce_field('symposium_hide_motd_nonce','symposium_hide_motd_nonce'); ?>
+				</div>
+				</form>
 		    
 				<div style="float:left; width:180px; text-align:center;">
 				<img src="<?php echo WP_PLUGIN_URL; ?>/wp-symposium/images/logo_small.png" /><br />
@@ -529,8 +535,6 @@ function symposium_plugin_welcome() {
 					</div>
 				</div>
 	
-				<p><?php _e( 'Want to hide this welcome screen?', 'wp-symposium' ); ?> <a class="hide_motd" href="javascript:void(0)"><?php _e('Dismiss it!', 'wp-symposium'); ?></a></p>
-				
 			</div>		 
 		</div>
 		<?php
@@ -3230,12 +3234,13 @@ function symposium_plugin_profile() {
 
 						// Extended Fields table
 						$extensions = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."symposium_extended ORDER BY extended_order, extended_name"));
-						$sql = " FROM ".$wpdb->prefix."usermeta WHERE meta_key NOT LIKE 'symposium_%'";
+						$sql = " WHERE meta_key NOT LIKE 'symposium_%'";
 						$sql .= " AND meta_key NOT LIKE '%wp_%'";
 						$sql .= " AND meta_key NOT LIKE '%level%'";
 						$sql .= " AND meta_key NOT LIKE '%role%'";
 						$sql .= " AND meta_key NOT LIKE '%capabilit%'";
-						$rows = $wpdb->get_results("SELECT DISTINCT meta_key".$sql);
+						$sql = apply_filters( 'symposium_query_wp_metadata_hook', $sql );						
+						$rows = $wpdb->get_results("SELECT DISTINCT meta_key FROM ".$wpdb->prefix."usermeta".$sql);
 						
 						echo '<style>.widefat td { border:0 } </style>';
 						echo '<table class="widefat">';
