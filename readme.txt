@@ -5,8 +5,8 @@ Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
-Tested up to: 3.4.1
-Stable tag: 12.09
+Tested up to: 3.4.2
+Stable tag: 12.10
 
 Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
@@ -64,7 +64,7 @@ At www.wpsymposium.com or the WPS Wiki at www.wpswiki.com.
 
 == Installation ==
 
-An admin guide and more information is available at www.wpswiki.com.
+More information is available at www.wpswiki.com, and a work-in-progress admin guide is available at https://dl.dropbox.com/u/49355018/wps.pdf
 
 Important - after activating for the first time, and after changing any WP Symposium shortcodes, make sure you visit the WP Symposium -> Installation page that updates internal paths.
 
@@ -84,6 +84,10 @@ Tested with PHP 5.
 * unzip the contents of the ZIP file in your /wp-content/plugins folder
 * activate the plugins you want via Plugins on the WordPress admin dashboard (including the core plugin)
 * important - go to the Installation page to complete the setup
+
+*Getting latest version*
+
+Nightly builds and release candidates are available at www.wpsymposium.com/downloadinstall which can be installed using the manual process above.
 
 *Adding WP Symposium plugins to your site*
 
@@ -168,7 +172,7 @@ A. For $99 a year, we will do a full install on your server (if it won't work fo
 
 == Changelog ==
 
-From WP Symposium's first introduction to the WordPress repository, right up to now, releases are generally made on a weekly basis. The best way to keep abreast of changes is via the release notes at http://www.wpsymposium.com/blog - they are important to read as they provide information on each release.
+From WP Symposium's first introduction to the WordPress repository, right up to now, releases are regularly made following the release cycle. The best way to keep abreast of changes is via the release notes at http://www.wpsymposium.com/blog - they are important to read as they provide information on each release.
 To see what's coming next (Bronze members can vote!) take a look at http://www.wpsymposium.com/voting.
 
 == Upgrade Notice ==
