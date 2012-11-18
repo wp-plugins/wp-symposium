@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: WP Symposium Yes/No vote Widget
+Plugin Name: WP Symposium A Social Network For WordPress
 Plugin URI: http://www.wpsymposium.com
 Description: Adds a WP Symposium Widget to display a Yes/No vote with chart (bar or pie). Requires a licence from http://www.jscharts.com to remove small JS Charts logo. Requires WP Symposium core plugin to be activated.   
 Version: 12.11

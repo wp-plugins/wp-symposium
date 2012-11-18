@@ -2,7 +2,7 @@
 /*
 Plugin Name: WP Symposium A Social Network For WordPress
 Plugin URI: http://www.wpsymposium.com
-Description: Core code for WP Symposium, this plugin must always be activated, before activating other WP Symposium plugins.
+Description: <strong>Core Plugin code for WP Symposium, this plugin must always be activated, before activating other WP Symposium plugins.</strong>
 Version: 12.11
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
