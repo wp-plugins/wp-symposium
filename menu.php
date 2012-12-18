@@ -572,7 +572,7 @@ function __wps__plugin_welcome() {
 			    <h3><?php echo WPS_WL; ?></h3>		    
 			    
 				<p class="about-description">
-				<?php echo sprintf(__( 'Thank you for installing %s v%s, welcome aboard! Go ahead and visit the <a href="%s">Installation page</a> to complete your installation/upgrade.' ), WPS_WL, WPS_VER, "admin.php?page=symposium_debug"); ?>
+				<?php echo sprintf(__( 'Thank you for installing %s v%s, welcome aboard! Go ahead and visit the <a href="%s">Installation page</a> to complete your installation/upgrade.', WPS_TEXT_DOMAIN ), WPS_WL, WPS_VER, "admin.php?page=symposium_debug"); ?>
 			    <?php
 			    $ver = str_replace('.', '-', WPS_VER);
 			    if (strpos($ver, ' ') !== false) $ver = substr($ver, 0, strpos($ver, ' ')); 
@@ -586,31 +586,31 @@ function __wps__plugin_welcome() {
 						<h4><?php _e( 'Getting Started' ); ?></h4>
 						<?php echo sprintf(__( 'First time setting up %s?', WPS_TEXT_DOMAIN ), WPS_WL); ?><br />
 						<ul>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-add-page" href="%s">Activate some features</a>' ), esc_url( admin_url('admin.php?page=symposium_debug') ) ); ?></li>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-add-page" href="%s">Add to your site pages</a>' ), esc_url( admin_url('admin.php?page=symposium_debug') ) ); ?></li>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-widgets-menus" href="%s">Check your Settings</a>' ), esc_url( admin_url('admin.php?page=symposium_settings') ) ); ?></li>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-write-blog" href="%s">Pick a color scheme</a>' ), esc_url( admin_url('admin.php?page=symposium_styles') ) ); ?></li>
-							<?php if (!__wps__is_plus()) echo sprintf( __( '<li><a class="welcome-icon welcome-learn-more" href="%s" target="_blank">Upgrade to Bronze membership</a>' ), esc_url( 'http://www.wpsymposium.com/membership').'</li>'); ?>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-add-page" href="%s">%s</a>' ), esc_url( admin_url('admin.php?page=symposium_debug') ), __('Activate some features', WPS_TEXT_DOMAIN) ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-add-page" href="%s">%s</a>' ), esc_url( admin_url('admin.php?page=symposium_debug') ), __('Add to your site pages', WPS_TEXT_DOMAIN) ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-widgets-menus" href="%s">%s</a>' ), esc_url( admin_url('admin.php?page=symposium_settings') ), __('Add to your site pages', WPS_TEXT_DOMAIN) ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-write-blog" href="%s">%s</a>' ), esc_url( admin_url('admin.php?page=symposium_styles') ), __('Pick a color scheme', WPS_TEXT_DOMAIN) ); ?></li>
+							<?php if (!__wps__is_plus()) echo '<li>'.sprintf( __( '<a class="welcome-icon welcome-learn-more" href="%s" target="_blank">%s</a>' ), esc_url( 'http://www.wpsymposium.com/membership'), __('Upgrade to Bronze membership', WPS_TEXT_DOMAIN)).'</li>'; ?>
 						</ul>						
 					</div>
 					<div class="welcome-panel-column">
 						<h4><?php _e('Upgrading?', WPS_TEXT_DOMAIN) ?></h4>
 						<?php echo __('You will need to:', WPS_TEXT_DOMAIN); ?>
 						<ul>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-widgets-menus" href="%s">Ensure %s plugin is activated</a>' ), esc_url( admin_url('plugins.php') ), WPS_WL ); ?></li>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-add-page" href="%s">Activate features on the Installation page</a>' ), esc_url( admin_url('admin.php?page=symposium_debug') ) ); ?></li>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-widgets-menus" href="%s">Reset your Profile Page Header template</a>' ), esc_url( admin_url('admin.php?page=symposium_templates') ) ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-widgets-menus" href="%s">%s</a>' ), esc_url( admin_url('plugins.php') ), __('Ensure the plugin is activated', WPS_TEXT_DOMAIN) ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-add-page" href="%s">%s</a>' ), esc_url( admin_url('admin.php?page=symposium_debug') ), __('Activate features on the Installation page', WPS_TEXT_DOMAIN) ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-widgets-menus" href="%s">%s</a>' ), esc_url( admin_url('admin.php?page=symposium_templates') ), __('Reset your Profile Page Header template', WPS_TEXT_DOMAIN) ); ?></li>
 						</ul>
 						<?php echo sprintf(__( 'It\'s <em>very important</em> that you read the <a href="%s" target="_blank">release notes</a>.', WPS_TEXT_DOMAIN ), "http://www.wpsymposium.com/2012/11/release-information-for-v12-12/"); ?><br />
                     </div>
 					<div class="welcome-panel-column welcome-panel-last">
 						<h4><?php _e( 'Need a little extra help?', WPS_TEXT_DOMAIN ); ?></h4>
 						<ul>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-view-site" href="%s" target="_blank">Frequently Asked Questions</a>' ), esc_url( 'http://www.wpsymposium.com/faqs' ) ); ?></li>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-learn-more" href="%s" target="_blank">Try this first!</a>' ), esc_url('http://www.wpswiki.com/index.php?title=Try_this_first') ); ?></li>
-                        	<li><?php echo sprintf( __( '<a class="welcome-icon welcome-learn-more" href="%s" target="_blank">Read the admin guide</a>' ), esc_url( 'https://dl.dropbox.com/u/49355018/wps.pdf' ) ); ?></li>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-learn-more" href="%s" target="_blank">Visit the Forum</a>' ), esc_url('http://www.wpsymposium.com/discuss') ); ?></li>
-							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-learn-more" href="%s" target="_blank">Check out the tutorials</a>' ), esc_url('http://www.wpsymposium.com/tutorials') ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-view-site" href="%s" target="_blank">%s</a>' ), esc_url( 'http://www.wpsymposium.com/faqs' ), __('Frequently Asked Questions', WPS_TEXT_DOMAIN) ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-learn-more" href="%s" target="_blank">%s</a>' ), esc_url('http://www.wpswiki.com/index.php?title=Try_this_first'), __('Try this first!', WPS_TEXT_DOMAIN) ); ?></li>
+                        	<li><?php echo sprintf( __( '<a class="welcome-icon welcome-learn-more" href="%s" target="_blank">%s</a>' ), esc_url( 'https://dl.dropbox.com/u/49355018/wps.pdf' ), __('Read the admin guide', WPS_TEXT_DOMAIN) ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-learn-more" href="%s" target="_blank">%s</a>' ), esc_url('http://www.wpsymposium.com/discuss'), __('Visit the Forum', WPS_TEXT_DOMAIN) ); ?></li>
+							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-learn-more" href="%s" target="_blank">%s</a>' ), esc_url('http://www.wpsymposium.com/tutorials'), __('Check out the tutorials', WPS_TEXT_DOMAIN) ); ?></li>
 						</ul>
                 	</div>
 				</div>
