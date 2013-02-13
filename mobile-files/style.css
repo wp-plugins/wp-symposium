@@ -1,0 +1,82 @@
+html, body {
+	margin: 0;
+}
+	
+* {
+	font-family: arial,helvetica;
+	font-size: 20px;
+}
+
+.home_link {
+	float: right;
+	font-weight: normal;
+}
+
+.subheading {
+	margin: 0 0 20px 0;
+	padding: 6px;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+	background-color:#efefef;
+}
+
+#header, #footer {
+	padding: 6px;
+	background-color: #aaa;
+	color: #fff;
+}
+#header {
+	font-weight: bold;
+}
+#footer {
+	margin-top:10px;
+}
+
+#footer a {
+	color: #fff;
+}
+
+li {
+	margin: 0 0 20px 0;
+}
+.line {
+	margin: 0 0 20px 10px;
+}
+
+#topic_post {
+	margin: 10px 0 10px 0;
+	padding: 6px;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+	font-weight: bold;
+	background-color:#efefef;
+}
+	
+.topic_started, .reply {
+	font-style: italic;
+	color: #aaa;
+	padding-bottom:20px;
+}
+
+.submit {
+	margin-bottom:20px;
+}
+
+.input {
+	width: 95%;
+	border: 1px solid #000;
+	margin-bottom:5px;
+}
+textarea {
+	width:95%;
+	height:200px;
+	border:1px solid #000;
+	margin-bottom:5px;
+}
+
+.form {
+	border: 1px solid #aaa;
+	padding: 20px;
+	margin: 20px;
+	width: 80%;
+}

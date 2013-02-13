@@ -1,0 +1,87 @@
+*************************
+* Change log for v13.02 *
+*************************
+
+_____Enhancements_____
+
+PROFILE
+* Include Extended Fields in profile page header [1]
+* Date of birth format can now be set via profile options (if day, month and year have all been set)
+* Added __wps__profile_born filter to allow formatting of date of birth/age on profile page
+* Added profile_activity_image and profile_activity_gallery_first_image classes to allow control height
+
+FORUM
+* New forum topic form defaults to current category
+* Admin's can now create new forum topics even if blocked to other users
+* Added 'Everyone' option to overall forum view/reply/comment permissions
+* Disabling replies now also disables comments
+* Message shown at bottom of forum topic if replies not allowed
+
+MAIL
+* Bulk options now provided (reset your "Mail Page: Tray Item" template)
+* Delete selected mail items
+* Mark all mail as read (inbox only)
+* Delete all mail
+* Recover all deleted mail
+* Small improvement to layout of mail message
+
+BRONZE: PANEL (CHAT) [2]/[3]
+* Chat windows completely re-written for stability
+* Smileys supported and URLs (that start with www.) converted into hyperlinks
+* New messages cause sound notification and title bar colour change
+* Chat windows can be turned into a separate browser chat window (so can leave the site/move around)
+* User's can select their own notification sound via the profile community settings
+* Click on chat name to go to their page
+
+BRONZE: PROFILE PLUS
+* Post an image to your activity (optional feature, set on 'Plus' admin options)
+* Simplified management of vertical menu when scrolling (just one value now)
+
+BRONZE: GROUPS
+* Horizontal menu with drop-down items now available for group page (activate on 'Plus' admin options)
+
+BRONZE: REPLY BY EMAIL
+* Displays next scheduled run time on admin options page
+* Added option in admin to check for waiting replies, but not actually process them
+* Added option to delete all from POP3 mailbox (to clear out)
+* Improved flow for email notifications
+
+BRONZE: FACEBOOK CONNECT
+Updated admin page with examples
+Replaced method of retrieving Facebook User ID
+
+CUBEPOINTS SUPPORT
+* Full support for CubePoints, see http://www.wpsymposium.com/2012/02/wp-symposium-cubepoints-module
+
+OTHER
+* Tested up to WordPress v3.5.1
+* Added URL to "Report" sent to site administrator
+* Removed border on DIV in default email template (as looked odd when replying to forum via email)
+* Moved inclusion of javascript translations to bottom of <body> tag, just before it's closed
+* Added additional reminder after installation/upgrade to visit installation page
+* Moved translations from dialogs.php to localized string (to avoid putting into DOM)
+* Moved PDF admin guide to online pages at www.wpsymposium.com
+* Added WPS icon to admin menu
+
+_____Bug_Fixes_____
+
+* Fixed link between extended fields and WordPress metadata (see note #1 below)
+* Improves stablity of table creation on installation
+* Ensures a 100% removal of WPS when uninstalling (all options, usermeta data, tables, etc).
+* Corrected www.wp__wps__.com in powered-by messages to www.wpsymposium.com
+* Fixed warnings when running WordPress in debug mode
+* Fixed bug for editing starting post in the forum
+* Fixed bug with WYSIWYG editor width
+* AJAX versions of widgets now loading okay, and not holding up page load
+* Default friends are now actual friends, not just a request
+* Gallery on WPMS installation bugs fixed
+* Events on WPMS installation bugs fixed
+* Friendship messages now sent from all requests
+* Other minor fixes
+
+_____Notes_____
+
+1. Remember that in WPMS installations, extended fields are network wide
+2. The Panel (chat) is now a Bronze member feature
+3. Chatroom no longer exists as part of the Panel
+
