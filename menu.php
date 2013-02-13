@@ -453,7 +453,7 @@ function __wps__plugin_welcome() {
 							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-add-page" href="%s">%s</a>' ), esc_url( admin_url('admin.php?page=symposium_debug') ), __('Activate features on the Installation page', WPS_TEXT_DOMAIN) ); ?></li>
 							<li><?php echo sprintf( __( '<a class="welcome-icon welcome-widgets-menus" href="%s">%s</a>' ), esc_url( admin_url('admin.php?page=symposium_templates') ), __('Reset your Profile Page Header template', WPS_TEXT_DOMAIN) ); ?></li>
 						</ul>
-						<?php echo sprintf(__( 'It\'s <em>very important</em> that you read the <a href="%s" target="_blank">release notes</a>.', WPS_TEXT_DOMAIN ), "http://www.wpsymposium.com/2012/11/release-information-for-v12-12/"); ?><br />
+						<?php echo sprintf(__( 'It\'s <em>very important</em> that you read the <a href="%s" target="_blank">release notes</a>.', WPS_TEXT_DOMAIN ), "http://www.wpsymposium.com/2013/01/release-information-for-v13-02/"); ?><br />
                     </div>
 					<div class="welcome-panel-column welcome-panel-last">
 						<h4><?php _e( 'Need a little extra help?', WPS_TEXT_DOMAIN ); ?></h4>
