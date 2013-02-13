@@ -6,17 +6,17 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 12.12
+Stable tag: 13.02
 
 Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
 
 == Description ==
 
-**WP Symposium turns a WordPress website into a Social Network! It is a suite of WordPress plugins including forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, chat room, profile page, social widgets, activity alerts, RSS activity feeds and support for other plugins such as Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.**
+**WP Symposium turns a WordPress website into a Social Network! It is a WordPress plugin thet provides a forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, profile page, social widgets, activity alerts, RSS activity feeds, Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.**
 
-For developers, there are a growing number of WordPress hooks and filters, along with classes, WP Symposium functions and Javascript variables. More information on the WPS Wiki at www.wpswiki.com.
+For developers, there are a growing number of WordPress hooks and filters, along with classes, WP Symposium functions and Javascript variables.
 
-Note: The Core WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, chat, panel, mail, member directory and widgets) - additional Bronze WP Symposium plugins require a subscription fee. They are included in the download so you can try them out on your site, and also at the request of existing users so that all get updated together.
+Note: The Core WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, chat, panel, mail, member directory and widgets) - additional Bronze WP Symposium features can be purchased. They are included in the download so you can try them out on your site, and also at the request of existing users so that all get updated together.
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
 
@@ -29,14 +29,14 @@ erm, sorry - only two steps.
 
 *What do you get?*
 
-You get a number of plugins that each provide a set of functionality and features, that can be used individually or all together, to produce a social networking website built on WordPress.
+A set of features, that can be used individually or all together, to produce a social networking website built on WordPress.
 
-You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars); friends; a "notification bar" with friends status, mail alerts and live chat windows. You can also activate a forum; a directory of members and internal (private) messaging.
+You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars); friends; a "notification bar" with friends status, mail and live alerts. You can also activate a forum; a directory of members and internal (private) messaging.
 
-And there are "Bronze" plugins for even more functionality - like Groups, Events, Facebook Shared Status, Photo Albums and Mobile Access.
+And there are "Bronze" features for even more functionality - live chat windows, Groups, Events, Facebook Shared Status, Photo Albums and Mobile Access.
 These are included in the package installation so you can try them on your site (a small banner is shown while you are trying out the Bronze plugins which is removed with an Activation Code if you subscribe to the Bronze subscription at www.wpsymposium.com/membership).
 
-Oh, and you also get widgets, with more to come, including latest new members and latest forum posts.
+Oh, and you also get widgets, with more to come, including latest new members, friends status updates, who is online and latest forum posts.
 
 *Can I change the layout and styles?*
 
@@ -44,7 +44,7 @@ Certainly can! Templates are provided for you to change the layout, and an easy-
 
 *How is it configured?*
 
-WP Symposium plugins work with any WordPress theme! No complicated theme development, and no complicated styles - you can even pick the colour scheme in the WordPress admin area!
+WP Symposium will work with any WordPress theme! No complicated theme development, and no complicated styles - you can even pick the colour scheme in the WordPress admin area!
 
 Via crowdin website at www.crowdin.net/project/symposium, a growing number of translations are being maintained by an active user base, so running WP Symposium in a different language is easily set up.
 
@@ -60,11 +60,11 @@ The development roadmap is directed by users! Anyone can see what's coming next,
 
 *Where can I get support?*
 
-At www.wpsymposium.com or the WPS Wiki at www.wpswiki.com.
+At www.wpsymposium.com forum, and for subscribers via a helpdesk.
 
 == Installation ==
 
-More information is available at www.wpswiki.com, and a work-in-progress admin guide is available at https://dl.dropbox.com/u/49355018/wps.pdf
+More information is available at www.wpsymposium.com, and an admin guide is available at https://dl.dropbox.com/u/49355018/wps.pdf.
 
 Important - after activating for the first time, and after changing any WP Symposium shortcodes, make sure you visit the WP Symposium -> Installation page that updates internal paths.
 
@@ -82,7 +82,6 @@ Tested with PHP 5.
 
 * download from wordpress.org/extend/plugins/wp-symposium/
 * unzip the contents of the ZIP file in your /wp-content/plugins folder
-* activate the plugins you want via Plugins on the WordPress admin dashboard (including the core plugin)
 * important - go to the Installation page to complete the setup
 
 *Getting latest version*
@@ -91,7 +90,7 @@ Nightly builds and release candidates are available at www.wpsymposium.com/downl
 
 *Adding WP Symposium plugins to your site*
 
-Full instructions are available on the WPS Wiki at www.wpswiki.com
+Full instructions are available via www.wpsymposium.com (see the blog for the admin guide, hints and tips, etc.
 
 == Screenshots ==
 
@@ -168,12 +167,19 @@ Q. How much does Bronze membership cost?
 A. $39 a year - if you don't want to continue your membership please cancel your PayPal subscription. You may want to wait until the end of your year to benefit from membership for as long as possible. You can continue to use Bronze plugins installed on your site even after you cancel (you just can't upgrade or get new ones).
 
 Q. What is Silver membership?
-A. For $99 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
+A. For $59 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
+
+Q. What is Gold membership?
+A. Lifetime membership! For $99, you get what the Bronze and Silver members get and nothing else to pay!
+
+Q. Where can I find copyright and licence information?
+A. The plugin is copyright WP Symposium Ltd, published under the GPL3 licence. For the end user licence agreement, please see licence.txt within the plugin download.
 
 == Changelog ==
 
 From WP Symposium's first introduction to the WordPress repository, right up to now, releases are regularly made following the release cycle. The best way to keep abreast of changes is via the release notes at http://www.wpsymposium.com/blog - they are important to read as they provide information on each release.
-To see what's coming next (Bronze members can vote!) take a look at http://www.wpsymposium.com/voting.
+To see what's coming next (members can vote!) take a look at http://www.wpsymposium.com/voting.
+Recent changes are included in the plugin as release.txt
 
 == Upgrade Notice ==
 
