@@ -8,7 +8,7 @@ Requires at least: 3.0
 Tested up to: 3.5
 Stable tag: 13.04
 
-Social Networking for WordPress: profle page, forum, activity,friends,  member directory, mail, chat, groups, events, gallery, mobile and more!
+Social Networking for WordPress: profile page, forum, activity,friends,  member directory, mail, chat, groups, events, gallery, mobile and more!
 
 == Description ==
 
