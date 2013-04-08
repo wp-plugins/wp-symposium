@@ -31,9 +31,10 @@ erm, sorry - only two steps.
 
 A set of features, that can be used individually or all together, to produce a social networking website built on WordPress.
 
-You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars); friends; a "notification bar" with friends status, mail and live alerts. You can also activate a forum; a directory of members and internal (private) messaging.
+You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars), make friendships (and followers), activate a forum, add a directory of members and send/receive internal (private) messaging.
 
 And there are "Bronze" features for even more functionality - live chat windows, Groups, Events, Facebook Shared Status, Photo Albums and Mobile Access.
+
 These are included in the package installation so you can try them on your site (a small banner is shown while you are trying out the Bronze plugins which is removed with an Activation Code if you subscribe to the Bronze subscription at www.wpsymposium.com/membership).
 
 Oh, and you also get widgets, with more to come, including latest new members, friends status updates, who is online and latest forum posts.
