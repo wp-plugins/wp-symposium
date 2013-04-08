@@ -3540,7 +3540,6 @@ function __wps__activity_stream($uid1='', $version='wall', $limit_from=0, $limit
 
 	$html = "";
 
-	
 	if (is_user_logged_in() || $privacy == 'public') {	
 	
 		$is_friend = ($uid1 > 0) ? __wps__friend_of($uid1, $current_user->ID) : false;	
@@ -4153,6 +4152,7 @@ function __wps__activity_stream($uid1='', $version='wall', $limit_from=0, $limit
 	}
 		
 	return $html;
+
 }
 
 // **********************************************************************************
