@@ -8,15 +8,15 @@ Requires at least: 3.0
 Tested up to: 3.5
 Stable tag: 13.04
 
-Social Networking for WordPress: forum, activity, member directory, mail, chat, profile page, groups, events, gallery, mobile, RSS and more!
+Social Networking for WordPress: profle page, forum, activity,friends,  member directory, mail, chat, groups, events, gallery, mobile and more!
 
 == Description ==
 
-**WP Symposium turns a WordPress website into a Social Network! It is a WordPress plugin thet provides a forum, activity (similar to Facebook wall), member directory, private mail, notification bar, chat windows, profile page, social widgets, activity alerts, RSS activity feeds, Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.**
+**WP Symposium turns a WordPress website into a Social Network! It is a WordPress plugin that provides a forum, activity (similar to Facebook wall), member directory, private mail, notification panel, chat windows, profile page, social widgets, activity alerts, RSS activity feeds, Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.**
 
 For developers, there are a growing number of WordPress hooks and filters, along with classes, WP Symposium functions and Javascript variables.
 
-Note: The Core WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, chat, panel, mail, member directory and widgets) - additional Bronze WP Symposium features can be purchased. They are included in the download so you can try them out on your site, and also at the request of existing users so that all get updated together.
+Note: The Core WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, mail, member directory and widgets) - additional "Bronze" WP Symposium features can be purchased. They are included in the download so you can try them out on your site, and also at the request of existing users so that all get updated together.
 
 Find out more, and try it out on our own social network at www.wpsymposium.com.
 
@@ -31,9 +31,10 @@ erm, sorry - only two steps.
 
 A set of features, that can be used individually or all together, to produce a social networking website built on WordPress.
 
-You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars); friends; a "notification bar" with friends status, mail and live alerts. You can also activate a forum; a directory of members and internal (private) messaging.
+You can activate a member profile page with activity wall and posts/replies; member profile photos (avatars), make friendships (and followers), activate a forum, add a directory of members and send/receive internal (private) messaging.
 
 And there are "Bronze" features for even more functionality - live chat windows, Groups, Events, Facebook Shared Status, Photo Albums and Mobile Access.
+
 These are included in the package installation so you can try them on your site (a small banner is shown while you are trying out the Bronze plugins which is removed with an Activation Code if you subscribe to the Bronze subscription at www.wpsymposium.com/membership).
 
 Oh, and you also get widgets, with more to come, including latest new members, friends status updates, who is online and latest forum posts.
