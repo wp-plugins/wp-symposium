@@ -1154,7 +1154,11 @@ function __wps__getTopic($topic_id, $group_id=0) {
 		// Final check if it's just not there
 		$sql = "SELECT tid FROM ".$wpdb->prefix."symposium_topics WHERE tid = %d";
 		if ($wpdb->get_var($wpdb->prepare($sql, $topic_id))) {
-			$html .= sprintf(__("You do not have permission to view this topic, sorry. <a href='%s'>Log in...</a>", WPS_TEXT_DOMAIN), site_url().'/wp-login.php?redirect_to='.urlencode(__wps__pageURL()));
+			if (is_user_logged_in()) {
+				$html .= __("You do not have permission to view this topic, sorry.", WPS_TEXT_DOMAIN);
+			} else {
+				$html .= sprintf(__("You do not have permission to view this topic, sorry. <a href='%s'>Log in...</a>", WPS_TEXT_DOMAIN), site_url().'/wp-login.php?redirect_to='.urlencode(__wps__pageURL()));
+			}
 
 
 			if (__wps__get_current_userlevel() == 5) $html .= '<br /><br />'.sprintf(__('Permissions are set via the WordPress admin dashboard->%s->Options->Forum.', WPS_TEXT_DOMAIN), WPS_WL_SHORT);

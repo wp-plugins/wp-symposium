@@ -77,7 +77,7 @@ add_action('__wps__admin_menu_hook', '__wps__add_news_to_admin_menu');
 
 function __wps__news_offsets() {
 	// Place Alerts offset settings in DOM so accessible via Javascript
- 	echo "<div id='__wps__news_y_offset' style='display:none'>".get_option(WPS_OPTIONS_PREFIX."_news_x_offset")."</div>";
+ 	echo "<div id='__wps__news_x_offset' style='display:none'>".get_option(WPS_OPTIONS_PREFIX."_news_x_offset")."</div>";
 	echo "<div id='__wps__news_y_offset' style='display:none'>".get_option(WPS_OPTIONS_PREFIX."_news_y_offset")."</div>";
 }
 add_action('wp_footer', '__wps__news_offsets');

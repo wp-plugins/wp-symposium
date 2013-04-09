@@ -17,11 +17,13 @@ __wps__show_tabs_header('groups');
 		$group_invites = (isset($_POST[ 'group_invites' ])) ? $_POST[ 'group_invites' ] : '';
 		$initial_groups = (isset($_POST[ 'initial_groups' ])) ? $_POST[ 'initial_groups' ] : '';
 		$group_invites_max = $_POST[ 'group_invites_max' ];
+		$group_max_members = ($_POST[ 'group_max_members' ] != '') ? $_POST[ 'group_max_members' ] : '0';
 
 		update_option(WPS_OPTIONS_PREFIX.'_group_all_create', $group_all_create);
 		update_option(WPS_OPTIONS_PREFIX.'_group_invites', $group_invites);
 		update_option(WPS_OPTIONS_PREFIX.'_group_invites_max', $group_invites_max);
 		update_option(WPS_OPTIONS_PREFIX.'_initial_groups', $initial_groups);
+		update_option(WPS_OPTIONS_PREFIX.'_group_max_members', $group_max_members);
 		update_option(WPS_OPTIONS_PREFIX.'_use_group_templates', isset($_POST[ 'wps_use_group_templates' ]) ? $_POST[ 'wps_use_group_templates' ] : '');
 
 		if (get_option(WPS_OPTIONS_PREFIX.'_profile_menu_type')) {
@@ -50,6 +52,7 @@ Directory=members';
 	$group_invites = get_option(WPS_OPTIONS_PREFIX.'_group_invites');
 	$group_invites_max = get_option(WPS_OPTIONS_PREFIX.'_group_invites_max');
 	$initial_groups = get_option(WPS_OPTIONS_PREFIX.'_initial_groups');
+	$group_max_members = (get_option(WPS_OPTIONS_PREFIX.'_group_max_members')) ? get_option(WPS_OPTIONS_PREFIX.'_group_max_members') : '0';
 
 	?>
 
@@ -85,6 +88,14 @@ Directory=members';
 		<td>
 		<input type="checkbox" name="group_invites" id="group_invites" <?php if ($group_invites == "on") { echo "CHECKED"; } ?>/>
 		<span class="description"><?php echo __("Allow group admin's to invite people to join via email.", WPS_TEXT_DOMAIN); ?></span></td> 
+		</tr> 
+
+		<tr valign="top"> 
+		<td scope="row"><label for="group_max_members"><?php _e('Default maximum members', WPS_TEXT_DOMAIN); ?></label></td>
+		<td><input name="group_max_members" style="width: 50px" type="text" id="group_max_members" value="<?php echo $group_max_members; ?>" class="regular-text" /> 
+		<span class="description">
+			<?php echo __('Maximum number of members a new group allows (can be changed in group settings), 0=unlimited.', WPS_TEXT_DOMAIN); ?>
+		</span></td> 
 		</tr> 
 
 		<tr valign="top"> 

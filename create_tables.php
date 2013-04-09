@@ -782,9 +782,9 @@ __wps__alter_table("groups", "ADD", "new_member_emails", "varchar(2)", "", "'on'
 __wps__alter_table("groups", "ADD", "add_alerts", "varchar(2)", "", "'on'");
 __wps__alter_table("groups", "ADD", "default_page", "varchar(16)", "", "'activity'");
 __wps__alter_table("groups", "ADD", "about_page", "text", "", "''");
+__wps__alter_table("groups", "ADD", "max_members", "int(11)", "NOT NULL", "'0'");
 
 // Add indexes
-
 __wps__add_index($wpdb->prefix . "symposium_topics", 'topic_owner');
 __wps__add_index($wpdb->prefix . "symposium_topics", 'topic_parent');
 __wps__add_index($wpdb->prefix . "symposium_topics", 'topic_category');

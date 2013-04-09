@@ -256,23 +256,25 @@ function __wps__add_events_menu_tabs($html,$title,$value,$uid1,$uid2,$privacy,$i
 		if (WPS_DEBUG) $html .= 'Events, allowed roles = '.$dir_levels.'<br />';
 		
 		// Check to see if this member is in the included list of roles
-		$user = get_userdata( $uid1 );
-		$capabilities = $user->{$wpdb->prefix.'capabilities'};
-		
 		$include = false;
-		if ($capabilities) {
-
-			foreach ( $capabilities as $role => $name ) {
-				if ($role) {
-					$role = strtolower($role);
-					$role = str_replace(' ', '', $role);
-					$role = str_replace('_', '', $role);
-					if (WPS_DEBUG) $html .= 'Checking role '.$role.' against '.$dir_levels.'<br />';
-					if (strpos($dir_levels, $role) !== FALSE) $include = true;
-				}
-			}		 														
-		
-		}	
+		if (is_user_logged_in()) {
+			$user = get_userdata( $uid1 );
+			$capabilities = $user->{$wpdb->prefix.'capabilities'};
+			
+			if ($capabilities) {
+	
+				foreach ( $capabilities as $role => $name ) {
+					if ($role) {
+						$role = strtolower($role);
+						$role = str_replace(' ', '', $role);
+						$role = str_replace('_', '', $role);
+						if (WPS_DEBUG) $html .= 'Checking role '.$role.' against '.$dir_levels.'<br />';
+						if (strpos($dir_levels, $role) !== FALSE) $include = true;
+					}
+				}		 														
+			
+			}	
+		}
 		
 		if ( ($include) && ( ($uid1 == $uid2) || (is_user_logged_in() && strtolower($privacy) == 'everyone') || (strtolower($privacy) == 'public') || (strtolower($privacy) == 'friends only' && $is_friend) || __wps__get_current_userlevel() == 5) ) {
 			$html .= '<li id="menu_events" class="__wps__profile_menu" href="javascript:void(0)">'.$title.'</li>';

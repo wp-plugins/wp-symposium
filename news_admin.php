@@ -27,7 +27,7 @@ if (isset($_POST['__wps__news_y_offset'])) {
 	
 		<tr><td colspan="2">
 				<?php _e('The Alerts plugin updates a DIV (which can be in a WordPress menu item or embedded in a theme) that notifies the member of news/notifications such as new 	mail/friends/activity/etc - notifications can be added by other plugins.', WPS_TEXT_DOMAIN); ?><br />
-				<?php _e('Depending on the theme you are using, the position of the list of alerts may not be exactly as you require (the default values are for use in the Wordpress TwentyEleven theme).', WPS_TEXT_DOMAIN); ?><br />
+				<?php _e('Depending on the theme you are using, the position of the list of alerts may not be exactly as you require.', WPS_TEXT_DOMAIN); ?><br />
 				<?php _e('To move the list of alerts left/right or up/down, change the offset values below. Use negative values to move left/up and positive values to move right/down.', WPS_TEXT_DOMAIN); ?>
 		</td></tr>
 

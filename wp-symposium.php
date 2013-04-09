@@ -3,7 +3,7 @@
 Plugin Name: WP Symposium
 Plugin URI: http://www.wpsymposium.com
 Description: Turn your WordPress site into a social network. Activate features on the Installation page.
-Version: 13.04
+Version: 13.XX NB2
 Author: Simon Goodchild
 Author URI: http://www.wpsymposium.com
 License: GPL3
@@ -23,7 +23,7 @@ include_once(dirname(__FILE__).'/hooks_filters.php');
 global $wpdb, $current_user;
 
 // Set version
-define('WPS_VER', '13.04');
+define('WPS_VER', '13.XX NB2');
 
 // Load activated sub-plugins
 require_once(dirname(__FILE__).'/widgets.php');
@@ -868,16 +868,16 @@ function __wps__js_init() {
 		}	
 
 	 	if (get_option(WPS_OPTIONS_PREFIX.'_use_wysiwyg') == "on" || function_exists('__wps__events_main') || function_exists('__wps__group')) {
-	 		wp_enqueue_script('wps-tinymce', $plugin.'/tiny_mce/tiny_mce.js', array('jquery'));	
+	 		wp_enqueue_script('wps-tinymce', $plugin.'/tiny_mce/tiny_mce_src.js', array('jquery'));	
 	 	}
 
 		// Upload CSS
 	    wp_register_style('__wps__upload_ui_css', WPS_PLUGIN_URL.'/css/jquery.fileupload-ui.css');
 		wp_enqueue_style('__wps__upload_ui_css');
 	    // Upload JS
-		wp_enqueue_script('__wps__tmpl', 'http://blueimp.github.com/JavaScript-Templates/tmpl.min.js', array('jquery'));	
-		wp_enqueue_script('__wps__load_image', 'http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js', array('jquery'));	
-		wp_enqueue_script('__wps__canvas_to_blob', 'http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js', array('jquery'));	
+		wp_enqueue_script('__wps__tmpl', WPS_PLUGIN_URL.'/js/tmpl.min.js', array('jquery'));	
+		wp_enqueue_script('__wps__load_image', WPS_PLUGIN_URL.'/js/load-image.min.js', array('jquery'));	
+		wp_enqueue_script('__wps__canvas_to_blob', WPS_PLUGIN_URL.'/js/canvas-to-blob.min.js', array('jquery'));	
 		wp_enqueue_script('__wps__iframe_transport', WPS_PLUGIN_URL.'/js/jquery.iframe-transport.js', array('jquery'));	
 		wp_enqueue_script('__wps__fileupload', WPS_PLUGIN_URL.'/js/jquery.fileupload.js', array('jquery'));	
 		wp_enqueue_script('__wps__fileupload_fp', WPS_PLUGIN_URL.'/js/jquery.fileupload-fp.js', array('jquery'));	

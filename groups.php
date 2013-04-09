@@ -129,12 +129,17 @@ function __wps_show_group($page)
 						if ($member_of == "no") {
 
 							// Not a member, or pending, so show join button
-							if ($group->private != "on") {
-								$buttons .='<input type="submit" value="'.__("Join Group", WPS_TEXT_DOMAIN).'" id="groups_join_button" class="__wps__button">';
-								$buttons .='<p id="groups_join_button_done" style="padding:6px;display:none">'.__('You are now a member of this group.', WPS_TEXT_DOMAIN).'</p>';
+							$member_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(gmid) FROM ".$wpdb->prefix."symposium_group_members WHERE group_id = %d", $gid));
+							if ($member_count < $group->max_members) {
+								if ($group->private != "on") {
+									$buttons .='<input type="submit" value="'.__("Join Group", WPS_TEXT_DOMAIN).'" id="groups_join_button" class="__wps__button">';
+									$buttons .='<p id="groups_join_button_done" style="padding:6px;display:none">'.__('You are now a member of this group.', WPS_TEXT_DOMAIN).'</p>';
+								} else {
+									$buttons .='<input type="submit" value="'.__("Request to Join", WPS_TEXT_DOMAIN).'" id="groups_join_button" class="__wps__button">';
+									$buttons .='<p id="groups_join_button_done" style="padding:6px;display:none">'.__('Your membership is awaiting approval.', WPS_TEXT_DOMAIN).'</p>';
+								}
 							} else {
-								$buttons .='<input type="submit" value="'.__("Request to Join", WPS_TEXT_DOMAIN).'" id="groups_join_button" class="__wps__button">';
-								$buttons .='<p id="groups_join_button_done" style="padding:6px;display:none">'.__('Your membership is awaiting approval.', WPS_TEXT_DOMAIN).'</p>';
+								$buttons .='<p>'.__('Group membership is full.', WPS_TEXT_DOMAIN).'</p>';
 							}
 
 						} else {
