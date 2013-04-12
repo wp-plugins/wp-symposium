@@ -15,7 +15,7 @@
 if ( !defined('WPS_WL') ) 						define('WPS_WL', 'WP Symposium'); 										// Long name
 if ( !defined('WPS_WL_SHORT') ) 				define('WPS_WL_SHORT', 'WP Symposium');									// Alternative short name
 if ( !defined('WPS_DIR') ) 						define('WPS_DIR', 'wp-symposium'); 										// Installed plugin folder (within WordPress plugins)
-if ( !defined('WPS_WELCOME_MESSAGE') ) 			define('WPS_WELCOME_MESSAGE', '../../welcome.html'); 					// Alternative file location of welcome message
+if ( !defined('WPS_WELCOME_MESSAGE') ) 			define('WPS_WELCOME_MESSAGE', '../not-there.html'); 					// Alternative file location of welcome message
 if ( !defined('WPS_TEXT_DOMAIN') ) 				define('WPS_TEXT_DOMAIN', 'wp-symposium'); 								// Text domain for translations
 if ( !defined('WPS_SHORTCODE_PREFIX') )			define('WPS_SHORTCODE_PREFIX', 'symposium');							// Prefix for shortcodes 
 if ( !defined('WPS_HIDE_ACTIVATION') )			define('WPS_HIDE_ACTIVATION', false);									// Whether to hide activation code on Installation page
