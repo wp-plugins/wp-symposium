@@ -1,0 +1,32 @@
+*************************
+* Change log for v13.05 *
+*************************
+
+_____Enhancements_____
+
+CORE
+
+* Choose to exclude JWPlayer (large javascript file) in Manage->Settings
+* Added "Everyone" to Manage->Thesaurus, for example, change to "Community"
+
+PROFILE
+
+* Choose which extended fields to include in advanced search
+* Set default privacy level of new members via Options->Profile
+
+FORUM
+
+* Topic post/reply lock countdown shown (admin's can always delete)
+* Forum topic post/reply lock countdown
+
+GROUPS
+
+* Group admin can set maximum number of members
+* Set default maximum number of members per group on Group admin page
+
+_____Bug_Fixes_____
+
+
+* Fixed upload of non-images (uses Manage->Settings->extensions)
+* Backslashes on community settings (text field)
+* Events in calendar view now defaults to current month
