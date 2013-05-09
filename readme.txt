@@ -6,7 +6,7 @@ Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 13.04
+Stable tag: 13.05
 
 Social Networking for WordPress: profile page, forum, activity,friends,  member directory, mail, chat, groups, events, gallery, mobile and more!
 
