@@ -114,9 +114,6 @@ if ( ( get_option(WPS_OPTIONS_PREFIX."_version") != WPS_VER && is_admin()) || (i
  	// Update Versions *******************************************************************************
 	update_option(WPS_OPTIONS_PREFIX."_version", WPS_VER);
 
-	// Notify developers (feel free to comment out the next line)
-	@mail('info@wpsymposium.com', get_bloginfo('url').' installed v'.WPS_VER, get_bloginfo('url'));
-		
 		
 }
 
