@@ -1,0 +1,93 @@
+************************
+* Change log for 13.10 *
+************************
+
+This information is also available at http://www.wpsymposium.com/wp-content/plugins/wp-symposium/release.txt.
+
+For a list of files that have changed since the previous live release, please view 
+<a href="http://www.wpsymposium.com/wp-content/plugins/wp-symposium/release_summary.pdf">release_summary.pdf</a>
+from which you can use file compare software to see individual changes, if you have made changes to the source code,
+such as ExamDiff for Windows (<a href="http://www.prestosoft.com">http://www.prestosoft.com</a>) 
+or KDiff3 for Mac (<a href="http://kdiff3.sourceforge.net">http://kdiff3.sourceforge.net</a>)
+
+_____Enhancements_____
+
+CORE
+
+* New option to delete users from WP Symposium and WordPress (WP Symposium->Manage)
+* New option to use basic HTML file upload (please Note 2 below)
+* New option to force UTF8 decoding in activity stream (WP Symposium->Manage->Settings, Troubleshooting)
+* Integrity check: added link showing where to fix orphaned topics (to WP Symposium->Manage->Forum Posts)
+* Updated jQuery UI to v1.10.3 (see Note 1 below)
+* Updated data('autocomplete') to data('uiAutocomplete') for jQuery UI v1.10 in wps.js
+
+ADVERTISING
+
+* Added advertising code block insertions for:
+  - area above forum
+  - within forum list of categories/topics (after 3rd item)
+  - within single topic (between starting post and first reply)
+* Add code into WP Symposium->Manage->Advertising
+
+WIDGETS
+
+* New widget to show recent alerts ("Recent Alerts") for the current member (only shown when logged in)
+
+_____Free Modules_____
+
+PROFILE
+
+* Activity: Implemented support for basic HTML file upload 
+* Avatar: Implemented support for basic HTML file upload 
+* Remove all friends button added to Friends page
+
+FORUM
+
+* Re-implemented support for non-image attachments like .pdf, .txt, .zip, etc (WP Symposium->Manage->Settings)
+* Implemented support for basic HTML file upload
+
+_____Bronze+ Modules_____
+
+ALERTS
+
+* New option to hide drop-down list, menu item can still go to alerts page (WP Symposium->Options->Alerts)
+
+GALLERY
+
+* Implemented support for basic HTML file upload 
+
+GROUPS
+
+* Forum: Implemented support for basic HTML file upload
+* Avatar: Implemented support for basic HTML file upload
+
+PANEL
+
+* New option to exclude offline members (WP Symposium->Options->Panel, "Show offline members")
+
+_____Bug_Fixes_____
+
+* Removed backslash from extended fields shown in profile page (textarea)
+* Removed backslash from forum category dropdown list and forum breadcrumb
+* Removed backslash from activity posts sent to Facebook
+
+_____Notes_____
+
+* Note 1: Changing jQuery UI theme
+
+The theme for jQuery UI can be changed by downloading a theme from http://jqueryui.com/themeroller and copying
+jquery-ui-1.10.3.custom.css into wp-symposium/css folder.
+
+* Note 2: Basic HTL file upload
+
+The basic HTML file upload has been added to allow those that experience clashes with themes or
+plugins with the default file upload method included, to have a more compatible method.
+It can be switched on via WP Symposium->Manage->Settings, "Basic File Upload".
+The styles can be set in WP Symposium->Styles->CSS using the ID __wps__file_upload_basic, for example, 
+#__wps__file_upload_basic { font-family:arial; }.
+
+However, it does reduce available features due to the way WP Symposium uses AJAX. You cannot crop uploaded
+avatars, and uploaded images to the forum are displayed on page refresh. There are no progress bars,
+and so when uploading large files, the user may not be aware anything is happening. Large files are
+not resized. Also, after posting with an attachment on the forum, a second attachment can only be posted
+after a page refresh (consider setting page "Refresh forum after reply" on WP Symposium->Options->Forum).
