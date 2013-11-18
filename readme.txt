@@ -3,7 +3,7 @@ Author: WP Symposium
 Contributors: simon.goodchild
 Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
-Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
+Tags: social network, social networking, social network plugin, wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.6
 Stable tag: 13.10
