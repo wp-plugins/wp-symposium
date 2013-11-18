@@ -8,7 +8,7 @@ Requires at least: 3.0
 Tested up to: 3.6
 Stable tag: 13.10
 
-Social Network Plugin for WordPress: profile page, forum, activity,friends,  member directory, mail, chat, groups, events, gallery, mobile and more!
+Social Network Plugin for WordPress: profile page, forum, activity, friends, member directory, mail, chat, groups, events, gallery, mobile and more!
 
 == Description ==
 
