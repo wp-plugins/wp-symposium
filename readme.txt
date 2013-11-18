@@ -1,6 +1,6 @@
-=== Plugin Name ===
+=== WP Symposium Social Network ===
 Author: WP Symposium
-Contributors: Simon Goodchild
+Contributors: simon.goodchild
 Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
 Tags: wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
