@@ -1,20 +1,20 @@
-=== WP Symposium Social Network ===
+=== Plugin Name ===
 Author: WP Symposium
-Contributors: simon.goodchild
+Contributors: Simon Goodchild
 Donate link: http://www.wpsymposium.com
 Link: http://www.wpsymposium.com
-Tags: social network, social networking, social network plugin, wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, french, german, italian, dutch, spanish
+Tags: social network, social networking, wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
-Tested up to: 3.6
-Stable tag: 13.10
+Tested up to: 3.7.1
+Stable tag: 13.12
 
-Social Network Plugin for WordPress: profile page, forum, activity, friends, member directory, mail, chat, groups, events, gallery, mobile and more!
+Social Networking for WordPress: profile page, forum, activity,friends,  member directory, mail, chat, groups, events, gallery, mobile and more!
 
 == Description ==
 
 **WP Symposium turns a WordPress website into a Social Network! It is a WordPress plugin that provides a forum, activity (similar to Facebook wall), member directory, private mail, notification panel, chat windows, profile page, social widgets, activity alerts, RSS activity feeds, Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.**
 
-For developers, there are a large number of WordPress hooks and filters, along with classes, WP Symposium functions and Javascript variables.
+For developers, there are a growing number of WordPress hooks and filters, along with classes, WP Symposium functions and Javascript variables.
 
 Note: The Core WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, mail, member directory and widgets) - additional "Bronze" WP Symposium features can be purchased. They are included in the download so you can try them out on your site, and also at the request of existing users so that all get updated together.
 
