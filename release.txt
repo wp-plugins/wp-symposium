@@ -1,0 +1,71 @@
+*****************************
+* Change log for 13.12 *
+*****************************
+
+This information is also available at http://www.wpsymposium.com/wp-content/plugins/wp-symposium/release.txt.
+
+For a list of files that have changed since the previous live release, please view http://www.wpsymposium.com/wp-content/plugins/wp-symposium/release_summary.pdf from which you can use file compare software to see individual changes, if you have made changes to the source code, such as ExamDiff for Windows (http://www.prestosoft.com) or KDiff3 for Mac (http://kdiff3.sourceforge.net)
+
+
+_____Core_____
+
+* Added responsive CSS to the forum (more will follow across WPS with the next release) [13]
+* Updated link to release notes category on welcome page (also shown via Menu->Welcome)
+* Added link to switch themes to suggested TwentyTen on welcome message
+* Corrected "Clear Audit Log" button layout on Audit tab [1]
+* Corrected typo on Plus admin page, description for Pages now refers to pages, not posts
+* Pop-out chat window depcrecated .live() JS function replaced with .on()
+* Over-ride URL to login pages, useful if using Login/Registration plugin [9]
+* Improved message for activation code on multi-site installations
+
+
+_____Free_Modules_____
+
+* Forum: Added pagination [5]
+* Forum: Layout more responsive (for tablets and phones). Reset your templates! [11]
+* Forum: New shortcode to display a single category (to use on different pages) [6]
+* Forum: Choose not to show breadcrumbs (possibly used in conjunction with above) [7]
+* Forum: Choose to exclude a forum category from main forum (possibly used in conjunction with above) [7]
+* Forum: Added [quote] -> [/quote] BB Code (CSS class is .__wps__quote)
+* Forum: Select WordPress roles that can manage forum (via front end) and can moderate forum posts (available via Dashboard Menu)
+* Forum: Admin option to disable forum email subscriptions (useful on busy forums on servers with lower capacity) [2]
+* Forum: Admin option to clear all forum subscriptions [2]
+* Forum: Admin option to set how many topics are shown in a category [3]
+
+* Mail: Unread items now shows a star to highlight it
+* Mail: Read and unread mail now have their own CSS classes (.mail_item_unread and .mail_item_read)
+
+* Member Directory: Set whether available publically or not [8]
+
+* Summary Widget: Improved layout, and now set avatar size (via widget settings)
+
+
+_____Bronze+ Modules_____
+
+* Profile Plus: Activity now includes when friends make other friends [4]
+* Profile Plus: Activity now optionally includes replies to forum posts [10]
+* Profile Plus: Activity now optionally includes replies to group forum posts [10]
+* Profile Plus: When posted YouTube video to activity, status text now shows above [12]
+
+
+_____Bug_Fixes_____
+
+* Remove all friends button only visible to member and admin
+* Fixed forum now showing to visitors when Guest selected, when using some non-English languages
+
+
+_____Notes_____
+
+[1]  Switch on via Settings, "Developers only". Also made link appearance on Settings reflect audit status.
+[2]  Switch on via Options -> Forum, Subscriptions
+[3]  Switch on via Options -> Forum, Display
+[4]  As this is shared with all friends, and comments would be shared among all friends (which is not apparent), comments are not permitted
+[5]  Switch on and configure via Options -> Forum, Display
+[6]  Use the forum category ID, for example: [symposium-forum cat="3"]
+[7]  Configure via Manage -> Categories (you can select per forum category)
+[8]  Switch on via Options -> Directory
+[9]  Enter URL in Manage -> Settings. Note [url] is replaced by current page URL, useful if passing parameter (eg, /wp-login.php?redirect_to=[url])
+[10] Switch on via Options -> Plus
+[11] Template for forums must be reset via Manage -> Templates. If you've customised CSS ensure you check your forum layout.
+[12] For new activity posts only, not retrospectively applied
+[13] Edit and access via Managed -> Styles -> Responsive
