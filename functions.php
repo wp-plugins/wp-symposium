@@ -463,7 +463,6 @@ function __wps__getTopic($topic_id, $group_id=0, $pagination=9999, $page=1) {
 								}
 							}
 
-
 						$html .= "</div><div style='clear:both'></div>";
 										
 						$html .= "<div class='started-by' style='margin-top:10px'>";
@@ -5063,7 +5062,7 @@ function __wps__do_Forumrecentposts_Widget($postcount,$preview,$cat_id,$show_rep
 											}
 											if ($incl_cat) {
 												if (get_option(WPS_OPTIONS_PREFIX.'_permalink_structure')) {
-													$cat = stripslahes($wpdb->get_var($wpdb->prepare('SELECT title FROM '.$wpdb->prefix.'symposium_cats WHERE cid = %d', $post->parent_category)));
+													$cat = stripslashes($wpdb->get_var($wpdb->prepare('SELECT title FROM '.$wpdb->prefix.'symposium_cats WHERE cid = %d', $post->parent_category)));
 													$perma_cat = __wps__get_forum_category_part_url($post->parent_category);
 													$html .= ' '.__('in', WPS_TEXT_DOMAIN)." <a href='".$forum_url.'/'.$perma_cat."'>".$cat."</a> ";
 												} else {
