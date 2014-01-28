@@ -1,0 +1,48 @@
+*****************************
+* Change log for 14.02 *
+*****************************
+
+This information is also available at http://www.wpsymposium.com/wp-content/plugins/wp-symposium/release.txt.
+
+
+_____Core_____
+
+* Codex: Replaced get userdatabylogin() with get_user_by()
+* Codex: Added support for WPS Profile Extensions (see http://www.wpsymposium.com/shop)
+
+
+_____Free_Features_____
+
+* Forum: Added __wps__forum_category_filter filter for each displayed forum category [2]
+
+
+_____Bronze+_Features_____
+
+* Profile Plus: Added option for BB Code toolbar in forum (Options->Profile Plus) [1]
+
+
+_____Bug_Fixes_____
+
+* Forum: Fixed issue when shortcodes were being interpreted on the Forum
+* Forum: Fixed issue with [code]...[/code] BB Code
+* Forum: Fixed issue with BB Codes not be interpreted (plain text only, not with WYSIWYG editor)
+
+
+_____Notes_____
+
+[1] Cannot be used with WYSIWYG editor, would be rather silly to anyway ;)
+[2] Forum category filter
+
+Put the following in your theme functions.php to choose whether to show a particular forum category (simple example to only show category ID 1).
+You could change the condition to check if a user has certain privileges on your site.
+
+add_filter('__wps__forum_category_filter','check_to_see_if_include_category', 10, 2);
+function check_to_see_if_include_category($forum_row, $cat_id){
+  if ($cat_id == 1) {
+    // include this category, based on the above check
+    return $forum_row;
+  } else {
+    // otherwise exclude this category
+    return '';
+  }
+}
