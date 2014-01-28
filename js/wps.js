@@ -1902,6 +1902,7 @@ jQuery(document).ready(function() {
 			}
 		});
 
+
 	});
 
 	if (jQuery("#profile_jcrop_target").length) {
@@ -3378,6 +3379,10 @@ jQuery(document).ready(function() {
 					}
 				}
 			}
+
+			// BB Toolbar
+			__wps__evoke_bbcode_toolbar();
+
 		});
 	}
 
@@ -3524,6 +3529,9 @@ jQuery(document).ready(function() {
 
 		// Enable file uploading
 		__wps__init_file_upload();
+
+		// BB Toolbar
+		__wps__evoke_bbcode_toolbar();		
 
 	}
 
@@ -4724,6 +4732,8 @@ jQuery(document).ready(function() {
 		jQuery("#new-topic-button").hide();
 		jQuery("#forum_breadcrumbs").hide();
 		jQuery("#__wps__forum_dropdown").hide();
+		// BB Toolbar
+		__wps__evoke_bbcode_toolbar();
 	});
 	jQuery("#cancel_post").live('click', function() {
 		jQuery("#new-topic").hide();
@@ -9816,12 +9826,12 @@ jQuery.fn.extend({
 
 function __wps__evoke_bbcode_toolbar() {
 	if (jQuery(".__wps__toolbar").length) {
-		jQuery(".__wps__toolbar_bold").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[b]','[/b]'); });
-		jQuery(".__wps__toolbar_italic").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[i]','[/i]'); });
-		jQuery(".__wps__toolbar_underline").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[u]','[/u]'); });
-		jQuery(".__wps__toolbar_quote").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[quote]','[/quote]'); });
-		jQuery(".__wps__toolbar_code").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[code]','[/code]'); });
-		jQuery(".__wps__toolbar_url").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[url=???]!!!','[/url]'); });
+		jQuery(".__wps__toolbar_bold").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[b]','[/b]'); exit; });
+		jQuery(".__wps__toolbar_italic").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[i]','[/i]'); exit; });
+		jQuery(".__wps__toolbar_underline").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[u]','[/u]'); exit; });
+		jQuery(".__wps__toolbar_quote").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[quote]','[/quote]'); exit; });
+		jQuery(".__wps__toolbar_code").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[code]','[/code]'); exit; });
+		jQuery(".__wps__toolbar_url").live('click', function() { jQuery('#'+jQuery(this).attr('rel')).insertAtCaret('[url=???]!!!','[/url]'); exit; });
 	}
 }
 
