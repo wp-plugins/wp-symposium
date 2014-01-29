@@ -670,9 +670,9 @@ function __wps__getTopic($topic_id, $group_id=0, $pagination=9999, $page=1) {
 						}
 						
 						// Add Signature
-						$signature = __wps__get_meta($post->topic_owner, 'signature');
+						$signature = str_replace("\\", "", __wps__get_meta($post->topic_owner, 'signature'));
 						if ($signature != '') {
-							$html .= '<div class="sep_top"><em>'.__wps__make_url(stripslashes($signature)).'</em></div>';
+							$html .= '<div class="sep_top"><em>'.__wps__make_url($signature).'</em></div>';
 						}
 
 										
@@ -1076,9 +1076,9 @@ function __wps__getTopic($topic_id, $group_id=0, $pagination=9999, $page=1) {
 									}
 
 								// Add Signature
-								$signature = __wps__get_meta($child->topic_owner, 'signature');
+								$signature = str_replace("\\", "", __wps__get_meta($child->topic_owner, 'signature'));
 								if ($signature != '') {
-									$reply_html .= '<div class="sep_top"><em>'.__wps__make_url(stripslashes($signature)).'</em></div>';
+									$reply_html .= '<div class="sep_top"><em>'.__wps__make_url($signature).'</em></div>';
 								}
 								
 								// Check for any comments now for side image (then used below)
