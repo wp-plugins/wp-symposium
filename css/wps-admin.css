@@ -1,18 +1,8 @@
-@font-face {
-	font-family: 'WPST-icons';
-	src:url('./fonts/WPST-icons.eot');
-	src:url('./fonts/WPST-icons.eot?#iefix') format('embedded-opentype'),
-		url('./fonts/WPST-icons.ttf') format('truetype'),
-		url('./fonts/WPST-icons.woff') format('woff'),
-		url('./fonts/WPST-icons.svg#WPST-icons') format('svg');
-	font-weight: normal;
-	font-style: normal;
-}
-
-#toplevel_page_symposium_debug div.wp-menu-image:before {
-	font-family: WPST-icons !important;
-	content: '\e601';
-	font-size: 190% !important;
+#toplevel_page_symposium_debug div.wp-menu-image {
+	background-image:url('images/wps_logo.svg');
+	background-size: 22px auto;
+	background-position: 7px 5px;
+	background-repeat: no-repeat;
 }
 
 .__wps__tooltip {
