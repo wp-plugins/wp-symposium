@@ -1,0 +1,30 @@
+****************************
+* Change log for 14.03 *
+****************************
+
+This information is also available at http://www.wpsymposium.com/wp-content/plugins/wp-symposium/release.txt.
+
+
+_____Core_____
+
+Defined('WPS_PLUGIN_URL') now supports SSL certificates
+
+
+_____Free_Features_____
+
+Mail: WPS admin can now send mail to any member via their profile page
+Mail: WPS admin automatically gets all site members in the Mail Compose "To:" list
+
+_____Bronze+_Features_____
+
+Groups: Set order groups are shown (Options->Groups)
+Groups: Last active updated whenever group is visited, not just contributed to, as therefore considered active
+
+
+_____Bug_Fixes_____
+
+* Fixed $wpdb->prepare bug in WPS mail class
+* Fixed bug when creating forum category from bbPress installation
+* Fixed bug causing Advanced Search options to not appear
+
+_____Notes_____
