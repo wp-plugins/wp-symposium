@@ -1,0 +1,12 @@
+****************************
+* Change log for 14.04 *
+****************************
+
+This information is also available at http://www.wpsymposium.com/wp-content/plugins/wp-symposium/release.txt.
+
+
+_____Core_____
+
+Minor bug fixes
+Minor updates for WordPress v3.9 compatibility
+
