@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== WP Symposium Social Network Plugin ===
 Author: WP Symposium
 Contributors: Simon Goodchild
 Donate link: http://www.wpsymposium.com
@@ -13,6 +13,8 @@ Social Networking for WordPress: profile page, forum, activity, friends, member 
 == Description ==
 
 **WP Symposium turns a WordPress website into a Social Network! It is a WordPress plugin that provides a forum, activity (similar to Facebook wall), member directory, private mail, notification panel, chat windows, profile page, social widgets, activity alerts, RSS activity feeds, Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.**
+
+Please be aware that WP Symposium Pro is also available (www.wpsymposiumpro.com).
 
 For developers, there are a growing number of WordPress hooks and filters, along with classes, WP Symposium functions and Javascript variables.
 
