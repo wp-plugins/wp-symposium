@@ -99,21 +99,7 @@ Full instructions are available via www.wpsymposium.com (see the blog for the ad
 
 == Screenshots ==
 
-1. Member Wall
-2. Friends
-3. Profile Photo
-4. Custom extended information
-5. Mail
-6. Forum Categories
-7. Forum Topic
-8. Edit Forum Post
-9. Smilies/Emoticons
-10. Friends online status
-11. Site-wide chatroom
-12. Latest Forum Posts widget
-13. New Members widget
-14. Yes/No Vote widget
-15. Easily change styles
+The best way to appreciate how great your social network can look is to visit www.wpsymposiumpro.com or www.symposium.com !
 
 == Frequently Asked Questions ==
 
