@@ -1,4 +1,4 @@
-=== WP Symposium Social Network Plugin ===
+=== Plugin Name ===
 Author: WP Symposium
 Contributors: Simon Goodchild
 Donate link: http://www.wpsymposium.com
@@ -6,15 +6,11 @@ Link: http://www.wpsymposium.com
 Tags: social network, social networking, wp-symposium, symposium, forum, social, chat, friends, wall, status, message, registration, directory, groups, events, foreign language, french, german, italian, dutch, spanish
 Requires at least: 3.0
 Tested up to: 3.9
-Stable tag: 14.04
+Stable tag: 14.05
 
 Social Networking for WordPress: profile page, forum, activity, friends, member directory, mail, chat, groups, events, gallery, mobile and more!
 
 == Description ==
-
-**New plugin news!**
-
-Unleash your imagination with the latest generation of this plugin: https://wordpress.org/plugins/wp-symposium-pro !
 
 **WP Symposium turns a WordPress website into a Social Network! It is a WordPress plugin that provides a forum, activity (similar to Facebook wall), member directory, private mail, notification panel, chat windows, profile page, social widgets, activity alerts, RSS activity feeds, Groups, Events, Gallery, Facebook Connect and Mobile support! You simply choose which you want to activate! Certain features are optional to members to protect their privacy.**
 
@@ -99,7 +95,21 @@ Full instructions are available via www.wpsymposium.com (see the blog for the ad
 
 == Screenshots ==
 
-The best way to appreciate how great your social network can look is to visit www.wpsymposiumpro.com or www.symposium.com !
+1. Member Wall
+2. Friends
+3. Profile Photo
+4. Custom extended information
+5. Mail
+6. Forum Categories
+7. Forum Topic
+8. Edit Forum Post
+9. Smilies/Emoticons
+10. Friends online status
+11. Site-wide chatroom
+12. Latest Forum Posts widget
+13. New Members widget
+14. Yes/No Vote widget
+15. Easily change styles
 
 == Frequently Asked Questions ==
 
