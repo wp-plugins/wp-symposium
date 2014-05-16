@@ -1627,6 +1627,8 @@ function __wps__getForum($cat_id, $limit_from=0, $group_id=0) {
 					$new_topic_form .= '<div name="new-topic" id="new-topic" style="display:none;">';
 						$new_topic_form .= '<input type="hidden" id="cid" value="'.$cat_id.'">';
 
+						$defaultcat = $wpdb->get_var($wpdb->prepare("SELECT cid FROM ".$wpdb->prefix."symposium_cats WHERE defaultcat = %s", 'on'));
+
 						if ($group_id == 0) {
 	
 							$new_topic_form .= '<div class="new-topic-category label">'.__("Select a Category", WPS_TEXT_DOMAIN).'<br />';
@@ -1697,9 +1699,7 @@ function __wps__getForum($cat_id, $limit_from=0, $group_id=0) {
 						$new_topic_form .= '<textarea class="new-topic-subject-text'.$elastic.'" id="new_topic_text" style="width:100%;"></textarea>';
 						$new_topic_form .= '</div>';
 						if (get_option(WPS_OPTIONS_PREFIX.'_use_wysiwyg') == 'on') { $new_topic_form .= '<br />'; }
-						
-						$defaultcat = $wpdb->get_var($wpdb->prepare("SELECT cid FROM ".$wpdb->prefix."symposium_cats WHERE defaultcat = %s", 'on'));
-	
+							
 						// Upload
 						if (get_option(WPS_OPTIONS_PREFIX.'_forum_uploads')) {
 							include_once('server/file_upload_include.php');
