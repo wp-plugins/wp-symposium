@@ -20,8 +20,6 @@ For developers, there are a growing number of WordPress hooks and filters, along
 
 Note: The Core WP Symposium plugin from WordPress.org is free (that includes profile, activity, forum, mail, member directory and widgets) - additional "Bronze" WP Symposium features can be purchased. They are included in the download so you can try them out on your site, and also at the request of existing users so that all get updated together.
 
-Find out more, and try it out on our own social network at www.wpsymposium.com.
-
 *Three steps to create a Social Network website*
 
 1. Download WordPress
@@ -55,7 +53,6 @@ Via crowdin website at www.crowdin.net/project/symposium, a growing number of tr
 
 Loads! Smilies, loves AJAX, an installation "health check" page, templates for changing the page layout, options for just about everything... the list goes on!
 
-Find out more, and try it out on our own social network at www.wpsymposium.com.
   
 *Can I see what features are coming next?*
 
@@ -118,14 +115,11 @@ Full instructions are available via www.wpsymposium.com (see the blog for the ad
 Q. Where can I find more information?
 A. Go to www.wpsymposium.com for a demo and an active community of users. Visit www.wpswiki.com for further information and an admin guide.
 
-Q. Can I try it out?
-A. Yep, go to www.wpsymposium.com
-
 Q. Is WP Symposium covered by the GPL license?
 A. Yes, for sure. Everything listed on the WordPress directory is covered by the GPL v3 licence. There may be other plugins that are compatible with WP Symposium that are sold commercially, but what is provided via the download at www.wordpress.org will always be covered by the GPL licence.
 
 Q. What's the one thing I probably haven't done?
-A. Visited the Installation page to update WP Symposium's internal paths. Check out www.wpswiki.com, in particular the "Try this first" page.
+A. Visited the Installation page to update WP Symposium's internal paths?
 
 Q. The admin side works, but the forum (or another plugin) doesn't appear?
 A. Check you have `[symposium-forum]` on your page, with a hyphen, not an underscore. Replace `[symposium-forum]` with the shortcode of the plugin.
@@ -134,7 +128,7 @@ Q. I've done that, but the forum (or another plugin) still doesn't appear?
 A. Have you put `[symposium-forum]` on a WordPress page, not an HTML file? 
 
 Q. It all looks okay, but I just get a spinning "please wait" symbol?
-A. Read the "Try this first" page at www.wpswiki.com, if that still doesn't help visit www.wpsymposium.com. You almost certainly have a Javascript problem.
+A. Sounds like you almost certainly have a Javascript problem. Use Firefox+Firebug or Chrome Developer Console to see what's going on.
 
 Q. Can I use other languages?
 A. There are a growing number of translations available to use at www.crowdin.net (see www.wpsymposium.com for further instructions). From v0.58 support for non-Western character sets was introduced (needs a fresh v0.58+ installation).
@@ -146,7 +140,7 @@ Q. Will WP Symposium work on WPMU/WPMS?
 A. Yes, WordPress Multi-site is supported, although it is not as widely used as the single site installation.
 
 Q. I don't see friends when they're online, can't edit forum posts or read all mail in my inbox. I see stuff, but not much works...
-A. Sounds like AJAX isn't working, probably due to a Javascript error. Check out the "Try this first" page at www.wpswiki.com.
+A. Sounds like AJAX isn't working, probably due to a Javascript error. Use Firefox+Firebug or Chrome Developer Console to see what's going on.
 
 Q. There used to be a login and registration plugin, where did they go?
 A. After consultation with users, the majority voted to leave authentication to WordPress or other plugins such as Theme-My-Login, however in hindsight it can be introduced in a more strategic manner. There is now a sidebar widget that allows members to login, or show links to the register/forgotten password WordPress pages. Once logged in, the user can see how any messages (including those unread) and friends (including new friend requests), etc with the same widget.
