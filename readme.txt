@@ -112,8 +112,11 @@ Full instructions are available via www.wpsymposium.com (see the blog for the ad
 
 == Frequently Asked Questions ==
 
-Q. Where can I find more information?
-A. Go to www.wpsymposium.com for a demo and an active community of users. Visit www.wpswiki.com for further information and an admin guide.
+Q. What is WP Symposium Pro?
+A. After 4 years, a lot has been learned, and "WPS Pro" is WP Symposium re-written from the ground-up, as compatible as we can make it, no custom tables and as much as possible use your existing theme styles. The core plugin is still free and available on the WordPress repositor at <https://wordpress.org/plugins/wp-symposium-pro>. Find out more at <http://www.wpsymposiumpro.com>.
+
+Q. How to I get an activate code for the extra features?
+A. Sorry, but with WP Symposium Pro providing the same features, we are no longer accepting paid-for features for this version of the plugin, and instead asking people to consider getting all these features with <https://wordpress.org/plugins/wp-symposium-pro>.
 
 Q. Is WP Symposium covered by the GPL license?
 A. Yes, for sure. Everything listed on the WordPress directory is covered by the GPL v3 licence. There may be other plugins that are compatible with WP Symposium that are sold commercially, but what is provided via the download at www.wordpress.org will always be covered by the GPL licence.
@@ -147,30 +150,6 @@ A. After consultation with users, the majority voted to leave authentication to 
 
 Q. How can I get rid of the Powered By message?
 A. Use the Templates via WP Admin -> WP Symposium -> Templates.
-
-Q. Because of all the nice AJAX, how can I get content submitted to search engines?
-A. There is a BETA (installation page) to use permalinks, all feedback welcome! Check out the Mobile/SEO/Accessibility plugin at www.wpsymposium.com
-
-Q. Which plugins may require a subscription fee?
-A. Currently the Groups, Facebook Connect, Events, Gallery, Mobile/SEO, Profile Plus and RSS Activity Feed require a Bronze membership at www.wpsymposium.com - all can be tried out at www.wpsymposium.com
-
-Q. If I take out a Bronze membership and I decide I don't want WP Symposium, can I get a refund?
-A. If the plugins don't work on your server, with TwentyEleven theme and all non-WPS plugins de-activated, then you will get a full refund, less any PayPal fees.
-
-Q. What happens if I cancel my Bronze membership?
-A. After cancellation, you will no longer be able to download upgrades/patches or new plugins (that are provided to Bronze members) from www.wpsymposium.com. You can continue to use those plugins you have on your site, and upgrade the core WP Symposium plugins from www.wordpress.org. You may want to wait until the end of your year to benefit from membership for as long as possible. You will not be able to access your helpdesk account after cancelling.
-
-Q. How much does Bronze membership cost?
-A. $39 a year - if you don't want to continue your membership please cancel your PayPal subscription. You may want to wait until the end of your year to benefit from membership for as long as possible. You can continue to use Bronze plugins installed on your site even after you cancel (you just can't upgrade or get new ones).
-
-Q. What is Silver membership?
-A. For $59 a year, we will do a full install on your server (if it won't work for any reason you get a full refund, less any PayPal fees). Any support tickets raised by Silver members will take priority over Bronze members.
-
-Q. What is Gold membership?
-A. Lifetime membership! For $99, you get what the Bronze and Silver members get and nothing else to pay!
-
-Q. Where can I find copyright and licence information?
-A. The plugin is copyright WP Symposium Ltd, published under the GPL3 licence. For the end user licence agreement, please see licence.txt within the plugin download.
 
 == Changelog ==
 
