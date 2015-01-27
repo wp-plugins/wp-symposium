@@ -113,7 +113,7 @@ Full instructions are available via www.wpsymposium.com (see the blog for the ad
 == Frequently Asked Questions ==
 
 Q. What is WP Symposium Pro?
-A. After 4 years, a lot has been learned, and "WPS Pro" is WP Symposium re-written from the ground-up, as compatible as we can make it, no custom tables and as much as possible use your existing theme styles. The core plugin is still free and available on the WordPress repositor at <https://wordpress.org/plugins/wp-symposium-pro>. Find out more at <http://www.wpsymposiumpro.com>.
+A. After 4 years, a lot has been learned, and "WPS Pro" is WP Symposium re-written from the ground-up, as compatible as we can make it, no custom tables and as much as possible use your existing theme styles. The core plugin is still free and available on the WordPress repository at <https://wordpress.org/plugins/wp-symposium-pro>.
 
 Q. How to I get an activate code for the extra features?
 A. Sorry, but with WP Symposium Pro providing the same features, we are no longer accepting paid-for features for this version of the plugin, and instead asking people to consider getting all these features with <https://wordpress.org/plugins/wp-symposium-pro>.
@@ -153,9 +153,7 @@ A. Use the Templates via WP Admin -> WP Symposium -> Templates.
 
 == Changelog ==
 
-From WP Symposium's first introduction to the WordPress repository, right up to now, releases are regularly made following the release cycle. The best way to keep abreast of changes is via the release notes at http://www.wpsymposium.com/blog - they are important to read as they provide information on each release.
-To see what's coming next (members can vote!) take a look at http://www.wpsymposium.com/voting.
-Recent changes are included in the plugin as release.txt
+With the release of <https://wordpress.org/plugins/wp-symposium-pro>, releases to this plugin will be for bug and security fixes only.
 
 == Upgrade Notice ==
 
